@@ -8,10 +8,10 @@ impl Xyiming {
             .map(|a| (&a).into())
     }
 
-    pub fn get_stream(&self, stream_id: StreamId) -> Option<StreamView> {
+    pub fn get_stream(&self, stream_id: Base58CryptoHash) -> Option<StreamView> {
         Self::streams()
-            .get(&stream_id)
+            .get(&stream_id.into())
             .map(|s| (&s).into())
-            .or(Self::finished().get(&stream_id).map(|s| (&s).into()))
+            .or(Self::finished().get(&stream_id.into()).map(|s| (&s).into()))
     }
 }

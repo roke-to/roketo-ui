@@ -11,12 +11,16 @@ impl Xyiming {
         receiver_id: ValidAccountId,
         token_name: String,
         tokens_per_tick: WrappedBalance,
-    ) -> StreamId {
+    ) -> Base58CryptoHash {
         assert!(
             env::attached_deposit() >= CREATE_STREAM_DEPOSIT,
             "{} {}",
             ERR_DEPOSIT_NOT_ENOUGH,
             CREATE_STREAM_DEPOSIT
+        );
+        assert!(
+            owner_id != receiver_id,
+            "WTF man"
         );
         // TODO generate stream_id reasonably
         let stream_id = env::sha256(&env::block_index().to_be_bytes())
@@ -50,12 +54,13 @@ impl Xyiming {
         };
         Self::streams().insert(&stream_id, &stream);
 
-        stream_id
+        stream_id.into()
     }
 
     /// depositing tokens to the stream
     #[payable]
-    pub fn deposit(&mut self, stream_id: StreamId) {
+    pub fn deposit(&mut self, stream_id: Base58CryptoHash) {
+        let stream_id = stream_id.into();
         let mut stream = self.extract_stream_or_panic(&stream_id);
         assert!(
             stream.token_id == NEAR_TOKEN_ID,
@@ -67,7 +72,8 @@ impl Xyiming {
     }
 
     // TODO assert 1 yocto
-    pub fn withdraw(&mut self, stream_id: StreamId) -> Promise {
+    pub fn withdraw(&mut self, stream_id: Base58CryptoHash) -> Promise {
+        let stream_id = stream_id.into();
         let mut stream = self.extract_stream_or_panic(&stream_id);
         assert!(
             stream.receiver_id == env::predecessor_account_id(),
@@ -97,7 +103,8 @@ impl Xyiming {
     /// returns two Promise: first for owner, second for receiver
     /// Promise for owner may be None if no funds left to return
     #[payable]
-    pub fn stop(&mut self, stream_id: StreamId) -> (Option<Promise>, Promise) {
+    pub fn stop_stream(&mut self, stream_id: Base58CryptoHash) -> (Option<Promise>, Promise) {
+        let stream_id = stream_id.into();
         let mut stream = self.extract_stream_or_panic(&stream_id);
         assert!(
             stream.receiver_id == env::predecessor_account_id()
@@ -111,7 +118,7 @@ impl Xyiming {
         let period = (env::block_timestamp() - stream.timestamp_started) as Balance;
         let expected_payment = stream.tokens_per_tick * period - stream.tokens_transferred;
         stream.status = STREAM_FINISHED.to_string();
-        let (owner_promise, receiver_promise) = if stream.balance > expected_payment {
+        let promises = if stream.balance > expected_payment {
             stream.tokens_transferred += expected_payment;
             (
                 Some(
@@ -130,6 +137,6 @@ impl Xyiming {
         Self::finished().insert(&stream_id, &stream);
 
         // TODO process promises failure
-        (owner_promise, receiver_promise)
+        promises
     }
 }
