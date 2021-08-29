@@ -46,6 +46,6 @@ impl Xyiming {
     pub(crate) fn extract_stream_or_panic(&mut self, stream_id: &StreamId) -> Stream {
         Self::streams()
             .remove(&stream_id)
-            .expect(ERR_STREAM_NOT_EXIST)
+            .expect(ERR_STREAM_NOT_ACTIVE)
     }
 }

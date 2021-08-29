@@ -2,11 +2,11 @@ use crate::*;
 
 pub const ERR_DEPOSIT_NOT_ENOUGH: &str = "Attached deposit is not enough, expected";
 pub const ERR_ACCESS_DENIED: &str = "Caller has no access, expected";
-pub const ERR_STREAM_INACTIVE: &str = "This operation is not permitted with inactive stream";
-pub const ERR_STREAM_NOT_EXIST: &str = "Stream not exist or finished";
+pub const ERR_STREAM_NOT_ACTIVE: &str = "Stream not exist or not active";
 
 pub const CREATE_STREAM_DEPOSIT: Balance = 100_000_000_000_000_000_000_000; // 0.1 NEAR
 pub const ONE_YOCTO: Balance = 1;
+pub const ONE_NEAR: Balance = 1_000_000_000_000_000_000_000_000; // 1 NEAR
 
 pub type StreamId = CryptoHash;
 pub type StreamStatus = String;

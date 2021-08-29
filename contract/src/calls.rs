@@ -71,7 +71,7 @@ impl Xyiming {
         Self::streams().insert(&stream_id, &stream);
     }
 
-    // TODO assert 1 yocto
+    /// can be executed only by receiver
     pub fn withdraw(&mut self, stream_id: Base58CryptoHash) -> Promise {
         let stream_id = stream_id.into();
         let mut stream = self.extract_stream_or_panic(&stream_id);
@@ -81,18 +81,23 @@ impl Xyiming {
             ERR_ACCESS_DENIED,
             stream.receiver_id
         );
-        assert!(stream.status == STREAM_ACTIVE, "{}", ERR_STREAM_INACTIVE);
+        // the following line should be always true due extract_stream_or_panic returns only active streams
+        debug_assert!(stream.status == STREAM_ACTIVE, "{}", ERR_STREAM_NOT_ACTIVE);
         let period = (env::block_timestamp() - stream.timestamp_started) as Balance;
         let expected_payment = stream.tokens_per_tick * period - stream.tokens_transferred;
         let promise = if stream.balance > expected_payment {
-            stream.status = STREAM_FINISHED.to_string();
-            stream.tokens_transferred += expected_payment;
-            Self::finished().insert(&stream_id, &stream);
-            Promise::new(stream.receiver_id).transfer(expected_payment)
-        } else {
-            stream.tokens_transferred += stream.balance;
+            let payment = expected_payment;
+            stream.balance -= payment;
+            stream.tokens_transferred += payment;
             Self::streams().insert(&stream_id, &stream);
-            Promise::new(stream.receiver_id).transfer(stream.balance)
+            Promise::new(stream.receiver_id).transfer(payment)
+        } else {
+            let payment = stream.balance;
+            stream.balance = 0;
+            stream.tokens_transferred += payment;
+            stream.status = STREAM_FINISHED.to_string();
+            Self::finished().insert(&stream_id, &stream);
+            Promise::new(stream.receiver_id).transfer(payment)
         };
 
         // TODO process promise failure
@@ -114,7 +119,8 @@ impl Xyiming {
             stream.owner_id,
             stream.receiver_id
         );
-        assert!(stream.status == STREAM_ACTIVE, "{}", ERR_STREAM_INACTIVE);
+        // the following line should be always true due extract_stream_or_panic returns only active streams
+        debug_assert!(stream.status == STREAM_ACTIVE, "{}", ERR_STREAM_NOT_ACTIVE);
         let period = (env::block_timestamp() - stream.timestamp_started) as Balance;
         let expected_payment = stream.tokens_per_tick * period - stream.tokens_transferred;
         stream.status = STREAM_FINISHED.to_string();
@@ -134,6 +140,7 @@ impl Xyiming {
                 Promise::new(stream.receiver_id.clone()).transfer(stream.balance),
             )
         };
+        stream.balance = 0;
         Self::finished().insert(&stream_id, &stream);
 
         // TODO process promises failure
