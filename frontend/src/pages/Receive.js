@@ -44,7 +44,7 @@ function ReceivePage (props) {
     console.log('account', account)
     inputs = inputs.map((input, id) => {
       return (
-        <div className='card' style={{ width: '90%', margin: '15px' }} key={id}>
+        <div className='card' style={{ width: '90%', margin: '15px', backgroundColor: '#141414' }} key={id}>
           <div className='card-body'>
             <div className='d-flex flex-row justify-content-between w-100'>
               <div className='col-2 m-1'>
@@ -92,7 +92,7 @@ function ReceivePage (props) {
   return (!props.connected) ? (<div className='container g-0 px-5'>Please connect your NEAR Account first</div>) : (
     <div className='container g-0 px-5'>
       <h4>Your receiving streams</h4>
-      <div className='card' style={{ width: '90%', margin: '15px' }}>
+      <div className='card' style={{ width: '90%', margin: '15px', backgroundColor: '#181818' }}>
         <div className='card-body'>
           <div className='d-flex flex-row justify-content-between w-100'>
             <div className='col-2 m-1'>

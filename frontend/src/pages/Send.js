@@ -46,7 +46,7 @@ function SendPage (props) {
     console.log('account', account)
     outputs = outputs.map((output, id) => {
       return (
-        <div className='card' style={{ width: '90%', margin: '15px' }} key={id}>
+        <div className='card' style={{ width: '90%', margin: '15px', backgroundColor: '#141414' }} key={id}>
           <div className='card-body'>
             <div className='d-flex flex-row justify-content-between w-100'>
               <div className='col-2 m-1'>
@@ -90,32 +90,32 @@ function SendPage (props) {
 
   return (!props.connected) ? (<div className='container g-0 px-5'>Please connect your NEAR Account first</div>) : (
     <div className='container g-0 px-5'>
-      <div className='card' style={{ width: '90%', margin: '15px' }}>
+      <div className='card' style={{ width: '90%', margin: '15px', backgroundColor: '#141414' }}>
         <div className='card-body'>
           <h5 className='card-title'>Create a stream</h5>
           <h6 className='card-subtitle mb-3 text-muted'>Stream your tokens to the receiver directly</h6>
           <form onSubmit={(e) => createStreamClick(e)}>
             <div className='form-group mb-2'>
               <label htmlFor='ownerInput' className='mb-2'>Owner</label>
-              <input className='form-control' id='ownerInput' placeholder={props.signedAccountId} />
+              <input className='form-control' id='ownerInput' placeholder={props.signedAccountId} style={{ backgroundColor: '#101010', color: '#e0e0e0' }} />
             </div>
             <div className='form-group mb-2'>
               <label htmlFor='receiverInput' className='mb-2'>Receiver</label>
-              <input className='form-control' id='receiverInput' placeholder='root.near' />
+              <input className='form-control' id='receiverInput' placeholder='root.near' style={{ backgroundColor: '#101010', color: '#e0e0e0' }} />
             </div>
             <label htmlFor='depositInput' className='mb-2'>Initial deposit</label>
             <div className='input-group mb-2'>
               <div className='input-group-prepend'>
-                <span className='input-group-text' id='basic-addon1'>{NEAR}</span>
+                <span className='input-group-text' id='basic-addon1' style={{ backgroundColor: '#303030', color: '#e0e0e0' }}>{NEAR}</span>
               </div>
-              <input className='form-control' id='depositInput' placeholder='15.70' describedby='basic-addon1' />
+              <input className='form-control' id='depositInput' placeholder='15.70' describedby='basic-addon1' style={{ backgroundColor: '#101010', color: '#e0e0e0' }} />
             </div>
             <label htmlFor='speedInput' className='mb-2'>Streaming speed, tokens per second</label>
             <div className='input-group mb-2'>
               <div className='input-group-prepend'>
-                <span className='input-group-text' id='basic-addon2'>{NEAR}</span>
+                <span className='input-group-text' id='basic-addon2' style={{ backgroundColor: '#303030', color: '#e0e0e0' }}>{NEAR}</span>
               </div>
-              <input className='form-control' id='speedInput' placeholder='0.03' describedby='basic-addon2' />
+              <input className='form-control' id='speedInput' placeholder='0.03' describedby='basic-addon2' style={{ backgroundColor: '#101010', color: '#e0e0e0' }} />
             </div>
 
             {props.connected && showButtons ? (
@@ -126,7 +126,7 @@ function SendPage (props) {
         </div>
       </div>
       <h4>Streams owned by you</h4>
-      <div className='card' style={{ width: '90%', margin: '15px' }}>
+      <div className='card' style={{ width: '90%', margin: '15px', backgroundColor: '#181818' }}>
         <div className='card-body'>
           <div className='d-flex flex-row justify-content-between w-100'>
             <div className='col-2 m-1'>
