@@ -136,7 +136,7 @@ function SendPage (props) {
             Stream ID
             </div>
             <div className='col-1 m-1'>
-            Total amount
+            Tokens left
             </div>
             <div className='col-1 m-1'>
             Token name
