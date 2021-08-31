@@ -4,8 +4,8 @@ use std::convert::TryInto;
 /// Import the generated proxy contract
 use xyiming::XyimingContract;
 use xyiming::{
-    StreamView, AccountView, ONE_YOCTO, ONE_NEAR, ERR_DEPOSIT_NOT_ENOUGH, ERR_ACCESS_DENIED, ERR_STREAM_NOT_ACTIVE,
-    CREATE_STREAM_DEPOSIT
+    AccountView, StreamView, CREATE_STREAM_DEPOSIT, ERR_ACCESS_DENIED, ERR_DEPOSIT_NOT_ENOUGH,
+    ERR_STREAM_NOT_ACTIVE, ONE_NEAR, ONE_YOCTO,
 };
 
 use near_sdk::json_types::Base58CryptoHash;
@@ -78,7 +78,13 @@ impl State {
         res
     }
 
-    pub fn do_create_stream(&self, owner_id: &str, receiver_id: &str, tokens_per_tick: u128, err: Option<&str>) -> String {
+    pub fn do_create_stream(
+        &self,
+        owner_id: &str,
+        receiver_id: &str,
+        tokens_per_tick: u128,
+        err: Option<&str>,
+    ) -> String {
         let contract = &self.contract;
 
         let outcome = call!(
@@ -107,14 +113,14 @@ impl State {
     }
 
     // WARN: outcome returns SuccessValue(``) for (Option<Promise>, Promise), so we cannot test it properly
-    pub fn do_stop_stream(&self, caller: &UserAccount, stream_id: &str, err: Option<&str>) /*-> (Option<Promise>, Promise)*/ {
+    pub fn do_stop_stream(&self, caller: &UserAccount, stream_id: &str, err: Option<&str>)
+    /*-> (Option<Promise>, Promise)*/
+    {
         let contract = &self.contract;
 
         let outcome = call!(
             caller,
-            contract.stop_stream(
-                stream_id.try_into().unwrap()
-            ),
+            contract.stop_stream(stream_id.try_into().unwrap()),
             deposit = ONE_YOCTO
         );
 
@@ -135,9 +141,7 @@ impl State {
 
         let outcome = call!(
             self.root,
-            contract.deposit(
-                stream_id.try_into().unwrap()
-            ),
+            contract.deposit(stream_id.try_into().unwrap()),
             deposit = deposit.into()
         );
 
@@ -153,15 +157,11 @@ impl State {
         }
     }
 
-    pub fn do_withdraw(&self, caller: &UserAccount, stream_id: &str, err: Option<&str>) /*-> Promise*/ {
+    pub fn do_withdraw(&self, caller: &UserAccount, stream_id: &str, err: Option<&str>) /*-> Promise*/
+    {
         let contract = &self.contract;
 
-        let outcome = call!(
-            caller,
-            contract.withdraw(
-                stream_id.try_into().unwrap()
-            )
-        );
+        let outcome = call!(caller, contract.withdraw(stream_id.try_into().unwrap()));
 
         if let Some(msg) = err {
             assert!(
@@ -180,9 +180,7 @@ impl State {
 
         let outcome = call!(
             self.root,
-            contract.stop_stream(
-                "11111111111111111111111111111111".try_into().unwrap()
-            ),
+            contract.stop_stream("11111111111111111111111111111111".try_into().unwrap()),
             deposit = ONE_YOCTO
         );
         assert!(!outcome.is_ok(), "Should panic");
@@ -208,9 +206,7 @@ fn create_stream() {
     let stream_id = state.do_create_stream(ALICE, BOB, 100, None);
     let stream = state.get_stream(&stream_id).unwrap();
     // TODO check all stream fields
-    assert_eq!(
-        stream.owner_id, ALICE
-    );
+    assert_eq!(stream.owner_id, ALICE);
 }
 
 #[test]

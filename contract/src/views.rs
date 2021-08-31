@@ -12,6 +12,12 @@ impl Xyiming {
         Self::streams()
             .get(&stream_id.into())
             .map(|s| (&s).into())
-            .or(Self::finished().get(&stream_id.into()).map(|s| (&s).into()))
+            .or(Self::finished()
+                .get(&stream_id.into())
+                .map(|s| (&s).into())
+                .map(|mut s: StreamView| {
+                    s.stream_id = stream_id;
+                    s
+                }))
     }
 }

@@ -13,8 +13,8 @@ pub use crate::stream::*;
 pub use crate::views::*;
 
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::collections::{LookupMap, TreeMap, Vector};
-use near_sdk::json_types::{ValidAccountId, WrappedBalance, WrappedTimestamp, Base58CryptoHash};
+use near_sdk::collections::{LookupMap, UnorderedSet, Vector};
+use near_sdk::json_types::{Base58CryptoHash, ValidAccountId, WrappedBalance, WrappedTimestamp};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
     env, near_bindgen, AccountId, Balance, CryptoHash, PanicOnDefault, Promise, Timestamp,

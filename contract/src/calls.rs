@@ -18,10 +18,7 @@ impl Xyiming {
             ERR_DEPOSIT_NOT_ENOUGH,
             CREATE_STREAM_DEPOSIT
         );
-        assert!(
-            owner_id != receiver_id,
-            "WTF man"
-        );
+        assert!(owner_id != receiver_id, "WTF man");
         // TODO generate stream_id reasonably
         let stream_id = env::sha256(&env::block_index().to_be_bytes())
             .as_slice()
@@ -36,8 +33,8 @@ impl Xyiming {
             0
         };
 
-        owner.add_output(owner_id.as_ref(), receiver_id.as_ref(), &stream_id);
-        receiver.add_input(receiver_id.as_ref(), owner_id.as_ref(), &stream_id);
+        owner.add_output(&stream_id);
+        receiver.add_input(&stream_id);
 
         self.save_account_or_panic(owner_id.as_ref(), &owner);
         self.save_account_or_panic(receiver_id.as_ref(), &receiver);
@@ -81,22 +78,22 @@ impl Xyiming {
             ERR_ACCESS_DENIED,
             stream.receiver_id
         );
-        // the following line should be always true due extract_stream_or_panic returns only active streams
-        debug_assert!(stream.status == STREAM_ACTIVE, "{}", ERR_STREAM_NOT_ACTIVE);
-        let period = (env::block_timestamp() - stream.timestamp_started) as Balance;
-        let expected_payment = stream.tokens_per_tick * period - stream.tokens_transferred;
-        let promise = if stream.balance > expected_payment {
-            let payment = expected_payment;
+        let payment = Self::get_available_amount(&stream);
+        stream.tokens_transferred += payment;
+        let promise = if stream.balance > payment {
             stream.balance -= payment;
-            stream.tokens_transferred += payment;
             Self::streams().insert(&stream_id, &stream);
             Promise::new(stream.receiver_id).transfer(payment)
         } else {
-            let payment = stream.balance;
             stream.balance = 0;
-            stream.tokens_transferred += payment;
             stream.status = STREAM_FINISHED.to_string();
             Self::finished().insert(&stream_id, &stream);
+            /*let mut owner = self.extract_account_or_create(&stream.owner_id);
+            let mut receiver = self.extract_account_or_create(&stream.receiver_id);
+            owner.remove_output(&stream_id);
+            receiver.remove_input(&stream_id);
+            self.save_account_or_panic(&stream.owner_id, &owner);
+            self.save_account_or_panic(&stream.receiver_id, &receiver);*/
             Promise::new(stream.receiver_id).transfer(payment)
         };
 
@@ -119,31 +116,27 @@ impl Xyiming {
             stream.owner_id,
             stream.receiver_id
         );
-        // the following line should be always true due extract_stream_or_panic returns only active streams
-        debug_assert!(stream.status == STREAM_ACTIVE, "{}", ERR_STREAM_NOT_ACTIVE);
-        let period = (env::block_timestamp() - stream.timestamp_started) as Balance;
-        let expected_payment = stream.tokens_per_tick * period - stream.tokens_transferred;
-        stream.status = STREAM_FINISHED.to_string();
-        let promises = if stream.balance > expected_payment {
-            stream.tokens_transferred += expected_payment;
-            (
-                Some(
-                    Promise::new(stream.owner_id.clone())
-                        .transfer(stream.balance - expected_payment),
-                ),
-                Promise::new(stream.receiver_id.clone()).transfer(expected_payment),
-            )
+        //let mut owner = self.extract_account_or_create(&stream.owner_id);
+        //let mut receiver = self.extract_account_or_create(&stream.receiver_id);
+        let payment = Self::get_available_amount(&stream);
+        let owner_promise = if stream.balance > payment {
+            Some(Promise::new(stream.owner_id.clone()).transfer(stream.balance - payment))
         } else {
-            stream.tokens_transferred += stream.balance;
-            (
-                None,
-                Promise::new(stream.receiver_id.clone()).transfer(stream.balance),
-            )
+            None
         };
+        stream.tokens_transferred += payment;
         stream.balance = 0;
+        stream.status = STREAM_FINISHED.to_string();
         Self::finished().insert(&stream_id, &stream);
+        //owner.remove_output(&stream_id);
+        //receiver.remove_input(&stream_id);
+        //self.save_account_or_panic(&stream.owner_id, &owner);
+        //self.save_account_or_panic(&stream.receiver_id, &receiver);
 
         // TODO process promises failure
-        promises
+        (
+            owner_promise,
+            Promise::new(stream.receiver_id.clone()).transfer(payment),
+        )
     }
 }

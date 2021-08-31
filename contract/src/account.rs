@@ -3,8 +3,8 @@ use crate::*;
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct Account {
     /// Graph of actual streams to enable quick search by AccountId
-    pub inputs: TreeMap<AccountId, Vector<StreamId>>,
-    pub outputs: TreeMap<AccountId, Vector<StreamId>>,
+    pub inputs: UnorderedSet<StreamId>,
+    pub outputs: UnorderedSet<StreamId>,
 
     /// Bridges to push streams further
     // TODO implement bridges
@@ -21,69 +21,43 @@ pub struct AccountView {
 
 impl From<&Account> for AccountView {
     fn from(a: &Account) -> Self {
-        let streams = Xyiming::streams();
+        let active_streams = Xyiming::streams();
+        let finished_streams = Xyiming::finished();
         Self {
             inputs: a
                 .inputs
                 .iter()
-                .map(|(_, x)| {
-                    x.iter()
-                        .map(|y| (&streams.get(&y).unwrap()).into())
-                        .collect::<Vec<StreamView>>()
+                .map(|y| {
+                    let mut stream_view: StreamView =
+                        (&active_streams.get(&y).or(finished_streams.get(&y)).unwrap()).into();
+                    stream_view.stream_id = y.into();
+                    stream_view
                 })
-                .flatten()
                 .collect(),
             outputs: a
                 .outputs
                 .iter()
-                .map(|(_, x)| {
-                    x.iter()
-                        .map(|y| (&streams.get(&y).unwrap()).into())
-                        .collect::<Vec<StreamView>>()
+                .map(|y| {
+                    let mut stream_view: StreamView =
+                        (&active_streams.get(&y).or(finished_streams.get(&y)).unwrap()).into();
+                    stream_view.stream_id = y.into();
+                    stream_view
                 })
-                .flatten()
                 .collect(),
         }
     }
 }
 
 impl Account {
-    pub(crate) fn add_input(
-        &mut self,
-        self_id: &AccountId,
-        owner_id: &AccountId,
-        stream_id: &StreamId,
-    ) {
-        let mut account_inputs = self.inputs.remove(owner_id).unwrap_or_else(|| {
-            let mut prefix = Vec::with_capacity(65);
-            prefix.push(b'w');
-            prefix.extend(env::sha256(&self_id.as_bytes()));
-            prefix.extend(env::sha256(&owner_id.as_bytes()));
-            Vector::new(prefix)
-        });
-
-        account_inputs.push(stream_id);
-
-        self.inputs.insert(owner_id, &account_inputs);
+    // according to near-sdk/src/collections/unordered_set.rs
+    pub(crate) fn add_input(&mut self, stream_id: &StreamId) {
+        let res = self.inputs.insert(stream_id);
+        assert!(res);
     }
 
-    pub(crate) fn add_output(
-        &mut self,
-        self_id: &AccountId,
-        receiver_id: &AccountId,
-        stream_id: &StreamId,
-    ) {
-        let mut account_outputs = self.outputs.remove(receiver_id).unwrap_or_else(|| {
-            let mut prefix = Vec::with_capacity(65);
-            prefix.push(b'v');
-            prefix.extend(env::sha256(&self_id.as_bytes()));
-            prefix.extend(env::sha256(&receiver_id.as_bytes()));
-            Vector::new(prefix)
-        });
-
-        account_outputs.push(stream_id);
-
-        self.outputs.insert(receiver_id, &account_outputs);
+    pub(crate) fn add_output(&mut self, stream_id: &StreamId) {
+        let res = self.outputs.insert(stream_id);
+        assert!(res);
     }
 }
 
@@ -101,8 +75,8 @@ impl Xyiming {
             prefix3.extend(env::sha256(&account_id.as_bytes()));
 
             Account {
-                inputs: TreeMap::new(prefix),
-                outputs: TreeMap::new(prefix2),
+                inputs: UnorderedSet::new(prefix),
+                outputs: UnorderedSet::new(prefix2),
                 bridges: Vector::new(prefix3),
             }
         })
