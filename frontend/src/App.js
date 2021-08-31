@@ -130,7 +130,7 @@ class App extends React.Component {
           <nav className='navbar navbar-expand-lg navbar-dark mb-3' style={{ backgroundColor: '#2F2F2F' }}>
             <div className='container-fluid'>
               <Link className='navbar-brand' to='/' title='Xyiming'>
-                <img src={Logo} alt='Xyiming' className='d-inline-block align-middle' style={{ opacity: 0.9, backgroundColor: 'lightblue' }} />
+                <img src={Logo} alt='Xyiming' className='d-inline-block align-middle mx-3' style={{ opacity: 0.65 }} />
                 Streaming Xyiming
               </Link>
               <button
