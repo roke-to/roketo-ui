@@ -43,7 +43,7 @@ function SendPage (props) {
   let outputs = (account && account.outputs) ? account.outputs : []
 
   if (props.connected && account) {
-    console.log('!!!', account)
+    console.log('account', account)
     outputs = outputs.map((output, id) => {
       return (
         <div className='card' style={{ width: '90%', margin: '15px' }} key={id}>

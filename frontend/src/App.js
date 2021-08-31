@@ -160,7 +160,7 @@ class App extends React.Component {
             <Route exact path='/'>
               <SendPage {...passProps} />
             </Route>
-            <Route exact path='/fiat'>
+            <Route exact path='/receive'>
               <ReceivePage {...passProps} />
             </Route>
           </Switch>
