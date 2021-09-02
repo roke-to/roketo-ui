@@ -68,16 +68,10 @@ impl Xyiming {
         Self::streams().insert(&stream_id, &stream);
     }
 
-    /// can be executed only by receiver
+    // TODO decide do we need to require receiver only
     pub fn withdraw(&mut self, stream_id: Base58CryptoHash) -> Promise {
         let stream_id = stream_id.into();
         let mut stream = self.extract_stream_or_panic(&stream_id);
-        assert!(
-            stream.receiver_id == env::predecessor_account_id(),
-            "{} {}",
-            ERR_ACCESS_DENIED,
-            stream.receiver_id
-        );
 
         let promise = Self::withdraw_receiver(&mut stream);
 
