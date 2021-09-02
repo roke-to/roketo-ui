@@ -41,7 +41,7 @@ impl From<&Stream> for StreamView {
             tokens_per_tick: s.tokens_per_tick.into(),
             tokens_transferred: s.tokens_transferred.into(),
             tokens_available: Xyiming::get_available_amount(s).into(),
-            status: s.status.clone(),
+            status: s.status.to_string(),
         }
     }
 }
@@ -49,7 +49,7 @@ impl From<&Stream> for StreamView {
 impl Xyiming {
     pub(crate) fn get_available_amount(stream: &Stream) -> Balance {
         // the following line should be always true due extract_stream_or_panic returns only active streams
-        debug_assert!(stream.status == STREAM_ACTIVE, "{}", ERR_STREAM_NOT_ACTIVE);
+        debug_assert!(!stream.status.is_terminated(), "{}", ERR_STREAM_NOT_ACTIVE);
         let period = (env::block_timestamp() - stream.timestamp_started) as Balance;
         let expected_payment = stream.tokens_per_tick * period - stream.tokens_transferred;
         std::cmp::min(stream.balance, expected_payment)
@@ -63,7 +63,7 @@ impl Xyiming {
             Promise::new(stream.receiver_id.clone()).transfer(payment)
         } else {
             stream.balance = 0;
-            stream.status = STREAM_FINISHED.to_string();
+            stream.status = StreamStatus::Finished;
             /*let mut owner = self.extract_account_or_create(&stream.owner_id);
             let mut receiver = self.extract_account_or_create(&stream.receiver_id);
             owner.remove_output(&stream_id);

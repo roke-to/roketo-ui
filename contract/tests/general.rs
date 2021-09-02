@@ -404,7 +404,7 @@ fn withdraw_then_stop() {
     assert!(u128::from(stream.tokens_transferred) < total);
     assert!(u128::from(stream.tokens_transferred) > stream_transferred);
     assert!(stream.balance == 0.into());
-    assert!(stream.status == "FINISHED");
+    assert!(stream.status == "INTERRUPTED");
 
     state.do_withdraw(bob, &stream_id, Some(ERR_STREAM_NOT_ACTIVE));
 

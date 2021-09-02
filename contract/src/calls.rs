@@ -47,7 +47,7 @@ impl Xyiming {
             tokens_per_tick: tokens_per_tick.into(),
             tokens_transferred: 0,
             timestamp_started: env::block_timestamp(),
-            status: STREAM_ACTIVE.to_string(),
+            status: StreamStatus::Active,
         };
         Self::streams().insert(&stream_id, &stream);
 
@@ -81,7 +81,7 @@ impl Xyiming {
 
         let promise = Self::withdraw_receiver(&mut stream);
 
-        if stream.status == STREAM_FINISHED {
+        if stream.status.is_terminated() {
             Self::finished().insert(&stream_id, &stream);
         } else {
             Self::streams().insert(&stream_id, &stream);
@@ -109,12 +109,12 @@ impl Xyiming {
 
         let receiver_promise = Self::withdraw_receiver(&mut stream);
 
-        let owner_promise = if stream.status == STREAM_FINISHED {
+        let owner_promise = if stream.status.is_terminated() {
             None
         } else {
             let payment = stream.balance;
             stream.balance = 0;
-            stream.status = STREAM_FINISHED.to_string();
+            stream.status = StreamStatus::Interrupted;
             Some(Promise::new(stream.owner_id.clone()).transfer(payment))
         };
         Self::finished().insert(&stream_id, &stream);
