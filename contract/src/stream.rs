@@ -52,6 +52,9 @@ impl From<&Stream> for StreamView {
 impl Xyiming {
     pub(crate) fn get_available_amount(stream: &Stream) -> Balance {
         // the following line should be always true due extract_stream_or_panic returns only active streams
+        if stream.status != StreamStatus::Active {
+            return 0;
+        }
         debug_assert!(
             !stream.status.is_terminated(),
             "{}",

@@ -91,6 +91,7 @@ impl Xyiming {
         promise
     }
 
+    #[payable]
     pub fn pause_stream(&mut self, stream_id: Base58CryptoHash) -> Promise {
         let stream_id = stream_id.into();
         let mut stream = self.extract_stream_or_panic(&stream_id);
@@ -122,7 +123,7 @@ impl Xyiming {
     }
 
     /// Only owner can restart the stream
-    // TODO make it payable
+    #[payable]
     pub fn restart_stream(&mut self, stream_id: Base58CryptoHash) {
         let stream_id = stream_id.into();
         let mut stream = self.extract_stream_or_panic(&stream_id);

@@ -7,6 +7,14 @@ function ReceivePage (props) {
   const profileId = props.signedAccountId
   const [showButtons, setShowButtons] = useState(true)
 
+  async function pauseStreamClick (e, output) {
+    e.preventDefault()
+    setShowButtons(false)
+    console.log('pausing', output)
+    const res = await props._near.contract.pause_stream({ stream_id: output.stream_id }, '200000000000000', 1)
+    console.log('pausing res', res)
+  }
+
   async function withdrawStreamClick (e, input) {
     e.preventDefault()
     setShowButtons(false)
@@ -75,6 +83,7 @@ function ReceivePage (props) {
                 {props.connected && showButtons && input.status === 'ACTIVE' ? (
                   <div className='d-flex flex-row'>
                     <button disabled={!props.signedIn} className='btn btn-success btn-sm m-1' onClick={(e) => withdrawStreamClick(e, input)}>Withdraw</button>
+                    <button disabled={!props.signedIn} className='btn btn-warning btn-sm m-1' onClick={(e) => pauseStreamClick(e, input)}>Pause</button>
                     <button disabled={!props.signedIn} className='btn btn-danger btn-sm m-1' onClick={(e) => stopStreamClick(e, input)}>Stop</button>
                   </div>
                 ) : (

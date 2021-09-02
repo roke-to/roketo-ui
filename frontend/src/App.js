@@ -14,7 +14,7 @@ const TestNearConfig = {
   accountSuffix: 'testnet',
   networkId: 'testnet',
   nodeUrl: 'https://rpc.testnet.near.org',
-  contractName: 'dev-1630411495814-97749356114440',
+  contractName: 'dev-1630620093134-24572428066419',
   walletUrl: 'https://wallet.testnet.near.org'
 }
 const MainNearConfig = {
@@ -68,6 +68,8 @@ class App extends React.Component {
         'create_stream',
         'deposit',
         'withdraw',
+        'pause_stream',
+        'restart_stream',
         'stop_stream'
       ]
     })

@@ -7,6 +7,22 @@ function SendPage (props) {
   const profileId = props.signedAccountId
   const [showButtons, setShowButtons] = useState(true)
 
+  async function pauseStreamClick (e, output) {
+    e.preventDefault()
+    setShowButtons(false)
+    console.log('pausing', output)
+    const res = await props._near.contract.pause_stream({ stream_id: output.stream_id }, '200000000000000', 1)
+    console.log('pausing res', res)
+  }
+
+  async function restartStreamClick (e, output) {
+    e.preventDefault()
+    setShowButtons(false)
+    console.log('restarting', output)
+    const res = await props._near.contract.restart_stream({ stream_id: output.stream_id }, '200000000000000', 1)
+    console.log('restarting res', res)
+  }
+
   async function stopStreamClick (e, output) {
     e.preventDefault()
     setShowButtons(false)
@@ -74,8 +90,17 @@ function SendPage (props) {
                 {output.status}
               </small>
               <div className='col-2 m-1'>
-                {props.connected && showButtons && output.status === 'ACTIVE' ? (
-                  <button disabled={!props.signedIn} className='btn btn-danger btn-sm' onClick={(e) => stopStreamClick(e, output)}>Stop the stream</button>
+                {props.connected && showButtons && (output.status === 'ACTIVE' || output.status === 'PAUSED') ? (
+                  <div className='d-flex flex-row'>
+                    <div>
+                      {output.status === 'ACTIVE' ? (
+                        <button disabled={!props.signedIn} className='btn btn-warning btn-sm m-1' onClick={(e) => pauseStreamClick(e, output)}>Pause</button>
+                      ) : (
+                        <button disabled={!props.signedIn} className='btn btn-warning btn-sm m-1' onClick={(e) => restartStreamClick(e, output)}>Restart</button>
+                      )}
+                    </div>
+                    <button disabled={!props.signedIn} className='btn btn-danger btn-sm m-1' onClick={(e) => stopStreamClick(e, output)}>Stop</button>
+                  </div>
                 ) : (
                   <div />)}
               </div>
