@@ -75,9 +75,9 @@ function SendPage (props) {
               </small>
               <div className='col-2 m-1'>
                 {props.connected && showButtons && output.status === 'ACTIVE' ? (
-                  <button disabled={!props.signedIn} className='btn btn-danger' onClick={(e) => stopStreamClick(e, output)}>Stop the stream</button>
+                  <button disabled={!props.signedIn} className='btn btn-danger btn-sm' onClick={(e) => stopStreamClick(e, output)}>Stop the stream</button>
                 ) : (
-                  <div className='mt-4'>{loader()}</div>)}
+                  <div />)}
               </div>
             </div>
           </div>

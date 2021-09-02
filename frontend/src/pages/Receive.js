@@ -78,7 +78,7 @@ function ReceivePage (props) {
                     <button disabled={!props.signedIn} className='btn btn-danger btn-sm m-1' onClick={(e) => stopStreamClick(e, input)}>Stop</button>
                   </div>
                 ) : (
-                  <div className='mt-4'>{loader()}</div>)}
+                  <div />)}
               </div>
             </div>
           </div>
