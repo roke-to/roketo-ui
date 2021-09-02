@@ -2,7 +2,10 @@ use crate::*;
 
 pub const ERR_DEPOSIT_NOT_ENOUGH: &str = "Attached deposit is not enough, expected";
 pub const ERR_ACCESS_DENIED: &str = "Caller has no access, expected";
-pub const ERR_STREAM_NOT_ACTIVE: &str = "Stream not exist or not active";
+pub const ERR_STREAM_NOT_AVAILABLE: &str = "Stream not exist or terminated";
+pub const ERR_WITHDRAW_PAUSED: &str = "Cannot withdraw from paused stream";
+pub const ERR_PAUSE_PAUSED: &str = "Cannot pause paused stream";
+pub const ERR_RESTART_ACTIVE: &str = "Cannot restart active stream";
 
 pub const CREATE_STREAM_DEPOSIT: Balance = 100_000_000_000_000_000_000_000; // 0.1 NEAR
 pub const ONE_YOCTO: Balance = 1;
@@ -18,12 +21,12 @@ pub const TOKENS: [&'static str; NUM_TOKENS] = ["NEAR", "DACHA"];
 
 pub const TOKEN_ACCOUNTS: [&'static str; NUM_TOKENS] = ["", "dacha.tkn.near"];
 
-#[derive(BorshDeserialize, BorshSerialize)]
+#[derive(BorshDeserialize, BorshSerialize, PartialEq)]
 pub enum StreamStatus {
     Active,
     Paused,
     Interrupted,
-    Finished
+    Finished,
 }
 
 impl StreamStatus {
@@ -41,7 +44,7 @@ impl StreamStatus {
             StreamStatus::Active => false,
             StreamStatus::Paused => false,
             StreamStatus::Interrupted => true,
-            StreamStatus::Finished => true
+            StreamStatus::Finished => true,
         }
     }
 }

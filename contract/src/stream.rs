@@ -6,7 +6,8 @@ pub struct Stream {
     pub receiver_id: AccountId,
     pub token_id: TokenId,
     pub balance: Balance,
-    pub timestamp_started: Timestamp,
+    pub timestamp_created: Timestamp,
+    pub last_withdrawal: Timestamp,
     pub tokens_per_tick: Balance,
     pub tokens_transferred: Balance,
     // TODO refactor StreamStatus
@@ -22,7 +23,8 @@ pub struct StreamView {
     pub receiver_id: String,
     pub token_name: String,
     pub balance: WrappedBalance,
-    pub timestamp_started: WrappedTimestamp,
+    pub timestamp_created: WrappedTimestamp,
+    pub last_withdrawal: WrappedTimestamp,
     pub tokens_per_tick: WrappedBalance,
     pub tokens_transferred: WrappedBalance,
     pub tokens_available: WrappedBalance,
@@ -37,7 +39,8 @@ impl From<&Stream> for StreamView {
             receiver_id: s.receiver_id.clone(),
             token_name: Xyiming::get_token_name_by_id(s.token_id),
             balance: s.balance.into(),
-            timestamp_started: s.timestamp_started.into(),
+            timestamp_created: s.timestamp_created.into(),
+            last_withdrawal: s.last_withdrawal.into(),
             tokens_per_tick: s.tokens_per_tick.into(),
             tokens_transferred: s.tokens_transferred.into(),
             tokens_available: Xyiming::get_available_amount(s).into(),
@@ -49,15 +52,20 @@ impl From<&Stream> for StreamView {
 impl Xyiming {
     pub(crate) fn get_available_amount(stream: &Stream) -> Balance {
         // the following line should be always true due extract_stream_or_panic returns only active streams
-        debug_assert!(!stream.status.is_terminated(), "{}", ERR_STREAM_NOT_ACTIVE);
-        let period = (env::block_timestamp() - stream.timestamp_started) as Balance;
-        let expected_payment = stream.tokens_per_tick * period - stream.tokens_transferred;
+        debug_assert!(
+            !stream.status.is_terminated(),
+            "{}",
+            ERR_STREAM_NOT_AVAILABLE
+        );
+        let period = (env::block_timestamp() - stream.last_withdrawal) as Balance;
+        let expected_payment = stream.tokens_per_tick * period;
         std::cmp::min(stream.balance, expected_payment)
     }
 
     pub(crate) fn withdraw_receiver(stream: &mut Stream) -> Promise {
         let payment = Self::get_available_amount(&stream);
         stream.tokens_transferred += payment;
+        stream.last_withdrawal = env::block_timestamp();
         if stream.balance > payment {
             stream.balance -= payment;
             Promise::new(stream.receiver_id.clone()).transfer(payment)
@@ -77,6 +85,6 @@ impl Xyiming {
     pub(crate) fn extract_stream_or_panic(&mut self, stream_id: &StreamId) -> Stream {
         Self::streams()
             .remove(&stream_id)
-            .expect(ERR_STREAM_NOT_ACTIVE)
+            .expect(ERR_STREAM_NOT_AVAILABLE)
     }
 }

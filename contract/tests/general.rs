@@ -5,7 +5,8 @@ use std::convert::TryInto;
 use xyiming::XyimingContract;
 use xyiming::{
     AccountView, StreamView, CREATE_STREAM_DEPOSIT, ERR_ACCESS_DENIED, ERR_DEPOSIT_NOT_ENOUGH,
-    ERR_STREAM_NOT_ACTIVE, ONE_NEAR, ONE_YOCTO,
+    ERR_PAUSE_PAUSED, ERR_RESTART_ACTIVE, ERR_STREAM_NOT_AVAILABLE, ERR_WITHDRAW_PAUSED, ONE_NEAR,
+    ONE_YOCTO,
 };
 
 use near_sdk::json_types::Base58CryptoHash;
@@ -175,6 +176,42 @@ impl State {
         }
     }
 
+    pub fn do_pause(&self, caller: &UserAccount, stream_id: &str, err: Option<&str>) /*-> Promise*/
+    {
+        let contract = &self.contract;
+
+        let outcome = call!(caller, contract.pause_stream(stream_id.try_into().unwrap()));
+
+        if let Some(msg) = err {
+            assert!(
+                format!("{:?}", outcome.status()).contains(msg),
+                "received {:?}",
+                outcome.status()
+            );
+            assert!(!outcome.is_ok(), "Should panic");
+        } else {
+            outcome.assert_success();
+        }
+    }
+
+    pub fn do_restart(&self, caller: &UserAccount, stream_id: &str, err: Option<&str>) /*-> Promise*/
+    {
+        let contract = &self.contract;
+
+        let outcome = call!(caller, contract.restart_stream(stream_id.try_into().unwrap()));
+
+        if let Some(msg) = err {
+            assert!(
+                format!("{:?}", outcome.status()).contains(msg),
+                "received {:?}",
+                outcome.status()
+            );
+            assert!(!outcome.is_ok(), "Should panic");
+        } else {
+            outcome.assert_success();
+        }
+    }
+
     pub fn sdk_sim_tick_tock(&self) {
         let contract = &self.contract;
 
@@ -268,9 +305,9 @@ fn create_stream_stop_stream() {
     state.do_stop_stream(&state.root, &stream_id, Some(ERR_ACCESS_DENIED));
 
     state.do_stop_stream(&alice, &stream_id, None);
-    state.do_stop_stream(&alice, &stream_id, Some(ERR_STREAM_NOT_ACTIVE));
-    state.do_stop_stream(&bob, &stream_id, Some(ERR_STREAM_NOT_ACTIVE));
-    state.do_stop_stream(&state.root, &stream_id, Some(ERR_STREAM_NOT_ACTIVE));
+    state.do_stop_stream(&alice, &stream_id, Some(ERR_STREAM_NOT_AVAILABLE));
+    state.do_stop_stream(&bob, &stream_id, Some(ERR_STREAM_NOT_AVAILABLE));
+    state.do_stop_stream(&state.root, &stream_id, Some(ERR_STREAM_NOT_AVAILABLE));
 }
 
 #[test]
@@ -318,8 +355,7 @@ fn withdraw_sanity() {
     let stream = state.get_stream(&stream_id).unwrap();
     assert!(stream.balance == (123 * ONE_NEAR).into());
 
-    state.do_withdraw(alice, &stream_id, Some(ERR_ACCESS_DENIED));
-    state.do_withdraw(bob, &stream_id, None);
+    state.do_withdraw(alice, &stream_id, None);
 
     let stream = state.get_stream(&stream_id).unwrap();
     let stream_balance = u128::from(stream.balance);
@@ -330,7 +366,6 @@ fn withdraw_sanity() {
     assert!(u128::from(stream.tokens_transferred) > 0);
     assert!(stream.status == "ACTIVE");
 
-    state.do_withdraw(alice, &stream_id, Some(ERR_ACCESS_DENIED));
     state.do_withdraw(bob, &stream_id, None);
 
     let stream = state.get_stream(&stream_id).unwrap();
@@ -355,7 +390,6 @@ fn withdraw_all() {
     let stream = state.get_stream(&stream_id).unwrap();
     assert!(stream.balance == total.into());
 
-    state.do_withdraw(alice, &stream_id, Some(ERR_ACCESS_DENIED));
     state.do_withdraw(bob, &stream_id, None);
 
     let stream = state.get_stream(&stream_id).unwrap();
@@ -369,8 +403,7 @@ fn withdraw_all() {
         state.sdk_sim_tick_tock();
     }
 
-    state.do_withdraw(alice, &stream_id, Some(ERR_ACCESS_DENIED));
-    state.do_withdraw(bob, &stream_id, None);
+    state.do_withdraw(alice, &stream_id, None);
 
     let stream = state.get_stream(&stream_id).unwrap();
     assert!(stream.balance == 0.into());
@@ -390,7 +423,6 @@ fn withdraw_then_stop() {
     let total = 20 * ONE_NEAR;
     state.do_deposit(&stream_id, total, None);
 
-    state.do_withdraw(alice, &stream_id, Some(ERR_ACCESS_DENIED));
     state.do_withdraw(bob, &stream_id, None);
 
     let stream = state.get_stream(&stream_id).unwrap();
@@ -406,9 +438,53 @@ fn withdraw_then_stop() {
     assert!(stream.balance == 0.into());
     assert!(stream.status == "INTERRUPTED");
 
-    state.do_withdraw(bob, &stream_id, Some(ERR_STREAM_NOT_ACTIVE));
+    state.do_withdraw(alice, &stream_id, Some(ERR_STREAM_NOT_AVAILABLE));
 
-    state.do_stop_stream(alice, &stream_id, Some(ERR_STREAM_NOT_ACTIVE));
+    state.do_stop_stream(alice, &stream_id, Some(ERR_STREAM_NOT_AVAILABLE));
+}
+
+#[test]
+fn pause_sanity() {
+    let mut state = State::new();
+    state.create_alice();
+    state.create_bob();
+    let alice = state.accounts.get(ALICE).unwrap();
+    let bob = state.accounts.get(BOB).unwrap();
+
+    let stream_id = state.do_create_stream(ALICE, BOB, ONE_YOCTO, None);
+    state.do_deposit(&stream_id, 123 * ONE_NEAR, None);
+    let stream = state.get_stream(&stream_id).unwrap();
+    assert!(stream.balance == (123 * ONE_NEAR).into());
+
+    state.do_restart(alice, &stream_id, Some(ERR_RESTART_ACTIVE));
+    state.do_pause(alice, &stream_id, None);
+
+    let stream = state.get_stream(&stream_id).unwrap();
+    let stream_balance = u128::from(stream.balance);
+    let stream_transferred = u128::from(stream.tokens_transferred);
+    assert!(u128::from(stream.balance) < 123 * ONE_NEAR);
+    assert!(u128::from(stream.balance) > 0);
+    assert!(u128::from(stream.tokens_transferred) < 123 * ONE_NEAR);
+    assert!(u128::from(stream.tokens_transferred) > 0);
+    assert!(stream.status == "PAUSED");
+
+    state.do_pause(alice, &stream_id, Some(ERR_PAUSE_PAUSED));
+    state.do_pause(bob, &stream_id, Some(ERR_PAUSE_PAUSED));
+
+    state.do_withdraw(alice, &stream_id, Some(ERR_WITHDRAW_PAUSED));
+    state.do_withdraw(bob, &stream_id, Some(ERR_WITHDRAW_PAUSED));
+
+    state.do_restart(bob, &stream_id, Some(ERR_ACCESS_DENIED));
+    state.do_restart(alice, &stream_id, None);
+
+    state.do_withdraw(bob, &stream_id, None);
+
+    let stream = state.get_stream(&stream_id).unwrap();
+    assert!(u128::from(stream.balance) < stream_balance);
+    assert!(u128::from(stream.balance) > 0);
+    assert!(u128::from(stream.tokens_transferred) < 123 * ONE_NEAR);
+    assert!(u128::from(stream.tokens_transferred) > stream_transferred);
+    assert!(stream.status == "ACTIVE");
 }
 
 // tests:

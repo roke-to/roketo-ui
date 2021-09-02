@@ -46,7 +46,8 @@ impl Xyiming {
             balance,
             tokens_per_tick: tokens_per_tick.into(),
             tokens_transferred: 0,
-            timestamp_started: env::block_timestamp(),
+            timestamp_created: env::block_timestamp(),
+            last_withdrawal: env::block_timestamp(),
             status: StreamStatus::Active,
         };
         Self::streams().insert(&stream_id, &stream);
@@ -72,6 +73,11 @@ impl Xyiming {
     pub fn withdraw(&mut self, stream_id: Base58CryptoHash) -> Promise {
         let stream_id = stream_id.into();
         let mut stream = self.extract_stream_or_panic(&stream_id);
+        assert!(
+            stream.status == StreamStatus::Active,
+            "{}",
+            ERR_WITHDRAW_PAUSED
+        );
 
         let promise = Self::withdraw_receiver(&mut stream);
 
@@ -83,6 +89,58 @@ impl Xyiming {
 
         // TODO process promise failure
         promise
+    }
+
+    pub fn pause_stream(&mut self, stream_id: Base58CryptoHash) -> Promise {
+        let stream_id = stream_id.into();
+        let mut stream = self.extract_stream_or_panic(&stream_id);
+        assert!(
+            stream.receiver_id == env::predecessor_account_id()
+                || stream.owner_id == env::predecessor_account_id(),
+            "{} {} or {}",
+            ERR_ACCESS_DENIED,
+            stream.owner_id,
+            stream.receiver_id
+        );
+        assert!(
+            stream.status == StreamStatus::Active,
+            "{}",
+            ERR_PAUSE_PAUSED
+        );
+
+        let promise = Self::withdraw_receiver(&mut stream);
+
+        if stream.status.is_terminated() {
+            Self::finished().insert(&stream_id, &stream);
+        } else {
+            stream.status = StreamStatus::Paused;
+            Self::streams().insert(&stream_id, &stream);
+        }
+
+        // TODO process promise failure
+        promise
+    }
+
+    /// Only owner can restart the stream
+    // TODO make it payable
+    pub fn restart_stream(&mut self, stream_id: Base58CryptoHash) {
+        let stream_id = stream_id.into();
+        let mut stream = self.extract_stream_or_panic(&stream_id);
+        assert!(
+            stream.owner_id == env::predecessor_account_id(),
+            "{} {}",
+            ERR_ACCESS_DENIED,
+            stream.owner_id
+        );
+        assert!(
+            stream.status == StreamStatus::Paused,
+            "{}",
+            ERR_RESTART_ACTIVE
+        );
+        stream.last_withdrawal = env::block_timestamp();
+        stream.status = StreamStatus::Active;
+
+        Self::streams().insert(&stream_id, &stream);
     }
 
     /// stopping the stream, sending tokens to owner and receiver back
