@@ -78,24 +78,14 @@ impl Xyiming {
             ERR_ACCESS_DENIED,
             stream.receiver_id
         );
-        let payment = Self::get_available_amount(&stream);
-        stream.tokens_transferred += payment;
-        let promise = if stream.balance > payment {
-            stream.balance -= payment;
-            Self::streams().insert(&stream_id, &stream);
-            Promise::new(stream.receiver_id).transfer(payment)
-        } else {
-            stream.balance = 0;
-            stream.status = STREAM_FINISHED.to_string();
+
+        let promise = Self::withdraw_receiver(&mut stream);
+
+        if stream.status == STREAM_FINISHED {
             Self::finished().insert(&stream_id, &stream);
-            /*let mut owner = self.extract_account_or_create(&stream.owner_id);
-            let mut receiver = self.extract_account_or_create(&stream.receiver_id);
-            owner.remove_output(&stream_id);
-            receiver.remove_input(&stream_id);
-            self.save_account_or_panic(&stream.owner_id, &owner);
-            self.save_account_or_panic(&stream.receiver_id, &receiver);*/
-            Promise::new(stream.receiver_id).transfer(payment)
-        };
+        } else {
+            Self::streams().insert(&stream_id, &stream);
+        }
 
         // TODO process promise failure
         promise
@@ -116,27 +106,20 @@ impl Xyiming {
             stream.owner_id,
             stream.receiver_id
         );
-        //let mut owner = self.extract_account_or_create(&stream.owner_id);
-        //let mut receiver = self.extract_account_or_create(&stream.receiver_id);
-        let payment = Self::get_available_amount(&stream);
-        let owner_promise = if stream.balance > payment {
-            Some(Promise::new(stream.owner_id.clone()).transfer(stream.balance - payment))
-        } else {
+
+        let receiver_promise = Self::withdraw_receiver(&mut stream);
+
+        let owner_promise = if stream.status == STREAM_FINISHED {
             None
+        } else {
+            let payment = stream.balance;
+            stream.balance = 0;
+            stream.status = STREAM_FINISHED.to_string();
+            Some(Promise::new(stream.owner_id.clone()).transfer(payment))
         };
-        stream.tokens_transferred += payment;
-        stream.balance = 0;
-        stream.status = STREAM_FINISHED.to_string();
         Self::finished().insert(&stream_id, &stream);
-        //owner.remove_output(&stream_id);
-        //receiver.remove_input(&stream_id);
-        //self.save_account_or_panic(&stream.owner_id, &owner);
-        //self.save_account_or_panic(&stream.receiver_id, &receiver);
 
         // TODO process promises failure
-        (
-            owner_promise,
-            Promise::new(stream.receiver_id.clone()).transfer(payment),
-        )
+        (owner_promise, receiver_promise)
     }
 }

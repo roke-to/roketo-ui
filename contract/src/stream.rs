@@ -55,6 +55,25 @@ impl Xyiming {
         std::cmp::min(stream.balance, expected_payment)
     }
 
+    pub(crate) fn withdraw_receiver(stream: &mut Stream) -> Promise {
+        let payment = Self::get_available_amount(&stream);
+        stream.tokens_transferred += payment;
+        if stream.balance > payment {
+            stream.balance -= payment;
+            Promise::new(stream.receiver_id.clone()).transfer(payment)
+        } else {
+            stream.balance = 0;
+            stream.status = STREAM_FINISHED.to_string();
+            /*let mut owner = self.extract_account_or_create(&stream.owner_id);
+            let mut receiver = self.extract_account_or_create(&stream.receiver_id);
+            owner.remove_output(&stream_id);
+            receiver.remove_input(&stream_id);
+            self.save_account_or_panic(&stream.owner_id, &owner);
+            self.save_account_or_panic(&stream.receiver_id, &receiver);*/
+            Promise::new(stream.receiver_id.clone()).transfer(payment)
+        }
+    }
+
     pub(crate) fn extract_stream_or_panic(&mut self, stream_id: &StreamId) -> Stream {
         Self::streams()
             .remove(&stream_id)
