@@ -70,6 +70,9 @@ class App extends React.Component {
         'withdraw',
         'pause_stream',
         'restart_stream',
+        'create_bridge',
+        'delete_bridge',
+        'push_flow',
         'stop_stream'
       ]
     })

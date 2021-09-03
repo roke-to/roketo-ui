@@ -39,7 +39,7 @@ function SendPage (props) {
     // TODO
     const deposit = String(parseInt((parseFloat(document.getElementById('depositInput').value) + 1e-1) * 1e9)) + '000000000000000'
     const speed = String(parseInt((parseFloat(document.getElementById('speedInput').value) + 0) * 1e9)) + '000000'
-    const res = await props._near.contract.create_stream({ owner_id: ownerId, receiver_id: receiverId, token_name: 'NEAR', tokens_per_tick: speed }, '200000000000000', deposit)
+    const res = await props._near.contract.create_stream({ description: 'blabla', owner_id: ownerId, receiver_id: receiverId, token_name: 'NEAR', tokens_per_tick: speed }, '200000000000000', deposit)
     console.log('create res', res)
   }
 
