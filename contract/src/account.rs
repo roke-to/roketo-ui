@@ -7,8 +7,7 @@ pub struct Account {
     pub outputs: UnorderedSet<StreamId>,
 
     /// Bridges to push streams further
-    // TODO implement bridges
-    pub bridges: Vector<(StreamId, StreamId)>,
+    pub bridges: UnorderedSet<BridgeId>,
     // TODO add stats
 }
 
@@ -17,31 +16,48 @@ pub struct Account {
 pub struct AccountView {
     pub inputs: Vec<StreamView>,
     pub outputs: Vec<StreamView>,
+    pub bridges: Vec<BridgeView>,
 }
 
 impl From<&Account> for AccountView {
     fn from(a: &Account) -> Self {
-        let active_streams = Xyiming::streams();
-        let finished_streams = Xyiming::finished();
+        let actual_streams = Xyiming::actual_streams();
+        let terminated_streams = Xyiming::terminated_streams();
+        let bridges = Xyiming::bridges();
         Self {
             inputs: a
                 .inputs
                 .iter()
-                .map(|y| {
-                    let mut stream_view: StreamView =
-                        (&active_streams.get(&y).or(finished_streams.get(&y)).unwrap()).into();
-                    stream_view.stream_id = y.into();
+                .map(|x| {
+                    let mut stream_view: StreamView = (&actual_streams
+                        .get(&x)
+                        .or(terminated_streams.get(&x))
+                        .unwrap())
+                        .into();
+                    stream_view.stream_id = x.into();
                     stream_view
                 })
                 .collect(),
             outputs: a
                 .outputs
                 .iter()
-                .map(|y| {
-                    let mut stream_view: StreamView =
-                        (&active_streams.get(&y).or(finished_streams.get(&y)).unwrap()).into();
-                    stream_view.stream_id = y.into();
+                .map(|x| {
+                    let mut stream_view: StreamView = (&actual_streams
+                        .get(&x)
+                        .or(terminated_streams.get(&x))
+                        .unwrap())
+                        .into();
+                    stream_view.stream_id = x.into();
                     stream_view
+                })
+                .collect(),
+            bridges: a
+                .bridges
+                .iter()
+                .map(|x| {
+                    let mut bridge_view: BridgeView = (&bridges.get(&x).unwrap()).into();
+                    bridge_view.bridge_id = x.into();
+                    bridge_view
                 })
                 .collect(),
         }
@@ -62,7 +78,7 @@ impl Account {
 }
 
 impl Xyiming {
-    pub(crate) fn extract_account_or_create(&mut self, account_id: &AccountId) -> Account {
+    pub(crate) fn extract_account_or_create(account_id: &AccountId) -> Account {
         Self::accounts().remove(&account_id).unwrap_or_else(|| {
             let mut prefix = Vec::with_capacity(33);
             prefix.push(b'x');
@@ -77,12 +93,12 @@ impl Xyiming {
             Account {
                 inputs: UnorderedSet::new(prefix),
                 outputs: UnorderedSet::new(prefix2),
-                bridges: Vector::new(prefix3),
+                bridges: UnorderedSet::new(prefix3),
             }
         })
     }
 
-    pub(crate) fn save_account_or_panic(&mut self, account_id: &AccountId, account: &Account) {
+    pub(crate) fn save_account_or_panic(account_id: &AccountId, account: &Account) {
         assert!(Self::accounts().insert(account_id, account).is_none());
     }
 }

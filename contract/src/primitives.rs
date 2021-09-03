@@ -6,11 +6,15 @@ pub const ERR_STREAM_NOT_AVAILABLE: &str = "Stream not exist or terminated";
 pub const ERR_WITHDRAW_PAUSED: &str = "Cannot withdraw from paused stream";
 pub const ERR_PAUSE_PAUSED: &str = "Cannot pause paused stream";
 pub const ERR_RESTART_ACTIVE: &str = "Cannot restart active stream";
+pub const ERR_TEXT_FIELD_TOO_LONG: &str = "Text field is too long";
 
+pub const CREATE_BRIDGE_DEPOSIT: Balance = 10_000_000_000_000_000_000_000; // 0.01 NEAR
 pub const CREATE_STREAM_DEPOSIT: Balance = 100_000_000_000_000_000_000_000; // 0.1 NEAR
 pub const ONE_YOCTO: Balance = 1;
 pub const ONE_NEAR: Balance = 1_000_000_000_000_000_000_000_000; // 1 NEAR
+pub const MAX_TEXT_FIELD: usize = 255;
 
+pub type BridgeId = CryptoHash;
 pub type StreamId = CryptoHash;
 pub type TokenId = u32;
 
@@ -49,9 +53,8 @@ impl StreamStatus {
     }
 }
 
-pub const STREAM_ACTIVE: &'static str = "ACTIVE";
-pub const STREAM_PAUSED: &'static str = "PAUSED";
-pub const STREAM_FINISHED: &'static str = "FINISHED";
+#[derive(BorshDeserialize, BorshSerialize, PartialEq)]
+pub struct Bridge {}
 
 impl Xyiming {
     pub(crate) fn get_token_id_by_name(token_name: &String) -> Option<TokenId> {

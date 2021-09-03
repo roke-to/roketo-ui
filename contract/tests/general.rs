@@ -26,6 +26,7 @@ const ALICE: &str = "alice";
 const BOB: &str = "bob";
 #[allow(dead_code)]
 const CAROL: &str = "carol";
+const DEFAULT_DESCRIPTION: &str = "default description";
 const DEFAULT_TOKEN_NAME: &str = "NEAR";
 const ONE_NEAR_PER_TICK: u128 = ONE_NEAR / 1_000_000_000;
 
@@ -91,6 +92,7 @@ impl State {
         let outcome = call!(
             self.root,
             contract.create_stream(
+                DEFAULT_DESCRIPTION.to_string(),
                 owner_id.try_into().unwrap(),
                 receiver_id.try_into().unwrap(),
                 DEFAULT_TOKEN_NAME.to_string(),
@@ -198,7 +200,10 @@ impl State {
     {
         let contract = &self.contract;
 
-        let outcome = call!(caller, contract.restart_stream(stream_id.try_into().unwrap()));
+        let outcome = call!(
+            caller,
+            contract.restart_stream(stream_id.try_into().unwrap())
+        );
 
         if let Some(msg) = err {
             assert!(
@@ -278,6 +283,7 @@ fn create_stream_insufficient_funds() {
     let outcome = call!(
         state.root,
         contract.create_stream(
+            DEFAULT_DESCRIPTION.to_string(),
             ALICE.try_into().unwrap(),
             BOB.try_into().unwrap(),
             DEFAULT_TOKEN_NAME.to_string(),
@@ -318,6 +324,7 @@ fn create_stream_instant_deposit() {
     let outcome = call!(
         state.root,
         contract.create_stream(
+            DEFAULT_DESCRIPTION.to_string(),
             ALICE.try_into().unwrap(),
             BOB.try_into().unwrap(),
             DEFAULT_TOKEN_NAME.to_string(),

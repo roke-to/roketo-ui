@@ -8,11 +8,15 @@ impl Xyiming {
             .map(|a| (&a).into())
     }
 
+    pub fn get_bridge(&self, bridge_id: Base58CryptoHash) -> Option<BridgeView> {
+        Self::bridges().get(&bridge_id.into()).map(|b| (&b).into())
+    }
+
     pub fn get_stream(&self, stream_id: Base58CryptoHash) -> Option<StreamView> {
-        Self::streams()
+        Self::actual_streams()
             .get(&stream_id.into())
             .map(|s| (&s).into())
-            .or(Self::finished()
+            .or(Self::terminated_streams()
                 .get(&stream_id.into())
                 .map(|s| (&s).into())
                 .map(|mut s: StreamView| {
