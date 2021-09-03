@@ -4,26 +4,28 @@
   "homepage": "https://near.money",
   "private": true,
   "dependencies": {
+    "@craco/craco": "^6.2.0",
     "bootstrap": "^5.0.0-beta2",
     "error-polyfill": "^0.1.2",
+    "faker": "^5.5.3",
     "local-storage": "^2.0.0",
+    "moment": "^2.29.1",
     "near-api-js": "^0.37.0",
     "near-seed-phrase": "^0.1.1",
     "node-sass": "^4.0.0",
-    "moment": "^2.29.1",
     "react": "^16.13.1",
     "react-bootstrap": "^1.5.2",
     "react-dom": "^16.13.1",
     "react-infinite-scroller": "^1.2.4",
     "react-moment": "^1.1.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.0",
+    "react-scripts": "^4.0.3",
     "swr": "^0.5.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
     "eject": "react-scripts eject",
     "deploy": "yarn build && gh-pages -d build"
   },
@@ -43,6 +45,9 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^2.2.0"
+    "autoprefixer": "^9.8.6",
+    "gh-pages": "^2.2.0",
+    "postcss": "^7.0.36",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.9"
   }
 }
