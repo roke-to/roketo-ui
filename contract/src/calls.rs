@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::*;
 
 #[near_bindgen]
@@ -84,7 +86,7 @@ impl Xyiming {
             ERR_WITHDRAW_PAUSED
         );
 
-        let promise = stream.withdraw_receiver();
+        let payment = stream.process_withdraw();
 
         if stream.status.is_terminated() {
             Self::terminated_streams().insert(&stream_id, &stream);
@@ -93,7 +95,7 @@ impl Xyiming {
         }
 
         // TODO process promise failure
-        promise
+        Promise::new(stream.receiver_id).transfer(payment)
     }
 
     #[payable]
@@ -114,7 +116,7 @@ impl Xyiming {
             ERR_PAUSE_PAUSED
         );
 
-        let promise = stream.withdraw_receiver();
+        let payment = stream.process_withdraw();
 
         if stream.status.is_terminated() {
             Self::terminated_streams().insert(&stream_id, &stream);
@@ -124,7 +126,7 @@ impl Xyiming {
         }
 
         // TODO process promise failure
-        promise
+        Promise::new(stream.receiver_id).transfer(payment)
     }
 
     /// Only owner can restart the stream
@@ -165,20 +167,23 @@ impl Xyiming {
             stream.receiver_id
         );
 
-        let receiver_promise = stream.withdraw_receiver();
+        let receiver_payment = stream.process_withdraw();
 
         let owner_promise = if stream.status.is_terminated() {
             None
         } else {
-            let payment = stream.balance;
+            let owner_payment = stream.balance;
             stream.balance = 0;
             stream.status = StreamStatus::Interrupted;
-            Some(Promise::new(stream.owner_id.clone()).transfer(payment))
+            Some(Promise::new(stream.owner_id.clone()).transfer(owner_payment))
         };
         Self::terminated_streams().insert(&stream_id, &stream);
 
         // TODO process promises failure
-        (owner_promise, receiver_promise)
+        (
+            owner_promise,
+            Promise::new(stream.receiver_id).transfer(receiver_payment),
+        )
     }
 
     /// Can be called only by receiver of input and owner of output, both conditions should be true
@@ -188,7 +193,7 @@ impl Xyiming {
         description: String,
         input_stream_id: Base58CryptoHash,
         output_stream_id: Base58CryptoHash,
-        tokens_per_tick: WrappedBalance,
+        redirect_rate: u32,
     ) -> Base58CryptoHash {
         assert!(
             description.len() < MAX_TEXT_FIELD,
@@ -210,13 +215,15 @@ impl Xyiming {
             .expect(ERR_STREAM_NOT_AVAILABLE);
         assert!(
             input_view.receiver_id == env::predecessor_account_id(),
-            "{}",
-            ERR_ACCESS_DENIED
+            "{} {}",
+            ERR_ACCESS_DENIED,
+            input_view.receiver_id
         );
         assert!(
             output_view.owner_id == env::predecessor_account_id(),
-            "{}",
-            ERR_ACCESS_DENIED
+            "{} {}",
+            ERR_ACCESS_DENIED,
+            output_view.owner_id
         );
 
         // create the bridge and save in into the storage
@@ -224,7 +231,7 @@ impl Xyiming {
             description,
             input_stream_id.into(),
             output_stream_id.into(),
-            tokens_per_tick.into(),
+            redirect_rate,
         );
 
         // add bridge to the account
@@ -242,15 +249,65 @@ impl Xyiming {
         let mut account = Self::extract_account_or_create(&env::predecessor_account_id());
         assert!(
             account.bridges.remove(&bridge_id.into()),
-            "{}",
-            ERR_ACCESS_DENIED
+            "{} bridge owner",
+            ERR_ACCESS_DENIED,
         );
+        Self::save_account_or_panic(&env::predecessor_account_id(), &account);
 
         // remove bridge from the storage
         Self::extract_bridge_or_panic(&bridge_id.into());
     }
 
     #[payable]
-    pub fn push_flow(&mut self) -> Vec<Promise> {
+    pub fn push_flow(&mut self, account_id: ValidAccountId) -> Promise {
+        let account_view = Self::accounts().get(account_id.as_ref()).unwrap();
+        assert!(
+            account_view.cron_calls_enabled,
+            "{}",
+            ERR_CRON_CALLS_DISABLED
+        );
+        // TODO process other tokens
+        let mut total = HashMap::<StreamId, Balance>::new();
+        let mut tokens_left = HashMap::<StreamId, Balance>::new();
+        for input_stream_id in account_view.inputs.iter() {
+            let mut input_stream = Self::extract_stream_or_panic(&input_stream_id);
+            if input_stream.status != StreamStatus::Active {
+                continue;
+            }
+            let payment = input_stream.process_withdraw();
+            if input_stream.status.is_terminated() {
+                Self::terminated_streams().insert(&input_stream_id, &input_stream);
+            } else {
+                Self::actual_streams().insert(&input_stream_id, &input_stream);
+            }
+
+            total.insert(input_stream_id, payment);
+            tokens_left.insert(input_stream_id, payment);
+        }
+        for bridge_id in account_view.bridges.iter() {
+            let bridge_view = Self::bridges().get(&bridge_id).unwrap();
+            if tokens_left.contains_key(&bridge_view.input_stream_id) {
+                let mut output_stream =
+                    Self::extract_stream_or_panic(&bridge_view.output_stream_id);
+                if output_stream.status != StreamStatus::Active {
+                    continue;
+                }
+                // TODO process bridge subtraction overflow
+                let transfer_amount = total.get(&bridge_view.input_stream_id).unwrap()
+                    / 1_000_000_000
+                    * bridge_view.redirect_rate as u128;
+                tokens_left.insert(
+                    bridge_view.input_stream_id,
+                    tokens_left.get(&bridge_view.input_stream_id).unwrap() - transfer_amount,
+                );
+                output_stream.balance += transfer_amount;
+                Self::actual_streams().insert(&bridge_view.output_stream_id, &output_stream);
+            }
+        }
+
+        // TODO calculate the commission to cover cron expenses
+        let receiver_payment = tokens_left.iter().map(|(_, v)| v).sum::<Balance>() * 999 / 1000;
+
+        Promise::new(account_id.into()).transfer(receiver_payment)
     }
 }

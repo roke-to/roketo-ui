@@ -8,6 +8,8 @@ pub struct Account {
 
     /// Bridges to push streams further
     pub bridges: UnorderedSet<BridgeId>,
+
+    pub cron_calls_enabled: bool,
     // TODO add stats
 }
 
@@ -17,6 +19,7 @@ pub struct AccountView {
     pub inputs: Vec<StreamView>,
     pub outputs: Vec<StreamView>,
     pub bridges: Vec<BridgeView>,
+    pub cron_calls_enabled: bool,
 }
 
 impl From<&Account> for AccountView {
@@ -60,6 +63,7 @@ impl From<&Account> for AccountView {
                     bridge_view
                 })
                 .collect(),
+            cron_calls_enabled: a.cron_calls_enabled,
         }
     }
 }
@@ -94,6 +98,8 @@ impl Xyiming {
                 inputs: UnorderedSet::new(prefix),
                 outputs: UnorderedSet::new(prefix2),
                 bridges: UnorderedSet::new(prefix3),
+                // TODO set false by default
+                cron_calls_enabled: true,
             }
         })
     }

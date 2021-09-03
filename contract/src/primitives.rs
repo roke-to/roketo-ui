@@ -7,6 +7,7 @@ pub const ERR_WITHDRAW_PAUSED: &str = "Cannot withdraw from paused stream";
 pub const ERR_PAUSE_PAUSED: &str = "Cannot pause paused stream";
 pub const ERR_RESTART_ACTIVE: &str = "Cannot restart active stream";
 pub const ERR_TEXT_FIELD_TOO_LONG: &str = "Text field is too long";
+pub const ERR_CRON_CALLS_DISABLED: &str = "Cron calls disabled";
 
 pub const CREATE_BRIDGE_DEPOSIT: Balance = 10_000_000_000_000_000_000_000; // 0.01 NEAR
 pub const CREATE_STREAM_DEPOSIT: Balance = 100_000_000_000_000_000_000_000; // 0.1 NEAR

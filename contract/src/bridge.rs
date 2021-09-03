@@ -3,9 +3,9 @@ use crate::*;
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct Bridge {
     pub description: String,
-    pub input_stream: StreamId,
-    pub output_stream: StreamId,
-    pub tokens_per_tick: Balance,
+    pub input_stream_id: StreamId,
+    pub output_stream_id: StreamId,
+    pub redirect_rate: u32,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -13,9 +13,9 @@ pub struct Bridge {
 pub struct BridgeView {
     pub bridge_id: Base58CryptoHash,
     pub description: String,
-    pub input_stream: Base58CryptoHash,
-    pub output_stream: Base58CryptoHash,
-    pub tokens_per_tick: WrappedBalance,
+    pub input_stream_id: Base58CryptoHash,
+    pub output_stream_id: Base58CryptoHash,
+    pub redirect_rate: f64,
 }
 
 impl From<&Bridge> for BridgeView {
@@ -23,9 +23,9 @@ impl From<&Bridge> for BridgeView {
         Self {
             bridge_id: Base58CryptoHash::default(), // will be filled later
             description: b.description.clone(),
-            input_stream: b.input_stream.into(),
-            output_stream: b.output_stream.into(),
-            tokens_per_tick: b.tokens_per_tick.into(),
+            input_stream_id: b.input_stream_id.into(),
+            output_stream_id: b.output_stream_id.into(),
+            redirect_rate: f64::from(b.redirect_rate) * 1e-9,
         }
     }
 }
@@ -33,9 +33,9 @@ impl From<&Bridge> for BridgeView {
 impl Bridge {
     pub(crate) fn new(
         description: String,
-        input_stream: StreamId,
-        output_stream: StreamId,
-        tokens_per_tick: Balance,
+        input_stream_id: StreamId,
+        output_stream_id: StreamId,
+        redirect_rate: u32,
     ) -> BridgeId {
         let bridge_id = env::sha256(&env::block_index().to_be_bytes())
             .as_slice()
@@ -45,9 +45,9 @@ impl Bridge {
             &bridge_id,
             &Self {
                 description,
-                input_stream,
-                output_stream,
-                tokens_per_tick,
+                input_stream_id,
+                output_stream_id,
+                redirect_rate,
             },
         );
         bridge_id

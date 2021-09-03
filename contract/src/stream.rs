@@ -83,18 +83,17 @@ impl Stream {
         stream_id
     }
 
-    pub(crate) fn withdraw_receiver(&mut self) -> Promise {
+    pub(crate) fn process_withdraw(&mut self) -> Balance {
         let payment = self.get_available_amount();
         self.tokens_transferred += payment;
         self.last_withdrawal = env::block_timestamp();
         if self.balance > payment {
             self.balance -= payment;
-            Promise::new(self.receiver_id.clone()).transfer(payment)
         } else {
             self.balance = 0;
             self.status = StreamStatus::Finished;
-            Promise::new(self.receiver_id.clone()).transfer(payment)
         }
+        payment
     }
 
     pub(crate) fn get_available_amount(&self) -> Balance {
