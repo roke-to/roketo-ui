@@ -74,12 +74,9 @@ async function createNearInstance () {
       changeMethods: [
         'create_stream',
         'deposit',
-        'withdraw',
+        'update_account',
+        'start_stream',
         'pause_stream',
-        'restart_stream',
-        'create_bridge',
-        'delete_bridge',
-        'push_flow',
         'stop_stream'
       ]
     }
