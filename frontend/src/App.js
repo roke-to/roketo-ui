@@ -1,190 +1,86 @@
-import React from 'react'
-import 'error-polyfill'
-import 'bootstrap/dist/js/bootstrap.bundle'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import './App.scss'
-import * as nearAPI from 'near-api-js'
-import Logo from './images/logo.png'
-import { HashRouter as Router, Link, Route, Switch } from 'react-router-dom'
-import SendPage from './pages/Send'
-import ReceivePage from './pages/Receive'
+import React from 'react';
+import 'error-polyfill';
+import 'bootstrap/dist/js/bootstrap.bundle';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.scss';
+import {
+  HashRouter as Router,
+  Link,
+  Route,
+  Switch,
+  Redirect,
+} from 'react-router-dom';
+import SendPage from './pages/Send';
+import ReceivePage from './pages/Receive';
+import { Header } from './components/Header';
+import { NearContext, useCreateNear } from './features/near-connect/useNear';
+import { MyStreamsPage } from './pages/MyStreams';
+import { AuthorizePage } from './pages/Authorize';
 
-const IsMainnet = window.location.hostname === '(xyiming)' // TODO
-const TestNearConfig = {
-  accountSuffix: 'testnet',
-  networkId: 'testnet',
-  nodeUrl: 'https://rpc.testnet.near.org',
-  contractName: 'dev-1630685656410-62108694435619',
-  walletUrl: 'https://wallet.testnet.near.org',
-  ft: 'dev-1630798753809-34755859843881'
+// A wrapper for <Route> that redirects to the login
+// screen if you're not yet authenticated.
+function PrivateRoute({ children, allowed, redirect, ...rest }) {
+  return (
+    <Route
+      {...rest}
+      render={({ location }) => {
+        console.log(`Render ${rest.path}, allowed? ${allowed}`);
+        return allowed ? children : redirect;
+      }}
+    />
+  );
 }
-const MainNearConfig = {
-  accountSuffix: 'near',
-  networkId: 'mainnet',
-  nodeUrl: 'https://rpc.mainnet.near.org',
-  contractName: 'dev-1630411495814-97749356114440',
-  walletUrl: 'https://wallet.near.org'
-}
 
-const NearConfig = IsMainnet ? MainNearConfig : TestNearConfig
+function AppFn() {
+  const near = useCreateNear();
 
-class App extends React.Component {
-  constructor (props) {
-    super(props)
+  return (
+    <NearContext.Provider value={near}>
+      <div className="twind-bg-dark text-white">
+        {near.inited ? (
+          <Router basename={process.env.PUBLIC_URL}>
+            <Header />
 
-    this._near = {}
-
-    this.state = {
-      connected: false,
-      account: null
-    }
-
-    this._near.config = NearConfig
-
-    this._initNear().then(() => {
-      this.setState({
-        signedIn: !!this._near.accountId,
-        signedAccountId: this._near.accountId,
-        connected: true
-      })
-    })
-  }
-
-  async _initNear () {
-    const keyStore = new nearAPI.keyStores.BrowserLocalStorageKeyStore()
-    const near = await nearAPI.connect(Object.assign({ deps: { keyStore } }, NearConfig))
-    this._near.keyStore = keyStore
-    this._near.near = near
-
-    this._near.walletConnection = new nearAPI.WalletConnection(near, NearConfig.contractName)
-    this._near.accountId = this._near.walletConnection.getAccountId()
-
-    this._near.account = this._near.walletConnection.account()
-    this._near.contract = new nearAPI.Contract(this._near.account, NearConfig.contractName, {
-      viewMethods: [
-        'get_account',
-        'get_stream'
-      ],
-      changeMethods: [
-        'create_stream',
-        'deposit',
-        'withdraw',
-        'pause_stream',
-        'restart_stream',
-        'create_bridge',
-        'delete_bridge',
-        'push_flow',
-        'stop_stream'
-      ]
-    })
-
-    // TODO set multiple
-    this._near.ft = new nearAPI.Contract(this._near.account, NearConfig.ft, {
-      viewMethods: [
-        'ft_balance_of'
-      ],
-      changeMethods: [
-        'ft_transfer',
-        'ft_transfer_call'
-      ]
-    })
-
-    this._near.logOut = () => {
-      this._near.walletConnection.signOut()
-      this._near.accountId = null
-      this.setState({
-        signedIn: !!this._accountId,
-        signedAccountId: this._accountId
-      })
-    }
-
-    this._near.refreshAllowance = async () => {
-      alert("You're out of access key allowance. Need sign in again to refresh it")
-      await this.logOut()
-      await this.requestSignIn()
-    }
-  }
-
-  async requestSignIn (e) {
-    e && e.preventDefault()
-    const appTitle = 'Streaming Xyiming'
-    await this._near.walletConnection.requestSignIn(
-      NearConfig.contractName,
-      appTitle
-    )
-    return false
-  }
-
-  render () {
-    const passProps = {
-      _near: this._near,
-      refreshAllowance: () => this._near.refreshAllowance(),
-      ...this.state
-    }
-    const header = !this.state.connected ? (
-      <div>Connecting... <span className='spinner-grow spinner-grow-sm' role='status' aria-hidden='true' /></div>
-    ) : (this.state.signedIn ? (
-      <div>
-        <button
-          className='btn btn-outline-secondary'
-          onClick={() => this._near.logOut()}
-        >Sign out ({this.state.signedAccountId})
-        </button>
-      </div>
-    ) : (
-      <div>
-        <button
-          className='btn btn-primary'
-          onClick={(e) => this.requestSignIn(e)}
-        >Sign in with NEAR Wallet
-        </button>
-      </div>
-    ))
-
-    return (
-      <div className='App text-white' style={{ backgroundColor: '#1E1E1E' }}>
-        <Router basename={process.env.PUBLIC_URL}>
-          <nav className='navbar navbar-expand-lg navbar-dark mb-3' style={{ backgroundColor: '#2F2F2F' }}>
-            <div className='container-fluid'>
-              <Link className='navbar-brand' to='/' title='Xyiming'>
-                <img src={Logo} alt='Xyiming' className='d-inline-block align-middle mx-3' style={{ opacity: 0.65 }} />
-                Streaming Xyiming
-              </Link>
-              <button
-                className='navbar-toggler' type='button' data-bs-toggle='collapse'
-                data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent'
-                aria-expanded='false' aria-label='Toggle navigation'
+            <Switch>
+              <PrivateRoute
+                exact
+                redirect={<Redirect to="/" />}
+                allowed={!near.auth.signedIn}
+                path="/authorize"
               >
-                <span className='navbar-toggler-icon' />
-              </button>
-              <div className='collapse navbar-collapse' id='navbarSupportedContent'>
-                <ul className='navbar-nav me-auto mb-2 mb-lg-0'>
-                  <li className='nav-item'>
-                    <Link className='nav-link' aria-current='page' to='/'>Send</Link>
-                  </li>
-                  <li className='nav-item'>
-                    <Link className='nav-link' aria-current='page' to='/receive'>Receive</Link>
-                  </li>
-                </ul>
-                <form className='d-flex'>
-                  {header}
-                </form>
-              </div>
-            </div>
-          </nav>
+                <AuthorizePage />
+              </PrivateRoute>
 
-          <Switch>
-            <Route exact path='/'>
-              <SendPage {...passProps} />
-            </Route>
-            <Route exact path='/receive'>
-              <ReceivePage {...passProps} />
-            </Route>
-          </Switch>
-        </Router>
+              <PrivateRoute
+                exact
+                redirect={<Redirect to="/authorize" />}
+                allowed={near.auth.signedIn}
+                path="/"
+              >
+                <SendPage />
+              </PrivateRoute>
+              <PrivateRoute
+                exact
+                redirect={<Redirect to="/authorize" />}
+                allowed={near.auth.signedIn}
+                path="/my_streams"
+              >
+                <MyStreamsPage />
+              </PrivateRoute>
+              <PrivateRoute
+                exact
+                redirect={<Redirect to="/authorize" />}
+                allowed={near.auth.signedIn}
+                path="/receive"
+              >
+                <ReceivePage />
+              </PrivateRoute>
+            </Switch>
+          </Router>
+        ) : null}
       </div>
-    )
-  }
+    </NearContext.Provider>
+  );
 }
 
-export default App
+export default AppFn;
