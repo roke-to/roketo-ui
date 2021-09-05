@@ -67,11 +67,19 @@ impl Xyiming {
     pub fn deposit(&mut self, stream_id: Base58CryptoHash) {
         let stream_id = stream_id.into();
         let mut stream = Self::extract_stream_or_panic(&stream_id);
-        assert!(
-            stream.token_id == NEAR_TOKEN_ID,
-            "only NEAR tokens are supported in this version of the contract"
-        );
+        assert!(stream.token_id == NEAR_TOKEN_ID, "{}", ERR_NOT_NEAR_TOKEN);
         stream.balance += env::attached_deposit();
+
+        Self::actual_streams().insert(&stream_id, &stream);
+    }
+
+    /// depositing ft tokens to the stream
+    #[private]
+    pub fn deposit_ft(&mut self, stream_id: Base58CryptoHash, amount: WrappedBalance) {
+        let stream_id = stream_id.into();
+        let mut stream = Self::extract_stream_or_panic(&stream_id);
+        assert!(stream.token_id != NEAR_TOKEN_ID, "{}", ERR_NOT_FT_TOKEN);
+        stream.balance += Balance::from(amount);
 
         Self::actual_streams().insert(&stream_id, &stream);
     }
@@ -95,7 +103,7 @@ impl Xyiming {
         }
 
         // TODO process promise failure
-        Promise::new(stream.receiver_id).transfer(payment)
+        Self::build_promise(stream.token_id, stream.receiver_id, payment)
     }
 
     #[payable]
@@ -126,7 +134,7 @@ impl Xyiming {
         }
 
         // TODO process promise failure
-        Promise::new(stream.receiver_id).transfer(payment)
+        Self::build_promise(stream.token_id, stream.receiver_id, payment)
     }
 
     /// Only owner can restart the stream
@@ -175,14 +183,18 @@ impl Xyiming {
             let owner_payment = stream.balance;
             stream.balance = 0;
             stream.status = StreamStatus::Interrupted;
-            Some(Promise::new(stream.owner_id.clone()).transfer(owner_payment))
+            Some(Self::build_promise(
+                stream.token_id,
+                stream.owner_id.clone(),
+                owner_payment,
+            ))
         };
         Self::terminated_streams().insert(&stream_id, &stream);
 
         // TODO process promises failure
         (
             owner_promise,
-            Promise::new(stream.receiver_id).transfer(receiver_payment),
+            Self::build_promise(stream.token_id, stream.receiver_id, receiver_payment),
         )
     }
 
@@ -260,6 +272,7 @@ impl Xyiming {
 
     #[payable]
     pub fn push_flow(&mut self, account_id: ValidAccountId) -> Promise {
+        // TODO process FTs
         let account_view = Self::accounts().get(account_id.as_ref()).unwrap();
         assert!(
             account_view.cron_calls_enabled,
@@ -308,6 +321,7 @@ impl Xyiming {
         // TODO calculate the commission to cover cron expenses
         let receiver_payment = tokens_left.iter().map(|(_, v)| v).sum::<Balance>() * 999 / 1000;
 
+        // TODO process promises failure
         Promise::new(account_id.into()).transfer(receiver_payment)
     }
 }

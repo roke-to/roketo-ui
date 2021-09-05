@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import useSWR from 'swr'
 
-import { fromNear, loader } from '../components/Helpers'
+import { fromNear } from '../components/Helpers'
 
 function ReceivePage (props) {
   const profileId = props.signedAccountId

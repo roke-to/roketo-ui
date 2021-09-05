@@ -15,7 +15,8 @@ const TestNearConfig = {
   networkId: 'testnet',
   nodeUrl: 'https://rpc.testnet.near.org',
   contractName: 'dev-1630685656410-62108694435619',
-  walletUrl: 'https://wallet.testnet.near.org'
+  walletUrl: 'https://wallet.testnet.near.org',
+  ft: 'dev-1630798753809-34755859843881'
 }
 const MainNearConfig = {
   accountSuffix: 'near',
@@ -74,6 +75,17 @@ class App extends React.Component {
         'delete_bridge',
         'push_flow',
         'stop_stream'
+      ]
+    })
+
+    // TODO set multiple
+    this._near.ft = new nearAPI.Contract(this._near.account, NearConfig.ft, {
+      viewMethods: [
+        'ft_balance_of'
+      ],
+      changeMethods: [
+        'ft_transfer',
+        'ft_transfer_call'
       ]
     })
 

@@ -687,6 +687,29 @@ fn bridge_simple() {
     state.do_withdraw(alice, &stream2_id, None);
 }
 
+#[test]
+fn create_stream_then_deposit_ft() {
+    let state = State::new();
+    let contract = &state.contract;
+
+    let outcome = call!(
+        state.root,
+        contract.create_stream(
+            DEFAULT_DESCRIPTION.to_string(),
+            ALICE.try_into().unwrap(),
+            BOB.try_into().unwrap(),
+            "TARAS".to_string(),
+            ONE_NEAR_PER_TICK.into()
+        ),
+        deposit = CREATE_STREAM_DEPOSIT
+    );
+    assert!(outcome.is_ok());
+
+    let stream_id: String = (&outcome.unwrap_json::<Base58CryptoHash>()).into();
+    let stream = state.get_stream(&stream_id).unwrap();
+    //assert!(stream.balance == (123 * ONE_NEAR).into());
+}
+
 // tests:
 // - multiple streams
 // - stress-test
