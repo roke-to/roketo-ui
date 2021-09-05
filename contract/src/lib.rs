@@ -1,14 +1,12 @@
 use std::convert::TryInto;
 
 mod account;
-mod bridge;
 mod calls;
 mod primitives;
 mod stream;
 mod views;
 
 pub use crate::account::*;
-pub use crate::bridge::*;
 pub use crate::calls::*;
 pub use crate::primitives::*;
 pub use crate::stream::*;
@@ -64,18 +62,8 @@ impl Xyiming {
         LookupMap::new(b"a".to_vec())
     }
 
-    /// Bridges connecting streams
-    pub(crate) fn bridges() -> LookupMap<BridgeId, Bridge> {
-        LookupMap::new(b"b".to_vec())
-    }
-
-    /// Active or paused streams
-    pub(crate) fn actual_streams() -> LookupMap<StreamId, Stream> {
+    /// Streams
+    pub(crate) fn streams() -> LookupMap<StreamId, Stream> {
         LookupMap::new(b"c".to_vec())
-    }
-
-    /// Stopped or finished streams
-    pub(crate) fn terminated_streams() -> LookupMap<StreamId, Stream> {
-        LookupMap::new(b"d".to_vec())
     }
 }

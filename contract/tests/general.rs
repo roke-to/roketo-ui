@@ -4,9 +4,9 @@ use std::convert::TryInto;
 /// Import the generated proxy contract
 use xyiming::XyimingContract;
 use xyiming::{
-    AccountView, BridgeView, StreamView, CREATE_BRIDGE_DEPOSIT, CREATE_STREAM_DEPOSIT,
-    ERR_ACCESS_DENIED, ERR_DEPOSIT_NOT_ENOUGH, ERR_PAUSE_PAUSED, ERR_RESTART_ACTIVE,
-    ERR_STREAM_NOT_AVAILABLE, ERR_WITHDRAW_PAUSED, ONE_NEAR, ONE_YOCTO,
+    AccountView, StreamView, CREATE_STREAM_DEPOSIT,
+    ERR_ACCESS_DENIED, ERR_DEPOSIT_NOT_ENOUGH, ERR_PAUSE_PAUSED,
+    ERR_STREAM_NOT_AVAILABLE, ONE_NEAR, ONE_YOCTO,ERR_CANNOT_START_STREAM
 };
 
 use near_sdk::json_types::Base58CryptoHash;
@@ -29,7 +29,6 @@ const CAROL: &str = "carol";
 const DEFAULT_DESCRIPTION: &str = "default description";
 const DEFAULT_TOKEN_NAME: &str = "NEAR";
 const ONE_NEAR_PER_TICK: u128 = ONE_NEAR / 1_000_000_000;
-const ONE_PERCENT: u32 = 10_000_000;
 
 struct State {
     pub root: UserAccount,
@@ -86,12 +85,6 @@ impl State {
         res
     }
 
-    pub fn get_bridge(&self, bridge_id: &str) -> Option<BridgeView> {
-        let contract = &self.contract;
-        let res = view!(contract.get_bridge(bridge_id.try_into().unwrap())).unwrap_json();
-        res
-    }
-
     pub fn do_create_stream(
         &self,
         owner_id: &str,
@@ -104,13 +97,14 @@ impl State {
         let outcome = call!(
             self.root,
             contract.create_stream(
-                DEFAULT_DESCRIPTION.to_string(),
+                Some(DEFAULT_DESCRIPTION.to_string()),
                 owner_id.try_into().unwrap(),
                 receiver_id.try_into().unwrap(),
                 DEFAULT_TOKEN_NAME.to_string(),
-                tokens_per_tick.into()
+                tokens_per_tick.into(),
+                true
             ),
-            deposit = CREATE_STREAM_DEPOSIT
+            deposit = CREATE_STREAM_DEPOSIT + 123 * ONE_NEAR
         );
 
         if let Some(msg) = err {
@@ -129,7 +123,6 @@ impl State {
 
     // WARN: outcome returns SuccessValue(``) for (Option<Promise>, Promise), so we cannot test it properly
     pub fn do_stop_stream(&self, caller: &UserAccount, stream_id: &str, err: Option<&str>)
-    /*-> (Option<Promise>, Promise)*/
     {
         let contract = &self.contract;
 
@@ -172,11 +165,10 @@ impl State {
         }
     }
 
-    pub fn do_withdraw(&self, caller: &UserAccount, stream_id: &str, err: Option<&str>) /*-> Promise*/
+    pub fn do_update_account(&self, account_id: &str, err: Option<&str>) /*-> Promise*/
     {
         let contract = &self.contract;
-
-        let outcome = call!(caller, contract.withdraw(stream_id.try_into().unwrap()));
+        let outcome = call!(self.root, contract.update_account(account_id.try_into().unwrap()));
 
         if let Some(msg) = err {
             assert!(
@@ -208,91 +200,13 @@ impl State {
         }
     }
 
-    pub fn do_restart(&self, caller: &UserAccount, stream_id: &str, err: Option<&str>) /*-> Promise*/
+    pub fn do_start(&self, caller: &UserAccount, stream_id: &str, err: Option<&str>) /*-> Promise*/
     {
         let contract = &self.contract;
 
         let outcome = call!(
             caller,
-            contract.restart_stream(stream_id.try_into().unwrap())
-        );
-
-        if let Some(msg) = err {
-            assert!(
-                format!("{:?}", outcome.status()).contains(msg),
-                "received {:?}",
-                outcome.status()
-            );
-            assert!(!outcome.is_ok(), "Should panic");
-        } else {
-            outcome.assert_success();
-        }
-    }
-
-    pub fn do_create_bridge(
-        &self,
-        caller: &UserAccount,
-        stream1_id: &str,
-        stream2_id: &str,
-        percent: u32,
-        err: Option<&str>,
-    ) -> String {
-        let contract = &self.contract;
-
-        let outcome = call!(
-            caller,
-            contract.create_bridge(
-                DEFAULT_DESCRIPTION.to_string(),
-                stream1_id.try_into().unwrap(),
-                stream2_id.try_into().unwrap(),
-                percent
-            ),
-            deposit = CREATE_BRIDGE_DEPOSIT
-        );
-
-        if let Some(msg) = err {
-            assert!(
-                format!("{:?}", outcome.status()).contains(msg),
-                "received {:?}",
-                outcome.status()
-            );
-            assert!(!outcome.is_ok(), "Should panic");
-            String::default()
-        } else {
-            outcome.assert_success();
-            (&outcome.unwrap_json::<Base58CryptoHash>()).into()
-        }
-    }
-
-    pub fn do_delete_bridge(&self, caller: &UserAccount, bridge_id: &str, err: Option<&str>) {
-        let contract = &self.contract;
-
-        let outcome = call!(
-            caller,
-            contract.delete_bridge(bridge_id.try_into().unwrap()),
-            deposit = ONE_YOCTO
-        );
-
-        if let Some(msg) = err {
-            assert!(
-                format!("{:?}", outcome.status()).contains(msg),
-                "received {:?}",
-                outcome.status()
-            );
-            assert!(!outcome.is_ok(), "Should panic");
-        } else {
-            outcome.assert_success();
-        }
-    }
-
-    pub fn do_push_flow(&self, account_id: &str, err: Option<&str>) /*-> Promise*/
-    {
-        let contract = &self.contract;
-
-        let outcome = call!(
-            self.root,
-            contract.push_flow(account_id.try_into().unwrap()),
-            deposit = ONE_YOCTO
+            contract.start_stream(stream_id.try_into().unwrap())
         );
 
         if let Some(msg) = err {
@@ -373,11 +287,12 @@ fn create_stream_insufficient_funds() {
     let outcome = call!(
         state.root,
         contract.create_stream(
-            DEFAULT_DESCRIPTION.to_string(),
+            Some(DEFAULT_DESCRIPTION.to_string()),
             ALICE.try_into().unwrap(),
             BOB.try_into().unwrap(),
             DEFAULT_TOKEN_NAME.to_string(),
-            ONE_NEAR_PER_TICK.into()
+            ONE_NEAR_PER_TICK.into(),
+            true
         ),
         deposit = CREATE_STREAM_DEPOSIT - 1
     );
@@ -403,7 +318,7 @@ fn create_stream_stop_stream() {
     state.do_stop_stream(&alice, &stream_id, None);
     state.do_stop_stream(&alice, &stream_id, Some(ERR_STREAM_NOT_AVAILABLE));
     state.do_stop_stream(&bob, &stream_id, Some(ERR_STREAM_NOT_AVAILABLE));
-    state.do_stop_stream(&state.root, &stream_id, Some(ERR_STREAM_NOT_AVAILABLE));
+    state.do_stop_stream(&state.root, &stream_id, Some(ERR_ACCESS_DENIED));
 }
 
 #[test]
@@ -414,11 +329,12 @@ fn create_stream_instant_deposit() {
     let outcome = call!(
         state.root,
         contract.create_stream(
-            DEFAULT_DESCRIPTION.to_string(),
+            Some(DEFAULT_DESCRIPTION.to_string()),
             ALICE.try_into().unwrap(),
             BOB.try_into().unwrap(),
             DEFAULT_TOKEN_NAME.to_string(),
-            ONE_NEAR_PER_TICK.into()
+            ONE_NEAR_PER_TICK.into(),
+            true
         ),
         deposit = CREATE_STREAM_DEPOSIT + 123 * ONE_NEAR
     );
@@ -427,16 +343,49 @@ fn create_stream_instant_deposit() {
     let stream_id: String = (&outcome.unwrap_json::<Base58CryptoHash>()).into();
     let stream = state.get_stream(&stream_id).unwrap();
     assert!(stream.balance == (123 * ONE_NEAR).into());
+    assert!(stream.status == "ACTIVE");
 }
 
 #[test]
-fn create_stream_then_deposit() {
-    let state = State::new();
+fn create_stream_then_deposit_then_start() {
+    let mut state = State::new();
+    state.create_alice();
+    state.create_bob();
+    let alice = state.accounts.get(ALICE).unwrap();
+    let bob = state.accounts.get(BOB).unwrap();
+    let contract = &state.contract;
 
-    let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+    let outcome = call!(
+        state.root,
+        contract.create_stream(
+            Some(DEFAULT_DESCRIPTION.to_string()),
+            ALICE.try_into().unwrap(),
+            BOB.try_into().unwrap(),
+            DEFAULT_TOKEN_NAME.to_string(),
+            ONE_NEAR_PER_TICK.into(),
+            true
+        ),
+        deposit = CREATE_STREAM_DEPOSIT
+    );
+    assert!(outcome.is_ok());
+
+    let stream_id: String = (&outcome.unwrap_json::<Base58CryptoHash>()).into();
+    let stream = state.get_stream(&stream_id).unwrap();
+    assert!(stream.balance == 0.into());
+    assert!(stream.status == "INITIALIZED");
+
     state.do_deposit(&stream_id, 123 * ONE_NEAR, None);
     let stream = state.get_stream(&stream_id).unwrap();
     assert!(stream.balance == (123 * ONE_NEAR).into());
+    assert!(stream.status == "INITIALIZED");
+
+    state.do_start(&bob, &stream_id, Some(ERR_ACCESS_DENIED));
+    state.do_start(&alice, &stream_id, None);
+    let stream = state.get_stream(&stream_id).unwrap();
+    assert!(stream.balance == (123 * ONE_NEAR).into());
+    assert!(stream.status == "ACTIVE");
+
+    state.do_start(&alice, &stream_id, Some(ERR_CANNOT_START_STREAM));
 }
 
 #[test]
@@ -448,29 +397,23 @@ fn withdraw_sanity() {
     let bob = state.accounts.get(BOB).unwrap();
 
     let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
-    state.do_deposit(&stream_id, 123 * ONE_NEAR, None);
     let stream = state.get_stream(&stream_id).unwrap();
     assert!(stream.balance == (123 * ONE_NEAR).into());
 
-    state.do_withdraw(alice, &stream_id, None);
+    state.do_update_account(ALICE, None);
 
     let stream = state.get_stream(&stream_id).unwrap();
-    let stream_balance = u128::from(stream.balance);
-    let stream_transferred = u128::from(stream.tokens_transferred);
+    assert!(stream.balance == (123 * ONE_NEAR).into());
+    assert!(stream.status == "ACTIVE");
+
+    state.do_update_account(BOB, None);
+
+    let stream = state.get_stream(&stream_id).unwrap();
     assert!(u128::from(stream.balance) < 123 * ONE_NEAR);
     assert!(u128::from(stream.balance) > 0);
-    assert!(u128::from(stream.tokens_transferred) < 123 * ONE_NEAR);
-    assert!(u128::from(stream.tokens_transferred) > 0);
     assert!(stream.status == "ACTIVE");
 
-    state.do_withdraw(bob, &stream_id, None);
-
-    let stream = state.get_stream(&stream_id).unwrap();
-    assert!(u128::from(stream.balance) < stream_balance);
-    assert!(u128::from(stream.balance) > 0);
-    assert!(u128::from(stream.tokens_transferred) < 123 * ONE_NEAR);
-    assert!(u128::from(stream.tokens_transferred) > stream_transferred);
-    assert!(stream.status == "ACTIVE");
+    assert!(bob.account().unwrap().amount + u128::from(stream.balance) == alice.account().unwrap().amount + 123 * ONE_NEAR);
 }
 
 #[test]
@@ -480,32 +423,44 @@ fn withdraw_all() {
     state.create_bob();
     let alice = state.accounts.get(ALICE).unwrap();
     let bob = state.accounts.get(BOB).unwrap();
+    let contract = &state.contract;
 
-    let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
-    let total = 20 * ONE_NEAR;
-    state.do_deposit(&stream_id, total, None);
+    let outcome = call!(
+        state.root,
+        contract.create_stream(
+            Some(DEFAULT_DESCRIPTION.to_string()),
+            ALICE.try_into().unwrap(),
+            BOB.try_into().unwrap(),
+            DEFAULT_TOKEN_NAME.to_string(),
+            ONE_NEAR_PER_TICK.into(),
+            true
+        ),
+        deposit = CREATE_STREAM_DEPOSIT + 20 * ONE_NEAR
+    );
+    assert!(outcome.is_ok());
+
+    let stream_id: String = (&outcome.unwrap_json::<Base58CryptoHash>()).into();
+
+    assert!(bob.account().unwrap().amount == alice.account().unwrap().amount);
+
+    state.do_update_account(BOB, None);
+
     let stream = state.get_stream(&stream_id).unwrap();
-    assert!(stream.balance == total.into());
-
-    state.do_withdraw(bob, &stream_id, None);
-
-    let stream = state.get_stream(&stream_id).unwrap();
-    assert!(u128::from(stream.balance) < total);
+    assert!(u128::from(stream.balance) < 123 * ONE_NEAR);
     assert!(u128::from(stream.balance) > 0);
-    assert!(u128::from(stream.tokens_transferred) < total);
-    assert!(u128::from(stream.tokens_transferred) > 0);
     assert!(stream.status == "ACTIVE");
 
     for _ in 0..25 {
         state.sdk_sim_tick_tock();
     }
 
-    state.do_withdraw(alice, &stream_id, None);
+    state.do_update_account(BOB, None);
 
     let stream = state.get_stream(&stream_id).unwrap();
     assert!(stream.balance == 0.into());
-    assert!(stream.tokens_transferred == total.into());
     assert!(stream.status == "FINISHED");
+
+    assert!(bob.account().unwrap().amount == alice.account().unwrap().amount + 20 * ONE_NEAR);
 }
 
 #[test]
@@ -517,27 +472,24 @@ fn withdraw_then_stop() {
     let bob = state.accounts.get(BOB).unwrap();
 
     let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
-    let total = 20 * ONE_NEAR;
-    state.do_deposit(&stream_id, total, None);
 
-    state.do_withdraw(bob, &stream_id, None);
+    state.do_update_account(BOB, None);
 
-    let stream = state.get_stream(&stream_id).unwrap();
-    let stream_transferred = u128::from(stream.tokens_transferred);
-    assert!(u128::from(stream.tokens_transferred) < total);
-    assert!(u128::from(stream.tokens_transferred) > 0);
+    assert!(bob.account().unwrap().amount > alice.account().unwrap().amount);
 
     state.do_stop_stream(alice, &stream_id, None);
 
     let stream = state.get_stream(&stream_id).unwrap();
-    assert!(u128::from(stream.tokens_transferred) < total);
-    assert!(u128::from(stream.tokens_transferred) > stream_transferred);
     assert!(stream.balance == 0.into());
     assert!(stream.status == "INTERRUPTED");
 
-    state.do_withdraw(alice, &stream_id, Some(ERR_STREAM_NOT_AVAILABLE));
-
     state.do_stop_stream(alice, &stream_id, Some(ERR_STREAM_NOT_AVAILABLE));
+    state.do_stop_stream(bob, &stream_id, Some(ERR_STREAM_NOT_AVAILABLE));
+
+    assert!(alice.account().unwrap().amount > bob.account().unwrap().amount + 100 * ONE_NEAR);
+    assert!(bob.account().unwrap().amount > to_yocto("1000000000"));
+
+    //println!("%%% {:?} {:?}", alice.account().unwrap().amount, bob.account().unwrap().amount);
 }
 
 #[test]
@@ -549,168 +501,49 @@ fn pause_sanity() {
     let bob = state.accounts.get(BOB).unwrap();
 
     let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
-    state.do_deposit(&stream_id, 123 * ONE_NEAR, None);
-    let stream = state.get_stream(&stream_id).unwrap();
-    assert!(stream.balance == (123 * ONE_NEAR).into());
 
-    state.do_restart(alice, &stream_id, Some(ERR_RESTART_ACTIVE));
+    state.do_start(alice, &stream_id, Some(ERR_CANNOT_START_STREAM));
+    let prev_alice_balance = alice.account().unwrap().amount;
+    let prev_bob_balance = bob.account().unwrap().amount;
+
     state.do_pause(alice, &stream_id, None);
+    assert!(alice.account().unwrap().amount < prev_alice_balance);
+    assert!(bob.account().unwrap().amount > prev_bob_balance);
 
     let stream = state.get_stream(&stream_id).unwrap();
     let stream_balance = u128::from(stream.balance);
-    let stream_transferred = u128::from(stream.tokens_transferred);
     assert!(u128::from(stream.balance) < 123 * ONE_NEAR);
     assert!(u128::from(stream.balance) > 0);
-    assert!(u128::from(stream.tokens_transferred) < 123 * ONE_NEAR);
-    assert!(u128::from(stream.tokens_transferred) > 0);
     assert!(stream.status == "PAUSED");
 
     state.do_pause(alice, &stream_id, Some(ERR_PAUSE_PAUSED));
     state.do_pause(bob, &stream_id, Some(ERR_PAUSE_PAUSED));
 
-    state.do_withdraw(alice, &stream_id, Some(ERR_WITHDRAW_PAUSED));
-    state.do_withdraw(bob, &stream_id, Some(ERR_WITHDRAW_PAUSED));
+    let prev_alice_balance = alice.account().unwrap().amount;
+    let prev_bob_balance = bob.account().unwrap().amount;
 
-    state.do_restart(bob, &stream_id, Some(ERR_ACCESS_DENIED));
-    state.do_restart(alice, &stream_id, None);
+    state.do_update_account(ALICE, None);
+    state.do_update_account(BOB, None);
 
-    state.do_withdraw(bob, &stream_id, None);
+    assert!(alice.account().unwrap().amount == prev_alice_balance);
+    assert!(bob.account().unwrap().amount == prev_bob_balance);
 
-    let stream = state.get_stream(&stream_id).unwrap();
-    assert!(u128::from(stream.balance) < stream_balance);
-    assert!(u128::from(stream.balance) > 0);
-    assert!(u128::from(stream.tokens_transferred) < 123 * ONE_NEAR);
-    assert!(u128::from(stream.tokens_transferred) > stream_transferred);
-    assert!(stream.status == "ACTIVE");
-}
+    state.do_start(bob, &stream_id, Some(ERR_ACCESS_DENIED));
+    let prev_bob_balance = bob.account().unwrap().amount;
+    state.do_start(alice, &stream_id, None);
 
-#[test]
-fn push_flow_sanity() {
-    let mut state = State::new();
-    state.create_alice();
-    state.create_bob();
+    assert!(alice.account().unwrap().amount < prev_alice_balance);
+    let prev_alice_balance = alice.account().unwrap().amount;
+    assert!(bob.account().unwrap().amount == prev_bob_balance);
 
-    let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
-    state.do_deposit(&stream_id, 123 * ONE_NEAR, None);
-    let stream = state.get_stream(&stream_id).unwrap();
-    assert!(stream.balance == (123 * ONE_NEAR).into());
+    state.do_update_account(ALICE, None);
+    state.do_update_account(BOB, None);
 
-    state.do_push_flow(BOB, None);
-
-    let stream = state.get_stream(&stream_id).unwrap();
-    let stream_balance = u128::from(stream.balance);
-    let stream_transferred = u128::from(stream.tokens_transferred);
-    assert!(u128::from(stream.balance) < 123 * ONE_NEAR);
-    assert!(u128::from(stream.balance) > 0);
-    assert!(u128::from(stream.tokens_transferred) < 123 * ONE_NEAR);
-    assert!(u128::from(stream.tokens_transferred) > 0);
-    assert!(stream.status == "ACTIVE");
-
-    state.do_push_flow(BOB, None);
+    assert!(alice.account().unwrap().amount == prev_alice_balance);
+    assert!(bob.account().unwrap().amount > prev_bob_balance);
 
     let stream = state.get_stream(&stream_id).unwrap();
     assert!(u128::from(stream.balance) < stream_balance);
     assert!(u128::from(stream.balance) > 0);
-    assert!(u128::from(stream.tokens_transferred) < 123 * ONE_NEAR);
-    assert!(u128::from(stream.tokens_transferred) > stream_transferred);
     assert!(stream.status == "ACTIVE");
 }
-
-#[test]
-fn bridge_simple() {
-    let mut state = State::new();
-    state.create_alice();
-    state.create_bob();
-    state.create_carol();
-    let alice = state.accounts.get(ALICE).unwrap();
-    let bob = state.accounts.get(BOB).unwrap();
-
-    let stream1_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
-    state.do_deposit(&stream1_id, 123 * ONE_NEAR, None);
-    let stream2_id = state.do_create_stream(BOB, CAROL, ONE_NEAR_PER_TICK, None);
-    state.do_deposit(&stream2_id, 56 * ONE_NEAR, None);
-
-    let old_stream1 = state.get_stream(&stream1_id).unwrap();
-    let old_stream2 = state.get_stream(&stream2_id).unwrap();
-
-    state.do_create_bridge(
-        alice,
-        &stream1_id,
-        &stream2_id,
-        50 * ONE_PERCENT,
-        Some(ERR_ACCESS_DENIED),
-    );
-    state.do_create_bridge(
-        bob,
-        &stream1_id,
-        &stream1_id,
-        50 * ONE_PERCENT,
-        Some(ERR_ACCESS_DENIED),
-    );
-    state.do_create_bridge(
-        bob,
-        &stream2_id,
-        &stream1_id,
-        50 * ONE_PERCENT,
-        Some(ERR_ACCESS_DENIED),
-    );
-    state.do_create_bridge(
-        bob,
-        &stream2_id,
-        &stream2_id,
-        50 * ONE_PERCENT,
-        Some(ERR_ACCESS_DENIED),
-    );
-    let bridge_id = state.do_create_bridge(bob, &stream1_id, &stream2_id, 50 * ONE_PERCENT, None);
-    let _bridge = state.get_bridge(&bridge_id);
-
-    state.do_push_flow(BOB, None);
-
-    let new_stream1 = state.get_stream(&stream1_id).unwrap();
-    let new_stream2 = state.get_stream(&stream2_id).unwrap();
-    assert!(u128::from(new_stream1.balance) < u128::from(old_stream1.balance));
-    assert!(u128::from(new_stream2.balance) > u128::from(old_stream2.balance));
-    assert!(
-        u128::from(new_stream2.balance)
-            < u128::from(old_stream1.balance) + u128::from(old_stream2.balance)
-    );
-
-    state.do_delete_bridge(alice, &bridge_id, Some(ERR_ACCESS_DENIED));
-    state.do_delete_bridge(bob, &bridge_id, None);
-    state.do_delete_bridge(bob, &bridge_id, Some(ERR_ACCESS_DENIED));
-
-    // should not fail
-    state.do_push_flow(BOB, None);
-    state.do_withdraw(bob, &stream1_id, None);
-    state.do_withdraw(alice, &stream1_id, None);
-    state.do_withdraw(bob, &stream2_id, None);
-    state.do_withdraw(alice, &stream2_id, None);
-}
-
-#[test]
-fn create_stream_then_deposit_ft() {
-    let state = State::new();
-    let contract = &state.contract;
-
-    let outcome = call!(
-        state.root,
-        contract.create_stream(
-            DEFAULT_DESCRIPTION.to_string(),
-            ALICE.try_into().unwrap(),
-            BOB.try_into().unwrap(),
-            "TARAS".to_string(),
-            ONE_NEAR_PER_TICK.into()
-        ),
-        deposit = CREATE_STREAM_DEPOSIT
-    );
-    assert!(outcome.is_ok());
-
-    let stream_id: String = (&outcome.unwrap_json::<Base58CryptoHash>()).into();
-    let stream = state.get_stream(&stream_id).unwrap();
-    //assert!(stream.balance == (123 * ONE_NEAR).into());
-}
-
-// tests:
-// - multiple streams
-// - stress-test
-// - check graph validity in the end
