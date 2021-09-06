@@ -25,32 +25,46 @@ pub struct AccountView {
     pub outputs: Vec<StreamView>,
     pub last_action: WrappedTimestamp,
     pub total_received: Vec<(String, WrappedBalance)>,
+    pub total_incoming: Vec<(String, WrappedBalance)>,
+    pub total_outgoing: Vec<(String, WrappedBalance)>,
     pub cron_calls_enabled: bool,
 }
 
 impl From<&Account> for AccountView {
     fn from(a: &Account) -> Self {
         let streams = Xyiming::streams();
+        let mut tokens_incoming = HashMap::<TokenId, Balance>::new();
+        let mut tokens_outgoing = HashMap::<TokenId, Balance>::new();
+        let input_streams = a
+            .inputs
+            .iter()
+            .map(|x| {
+                let stream = streams.get(&x).unwrap();
+                let mut stream_view: StreamView = (&stream).into();
+                stream_view.stream_id = Some(x.into());
+                if stream.status == StreamStatus::Active {
+                    *tokens_incoming.entry(stream.token_id).or_insert(0) += stream.tokens_per_tick;
+                }
+                stream_view
+            })
+            .collect();
+        let output_streams = a
+            .outputs
+            .iter()
+            .map(|x| {
+                let stream = streams.get(&x).unwrap();
+                let mut stream_view: StreamView = (&stream).into();
+                stream_view.stream_id = Some(x.into());
+                if stream.status == StreamStatus::Active && stream.auto_deposit_enabled {
+                    *tokens_outgoing.entry(stream.token_id).or_insert(0) += stream.tokens_per_tick;
+                }
+                stream_view
+            })
+            .collect();
         Self {
             account_id: a.account_id.clone(),
-            inputs: a
-                .inputs
-                .iter()
-                .map(|x| {
-                    let mut stream_view: StreamView = (&streams.get(&x).unwrap()).into();
-                    stream_view.stream_id = Some(x.into());
-                    stream_view
-                })
-                .collect(),
-            outputs: a
-                .outputs
-                .iter()
-                .map(|x| {
-                    let mut stream_view: StreamView = (&streams.get(&x).unwrap()).into();
-                    stream_view.stream_id = Some(x.into());
-                    stream_view
-                })
-                .collect(),
+            inputs: input_streams,
+            outputs: output_streams,
             last_action: a.last_action.into(),
             total_received: a
                 .total_received
@@ -58,6 +72,18 @@ impl From<&Account> for AccountView {
                 .map(|(token_id, amount)| (Xyiming::get_token_name_by_id(token_id), amount.into()))
                 .collect(),
             cron_calls_enabled: a.cron_calls_enabled,
+            total_incoming: tokens_incoming
+                .iter()
+                .map(|(&token_id, &amount)| {
+                    (Xyiming::get_token_name_by_id(token_id), amount.into())
+                })
+                .collect(),
+            total_outgoing: tokens_outgoing
+                .iter()
+                .map(|(&token_id, &amount)| {
+                    (Xyiming::get_token_name_by_id(token_id), amount.into())
+                })
+                .collect(),
         }
     }
 }

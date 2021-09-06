@@ -8,7 +8,7 @@ use xyiming::{
     ERR_DEPOSIT_NOT_ENOUGH, ERR_PAUSE_PAUSED, ERR_STREAM_NOT_AVAILABLE, ONE_NEAR, ONE_YOCTO,
 };
 
-use near_sdk::json_types::Base58CryptoHash;
+use near_sdk::json_types::{Base58CryptoHash, WrappedBalance};
 use near_sdk_sim::{call, deploy, init_simulator, to_yocto, view, ContractAccount, UserAccount};
 
 // Load in contract bytes at runtime
@@ -72,13 +72,13 @@ impl State {
         self.accounts.insert(CAROL.into(), carol);
     }
 
-    pub fn get_account(&self, account_id: &str) -> Option<AccountView> {
+    pub fn view_account(&self, account_id: &str) -> Option<AccountView> {
         let contract = &self.contract;
         let res = view!(contract.get_account(account_id.try_into().unwrap())).unwrap_json();
         res
     }
 
-    pub fn get_stream(&self, stream_id: &str) -> Option<StreamView> {
+    pub fn view_stream(&self, stream_id: &str) -> Option<StreamView> {
         let contract = &self.contract;
         let res = view!(contract.get_stream(stream_id.try_into().unwrap())).unwrap_json();
         res
@@ -101,7 +101,7 @@ impl State {
                 receiver_id.try_into().unwrap(),
                 DEFAULT_TOKEN_NAME.to_string(),
                 tokens_per_tick.into(),
-                true
+                false
             ),
             deposit = CREATE_STREAM_DEPOSIT + 123 * ONE_NEAR
         );
@@ -248,7 +248,7 @@ fn create_stream() {
     let state = State::new();
 
     let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
-    let stream = state.get_stream(&stream_id).unwrap();
+    let stream = state.view_stream(&stream_id).unwrap();
     // TODO check all stream fields
     assert_eq!(stream.owner_id, ALICE);
 }
@@ -257,23 +257,23 @@ fn create_stream() {
 fn create_stream_check_users() {
     let state = State::new();
 
-    let alice_account = state.get_account(ALICE);
+    let alice_account = state.view_account(ALICE);
     assert!(alice_account.is_none());
-    let bob_account = state.get_account(BOB);
+    let bob_account = state.view_account(BOB);
     assert!(bob_account.is_none());
-    let carol_account = state.get_account(CAROL);
+    let carol_account = state.view_account(CAROL);
     assert!(carol_account.is_none());
 
     let _stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
 
     // TODO check all user fields
-    let alice_account = state.get_account(ALICE).unwrap();
+    let alice_account = state.view_account(ALICE).unwrap();
     assert_eq!(alice_account.inputs.len(), 0);
     assert_eq!(alice_account.outputs.len(), 1);
-    let bob_account = state.get_account(BOB).unwrap();
+    let bob_account = state.view_account(BOB).unwrap();
     assert_eq!(bob_account.inputs.len(), 1);
     assert_eq!(bob_account.outputs.len(), 0);
-    let carol_account = state.get_account(CAROL);
+    let carol_account = state.view_account(CAROL);
     assert!(carol_account.is_none());
 }
 
@@ -332,14 +332,14 @@ fn create_stream_instant_deposit() {
             BOB.try_into().unwrap(),
             DEFAULT_TOKEN_NAME.to_string(),
             ONE_NEAR_PER_TICK.into(),
-            true
+            false
         ),
         deposit = CREATE_STREAM_DEPOSIT + 123 * ONE_NEAR
     );
     assert!(outcome.is_ok());
 
     let stream_id: String = (&outcome.unwrap_json::<Base58CryptoHash>()).into();
-    let stream = state.get_stream(&stream_id).unwrap();
+    let stream = state.view_stream(&stream_id).unwrap();
     assert!(stream.balance == (123 * ONE_NEAR).into());
     assert!(stream.status == "ACTIVE");
 }
@@ -361,25 +361,25 @@ fn create_stream_then_deposit_then_start() {
             BOB.try_into().unwrap(),
             DEFAULT_TOKEN_NAME.to_string(),
             ONE_NEAR_PER_TICK.into(),
-            true
+            false
         ),
         deposit = CREATE_STREAM_DEPOSIT
     );
     assert!(outcome.is_ok());
 
     let stream_id: String = (&outcome.unwrap_json::<Base58CryptoHash>()).into();
-    let stream = state.get_stream(&stream_id).unwrap();
+    let stream = state.view_stream(&stream_id).unwrap();
     assert!(stream.balance == 0.into());
     assert!(stream.status == "INITIALIZED");
 
     state.do_deposit(&stream_id, 123 * ONE_NEAR, None);
-    let stream = state.get_stream(&stream_id).unwrap();
+    let stream = state.view_stream(&stream_id).unwrap();
     assert!(stream.balance == (123 * ONE_NEAR).into());
     assert!(stream.status == "INITIALIZED");
 
     state.do_start(&bob, &stream_id, Some(ERR_ACCESS_DENIED));
     state.do_start(&alice, &stream_id, None);
-    let stream = state.get_stream(&stream_id).unwrap();
+    let stream = state.view_stream(&stream_id).unwrap();
     assert!(stream.balance == (123 * ONE_NEAR).into());
     assert!(stream.status == "ACTIVE");
 
@@ -395,18 +395,18 @@ fn withdraw_sanity() {
     let bob = state.accounts.get(BOB).unwrap();
 
     let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
-    let stream = state.get_stream(&stream_id).unwrap();
+    let stream = state.view_stream(&stream_id).unwrap();
     assert!(stream.balance == (123 * ONE_NEAR).into());
 
     state.do_update_account(ALICE, None);
 
-    let stream = state.get_stream(&stream_id).unwrap();
+    let stream = state.view_stream(&stream_id).unwrap();
     assert!(stream.balance == (123 * ONE_NEAR).into());
     assert!(stream.status == "ACTIVE");
 
     state.do_update_account(BOB, None);
 
-    let stream = state.get_stream(&stream_id).unwrap();
+    let stream = state.view_stream(&stream_id).unwrap();
     assert!(u128::from(stream.balance) < 123 * ONE_NEAR);
     assert!(u128::from(stream.balance) > 0);
     assert!(stream.status == "ACTIVE");
@@ -434,7 +434,7 @@ fn withdraw_all() {
             BOB.try_into().unwrap(),
             DEFAULT_TOKEN_NAME.to_string(),
             ONE_NEAR_PER_TICK.into(),
-            true
+            false
         ),
         deposit = CREATE_STREAM_DEPOSIT + 20 * ONE_NEAR
     );
@@ -446,7 +446,7 @@ fn withdraw_all() {
 
     state.do_update_account(BOB, None);
 
-    let stream = state.get_stream(&stream_id).unwrap();
+    let stream = state.view_stream(&stream_id).unwrap();
     assert!(u128::from(stream.balance) < 123 * ONE_NEAR);
     assert!(u128::from(stream.balance) > 0);
     assert!(stream.status == "ACTIVE");
@@ -457,7 +457,7 @@ fn withdraw_all() {
 
     state.do_update_account(BOB, None);
 
-    let stream = state.get_stream(&stream_id).unwrap();
+    let stream = state.view_stream(&stream_id).unwrap();
     assert!(stream.balance == 0.into());
     assert!(stream.status == "FINISHED");
 
@@ -480,7 +480,7 @@ fn withdraw_then_stop() {
 
     state.do_stop_stream(alice, &stream_id, None);
 
-    let stream = state.get_stream(&stream_id).unwrap();
+    let stream = state.view_stream(&stream_id).unwrap();
     assert!(stream.balance == 0.into());
     assert!(stream.status == "INTERRUPTED");
 
@@ -511,7 +511,7 @@ fn pause_sanity() {
     assert!(alice.account().unwrap().amount < prev_alice_balance);
     assert!(bob.account().unwrap().amount > prev_bob_balance);
 
-    let stream = state.get_stream(&stream_id).unwrap();
+    let stream = state.view_stream(&stream_id).unwrap();
     let stream_balance = u128::from(stream.balance);
     assert!(u128::from(stream.balance) < 123 * ONE_NEAR);
     assert!(u128::from(stream.balance) > 0);
@@ -543,8 +543,309 @@ fn pause_sanity() {
     assert!(alice.account().unwrap().amount == prev_alice_balance);
     assert!(bob.account().unwrap().amount > prev_bob_balance);
 
-    let stream = state.get_stream(&stream_id).unwrap();
+    let stream = state.view_stream(&stream_id).unwrap();
     assert!(u128::from(stream.balance) < stream_balance);
     assert!(u128::from(stream.balance) > 0);
     assert!(stream.status == "ACTIVE");
+}
+
+#[test]
+fn account_view_sanity() {
+    let mut state = State::new();
+    state.create_alice();
+    state.create_bob();
+    let alice = state.accounts.get(ALICE).unwrap();
+    let bob = state.accounts.get(BOB).unwrap();
+    let contract = &state.contract;
+
+    let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+
+    let alice_account = state.view_account(ALICE).unwrap();
+    let bob_account = state.view_account(BOB).unwrap();
+    assert!(alice_account.total_outgoing == []);
+    assert!(alice_account.total_incoming == []);
+    assert!(bob_account.total_outgoing == []);
+    assert!(
+        bob_account.total_incoming
+            == [("NEAR".to_string(), WrappedBalance::from(ONE_NEAR_PER_TICK))]
+    );
+
+    let outcome = call!(
+        bob,
+        contract.create_stream(
+            Some(DEFAULT_DESCRIPTION.to_string()),
+            BOB.try_into().unwrap(),
+            ALICE.try_into().unwrap(),
+            DEFAULT_TOKEN_NAME.to_string(),
+            (ONE_NEAR_PER_TICK / 2).into(),
+            true
+        ),
+        deposit = CREATE_STREAM_DEPOSIT + 20 * ONE_NEAR
+    );
+    assert!(outcome.is_ok());
+
+    let alice_account = state.view_account(ALICE).unwrap();
+    let bob_account = state.view_account(BOB).unwrap();
+    assert!(alice_account.total_outgoing == []);
+    assert!(
+        alice_account.total_incoming
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(ONE_NEAR_PER_TICK / 2)
+            )]
+    );
+    assert!(
+        bob_account.total_outgoing
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(ONE_NEAR_PER_TICK / 2)
+            )]
+    );
+    assert!(
+        bob_account.total_incoming
+            == [("NEAR".to_string(), WrappedBalance::from(ONE_NEAR_PER_TICK))]
+    );
+
+    state.do_pause(alice, &stream_id, None);
+
+    let alice_account = state.view_account(ALICE).unwrap();
+    let bob_account = state.view_account(BOB).unwrap();
+    assert!(alice_account.total_outgoing == []);
+    assert!(
+        alice_account.total_incoming
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(ONE_NEAR_PER_TICK / 2)
+            )]
+    );
+    assert!(
+        bob_account.total_outgoing
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(ONE_NEAR_PER_TICK / 2)
+            )]
+    );
+    assert!(bob_account.total_incoming == []);
+}
+
+#[test]
+fn withdraw_overflow() {
+    let mut state = State::new();
+    state.create_alice();
+    state.create_bob();
+    let _alice = state.accounts.get(ALICE).unwrap();
+    let bob = state.accounts.get(BOB).unwrap();
+    let contract = &state.contract;
+
+    let _stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+
+    let alice_account = state.view_account(ALICE).unwrap();
+    let bob_account = state.view_account(BOB).unwrap();
+    assert!(alice_account.total_outgoing == []);
+    assert!(alice_account.total_incoming == []);
+    assert!(bob_account.total_outgoing == []);
+    assert!(
+        bob_account.total_incoming
+            == [("NEAR".to_string(), WrappedBalance::from(ONE_NEAR_PER_TICK))]
+    );
+
+    let outcome = call!(
+        bob,
+        contract.create_stream(
+            Some(DEFAULT_DESCRIPTION.to_string()),
+            BOB.try_into().unwrap(),
+            ALICE.try_into().unwrap(),
+            DEFAULT_TOKEN_NAME.to_string(),
+            (10 * ONE_NEAR_PER_TICK).into(),
+            true
+        ),
+        deposit = CREATE_STREAM_DEPOSIT + 20 * ONE_NEAR
+    );
+    assert!(outcome.is_ok());
+
+    let alice_account = state.view_account(ALICE).unwrap();
+    let bob_account = state.view_account(BOB).unwrap();
+    assert!(alice_account.total_outgoing == []);
+    assert!(
+        alice_account.total_incoming
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(10 * ONE_NEAR_PER_TICK)
+            )]
+    );
+    assert!(
+        bob_account.total_outgoing
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(10 * ONE_NEAR_PER_TICK)
+            )]
+    );
+    assert!(
+        bob_account.total_incoming
+            == [("NEAR".to_string(), WrappedBalance::from(ONE_NEAR_PER_TICK))]
+    );
+
+    // must be disabled instantly
+    state.do_update_account(BOB, None);
+
+    let alice_account = state.view_account(ALICE).unwrap();
+    let bob_account = state.view_account(BOB).unwrap();
+    assert!(alice_account.total_outgoing == []);
+    assert!(
+        alice_account.total_incoming
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(10 * ONE_NEAR_PER_TICK)
+            )]
+    );
+    assert!(bob_account.total_outgoing == []);
+    assert!(
+        bob_account.total_incoming
+            == [("NEAR".to_string(), WrappedBalance::from(ONE_NEAR_PER_TICK))]
+    );
+}
+
+#[test]
+fn incoming_outgoing_sanity() {
+    let mut state = State::new();
+    state.create_alice();
+    state.create_bob();
+    let alice = state.accounts.get(ALICE).unwrap();
+    let bob = state.accounts.get(BOB).unwrap();
+    let contract = &state.contract;
+
+    let _stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+
+    let alice_account = state.view_account(ALICE).unwrap();
+    let bob_account = state.view_account(BOB).unwrap();
+    assert!(alice_account.total_outgoing == []);
+    assert!(alice_account.total_incoming == []);
+    assert!(bob_account.total_outgoing == []);
+    assert!(
+        bob_account.total_incoming
+            == [("NEAR".to_string(), WrappedBalance::from(ONE_NEAR_PER_TICK))]
+    );
+
+    let outcome = call!(
+        bob,
+        contract.create_stream(
+            Some(DEFAULT_DESCRIPTION.to_string()),
+            BOB.try_into().unwrap(),
+            ALICE.try_into().unwrap(),
+            DEFAULT_TOKEN_NAME.to_string(),
+            (ONE_NEAR_PER_TICK / 2).into(),
+            true
+        ),
+        deposit = CREATE_STREAM_DEPOSIT + 10 * ONE_NEAR
+    );
+    assert!(outcome.is_ok());
+
+    let alice_account = state.view_account(ALICE).unwrap();
+    let bob_account = state.view_account(BOB).unwrap();
+    assert!(alice_account.total_outgoing == []);
+    assert!(
+        alice_account.total_incoming
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(ONE_NEAR_PER_TICK / 2)
+            )]
+    );
+    assert!(
+        bob_account.total_outgoing
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(ONE_NEAR_PER_TICK / 2)
+            )]
+    );
+    assert!(
+        bob_account.total_incoming
+            == [("NEAR".to_string(), WrappedBalance::from(ONE_NEAR_PER_TICK))]
+    );
+
+    state.do_update_account(BOB, None);
+
+    let alice_account = state.view_account(ALICE).unwrap();
+    let bob_account = state.view_account(BOB).unwrap();
+    assert!(alice_account.total_outgoing == []);
+    assert!(
+        alice_account.total_incoming
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(ONE_NEAR_PER_TICK / 2)
+            )]
+    );
+    assert!(
+        bob_account.total_outgoing
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(ONE_NEAR_PER_TICK / 2)
+            )]
+    );
+    assert!(
+        bob_account.total_incoming
+            == [("NEAR".to_string(), WrappedBalance::from(ONE_NEAR_PER_TICK))]
+    );
+
+    for _ in 0..25 {
+        // more steps than initial balance can handle
+        state.do_update_account(BOB, None);
+    }
+
+    let alice_account = state.view_account(ALICE).unwrap();
+    let bob_account = state.view_account(BOB).unwrap();
+    assert!(alice_account.total_outgoing == []);
+    assert!(
+        alice_account.total_incoming
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(ONE_NEAR_PER_TICK / 2)
+            )]
+    );
+    assert!(
+        bob_account.total_outgoing
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(ONE_NEAR_PER_TICK / 2)
+            )]
+    );
+    assert!(
+        bob_account.total_incoming
+            == [("NEAR".to_string(), WrappedBalance::from(ONE_NEAR_PER_TICK))]
+    );
+
+    state.do_update_account(ALICE, None);
+
+    let alice_account = state.view_account(ALICE).unwrap();
+    assert!(alice_account.total_outgoing == []);
+    assert!(
+        alice_account.total_incoming
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(ONE_NEAR_PER_TICK / 2)
+            )]
+    );
+    assert!(
+        bob_account.total_outgoing
+            == [(
+                "NEAR".to_string(),
+                WrappedBalance::from(ONE_NEAR_PER_TICK / 2)
+            )]
+    );
+    assert!(
+        bob_account.total_incoming
+            == [("NEAR".to_string(), WrappedBalance::from(ONE_NEAR_PER_TICK))]
+    );
+
+    assert!(
+        alice.account().unwrap().amount + bob.account().unwrap().amount
+            < 2 * to_yocto("1000000000") + (123 + 20) * ONE_NEAR
+    );
+    assert!(
+        alice.account().unwrap().amount + bob.account().unwrap().amount
+            > 2 * to_yocto("1000000000")
+    );
+
+    //println!("@@@ {:?}", alice_account);
+
+    //println!("%%% {:?} {:?}", alice.account().unwrap().amount, bob.account().unwrap().amount);
 }

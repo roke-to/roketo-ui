@@ -32,6 +32,9 @@ impl Xyiming {
             owner_id != receiver_id,
             "Self-transferring is not allowed in this version of the contract"
         );
+        if auto_deposit_enabled && owner_id.as_ref() != &env::predecessor_account_id() {
+            assert!(false, "Caller must own auto-deposited streams");
+        }
         // TODO generate stream_id reasonably
         let stream_id = env::sha256(&env::block_index().to_be_bytes())
             .as_slice()
