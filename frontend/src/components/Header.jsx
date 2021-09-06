@@ -1,14 +1,11 @@
 import React from 'react';
-import { XyimingLogo } from './icons/XyimingLogo';
+import {XyimingLogo} from './icons/XyimingLogo';
 import * as icons from './icons';
-import { NavLink } from './kit';
-import { NearAuthButton } from '../features/near-auth/NearAuthButton';
+import {NavLink} from './kit';
+import {NearAuthButton} from '../features/near-auth/NearAuthButton';
 import classNames from 'classnames';
-import { routes } from '../lib/routing';
-
-function tailwindResponsive(size, classNames) {
-  return classNames.map((className) => `${size}:${className}`);
-}
+import {routes} from '../lib/routing';
+import LogoText from '../images/logo_stream_with_text.svg';
 
 export function Header() {
   const navigation = (
@@ -33,12 +30,7 @@ export function Header() {
 
   const logo = (
     <div className="twind-flex twind-justify-start twind-items-center">
-      <XyimingLogo></XyimingLogo>
-      <div className="twind-px-1"></div>
-      <pre>
-        Streaming <br />
-        Xyiming
-      </pre>
+      <img src={LogoText} alt="xyiming logo" />
     </div>
   );
   return (

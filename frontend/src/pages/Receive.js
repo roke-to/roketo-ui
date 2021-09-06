@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import useSWR from 'swr'
+import React, {useState} from 'react';
+import useSWR from 'swr';
 
-import { fromNear } from '../components/Helpers'
-import { useNear } from '../features/near-connect/useNear'
+import {fromNear} from '../components/Helpers';
+import {useNear} from '../features/near-connect/useNear';
 
 function ReceivingStremsTable ({
   inputs,
@@ -132,19 +132,19 @@ function ReceivePage () {
     setShowButtons(false)
     console.log('pausing', output)
     const res = await near.near.contract.pause_stream(
-      { stream_id: output.stream_id },
+      {stream_id: output.stream_id},
       '200000000000000',
       1
     )
     console.log('pausing res', res)
   }
 
-  async function withdrawStreamClick (e, input) {
-    e.preventDefault()
-    setShowButtons(false)
-    console.log('withdraw', input)
-    const res = await near.near.contract.update_account(
-      { account_id: profileId },
+  async function withdrawStreamClick(e, input) {
+    e.preventDefault();
+    setShowButtons(false);
+    console.log('withdraw', input);
+    const res = await near.near.contract.withdraw(
+      {stream_id: input.stream_id},
       '200000000000000',
       0
     )
@@ -158,7 +158,7 @@ function ReceivePage () {
     setShowButtons(false)
     console.log('stopping', input)
     const res = await near.near.contract.stop_stream(
-      { stream_id: input.stream_id },
+      {stream_id: input.stream_id},
       '200000000000000',
       1
     )
@@ -170,25 +170,24 @@ function ReceivePage () {
       if (!profileId) {
         return []
       }
-      return await near.near.contract.get_account({ account_id: profileId })
+      return await near.near.contract.get_account({account_id: profileId});
     } catch (e) {
       console.log('near error', e)
     }
     return []
   }
 
-  const { data: account } = useSWR(['account', profileId], fetchAccount, {
-    errorRetryInterval: 250
-  })
-  let inputs = account && account.inputs ? account.inputs : []
-  console.log('inputs', inputs)
+  const {data: account} = useSWR(['account', profileId], fetchAccount, {
+    errorRetryInterval: 250,
+  });
+  let inputs = account && account.inputs ? account.inputs : [];
 
   if (near.inited && account) {
     inputs = inputs.map((input, id) => {
       return (
         <div
-          className='card'
-          style={{ width: '90%', margin: '15px', backgroundColor: '#141414' }}
+          className="card"
+          style={{width: '90%', margin: '15px', backgroundColor: '#141414'}}
           key={id}
         >
           <div className='card-body'>

@@ -1,9 +1,9 @@
 import React from 'react';
-import { Button } from '../../components/kit';
-import { useNearAuth } from './useNearAuth';
+import {Button} from '../../components/kit';
+import {useNearAuth} from './useNearAuth';
 
 export function NearAuthButton(props) {
-  const { inited, logout, login, accountId, signedIn } = useNearAuth();
+  const {inited, logout, login, accountId, signedIn} = useNearAuth();
 
   if (!inited) {
     return (

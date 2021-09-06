@@ -1,8 +1,8 @@
-import React from 'react'
-import { useStreamControl } from './useStreamControl'
+import React from 'react';
+import {useStreamControl} from './useStreamControl';
 
-export function StreamControls ({ output }) {
-  const controls = useStreamControl(output.stream_id)
+export function StreamControls({output}) {
+  const controls = useStreamControl(output.stream_id);
 
   if (controls.loading) {
     // TODO: cool loader

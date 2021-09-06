@@ -8,7 +8,7 @@ export function NearContractApi(near) {
       if (!accountId) {
         return [];
       }
-      return await contract.get_account({ account_id: accountId });
+      return await contract.get_account({account_id: accountId});
     } catch (e) {
       console.log('near error', e);
     }

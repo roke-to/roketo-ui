@@ -1,25 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react'
-import * as nearAPI from 'near-api-js'
-import { NearContractApi } from './near-contract-api'
-
-const IsMainnet = window.location.hostname === '(xyiming)' // TODO
-const TestNearConfig = {
-  accountSuffix: 'testnet',
-  networkId: 'testnet',
-  nodeUrl: 'https://rpc.testnet.near.org',
-  contractName: 'dev-1630880865046-56845731587025',
-  walletUrl: 'https://wallet.testnet.near.org',
-  ft: 'dev-1630798753809-34755859843881'
-}
-const MainNearConfig = {
-  accountSuffix: 'near',
-  networkId: 'mainnet',
-  nodeUrl: 'https://rpc.mainnet.near.org',
-  contractName: 'dev-1630880865046-56845731587025',
-  walletUrl: 'https://wallet.near.org'
-}
-
-export const NearConfig = IsMainnet ? MainNearConfig : TestNearConfig
+import React, {useContext, useEffect, useState} from 'react';
+import * as nearAPI from 'near-api-js';
+import {NearContractApi} from './near-contract-api';
+import {NEAR_CONFIG as NearConfig} from './config';
 
 export const NearContext = React.createContext({
   inited: false,
@@ -44,8 +26,8 @@ export const NearContext = React.createContext({
 async function createNearInstance () {
   const keyStore = new nearAPI.keyStores.BrowserLocalStorageKeyStore()
   const near = await nearAPI.connect(
-    Object.assign({ deps: { keyStore } }, NearConfig)
-  )
+    Object.assign({deps: {keyStore}}, NearConfig),
+  );
 
   const _near = {
     keyStore: null,

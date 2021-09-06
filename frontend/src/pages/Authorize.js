@@ -1,7 +1,7 @@
 import React from 'react';
-import { NearAuthButton } from '../features/near-auth/NearAuthButton';
-import { useNear } from '../features/near-connect/useNear';
-import { Redirect } from 'react-router-dom';
+import {NearAuthButton} from '../features/near-auth/NearAuthButton';
+import {useNear} from '../features/near-connect/useNear';
+import {Redirect} from 'react-router-dom';
 
 export function AuthorizePage() {
   const near = useNear();

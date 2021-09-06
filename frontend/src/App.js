@@ -8,24 +8,24 @@ import {
   Link,
   Route,
   Switch,
-  Redirect
-} from 'react-router-dom'
-import SendPage from './pages/Send'
-import ReceivePage from './pages/Receive'
-import { Header } from './components/Header'
-import { NearContext, useCreateNear } from './features/near-connect/useNear'
-import { MyStreamsPage } from './pages/MyStreams'
-import { AuthorizePage } from './pages/Authorize'
+  Redirect,
+} from 'react-router-dom';
+import SendPage from './pages/Send';
+import ReceivePage from './pages/Receive';
+import {Header} from './components/Header';
+import {NearContext, useCreateNear} from './features/near-connect/useNear';
+import {MyStreamsPage} from './pages/MyStreams';
+import {AuthorizePage} from './pages/Authorize';
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
-function PrivateRoute ({ children, allowed, redirect, ...rest }) {
+function PrivateRoute({children, allowed, redirect, ...rest}) {
   return (
     <Route
       {...rest}
-      render={({ location }) => {
-        console.log(`Render ${rest.path}, allowed? ${allowed}`)
-        return allowed ? children : redirect
+      render={({location}) => {
+        console.log(`Render ${rest.path}, allowed? ${allowed}`);
+        return allowed ? children : redirect;
       }}
     />
   )
