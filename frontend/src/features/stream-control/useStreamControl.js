@@ -19,7 +19,7 @@ export function useStreamControl(streamId) {
 
   async function restart(output) {
     console.log('restarting', output);
-    const res = await near.near.contract.restart_stream(
+    const res = await near.near.contract.start_stream(
       {stream_id: streamId},
       '200000000000000',
       1,
