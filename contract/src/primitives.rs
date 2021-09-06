@@ -3,22 +3,21 @@ use crate::*;
 pub const ERR_DEPOSIT_NOT_ENOUGH: &str = "Attached deposit is not enough, expected";
 pub const ERR_ACCESS_DENIED: &str = "Caller has no access, expected";
 pub const ERR_STREAM_NOT_AVAILABLE: &str = "Stream not exist or terminated";
-pub const ERR_WITHDRAW_PAUSED: &str = "Cannot withdraw from paused stream";
 pub const ERR_PAUSE_PAUSED: &str = "Cannot pause paused stream";
-pub const ERR_RESTART_ACTIVE: &str = "Cannot restart active stream";
+pub const ERR_CANNOT_START_STREAM: &str = "Cannot start stream, invalid stream status";
 pub const ERR_TEXT_FIELD_TOO_LONG: &str = "Text field is too long";
 pub const ERR_CRON_CALLS_DISABLED: &str = "Cron calls disabled";
 pub const ERR_NOT_NEAR_TOKEN: &str = "Only NEAR tokens allowed in this method";
 pub const ERR_NOT_FT_TOKEN: &str = "Only FT tokens allowed in this method";
+pub const ERR_TOKENS_MISMATCH: &str = "Tokens mismatch";
+pub const ERR_INVALID_TOKEN: &str = "Invalid token name";
 
-pub const CREATE_BRIDGE_DEPOSIT: Balance = 10_000_000_000_000_000_000_000; // 0.01 NEAR
 pub const CREATE_STREAM_DEPOSIT: Balance = 100_000_000_000_000_000_000_000; // 0.1 NEAR
 pub const ONE_YOCTO: Balance = 1;
 pub const ONE_NEAR: Balance = 1_000_000_000_000_000_000_000_000; // 1 NEAR
 pub const MAX_TEXT_FIELD: usize = 255;
 pub const GAS_FOR_FT_TRANSFER: Gas = 10_000_000_000_000;
 
-pub type BridgeId = CryptoHash;
 pub type StreamId = CryptoHash;
 pub type TokenId = u32;
 
@@ -33,6 +32,7 @@ pub const TOKEN_ACCOUNTS: [&'static str; NUM_TOKENS] =
 
 #[derive(BorshDeserialize, BorshSerialize, PartialEq)]
 pub enum StreamStatus {
+    Initialized,
     Active,
     Paused,
     Interrupted,
@@ -42,6 +42,7 @@ pub enum StreamStatus {
 impl StreamStatus {
     pub(crate) fn to_string(&self) -> String {
         match self {
+            StreamStatus::Initialized => "INITIALIZED".to_string(),
             StreamStatus::Active => "ACTIVE".to_string(),
             StreamStatus::Paused => "PAUSED".to_string(),
             StreamStatus::Interrupted => "INTERRUPTED".to_string(),
@@ -51,6 +52,7 @@ impl StreamStatus {
 
     pub(crate) fn is_terminated(&self) -> bool {
         match self {
+            StreamStatus::Initialized => false,
             StreamStatus::Active => false,
             StreamStatus::Paused => false,
             StreamStatus::Interrupted => true,
@@ -58,9 +60,6 @@ impl StreamStatus {
         }
     }
 }
-
-#[derive(BorshDeserialize, BorshSerialize, PartialEq)]
-pub struct Bridge {}
 
 #[ext_contract]
 pub trait ContractB {
