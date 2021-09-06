@@ -4,9 +4,8 @@ use std::convert::TryInto;
 /// Import the generated proxy contract
 use xyiming::XyimingContract;
 use xyiming::{
-    AccountView, StreamView, CREATE_STREAM_DEPOSIT,
-    ERR_ACCESS_DENIED, ERR_DEPOSIT_NOT_ENOUGH, ERR_PAUSE_PAUSED,
-    ERR_STREAM_NOT_AVAILABLE, ONE_NEAR, ONE_YOCTO,ERR_CANNOT_START_STREAM
+    AccountView, StreamView, CREATE_STREAM_DEPOSIT, ERR_ACCESS_DENIED, ERR_CANNOT_START_STREAM,
+    ERR_DEPOSIT_NOT_ENOUGH, ERR_PAUSE_PAUSED, ERR_STREAM_NOT_AVAILABLE, ONE_NEAR, ONE_YOCTO,
 };
 
 use near_sdk::json_types::Base58CryptoHash;
@@ -122,8 +121,7 @@ impl State {
     }
 
     // WARN: outcome returns SuccessValue(``) for (Option<Promise>, Promise), so we cannot test it properly
-    pub fn do_stop_stream(&self, caller: &UserAccount, stream_id: &str, err: Option<&str>)
-    {
+    pub fn do_stop_stream(&self, caller: &UserAccount, stream_id: &str, err: Option<&str>) {
         let contract = &self.contract;
 
         let outcome = call!(
@@ -168,7 +166,10 @@ impl State {
     pub fn do_update_account(&self, account_id: &str, err: Option<&str>) /*-> Promise*/
     {
         let contract = &self.contract;
-        let outcome = call!(self.root, contract.update_account(account_id.try_into().unwrap()));
+        let outcome = call!(
+            self.root,
+            contract.update_account(account_id.try_into().unwrap())
+        );
 
         if let Some(msg) = err {
             assert!(
@@ -204,10 +205,7 @@ impl State {
     {
         let contract = &self.contract;
 
-        let outcome = call!(
-            caller,
-            contract.start_stream(stream_id.try_into().unwrap())
-        );
+        let outcome = call!(caller, contract.start_stream(stream_id.try_into().unwrap()));
 
         if let Some(msg) = err {
             assert!(
@@ -413,7 +411,10 @@ fn withdraw_sanity() {
     assert!(u128::from(stream.balance) > 0);
     assert!(stream.status == "ACTIVE");
 
-    assert!(bob.account().unwrap().amount + u128::from(stream.balance) == alice.account().unwrap().amount + 123 * ONE_NEAR);
+    assert!(
+        bob.account().unwrap().amount + u128::from(stream.balance)
+            == alice.account().unwrap().amount + 123 * ONE_NEAR
+    );
 }
 
 #[test]

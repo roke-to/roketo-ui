@@ -11,6 +11,8 @@ pub struct Account {
 
     pub last_action: Timestamp,
 
+    pub total_received: UnorderedMap<TokenId, Balance>,
+
     pub cron_calls_enabled: bool,
     // TODO add stats
 }
@@ -22,6 +24,7 @@ pub struct AccountView {
     pub inputs: Vec<StreamView>,
     pub outputs: Vec<StreamView>,
     pub last_action: WrappedTimestamp,
+    pub total_received: Vec<(String, WrappedBalance)>,
     pub cron_calls_enabled: bool,
 }
 
@@ -34,10 +37,7 @@ impl From<&Account> for AccountView {
                 .inputs
                 .iter()
                 .map(|x| {
-                    let mut stream_view: StreamView = (&streams
-                        .get(&x)
-                        .unwrap())
-                        .into();
+                    let mut stream_view: StreamView = (&streams.get(&x).unwrap()).into();
                     stream_view.stream_id = Some(x.into());
                     stream_view
                 })
@@ -46,15 +46,17 @@ impl From<&Account> for AccountView {
                 .outputs
                 .iter()
                 .map(|x| {
-                    let mut stream_view: StreamView = (&streams
-                        .get(&x)
-                        .unwrap())
-                        .into();
+                    let mut stream_view: StreamView = (&streams.get(&x).unwrap()).into();
                     stream_view.stream_id = Some(x.into());
                     stream_view
                 })
                 .collect(),
             last_action: a.last_action.into(),
+            total_received: a
+                .total_received
+                .iter()
+                .map(|(token_id, amount)| (Xyiming::get_token_name_by_id(token_id), amount.into()))
+                .collect(),
             cron_calls_enabled: a.cron_calls_enabled,
         }
     }
@@ -75,7 +77,6 @@ impl Account {
     pub(crate) fn update_state(&mut self) -> Vec<Promise> {
         let mut tokens_left = HashMap::<TokenId, Balance>::new();
         if self.last_action != env::block_timestamp() {
-
             for input_stream_id in self.inputs.iter() {
                 let mut input_stream = Xyiming::extract_stream_or_panic(&input_stream_id);
                 if input_stream.status != StreamStatus::Active {
@@ -89,7 +90,9 @@ impl Account {
 
             for output_stream_id in self.outputs.iter() {
                 let mut output_stream = Xyiming::extract_stream_or_panic(&output_stream_id);
-                if output_stream.status != StreamStatus::Active || !output_stream.auto_deposit_enabled {
+                if output_stream.status != StreamStatus::Active
+                    || !output_stream.auto_deposit_enabled
+                {
                     Xyiming::streams().insert(&output_stream_id, &output_stream);
                     continue;
                 }
@@ -114,8 +117,23 @@ impl Account {
             }
 
             self.last_action = env::block_timestamp();
+
+            for (token_id, amount) in tokens_left.iter() {
+                self.total_received.insert(
+                    &token_id,
+                    &(self.total_received.get(&token_id).unwrap_or(0) + amount),
+                );
+            }
+
+            tokens_left
+                .iter()
+                .map(|(&token_id, &amount)| {
+                    Xyiming::build_promise(token_id, self.account_id.clone(), amount)
+                })
+                .collect()
+        } else {
+            vec![]
         }
-        tokens_left.iter().map(|(&token_id, &amount)| Xyiming::build_promise(token_id, self.account_id.clone(), amount)).collect()
     }
 }
 
@@ -128,12 +146,16 @@ impl Xyiming {
             let mut prefix2 = Vec::with_capacity(33);
             prefix2.push(b'y');
             prefix2.extend(env::sha256(&account_id.as_bytes()));
+            let mut prefix3 = Vec::with_capacity(33);
+            prefix3.push(b'z');
+            prefix3.extend(env::sha256(&account_id.as_bytes()));
 
             Account {
                 account_id: account_id.into(),
                 inputs: UnorderedSet::new(prefix),
                 outputs: UnorderedSet::new(prefix2),
                 last_action: env::block_timestamp(),
+                total_received: UnorderedMap::new(prefix3),
                 // TODO set false by default
                 cron_calls_enabled: true,
             }

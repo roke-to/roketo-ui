@@ -111,7 +111,8 @@ impl Xyiming {
             stream_view.owner_id
         );
         assert!(
-            stream_view.status == StreamStatus::Paused || stream_view.status == StreamStatus::Initialized,
+            stream_view.status == StreamStatus::Paused
+                || stream_view.status == StreamStatus::Initialized,
             "{}",
             ERR_CANNOT_START_STREAM,
         );
@@ -168,7 +169,8 @@ impl Xyiming {
         let stream_id = stream_id.into();
         let stream_view = Self::streams().get(&stream_id).unwrap();
         assert!(
-            stream_view.owner_id == env::predecessor_account_id() || stream_view.receiver_id == env::predecessor_account_id(),
+            stream_view.owner_id == env::predecessor_account_id()
+                || stream_view.receiver_id == env::predecessor_account_id(),
             "{} {} {}",
             ERR_ACCESS_DENIED,
             stream_view.owner_id,

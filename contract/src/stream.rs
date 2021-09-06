@@ -44,7 +44,11 @@ impl From<&Stream> for StreamView {
             tokens_per_tick: s.tokens_per_tick.into(),
             auto_deposit_enabled: s.auto_deposit_enabled,
             status: s.status.to_string(),
-            available_to_withdraw: s.get_amount_since_last_action(Xyiming::accounts().get(&s.receiver_id).unwrap().last_action).into(),
+            available_to_withdraw: s
+                .get_amount_since_last_action(
+                    Xyiming::accounts().get(&s.receiver_id).unwrap().last_action,
+                )
+                .into(),
         }
     }
 }
@@ -74,7 +78,11 @@ impl Stream {
                 balance: initial_balance,
                 tokens_per_tick,
                 auto_deposit_enabled,
-                status: if initial_balance > 0 { StreamStatus::Active } else { StreamStatus::Initialized },
+                status: if initial_balance > 0 {
+                    StreamStatus::Active
+                } else {
+                    StreamStatus::Initialized
+                },
             },
         );
         stream_id
@@ -97,7 +105,7 @@ impl Stream {
             return 0;
         }
         let period = (env::block_timestamp() - last_action) as Balance;
-        self.tokens_per_tick * period        
+        self.tokens_per_tick * period
     }
 }
 
