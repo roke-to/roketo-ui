@@ -1,25 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import * as nearAPI from 'near-api-js';
 import {NearContractApi} from './near-contract-api';
-
-const IsMainnet = window.location.hostname === '(xyiming)'; // TODO
-const TestNearConfig = {
-  accountSuffix: 'testnet',
-  networkId: 'testnet',
-  nodeUrl: 'https://rpc.testnet.near.org',
-  contractName: 'dev-1630685656410-62108694435619',
-  walletUrl: 'https://wallet.testnet.near.org',
-  ft: 'dev-1630798753809-34755859843881',
-};
-const MainNearConfig = {
-  accountSuffix: 'near',
-  networkId: 'mainnet',
-  nodeUrl: 'https://rpc.mainnet.near.org',
-  contractName: 'dev-1630411495814-97749356114440',
-  walletUrl: 'https://wallet.near.org',
-};
-
-export const NearConfig = IsMainnet ? MainNearConfig : TestNearConfig;
+import {NEAR_CONFIG as NearConfig} from './config';
 
 export const NearContext = React.createContext({
   inited: false,

@@ -1,4 +1,4 @@
-import {useNear, NearConfig} from '../near-connect/useNear';
+import {useNear} from '../near-connect/useNear';
 
 export function useNearAuth() {
   const near = useNear();
