@@ -2,7 +2,7 @@ import React from 'react';
 import './Input.scss';
 import classNames from 'classnames';
 
-export function Input({ children, error, ...rest }) {
+export function Input({children, error, ...rest}) {
   const borderColor = error ? 'twind-border-red-400' : 'twind-border-border';
   return (
     <label

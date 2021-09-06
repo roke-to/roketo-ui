@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { useNear } from '../features/near-connect/useNear';
+import React, {useState} from 'react';
+import {useNear} from '../features/near-connect/useNear';
 import useSWR from 'swr';
-import { fromNear, fromTaras } from '../components/Helpers';
-import { StreamControls } from '../features/stream-control/StreamControls';
-import { NEAR, loader, TARAS } from '../components/Helpers';
+import {fromNear, fromTaras} from '../components/Helpers';
+import {StreamControls} from '../features/stream-control/StreamControls';
+import {NEAR, loader, TARAS} from '../components/Helpers';
 
 export function MyStreamsPage() {
   const near = useNear();
   const [token, setToken] = useState('NEAR');
   const [showButtons, setShowButtons] = useState(true);
 
-  const { data: account } = useSWR(
+  const {data: account} = useSWR(
     ['account', near.near.accountId],
     near.contractApi.getCurrentAccount,
     {
@@ -51,7 +51,7 @@ export function MyStreamsPage() {
             ),
           ) + '000000000000000';
         const res = await near.near.contract.deposit(
-          { stream_id: stream.stream_id },
+          {stream_id: stream.stream_id},
           '200000000000000',
           deposit,
         );
@@ -84,7 +84,7 @@ export function MyStreamsPage() {
     return (
       <div
         className="card"
-        style={{ width: '90%', margin: '15px', backgroundColor: '#141414' }}
+        style={{width: '90%', margin: '15px', backgroundColor: '#141414'}}
         key={id}
       >
         <div className="card-body">
@@ -135,7 +135,7 @@ export function MyStreamsPage() {
         <h4>Streams owned by you</h4>
         <div
           className="card"
-          style={{ width: '90%', margin: '15px', backgroundColor: '#181818' }}
+          style={{width: '90%', margin: '15px', backgroundColor: '#181818'}}
         >
           <div className="card-body">
             <div className="d-flex flex-row justify-content-between w-100">
@@ -156,7 +156,7 @@ export function MyStreamsPage() {
 
       <div
         className="card"
-        style={{ width: '90%', margin: '15px', backgroundColor: '#141414' }}
+        style={{width: '90%', margin: '15px', backgroundColor: '#141414'}}
       >
         <div className="card-body">
           <h5 className="card-title">Deposit tokens</h5>
@@ -199,7 +199,7 @@ export function MyStreamsPage() {
                 id="depositTokensInput"
                 placeholder="0.03"
                 describedby="basic-addon2"
-                style={{ backgroundColor: '#101010', color: '#e0e0e0' }}
+                style={{backgroundColor: '#101010', color: '#e0e0e0'}}
               />
             </div>
 

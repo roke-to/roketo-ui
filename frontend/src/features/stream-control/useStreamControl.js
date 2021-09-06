@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNear } from '../near-connect/useNear';
+import {useNear} from '../near-connect/useNear';
 
 export function useStreamControl(streamId) {
   const near = useNear();
@@ -8,7 +8,7 @@ export function useStreamControl(streamId) {
   async function pause(output) {
     console.log('pausing', output);
     const res = await near.near.contract.pause_stream(
-      { stream_id: streamId },
+      {stream_id: streamId},
       '200000000000000',
       1,
     );
@@ -20,7 +20,7 @@ export function useStreamControl(streamId) {
   async function restart(output) {
     console.log('restarting', output);
     const res = await near.near.contract.restart_stream(
-      { stream_id: streamId },
+      {stream_id: streamId},
       '200000000000000',
       1,
     );
@@ -32,7 +32,7 @@ export function useStreamControl(streamId) {
   async function stop(output) {
     console.log('stopping', output);
     const res = await near.near.contract.stop_stream(
-      { stream_id: streamId },
+      {stream_id: streamId},
       '200000000000000',
       1,
     );

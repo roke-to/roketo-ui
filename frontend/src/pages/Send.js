@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import useSWR from 'swr';
 
-import { NEAR, loader, TARAS } from '../components/Helpers';
-import { FormField, Input, Button } from '../components/kit';
-import { useNear } from '../features/near-connect/useNear';
+import {NEAR, loader, TARAS} from '../components/Helpers';
+import {FormField, Input, Button} from '../components/kit';
+import {useNear} from '../features/near-connect/useNear';
 
 function SendPage() {
   const near = useNear();
@@ -63,14 +63,14 @@ function SendPage() {
       if (!profileId) {
         return [];
       }
-      return await near.near.contract.get_account({ account_id: profileId });
+      return await near.near.contract.get_account({account_id: profileId});
     } catch (e) {
       console.log('near error', e);
     }
     return [];
   };
 
-  const { data: account } = useSWR(['account', profileId], fetchAccount, {
+  const {data: account} = useSWR(['account', profileId], fetchAccount, {
     errorRetryInterval: 250,
   });
   const outputs = account && account.outputs ? account.outputs : [];

@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import * as nearAPI from 'near-api-js';
-import { NearContractApi } from './near-contract-api';
+import {NearContractApi} from './near-contract-api';
 
 const IsMainnet = window.location.hostname === '(xyiming)'; // TODO
 const TestNearConfig = {
@@ -44,7 +44,7 @@ export const NearContext = React.createContext({
 async function createNearInstance() {
   const keyStore = new nearAPI.keyStores.BrowserLocalStorageKeyStore();
   const near = await nearAPI.connect(
-    Object.assign({ deps: { keyStore } }, NearConfig),
+    Object.assign({deps: {keyStore}}, NearConfig),
   );
 
   const _near = {

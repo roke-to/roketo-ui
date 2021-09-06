@@ -1,7 +1,7 @@
 import React from 'react';
-import { useStreamControl } from './useStreamControl';
+import {useStreamControl} from './useStreamControl';
 
-export function StreamControls({ output }) {
+export function StreamControls({output}) {
   const controls = useStreamControl(output.stream_id);
 
   if (controls.loading) {
