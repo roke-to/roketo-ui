@@ -19,6 +19,7 @@ export function MyStreamsPage() {
   );
 
   const outputs = account && account.outputs ? account.outputs : [];
+  console.log('accout', account);
   console.log('outputs', outputs);
 
   const depositList = account
@@ -82,6 +83,20 @@ export function MyStreamsPage() {
   }
 
   const outputsTable = outputs.map((output, id) => {
+    const history = output.history.map((record, id) => {
+      return (
+        <div className="d-flex flex-row justify-content-between w-100">
+          <div>{record.actor}</div>
+          <div>{record.action_type}</div>
+          {record.amount ? (
+            <div>{fromNear(record.amount).toFixed(2)}</div>
+          ) : (
+            <div />
+          )}
+          <div>{record.timestamp}</div>
+        </div>
+      );
+    });
     return (
       <div
         className="card"
@@ -125,6 +140,14 @@ export function MyStreamsPage() {
               <StreamControls output={output} />
             </div>
           </div>
+          <div className="h2">History</div>
+          <strong className="d-flex flex-row justify-content-between w-100">
+            <div>Actor</div>
+            <div>Action</div>
+            <div>Amount</div>
+            <div>Timestamp</div>
+          </strong>
+          {history}
         </div>
       </div>
     );

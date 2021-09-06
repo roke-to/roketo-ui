@@ -11,7 +11,7 @@ pub struct Stream {
     pub tokens_per_tick: Balance,
     pub auto_deposit_enabled: bool,
     pub status: StreamStatus,
-    //pub history: Vector<Action>,
+    pub history: Vector<Action>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -27,8 +27,8 @@ pub struct StreamView {
     pub tokens_per_tick: WrappedBalance,
     pub auto_deposit_enabled: bool,
     pub status: String,
-    //pub history: Vec<Action>,
     pub available_to_withdraw: WrappedBalance,
+    pub history: Vec<ActionView>,
 }
 
 impl From<&Stream> for StreamView {
@@ -49,6 +49,7 @@ impl From<&Stream> for StreamView {
                     Xyiming::accounts().get(&s.receiver_id).unwrap().last_action,
                 )
                 .into(),
+            history: s.history.iter().map(|a| (&a).into()).collect(),
         }
     }
 }
@@ -67,35 +68,47 @@ impl Stream {
             .as_slice()
             .try_into()
             .unwrap();
-        Xyiming::streams().insert(
-            &stream_id,
-            &Self {
-                description,
-                owner_id,
-                receiver_id,
-                token_id,
-                timestamp_created: env::block_timestamp(),
-                balance: initial_balance,
-                tokens_per_tick,
-                auto_deposit_enabled,
-                status: if initial_balance > 0 {
-                    StreamStatus::Active
-                } else {
-                    StreamStatus::Initialized
-                },
+        let mut prefix = Vec::with_capacity(33);
+        prefix.push(b'h');
+        prefix.extend(stream_id);
+        let mut stream = Self {
+            description,
+            owner_id,
+            receiver_id,
+            token_id,
+            timestamp_created: env::block_timestamp(),
+            balance: initial_balance,
+            tokens_per_tick,
+            auto_deposit_enabled,
+            status: if initial_balance > 0 {
+                StreamStatus::Active
+            } else {
+                StreamStatus::Initialized
             },
-        );
+            history: Vector::new(prefix),
+        };
+        stream.add_action(ActionType::Init);
+        if initial_balance > 0 {
+            stream.add_action(ActionType::Deposit(initial_balance));
+            stream.add_action(ActionType::Start);
+        }
+        Xyiming::streams().insert(&stream_id, &stream);
         stream_id
     }
 
     pub(crate) fn process_withdraw(&mut self, last_action: Timestamp) -> Balance {
         let payment = std::cmp::min(self.balance, self.get_amount_since_last_action(last_action));
-        // TODO update history: self.tokens_transferred += payment
+        self.add_action(ActionType::Withdraw(payment));
         if self.balance > payment {
             self.balance -= payment;
         } else {
             self.balance = 0;
             self.status = StreamStatus::Finished;
+            if self.auto_deposit_enabled {
+                self.auto_deposit_enabled = false;
+                self.add_action(ActionType::DisableAutoDeposit);
+            }
+            self.add_action(ActionType::Stop);
         }
         payment
     }
@@ -106,6 +119,14 @@ impl Stream {
         }
         let period = (env::block_timestamp() - last_action) as Balance;
         self.tokens_per_tick * period
+    }
+
+    pub(crate) fn add_action(&mut self, action_type: ActionType) {
+        self.history.push(&Action {
+            actor: env::predecessor_account_id(),
+            action_type,
+            timestamp: env::block_timestamp(),
+        });
     }
 }
 

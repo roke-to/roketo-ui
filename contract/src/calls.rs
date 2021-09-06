@@ -129,6 +129,7 @@ impl Xyiming {
         // TODO process promise failure
 
         let mut stream = Self::extract_stream_or_panic(&stream_id);
+        stream.add_action(ActionType::Start);
         stream.status = StreamStatus::Active;
         Self::streams().insert(&stream_id, &stream);
     }
@@ -162,6 +163,7 @@ impl Xyiming {
         let mut stream = Self::extract_stream_or_panic(&stream_id);
         if !stream.status.is_terminated() {
             // Only actual steams can be paused
+            stream.add_action(ActionType::Pause);
             stream.status = StreamStatus::Paused;
         }
         Self::streams().insert(&stream_id, &stream);
@@ -200,7 +202,13 @@ impl Xyiming {
             } else {
                 stream.status = StreamStatus::Finished;
             }
+            stream.add_action(ActionType::Refund(stream.balance));
             Self::build_promise(stream.token_id, stream.owner_id.clone(), stream.balance);
+            if stream.auto_deposit_enabled {
+                stream.auto_deposit_enabled = false;
+                stream.add_action(ActionType::DisableAutoDeposit);
+            }
+            stream.add_action(ActionType::Stop);
             stream.balance = 0;
             // TODO process promise failure
         }
