@@ -44,11 +44,7 @@ impl From<&Stream> for StreamView {
             tokens_per_tick: s.tokens_per_tick.into(),
             auto_deposit_enabled: s.auto_deposit_enabled,
             status: s.status.to_string(),
-            available_to_withdraw: s
-                .get_amount_since_last_action(
-                    Xyiming::accounts().get(&s.receiver_id).unwrap().last_action,
-                )
-                .into(),
+            available_to_withdraw: std::cmp::min(s.balance, s.get_amount_since_last_action(Xyiming::accounts().get(&s.receiver_id).unwrap().last_action)).into(),
             history: s.history.iter().map(|a| (&a).into()).collect(),
         }
     }
