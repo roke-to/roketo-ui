@@ -11,6 +11,7 @@ pub struct Stream {
     pub tokens_per_tick: Balance,
     pub auto_deposit_enabled: bool,
     pub status: StreamStatus,
+    pub tokens_total_withdrawn: Balance,
     pub history: Vector<Action>,
 }
 
@@ -27,6 +28,7 @@ pub struct StreamView {
     pub tokens_per_tick: WrappedBalance,
     pub auto_deposit_enabled: bool,
     pub status: String,
+    pub tokens_total_withdrawn: WrappedBalance,
     pub available_to_withdraw: WrappedBalance,
     pub history: Vec<ActionView>,
 }
@@ -44,8 +46,9 @@ impl From<&Stream> for StreamView {
             tokens_per_tick: s.tokens_per_tick.into(),
             auto_deposit_enabled: s.auto_deposit_enabled,
             status: s.status.to_string(),
+            tokens_total_withdrawn: s.tokens_total_withdrawn.into(),
             available_to_withdraw: std::cmp::min(s.balance, s.get_amount_since_last_action(Xyiming::accounts().get(&s.receiver_id).unwrap().last_action)).into(),
-            history: s.history.iter().map(|a| (&a).into()).collect(),
+            history: s.history.to_vec().iter().rev().take(MAX_HISTORY_RECORDS).map(|a| (a).into()).rev().collect(),
         }
     }
 }
@@ -81,6 +84,7 @@ impl Stream {
             } else {
                 StreamStatus::Initialized
             },
+            tokens_total_withdrawn: 0,
             history: Vector::new(prefix),
         };
         stream.add_action(ActionType::Init);
@@ -95,6 +99,7 @@ impl Stream {
     pub(crate) fn process_withdraw(&mut self, last_action: Timestamp) -> Balance {
         let payment = std::cmp::min(self.balance, self.get_amount_since_last_action(last_action));
         self.add_action(ActionType::Withdraw(payment));
+        self.tokens_total_withdrawn += payment;
         if self.balance > payment {
             self.balance -= payment;
         } else {

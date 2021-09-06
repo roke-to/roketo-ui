@@ -29,7 +29,7 @@ class Xyiming {
     return await contract.storage_deposit(
       {},
       100000000000000,
-      "1000000000000000000000"
+      "10000000000000000000000"
     );
   }
 
@@ -39,7 +39,7 @@ class Xyiming {
     console.log(await this.storageDeposit(account));
   }
 
-  async createStream(accountId) {
+  async createStream(accountId, otherAccountId) {
     const account = await new nearApiJs.Account(this.connection, CONTRACT_ID);
     const contract = new nearApiJs.Contract(account, CONTRACT_ID, {
       viewMethods: ["get_account", "get_stream"],
@@ -56,10 +56,10 @@ class Xyiming {
       await contract.create_stream(
         {
           description: "test stream",
-          owner_id: "kpr.testnet",
+          owner_id: otherAccountId,
           receiver_id: accountId,
           token_name: "NEAR",
-          tokens_per_tick: "1000000000000",
+          tokens_per_tick: "100000000000",
           auto_deposit_enabled: false,
         },
         300000000000000,
@@ -71,9 +71,9 @@ class Xyiming {
         {
           description: "test stream",
           owner_id: accountId,
-          receiver_id: "kpr.testnet",
+          receiver_id: otherAccountId,
           token_name: "NEAR",
-          tokens_per_tick: "1000000000000",
+          tokens_per_tick: "100000000000",
           auto_deposit_enabled: false,
         },
         300000000000000,

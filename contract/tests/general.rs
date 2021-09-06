@@ -459,6 +459,7 @@ fn withdraw_all() {
 
     let stream = state.view_stream(&stream_id).unwrap();
     assert!(stream.balance == 0.into());
+    assert!(stream.tokens_total_withdrawn == (20 * ONE_NEAR).into());
     assert!(stream.status == "FINISHED");
 
     assert!(bob.account().unwrap().amount == alice.account().unwrap().amount + 20 * ONE_NEAR);

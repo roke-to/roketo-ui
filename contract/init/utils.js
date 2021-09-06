@@ -8,7 +8,7 @@ const NETWORK_ID = "testnet";
 const NODE_URL = "https://rpc.testnet.near.org";
 
 const FT_TOKEN = "dev-1630798753809-34755859843881";
-const CONTRACT_ID = "dev-1630942664130-98316003426399";
+const CONTRACT_ID = "dev-1630964633889-96006156236045";
 
 function getCredentialsPath() {
   return path.join(homedir, CREDENTIALS_DIR);
