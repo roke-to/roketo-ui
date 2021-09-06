@@ -76,6 +76,7 @@ impl Xyiming {
         let mut stream = Self::extract_stream_or_panic(&stream_id);
         assert!(stream.token_id == NEAR_TOKEN_ID, "{}", ERR_NOT_NEAR_TOKEN);
         stream.balance += env::attached_deposit();
+        stream.add_action(ActionType::Deposit(env::attached_deposit()));
 
         Self::streams().insert(&stream_id, &stream);
     }
@@ -87,6 +88,7 @@ impl Xyiming {
         let mut stream = Self::extract_stream_or_panic(&stream_id);
         assert!(stream.token_id != NEAR_TOKEN_ID, "{}", ERR_NOT_FT_TOKEN);
         stream.balance += Balance::from(amount);
+        stream.add_action(ActionType::Deposit(amount.into()));
 
         Self::streams().insert(&stream_id, &stream);
     }

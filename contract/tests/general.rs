@@ -886,6 +886,11 @@ fn stream_history_sanity() {
     assert!(stream.history.len() == 7);
     assert!(stream.history[6].action_type == "Start");
 
+    state.do_deposit(&stream_id, 123 * ONE_NEAR, None);
+    let stream = state.view_stream(&stream_id).unwrap();
+    assert!(stream.history.len() == 8);
+    assert!(stream.history[7].action_type == "Deposit");
+
     let outcome = call!(
         bob,
         contract.create_stream(
