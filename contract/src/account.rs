@@ -124,7 +124,7 @@ impl Account {
                 }
                 if tokens_left.get(&output_stream.token_id).is_none() {
                     output_stream.auto_deposit_enabled = false;
-                    // TODO upd history here
+                    output_stream.add_action(ActionType::DisableAutoDeposit);
                     Xyiming::streams().insert(&output_stream_id, &output_stream);
                     continue;
                 }
@@ -132,12 +132,12 @@ impl Account {
                 let current_tokens_left = *tokens_left.get(&output_stream.token_id).unwrap();
                 if deposit_needed > current_tokens_left {
                     output_stream.auto_deposit_enabled = false;
-                    // TODO upd history here
+                    output_stream.add_action(ActionType::DisableAutoDeposit);
                     Xyiming::streams().insert(&output_stream_id, &output_stream);
                     continue;
                 }
-                // TODO upd history here
                 output_stream.balance += deposit_needed;
+                output_stream.add_action(ActionType::Deposit(deposit_needed));
                 tokens_left.insert(output_stream.token_id, current_tokens_left - deposit_needed);
                 Xyiming::streams().insert(&output_stream_id, &output_stream);
             }

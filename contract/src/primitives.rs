@@ -16,6 +16,7 @@ pub const CREATE_STREAM_DEPOSIT: Balance = 100_000_000_000_000_000_000_000; // 0
 pub const ONE_YOCTO: Balance = 1;
 pub const ONE_NEAR: Balance = 1_000_000_000_000_000_000_000_000; // 1 NEAR
 pub const MAX_TEXT_FIELD: usize = 255;
+pub const MAX_HISTORY_RECORDS: usize = 5;
 pub const GAS_FOR_FT_TRANSFER: Gas = 10_000_000_000_000;
 
 pub type StreamId = CryptoHash;
@@ -57,6 +58,57 @@ impl StreamStatus {
             StreamStatus::Paused => false,
             StreamStatus::Interrupted => true,
             StreamStatus::Finished => true,
+        }
+    }
+}
+
+#[derive(BorshDeserialize, BorshSerialize)]
+pub enum ActionType {
+    Init,
+    Deposit(Balance),
+    Withdraw(Balance),
+    Refund(Balance),
+    Start,
+    Pause,
+    Stop,
+    EnableAutoDeposit,
+    DisableAutoDeposit,
+}
+
+#[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
+pub struct Action {
+    pub actor: AccountId,
+    pub action_type: ActionType,
+    pub timestamp: Timestamp,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[serde(crate = "near_sdk::serde")]
+pub struct ActionView {
+    pub actor: String,
+    pub action_type: String,
+    pub amount: Option<WrappedBalance>,
+    pub timestamp: WrappedTimestamp,
+}
+
+impl From<&Action> for ActionView {
+    fn from(a: &Action) -> Self {
+        let (action_type, amount) = match a.action_type {
+            ActionType::Init => ("Init".to_string(), None),
+            ActionType::Deposit(amount) => ("Deposit".to_string(), Some(amount)),
+            ActionType::Withdraw(amount) => ("Withdraw".to_string(), Some(amount)),
+            ActionType::Refund(amount) => ("Refund".to_string(), Some(amount)),
+            ActionType::Start => ("Start".to_string(), None),
+            ActionType::Pause => ("Pause".to_string(), None),
+            ActionType::Stop => ("Stop".to_string(), None),
+            ActionType::EnableAutoDeposit => ("Auto-deposit enabled".to_string(), None),
+            ActionType::DisableAutoDeposit => ("Auto-deposit disabled".to_string(), None),
+        };
+        Self {
+            actor: a.actor.clone(),
+            action_type,
+            amount: amount.map(|a| a.into()),
+            timestamp: a.timestamp.into(),
         }
     }
 }

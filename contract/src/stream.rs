@@ -11,7 +11,8 @@ pub struct Stream {
     pub tokens_per_tick: Balance,
     pub auto_deposit_enabled: bool,
     pub status: StreamStatus,
-    //pub history: Vector<Action>,
+    pub tokens_total_withdrawn: Balance,
+    pub history: Vector<Action>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -27,8 +28,9 @@ pub struct StreamView {
     pub tokens_per_tick: WrappedBalance,
     pub auto_deposit_enabled: bool,
     pub status: String,
-    //pub history: Vec<Action>,
+    pub tokens_total_withdrawn: WrappedBalance,
     pub available_to_withdraw: WrappedBalance,
+    pub history: Vec<ActionView>,
 }
 
 impl From<&Stream> for StreamView {
@@ -44,11 +46,9 @@ impl From<&Stream> for StreamView {
             tokens_per_tick: s.tokens_per_tick.into(),
             auto_deposit_enabled: s.auto_deposit_enabled,
             status: s.status.to_string(),
-            available_to_withdraw: s
-                .get_amount_since_last_action(
-                    Xyiming::accounts().get(&s.receiver_id).unwrap().last_action,
-                )
-                .into(),
+            tokens_total_withdrawn: s.tokens_total_withdrawn.into(),
+            available_to_withdraw: std::cmp::min(s.balance, s.get_amount_since_last_action(Xyiming::accounts().get(&s.receiver_id).unwrap().last_action)).into(),
+            history: s.history.to_vec().iter().rev().take(MAX_HISTORY_RECORDS).map(|a| (a).into()).rev().collect(),
         }
     }
 }
@@ -67,35 +67,49 @@ impl Stream {
             .as_slice()
             .try_into()
             .unwrap();
-        Xyiming::streams().insert(
-            &stream_id,
-            &Self {
-                description,
-                owner_id,
-                receiver_id,
-                token_id,
-                timestamp_created: env::block_timestamp(),
-                balance: initial_balance,
-                tokens_per_tick,
-                auto_deposit_enabled,
-                status: if initial_balance > 0 {
-                    StreamStatus::Active
-                } else {
-                    StreamStatus::Initialized
-                },
+        let mut prefix = Vec::with_capacity(33);
+        prefix.push(b'h');
+        prefix.extend(stream_id);
+        let mut stream = Self {
+            description,
+            owner_id,
+            receiver_id,
+            token_id,
+            timestamp_created: env::block_timestamp(),
+            balance: initial_balance,
+            tokens_per_tick,
+            auto_deposit_enabled,
+            status: if initial_balance > 0 {
+                StreamStatus::Active
+            } else {
+                StreamStatus::Initialized
             },
-        );
+            tokens_total_withdrawn: 0,
+            history: Vector::new(prefix),
+        };
+        stream.add_action(ActionType::Init);
+        if initial_balance > 0 {
+            stream.add_action(ActionType::Deposit(initial_balance));
+            stream.add_action(ActionType::Start);
+        }
+        Xyiming::streams().insert(&stream_id, &stream);
         stream_id
     }
 
     pub(crate) fn process_withdraw(&mut self, last_action: Timestamp) -> Balance {
         let payment = std::cmp::min(self.balance, self.get_amount_since_last_action(last_action));
-        // TODO update history: self.tokens_transferred += payment
+        self.add_action(ActionType::Withdraw(payment));
+        self.tokens_total_withdrawn += payment;
         if self.balance > payment {
             self.balance -= payment;
         } else {
             self.balance = 0;
             self.status = StreamStatus::Finished;
+            if self.auto_deposit_enabled {
+                self.auto_deposit_enabled = false;
+                self.add_action(ActionType::DisableAutoDeposit);
+            }
+            self.add_action(ActionType::Stop);
         }
         payment
     }
@@ -106,6 +120,14 @@ impl Stream {
         }
         let period = (env::block_timestamp() - last_action) as Balance;
         self.tokens_per_tick * period
+    }
+
+    pub(crate) fn add_action(&mut self, action_type: ActionType) {
+        self.history.push(&Action {
+            actor: env::predecessor_account_id(),
+            action_type,
+            timestamp: env::block_timestamp(),
+        });
     }
 }
 
