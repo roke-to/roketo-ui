@@ -85,6 +85,14 @@ export function NearContractApi(near) {
     return res;
   }
 
+  async function getStream({streamId}) {
+    const res = await contract.get_stream({
+      stream_id: streamId,
+    });
+
+    return res;
+  }
+
   return {
     getCurrentAccount,
     getAccount,
@@ -93,5 +101,6 @@ export function NearContractApi(near) {
     pauseStream,
     startStream,
     stopStream,
+    getStream,
   };
 }
