@@ -1,7 +1,9 @@
 import classNames from 'classnames';
 import React from 'react';
+import useSWR from 'swr';
 import {StreamIn, StreamOut} from './icons';
 import {intervalToDuration, formatDuration} from 'date-fns';
+import {useNear} from '../features/near-connect/useNear';
 import {TokenFormatter} from '../lib/formatting';
 
 const streamType = {
@@ -18,10 +20,23 @@ const streamType = {
   tokens_per_tick: '400000000000',
 };
 
-export function StreamCard({stream = streamType, direction, className}) {
+export function StreamCard({streamId, direction, className}) {
+  const near = useNear();
+  const {data: stream_data} = useSWR(
+    ['stream', streamId],
+    near.contractApi.getStream,
+    {
+      errorRetryInterval: 1000,
+    },
+  );
+
+  const stream = stream_data || streamType;
+  console.log('stream_data', stream_data);
+  console.log('stream', stream);
+
   const tf = TokenFormatter(stream.token_name);
 
-  const secondsLeft = tf.ticksToMs(
+  /*const secondsLeft = tf.ticksToMs(
     Math.round(
       (stream.balance - stream.available_to_withdraw) / stream.tokens_per_tick,
     ),
@@ -29,7 +44,7 @@ export function StreamCard({stream = streamType, direction, className}) {
 
   const dateEnd = new Date(new Date().getTime() + secondsLeft);
   const duration = intervalToDuration({start: new Date(), end: dateEnd});
-  const formatted = formatDuration(duration);
+  const formatted = formatDuration(duration);*/
 
   return (
     <div
@@ -43,7 +58,7 @@ export function StreamCard({stream = streamType, direction, className}) {
           <div className="twind-w-8 twind-h-8 twind-rounded-lg twind-bg-card2 twind-inline-flex twind-items-center twind-justify-center twind-mr-4">
             I
           </div>
-          <div className="twind-flex twind-items-end">
+          {/*<div className="twind-flex twind-items-end">
             <div className="twind-text-2xl">
               {tf.amount(stream.available_to_withdraw)} of{' '}
               {tf.amount(stream.balance)}{' '}
@@ -59,7 +74,7 @@ export function StreamCard({stream = streamType, direction, className}) {
             </div>
 
             <div className="twind-ml-6">{formatted}</div>
-          </div>
+      </div>*/}
         </div>
       </div>
     </div>

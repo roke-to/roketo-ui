@@ -12,13 +12,6 @@ export function MyStreamsPage() {
   const [token, setToken] = useState('NEAR');
   const [filteredItems, setFiltered] = useState([]);
 
-  const isIncomingStream = (stream) => {
-    if (stream.owner_id === near.near.accountId) {
-      return false;
-    }
-    return true;
-  };
-
   const {data: account} = useSWR(
     ['account', near.near.accountId],
     near.contractApi.getCurrentAccount,
@@ -28,9 +21,7 @@ export function MyStreamsPage() {
   );
 
   const inputs = (account && account.inputs) || __INPUTS;
-  inputs.forEach((input) => (input.direction = 'in'));
   const outputs = (account && account.outputs) || __OUTPUTS;
-  outputs.forEach((output) => (output.direction = 'out'));
 
   const allStreams = useMemo(() => inputs.concat(outputs), [inputs, outputs]);
 
@@ -45,7 +36,7 @@ export function MyStreamsPage() {
     e.preventDefault();
     var selectBox = document.getElementById('selectBox');
     if (selectBox.selectedIndex > 0) {
-      const stream = outputs[selectBox.selectedIndex - 1];
+      const streamId = outputs[selectBox.selectedIndex - 1];
       if (token === 'NEAR') {
         const deposit =
           String(
@@ -55,7 +46,7 @@ export function MyStreamsPage() {
             ),
           ) + '000000000000000';
         const res = await near.near.contract.deposit(
-          {stream_id: stream.stream_id},
+          {stream_id: streamId},
           '200000000000000',
           deposit,
         );
@@ -73,7 +64,7 @@ export function MyStreamsPage() {
             receiver_id: near.near.near.config.contractName,
             amount: deposit,
             memo: 'xyiming transfer',
-            msg: stream.stream_id,
+            msg: streamId,
           },
           '200000000000000',
           1,
@@ -136,12 +127,8 @@ export function MyStreamsPage() {
     <div className="twind-container twind-p-12">
       <h1 className="twind-text-3xl twind-mb-12">All Streams</h1>
       <StreamFilters items={allStreams} onFilterDone={setFiltered} />
-      {filteredItems.map((stream) => (
-        <StreamCard
-          stream={stream}
-          className="twind-mb-4"
-          direction={isIncomingStream(stream) ? 'in' : 'out'}
-        />
+      {filteredItems.map((streamId) => (
+        <StreamCard streamId={streamId} className="twind-mb-4" />
       ))}
     </div>
   );
