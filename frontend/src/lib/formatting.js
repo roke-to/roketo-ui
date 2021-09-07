@@ -1,6 +1,6 @@
 import numbro from 'numbro';
 
-const tokens = {
+export const tokens = {
   NEAR: {
     decimals: 24,
   },
