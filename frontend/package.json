@@ -5,8 +5,10 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.2.0",
+    "bignumber.js": "^9.0.1",
     "bootstrap": "^5.0.0-beta2",
     "classnames": "^2.3.1",
+    "date-fns": "^2.23.0",
     "dotenv": "^10.0.0",
     "error-polyfill": "^0.1.2",
     "faker": "^5.5.3",
@@ -15,6 +17,7 @@
     "near-api-js": "^0.37.0",
     "near-seed-phrase": "^0.1.1",
     "node-sass": "^4.0.0",
+    "numbro": "^2.3.5",
     "react": "^16.13.1",
     "react-bootstrap": "^1.5.2",
     "react-dom": "^16.13.1",
@@ -35,7 +38,11 @@
     "extends": "react-app"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
