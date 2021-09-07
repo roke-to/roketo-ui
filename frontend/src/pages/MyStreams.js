@@ -3,6 +3,7 @@ import {useNear} from '../features/near-connect/useNear';
 import useSWR from 'swr';
 import {StreamCard} from '../components/StreamCard';
 import {StreamFilters} from '../features/filtering/streams';
+import {Button} from '../components/kit';
 
 const __INPUTS = [];
 const __OUTPUTS = [];
@@ -10,7 +11,19 @@ const __OUTPUTS = [];
 export function MyStreamsPage() {
   const near = useNear();
   const [token, setToken] = useState('NEAR');
+  const [showBtn, setShowBtn] = useState(true);
   const [filteredItems, setFiltered] = useState([]);
+
+  async function updateWithdrawClick(e) {
+    e.preventDefault();
+
+    setShowBtn(false);
+    const res = await near.contractApi.updateAccount({
+      accountId: near.near.accountId,
+    });
+
+    console.log('create res', res);
+  }
 
   const isIncomingStream = (stream) => {
     if (stream.owner_id === near.near.accountId) {
@@ -106,6 +119,16 @@ export function MyStreamsPage() {
         onFilterDone={setFiltered}
         className="twind-mb-10"
       />
+      <form
+        className="twind-max-w-lg twind-mx-auto twind-w-full"
+        onSubmit={(e) => updateWithdrawClick(e)}
+      >
+        <div className="twind-flex">
+          <Button variant="main" className="twind-mx-auto" disabled={!showBtn}>
+            {showBtn ? 'Update streams and withdraw' : 'Molodec'}
+          </Button>
+        </div>
+      </form>
       {filteredItems.map((stream) => (
         <StreamCard
           stream={stream}
