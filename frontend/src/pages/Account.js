@@ -28,13 +28,6 @@ export function AccountPage() {
     },
   );
 
-  const inputs = (account && account.inputs) || __INPUTS;
-  inputs.forEach((input) => (input.direction = 'in'));
-  const outputs = (account && account.outputs) || __OUTPUTS;
-  outputs.forEach((output) => (output.direction = 'out'));
-
-  const allStreams = useMemo(() => inputs.concat(outputs), [inputs, outputs]);
-
   console.log('ACCOUNT', account);
 
   return (
