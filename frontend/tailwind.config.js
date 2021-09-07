@@ -13,6 +13,8 @@ module.exports = {
         border: '#45426D',
         border2: '#413E61', // delimiteres
         hover: '#0D0B26',
+
+        card2: '#353354',
       },
     },
   },

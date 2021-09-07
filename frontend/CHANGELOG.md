@@ -1,3 +1,8 @@
+# v0.1.2, September 7, 2021
+- New DesignKit Components: `DropdownMenu`, `Filter`, `RadioButton`
+- WIP design for streams page
+- Install Numbro & BigInt for working with numbers
+  
 # v0.1.1, September 6, 2021
 
 
