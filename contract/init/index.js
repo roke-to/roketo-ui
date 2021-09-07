@@ -13,7 +13,7 @@ const xyiming = new Xyiming();
 
 async function run(accountId) {
   await xyiming.init();
-  await xyiming.initContract();
+  //await xyiming.initContract();
   accounts = [
     "ololo.testnet",
     "pinkinice.testnet",
@@ -24,7 +24,14 @@ async function run(accountId) {
     "teke97.testnet",
   ];
   for (i = 0; i < accounts.length; i++) {
-    await xyiming.createStream(accounts[i], "kpr.testnet");
+      while(true) {
+          try {
+            await xyiming.createStream(accounts[i], "kpr.testnet");
+              break
+          } catch(e) {
+              console.log(e)
+          }
+      }
   }
 }
 
@@ -48,4 +55,4 @@ async function run2(accountId) {
   }
 }
 
-run2();
+run();

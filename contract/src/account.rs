@@ -11,7 +11,9 @@ pub struct Account {
 
     pub last_action: Timestamp,
 
-    pub total_received: UnorderedMap<TokenId, Balance>,
+    pub total_incoming: Vec<Balance>,
+    pub total_outgoing: Vec<Balance>,
+    pub total_received: Vec<Balance>,
 
     pub cron_calls_enabled: bool,
     // TODO add stats
@@ -21,8 +23,8 @@ pub struct Account {
 #[serde(crate = "near_sdk::serde")]
 pub struct AccountView {
     pub account_id: String,
-    pub inputs: Vec<StreamView>,
-    pub outputs: Vec<StreamView>,
+    pub inputs: Vec<StreamId>,
+    pub outputs: Vec<StreamId>,
     pub last_action: WrappedTimestamp,
     pub total_received: Vec<(String, WrappedBalance)>,
     pub total_incoming: Vec<(String, WrappedBalance)>,
@@ -32,56 +34,33 @@ pub struct AccountView {
 
 impl From<&Account> for AccountView {
     fn from(a: &Account) -> Self {
-        let streams = Xyiming::streams();
-        let mut tokens_incoming = HashMap::<TokenId, Balance>::new();
-        let mut tokens_outgoing = HashMap::<TokenId, Balance>::new();
-        let input_streams = a
-            .inputs
-            .iter()
-            .map(|x| {
-                let stream = streams.get(&x).unwrap();
-                let mut stream_view: StreamView = (&stream).into();
-                stream_view.stream_id = Some(x.into());
-                if stream.status == StreamStatus::Active {
-                    *tokens_incoming.entry(stream.token_id).or_insert(0) += stream.tokens_per_tick;
-                }
-                stream_view
-            })
-            .collect();
-        let output_streams = a
-            .outputs
-            .iter()
-            .map(|x| {
-                let stream = streams.get(&x).unwrap();
-                let mut stream_view: StreamView = (&stream).into();
-                stream_view.stream_id = Some(x.into());
-                if stream.status == StreamStatus::Active && stream.auto_deposit_enabled {
-                    *tokens_outgoing.entry(stream.token_id).or_insert(0) += stream.tokens_per_tick;
-                }
-                stream_view
-            })
-            .collect();
         Self {
             account_id: a.account_id.clone(),
-            inputs: input_streams,
-            outputs: output_streams,
+            inputs: a.inputs.to_vec(),
+            outputs: a.outputs.to_vec(),
             last_action: a.last_action.into(),
             total_received: a
                 .total_received
                 .iter()
-                .map(|(token_id, amount)| (Xyiming::get_token_name_by_id(token_id), amount.into()))
+                .enumerate()
+                .filter(|(_, &amount)| amount != 0)
+                .map(|(token_id, &amount)| (Xyiming::get_token_name_by_id(token_id as u32), amount.into()))
                 .collect(),
             cron_calls_enabled: a.cron_calls_enabled,
-            total_incoming: tokens_incoming
+            total_incoming: a.total_incoming
                 .iter()
-                .map(|(&token_id, &amount)| {
-                    (Xyiming::get_token_name_by_id(token_id), amount.into())
+                .enumerate()
+                .filter(|(_, &amount)| amount != 0)
+                .map(|(token_id, &amount)| {
+                    (Xyiming::get_token_name_by_id(token_id as u32), amount.into())
                 })
                 .collect(),
-            total_outgoing: tokens_outgoing
+            total_outgoing: a.total_outgoing
                 .iter()
-                .map(|(&token_id, &amount)| {
-                    (Xyiming::get_token_name_by_id(token_id), amount.into())
+                .enumerate()
+                .filter(|(_, &amount)| amount != 0)
+                .map(|(token_id, &amount)| {
+                    (Xyiming::get_token_name_by_id(token_id as u32), amount.into())
                 })
                 .collect(),
         }
@@ -103,6 +82,8 @@ impl Account {
     pub(crate) fn update_state(&mut self) -> Vec<Promise> {
         let mut tokens_left = HashMap::<TokenId, Balance>::new();
         if self.last_action != env::block_timestamp() {
+            self.total_incoming = vec![0; NUM_TOKENS];
+            self.total_outgoing = vec![0; NUM_TOKENS];
             for input_stream_id in self.inputs.iter() {
                 let mut input_stream = Xyiming::extract_stream_or_panic(&input_stream_id);
                 if input_stream.status != StreamStatus::Active {
@@ -110,6 +91,9 @@ impl Account {
                     continue;
                 }
                 let payment = input_stream.process_withdraw(self.last_action);
+                if input_stream.status == StreamStatus::Active {
+                    self.total_incoming[input_stream.token_id as usize] += input_stream.tokens_per_tick;
+                }
                 Xyiming::streams().insert(&input_stream_id, &input_stream);
                 tokens_left.insert(input_stream.token_id, payment);
             }
@@ -138,6 +122,7 @@ impl Account {
                 }
                 output_stream.balance += deposit_needed;
                 output_stream.add_action(ActionType::Deposit(deposit_needed));
+                self.total_outgoing[output_stream.token_id as usize] += output_stream.tokens_per_tick;
                 tokens_left.insert(output_stream.token_id, current_tokens_left - deposit_needed);
                 Xyiming::streams().insert(&output_stream_id, &output_stream);
             }
@@ -145,10 +130,7 @@ impl Account {
             self.last_action = env::block_timestamp();
 
             for (token_id, amount) in tokens_left.iter() {
-                self.total_received.insert(
-                    &token_id,
-                    &(self.total_received.get(&token_id).unwrap_or(0) + amount),
-                );
+                self.total_received[*token_id as usize] += *amount;
             }
 
             tokens_left
@@ -172,16 +154,15 @@ impl Xyiming {
             let mut prefix2 = Vec::with_capacity(33);
             prefix2.push(b'y');
             prefix2.extend(env::sha256(&account_id.as_bytes()));
-            let mut prefix3 = Vec::with_capacity(33);
-            prefix3.push(b'z');
-            prefix3.extend(env::sha256(&account_id.as_bytes()));
 
             Account {
                 account_id: account_id.into(),
                 inputs: UnorderedSet::new(prefix),
                 outputs: UnorderedSet::new(prefix2),
                 last_action: env::block_timestamp(),
-                total_received: UnorderedMap::new(prefix3),
+                total_incoming: vec![0; NUM_TOKENS],
+                total_outgoing: vec![0; NUM_TOKENS],
+                total_received: vec![0; NUM_TOKENS],
                 // TODO set false by default
                 cron_calls_enabled: true,
             }

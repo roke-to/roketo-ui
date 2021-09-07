@@ -4,7 +4,7 @@ use std::convert::TryInto;
 /// Import the generated proxy contract
 use xyiming::XyimingContract;
 use xyiming::{
-    AccountView, StreamView, CREATE_STREAM_DEPOSIT, ERR_ACCESS_DENIED, ERR_CANNOT_START_STREAM,
+    AccountView, ActionView, StreamView, CREATE_STREAM_DEPOSIT, ERR_ACCESS_DENIED, ERR_CANNOT_START_STREAM,
     ERR_DEPOSIT_NOT_ENOUGH, ERR_PAUSE_PAUSED, ERR_STREAM_NOT_AVAILABLE, ONE_NEAR, ONE_YOCTO,
 };
 
@@ -81,6 +81,12 @@ impl State {
     pub fn view_stream(&self, stream_id: &str) -> Option<StreamView> {
         let contract = &self.contract;
         let res = view!(contract.get_stream(stream_id.try_into().unwrap())).unwrap_json();
+        res
+    }
+
+    pub fn view_stream_history(&self, stream_id: &str) -> Vec<ActionView> {
+        let contract = &self.contract;
+        let res = view!(contract.get_stream_history(stream_id.try_into().unwrap(), 0, 100)).unwrap_json();
         res
     }
 
@@ -642,6 +648,7 @@ fn withdraw_overflow() {
 
     let alice_account = state.view_account(ALICE).unwrap();
     let bob_account = state.view_account(BOB).unwrap();
+    
     assert!(alice_account.total_outgoing == []);
     assert!(alice_account.total_incoming == []);
     assert!(bob_account.total_outgoing == []);
@@ -862,35 +869,40 @@ fn stream_history_sanity() {
 
     let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.history.len() == 3);
-    assert!(stream.history[0].action_type == "Init");
-    assert!(stream.history[1].action_type == "Deposit");
-    assert!(stream.history[2].action_type == "Start");
+    assert!(stream.history_len == 3);
+    let history = state.view_stream_history(&stream_id);
+    assert!(history[0].action_type == "Init");
+    assert!(history[1].action_type == "Deposit");
+    assert!(history[2].action_type == "Start");
 
     state.do_update_account(ALICE, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.history.len() == 3);
+    assert!(stream.history_len == 3);
 
     state.do_update_account(BOB, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.history.len() == 4);
-    assert!(stream.history[3].action_type == "Withdraw");
+    assert!(stream.history_len == 4);
+    let history = state.view_stream_history(&stream_id);
+    assert!(history[3].action_type == "Withdraw");
 
     state.do_pause(alice, &stream_id, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.history.len() == 6);
-    assert!(stream.history[4].action_type == "Withdraw");
-    assert!(stream.history[5].action_type == "Pause");
+    assert!(stream.history_len == 6);
+    let history = state.view_stream_history(&stream_id);
+    assert!(history[4].action_type == "Withdraw");
+    assert!(history[5].action_type == "Pause");
 
     state.do_start(&alice, &stream_id, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.history.len() == 7);
-    assert!(stream.history[6].action_type == "Start");
+    assert!(stream.history_len == 7);
+    let history = state.view_stream_history(&stream_id);
+    assert!(history[6].action_type == "Start");
 
     state.do_deposit(&stream_id, 123 * ONE_NEAR, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.history.len() == 8);
-    assert!(stream.history[7].action_type == "Deposit");
+    assert!(stream.history_len == 8);
+    let history = state.view_stream_history(&stream_id);
+    assert!(history[7].action_type == "Deposit");
 
     let outcome = call!(
         bob,
@@ -908,16 +920,19 @@ fn stream_history_sanity() {
     let stream_id: String = (&outcome.unwrap_json::<Base58CryptoHash>()).into();
 
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.history.len() == 3);
-    assert!(stream.history[0].action_type == "Init");
-    assert!(stream.history[1].action_type == "Deposit");
-    assert!(stream.history[2].action_type == "Start");
+    assert!(stream.history_len == 4);
+    let history = state.view_stream_history(&stream_id);
+    assert!(history[0].action_type == "Init");
+    assert!(history[1].action_type == "Auto-deposit enabled");
+    assert!(history[2].action_type == "Deposit");
+    assert!(history[3].action_type == "Start");
 
     state.do_update_account(BOB, None);
     let stream = state.view_stream(&stream_id).unwrap();
     assert!(stream.auto_deposit_enabled);
-    assert!(stream.history.len() == 4);
-    assert!(stream.history[3].action_type == "Deposit");
+    assert!(stream.history_len == 5);
+    let history = state.view_stream_history(&stream_id);
+    assert!(history[4].action_type == "Deposit");
 
     for _ in 0..10 {
         state.sdk_sim_tick_tock();
@@ -926,8 +941,9 @@ fn stream_history_sanity() {
     state.do_update_account(BOB, None);
     let stream = state.view_stream(&stream_id).unwrap();
     assert!(stream.auto_deposit_enabled);
-    assert!(stream.history.len() == 5);
-    assert!(stream.history[4].action_type == "Deposit");
+    assert!(stream.history_len == 6);
+    let history = state.view_stream_history(&stream_id);
+    assert!(history[5].action_type == "Deposit");
 
     for _ in 0..3 {
         state.sdk_sim_tick_tock();
@@ -936,20 +952,22 @@ fn stream_history_sanity() {
     state.do_update_account(ALICE, None);
     let stream = state.view_stream(&stream_id).unwrap();
     assert!(!stream.auto_deposit_enabled);
-    assert!(stream.history.len() == 8);
-    assert!(stream.history[5].action_type == "Withdraw");
-    assert!(stream.history[6].action_type == "Auto-deposit disabled");
-    assert!(stream.history[7].action_type == "Stop");
+    assert!(stream.history_len == 9);
+    let history = state.view_stream_history(&stream_id);
+    assert!(history[6].action_type == "Withdraw");
+    assert!(history[7].action_type == "Auto-deposit disabled");
+    assert!(history[8].action_type == "Stop");
 
     let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
 
     state.do_stop(&bob, &stream_id, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.history.len() == 6);
-    assert!(stream.history[0].action_type == "Init");
-    assert!(stream.history[1].action_type == "Deposit");
-    assert!(stream.history[2].action_type == "Start");
-    assert!(stream.history[3].action_type == "Withdraw");
-    assert!(stream.history[4].action_type == "Refund");
-    assert!(stream.history[5].action_type == "Stop");
+    assert!(stream.history_len == 6);
+    let history = state.view_stream_history(&stream_id);
+    assert!(history[0].action_type == "Init");
+    assert!(history[1].action_type == "Deposit");
+    assert!(history[2].action_type == "Start");
+    assert!(history[3].action_type == "Withdraw");
+    assert!(history[4].action_type == "Refund");
+    assert!(history[5].action_type == "Stop");
 }

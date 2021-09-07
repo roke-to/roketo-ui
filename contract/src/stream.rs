@@ -30,7 +30,7 @@ pub struct StreamView {
     pub status: String,
     pub tokens_total_withdrawn: WrappedBalance,
     pub available_to_withdraw: WrappedBalance,
-    pub history: Vec<ActionView>,
+    pub history_len: u64,
 }
 
 impl From<&Stream> for StreamView {
@@ -48,13 +48,14 @@ impl From<&Stream> for StreamView {
             status: s.status.to_string(),
             tokens_total_withdrawn: s.tokens_total_withdrawn.into(),
             available_to_withdraw: std::cmp::min(s.balance, s.get_amount_since_last_action(Xyiming::accounts().get(&s.receiver_id).unwrap().last_action)).into(),
-            history: s.history.to_vec().iter().rev().take(MAX_HISTORY_RECORDS).map(|a| (a).into()).rev().collect(),
+            history_len: s.history.len(),
         }
     }
 }
 
 impl Stream {
     pub(crate) fn new(
+        stream_id: StreamId,
         description: Option<String>,
         owner_id: AccountId,
         receiver_id: AccountId,
@@ -62,11 +63,7 @@ impl Stream {
         initial_balance: Balance,
         tokens_per_tick: Balance,
         auto_deposit_enabled: bool,
-    ) -> StreamId {
-        let stream_id = env::sha256(&env::block_index().to_be_bytes())
-            .as_slice()
-            .try_into()
-            .unwrap();
+    ) -> Stream {
         let mut prefix = Vec::with_capacity(33);
         prefix.push(b'h');
         prefix.extend(stream_id);
@@ -88,12 +85,15 @@ impl Stream {
             history: Vector::new(prefix),
         };
         stream.add_action(ActionType::Init);
+        if auto_deposit_enabled {
+            stream.add_action(ActionType::EnableAutoDeposit);
+        }
         if initial_balance > 0 {
             stream.add_action(ActionType::Deposit(initial_balance));
             stream.add_action(ActionType::Start);
         }
         Xyiming::streams().insert(&stream_id, &stream);
-        stream_id
+        stream
     }
 
     pub(crate) fn process_withdraw(&mut self, last_action: Timestamp) -> Balance {
