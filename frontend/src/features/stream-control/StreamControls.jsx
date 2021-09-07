@@ -71,10 +71,7 @@ export function StreamControls({stream}) {
         <DropdownMenuItem>
           <button
             className="twind-inline-flex twind-items-center"
-            onClick={() => {
-              console.log('BUTTON STOP CLICKED');
-              controls.stop();
-            }}
+            onClick={controls.stop}
           >
             <Stop className="twind-mr-2 twind-flex-shrink-0" />
             <span> Stop stream </span>

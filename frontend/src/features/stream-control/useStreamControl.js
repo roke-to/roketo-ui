@@ -7,7 +7,6 @@ export function useStreamControl(streamId) {
 
   async function deposit({deposit}) {
     console.log('depositing', streamId);
-    console.log(near.near.contract);
     await near.contractApi.depositStream({
       streamId,
       deposit,

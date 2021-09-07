@@ -60,7 +60,6 @@ function DurationTimer({untilDate}) {
       }
 
       const duration = intervalToDuration({start: new Date(), end: untilDate});
-      console.log(duration);
       setDuration(duration);
     }, 1000);
 
