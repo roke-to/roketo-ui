@@ -66,11 +66,17 @@ function DurationTimer({untilDate}) {
     return () => clearInterval(id);
   }, [untilDate, expired]);
 
-  const formatted = !duration
+  /*const formatted = !duration
     ? ''
     : formatDuration(duration, {
         locale: shortEnLocale,
-      }) + ' remaining';
+      }) + ' remaining';*/
+
+  const formatted = !duration
+    ? ''
+    : JSON.stringify(duration, (key, value) =>
+        value instanceof Map ? [...value] : value,
+      ) + ' remaining';
 
   return <span>{formatted}</span>;
 }
