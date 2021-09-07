@@ -20,6 +20,8 @@ export function TokenFormatter(tokenName) {
   const MP = Math.pow(10, token.decimals);
 
   return {
+    toInt: (floatValue) =>
+      numbro(floatValue).multiply(MP).format({mantissa: 0}),
     amount: (amount) =>
       numbro(amount).divide(MP).format({
         mantissa: 2,
