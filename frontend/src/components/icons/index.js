@@ -7,3 +7,5 @@ export * from './StreamIn';
 export * from './StreamOut';
 export * from './Account';
 export * from './StreamWithdraw';
+export * from './History';
+export * from './Cron';
