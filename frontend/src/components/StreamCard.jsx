@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import React from 'react';
-import numbro from 'numbro';
 import {StreamIn, StreamOut} from './icons';
 import {intervalToDuration, formatDuration} from 'date-fns';
+import {TokenFormatter} from '../lib/formatting';
 
 const streamType = {
   auto_deposit_enabled: false,
@@ -18,43 +18,8 @@ const streamType = {
   tokens_per_tick: '400000000000',
 };
 
-const tokens = {
-  NEAR: {
-    decimals: 24,
-  },
-  TARAS: {
-    decimals: 18,
-  },
-  fallback: {
-    decimals: 18,
-  },
-};
-
-const TokenFormatter = (token = tokens.fallback) => {
-  const TICK_TO_MS = Math.pow(10, 6);
-  const MP = Math.pow(10, token.decimals);
-
-  return {
-    amount: (amount) =>
-      numbro(amount).divide(MP).format({
-        mantissa: 2,
-      }),
-    perTick: (speed) =>
-      numbro(speed)
-        .multiply(TICK_TO_MS)
-        .divide(MP)
-        .format({
-          mantissa: token.decimals - 6,
-          trimMantissa: true,
-        }),
-    ticksToMs: (ticks) => Math.round(ticks / TICK_TO_MS),
-  };
-};
-
 export function StreamCard({stream = streamType, direction, className}) {
-  let token = tokens[stream.token_name] || tokens.fallback;
-
-  const tf = TokenFormatter(token);
+  const tf = TokenFormatter(stream.token_name);
 
   const secondsLeft = tf.ticksToMs(
     Math.round(
@@ -88,7 +53,7 @@ export function StreamCard({stream = streamType, direction, className}) {
             <div className="twind-inline-flex twind-items-center twind-ml-4">
               {direction === 'out' ? <StreamOut /> : <StreamIn />}
               <span className="twind-ml-2">
-                <span>@{tf.perTick(stream.tokens_per_tick)}</span>
+                <span>@{tf.tokensPerS(stream.tokens_per_tick)}</span>
                 <span> {stream.token_name} / Sec</span>
               </span>
             </div>

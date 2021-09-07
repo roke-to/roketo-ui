@@ -1,82 +1,16 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {useNear} from '../features/near-connect/useNear';
 import useSWR from 'swr';
-import {fromNear, fromTaras} from '../components/Helpers';
-import {StreamControls} from '../features/stream-control/StreamControls';
-import {NEAR, loader, TARAS} from '../components/Helpers';
-import {CategoryTabs, Filter, FilterOptionWithCounter} from '../components/kit';
 import {StreamCard} from '../components/StreamCard';
+import {StreamFilters} from '../features/filtering/streams';
 
-const STREAM_STATUS = {
-  ARCHIVED: 'ARCHIVED',
-  ACTIVE: 'ACTIVE',
-  PAUSED: 'PAUSED',
-};
-const STREAM_DIRECTION = {
-  IN: 'in',
-  OUT: 'out',
-};
-const STREAM_TYPE_FILTER = {
-  ALL: 'All',
-  INCOMING: 'Incoming',
-  OUTGOING: 'Outgoing',
-};
-
-const STREAM_STATUS_FILTER = {
-  ALL: 'All',
-  ACTIVE: 'Active',
-  ARCHIVED: 'Archived',
-};
-
-function useFilters({items, filters}) {
-  console.log('UseFilters', {items, filters});
-  return items.filter((item) => filters.every((filter) => filter(item)));
-}
-
-function useStreamFilters(streams) {
-  const [statusFilterValue, setStatusFilter] = useState(
-    STREAM_STATUS_FILTER.ACTIVE,
-  );
-  const [directionFilterValue, setDirectionFilter] = useState(
-    STREAM_TYPE_FILTER.ALL,
-  );
-
-  const statusFilters = {
-    [STREAM_STATUS_FILTER.ALL]: () => true,
-    [STREAM_STATUS_FILTER.ACTIVE]: (stream) =>
-      stream.status === STREAM_STATUS.ACTIVE,
-    [STREAM_STATUS_FILTER.ARCHIVED]: (stream) =>
-      stream.status === STREAM_STATUS.ARCHIVED,
-  };
-
-  const directionFilters = {
-    [STREAM_TYPE_FILTER.ALL]: () => true,
-    [STREAM_TYPE_FILTER.INCOMING]: (stream) =>
-      STREAM_DIRECTION.IN === stream.direction,
-    [STREAM_TYPE_FILTER.OUTGOING]: (stream) =>
-      STREAM_DIRECTION.OUT === stream.direction,
-  };
-
-  const filteredItems = useFilters({
-    items: streams,
-    filters: [
-      directionFilters[directionFilterValue],
-      statusFilters[statusFilterValue],
-    ],
-  });
-
-  return {
-    directionFilterValue,
-    statusFilterValue,
-    setDirectionFilter,
-    setStatusFilter,
-    filteredItems,
-  };
-}
+const __INPUTS = [];
+const __OUTPUTS = [];
 
 export function MyStreamsPage() {
   const near = useNear();
   const [token, setToken] = useState('NEAR');
+  const [filteredItems, setFiltered] = useState([]);
 
   const isIncomingStream = (stream) => {
     if (stream.owner_id === near.near.accountId) {
@@ -93,16 +27,14 @@ export function MyStreamsPage() {
     },
   );
 
-  const inputs = (account && account.inputs) || [];
+  const inputs = (account && account.inputs) || __INPUTS;
   inputs.forEach((input) => (input.direction = 'in'));
-  const outputs = (account && account.outputs) || [];
+  const outputs = (account && account.outputs) || __OUTPUTS;
   outputs.forEach((output) => (output.direction = 'out'));
 
-  const allStreams = inputs.concat(outputs);
+  const allStreams = useMemo(() => inputs.concat(outputs), [inputs, outputs]);
 
-  const filter = useStreamFilters(allStreams);
   console.log('ACCOUNT', account);
-
   function selectClick(e) {
     var selectBox = document.getElementById('selectBox');
     if (selectBox.selectedIndex > 0) {
@@ -203,55 +135,8 @@ export function MyStreamsPage() {
   return (
     <div className="twind-container twind-p-12">
       <h1 className="twind-text-3xl twind-mb-12">All Streams</h1>
-      <div className="twind-flex">
-        <Filter
-          className="twind-mr-5"
-          options={Object.values(STREAM_TYPE_FILTER)}
-          label="Type:"
-          active={filter.directionFilterValue}
-          onChange={filter.setDirectionFilter}
-          renderOption={(option) => {
-            const countMap = {
-              [STREAM_TYPE_FILTER.INCOMING]: inputs.length,
-              [STREAM_TYPE_FILTER.OUTGOING]: outputs.length,
-              [STREAM_TYPE_FILTER.ALL]: inputs.length + outputs.length,
-            };
-
-            return (
-              <FilterOptionWithCounter
-                option={option}
-                count={countMap[option]}
-              />
-            );
-          }}
-        />
-        <Filter
-          options={Object.values(STREAM_STATUS_FILTER)}
-          label="Status:"
-          active={filter.statusFilterValue}
-          onChange={filter.setStatusFilter}
-          renderOption={(option) => {
-            const countMap = {
-              [STREAM_STATUS_FILTER.ACTIVE]: allStreams.filter(
-                (stream) => stream.status === STREAM_STATUS.ACTIVE,
-              ).length,
-              [STREAM_STATUS_FILTER.ALL]: allStreams.length,
-              [STREAM_STATUS_FILTER.ARCHIVED]: allStreams.filter(
-                (stream) => stream.status === STREAM_STATUS.ARCHIVED,
-              ).length,
-            };
-
-            return (
-              <FilterOptionWithCounter
-                option={option}
-                count={countMap[option]}
-              />
-            );
-          }}
-        />
-      </div>
-
-      {filter.filteredItems.map((stream) => (
+      <StreamFilters items={allStreams} onFilterDone={setFiltered} />
+      {filteredItems.map((stream) => (
         <StreamCard
           stream={stream}
           className="twind-mb-4"

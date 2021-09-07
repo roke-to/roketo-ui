@@ -5,4 +5,5 @@ export * from './FormField';
 export * from './CategoryTabs';
 export * from './Filter';
 export * from './DropdownMenu';
+export * from './DropdownOpener';
 export * from './RadioButton';

@@ -1,8 +1,7 @@
 import React, {useState} from 'react';
 import {DropdownArrowDown} from '../../icons/DropdownArrowDown';
-import {DropdownMenu, DropdownMenuItem} from '../DropdownMenu';
 import classNames from 'classnames';
-import {RadioButton} from '..';
+import {RadioButton, DropdownOpener, DropdownMenu, DropdownMenuItem} from '..';
 
 export function FilterOptionWithCounter({count, option}) {
   return (
@@ -31,19 +30,14 @@ export function Filter({
       )}
     >
       <div className="twind-text-gray twind-mr-2">{label}</div>
-      <button
+      <DropdownOpener
+        rounded
         onClick={() => setOpened(!opened)}
-        className="twind-cursor-pointer twind-flex twind-items-center twind-border twind-border-border twind-rounded-full twind-px-4 twind-py-3"
+        className="twind-w-36"
       >
         {active}
-        <DropdownArrowDown
-          className={classNames(
-            'twind-ml-2',
-            'twind-transform',
-            opened ? 'twind-rotate-180' : '',
-          )}
-        />
-      </button>
+      </DropdownOpener>
+
       <DropdownMenu opened={opened}>
         {options.map((option) => (
           <DropdownMenuItem>
