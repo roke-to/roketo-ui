@@ -11,7 +11,20 @@ export function useStreamControl(streamId) {
       streamId,
       deposit,
     });
-    //const res = await near.near.contract.
+  }
+
+  async function deposit_ft({deposit}) {
+    console.log('depositing ft', streamId);
+    await near.near.ft.ft_transfer_call(
+      {
+        receiver_id: near.near.contractName,
+        amount: deposit,
+        memo: 'xyiming transfer',
+        msg: streamId,
+      },
+      '200000000000000',
+      1,
+    );
   }
 
   async function pause() {
@@ -59,5 +72,6 @@ export function useStreamControl(streamId) {
     restart: wrapped(restart),
     stop: wrapped(stop),
     deposit: wrapped(deposit),
+    deposit_ft: wrapped(deposit_ft),
   };
 }

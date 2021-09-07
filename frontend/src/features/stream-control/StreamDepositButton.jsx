@@ -38,7 +38,11 @@ export function StreamDepositButton({stream}) {
           className="twind-w-full"
           variant="filled"
           type="button"
-          onClick={() => controls.deposit({deposit: tf.toInt(deposit)})}
+          onClick={() =>
+            stream.token_name === 'NEAR'
+              ? controls.deposit({deposit: tf.toInt(deposit)})
+              : controls.deposit_ft({deposit: tf.toInt(deposit)})
+          }
         >
           Add funds
         </Button>
