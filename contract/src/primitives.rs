@@ -16,7 +16,6 @@ pub const CREATE_STREAM_DEPOSIT: Balance = 100_000_000_000_000_000_000_000; // 0
 pub const ONE_YOCTO: Balance = 1;
 pub const ONE_NEAR: Balance = 1_000_000_000_000_000_000_000_000; // 1 NEAR
 pub const MAX_TEXT_FIELD: usize = 255;
-pub const MAX_HISTORY_RECORDS: usize = 5;
 pub const GAS_FOR_FT_TRANSFER: Gas = 10_000_000_000_000;
 
 pub type StreamId = CryptoHash;

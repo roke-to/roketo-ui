@@ -37,6 +37,7 @@ class Xyiming {
     const account = await new nearApiJs.Account(this.connection, CONTRACT_ID);
     console.log(account);
     console.log(await this.storageDeposit(account));
+      // call new
   }
 
   async createStream(accountId, otherAccountId) {
@@ -69,7 +70,7 @@ class Xyiming {
     console.log(
       await contract.create_stream(
         {
-          description: "test stream",
+          description: "test stream 2",
           owner_id: accountId,
           receiver_id: otherAccountId,
           token_name: "NEAR",
