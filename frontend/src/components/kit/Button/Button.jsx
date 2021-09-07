@@ -4,8 +4,10 @@ import './Button.scss';
 
 const variants = {
   main: 'main',
+  filled: 'filled',
   outlined: 'outlined',
 };
+const colors = ['dark', 'light'];
 export function Button({
   icon,
   children,
@@ -20,6 +22,9 @@ export function Button({
   } else if (variant === variants.outlined) {
     variantStyles =
       'twind-border-solid twind-border twind-border-blue hover:twind-bg-blue twind-font-semibold twind-rounded-lg';
+  } else if (variant === variants.filled) {
+    variantStyles =
+      'twind-bg-dark hover:twind-bg-hover twind-font-semibold twind-rounded-lg';
   }
 
   return (

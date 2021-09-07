@@ -44,18 +44,17 @@ function SendPage() {
                 1e9,
             ),
           );
-    const res = await near.near.contract.create_stream(
-      {
-        description: 'blabla',
-        owner_id: ownerId,
-        receiver_id: receiverId,
-        token_name: token,
-        tokens_per_tick: speed,
-        auto_deposit_enabled: false,
-      },
-      '200000000000000',
-      deposit,
-    );
+
+    const res = await near.contractApi.createStream({
+      deposit: deposit,
+      description: 'blabla',
+      ownerId: ownerId,
+      receiverId: receiverId,
+      token: token,
+      speed: speed,
+      autoDepositEnabled: false,
+    });
+
     console.log('create res', res);
   }
 

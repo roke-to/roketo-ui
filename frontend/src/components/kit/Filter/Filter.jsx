@@ -38,7 +38,7 @@ export function Filter({
         {active}
       </DropdownOpener>
 
-      <DropdownMenu opened={opened}>
+      <DropdownMenu opened={opened} className="twind-right-0">
         {options.map((option) => (
           <DropdownMenuItem>
             <RadioButton

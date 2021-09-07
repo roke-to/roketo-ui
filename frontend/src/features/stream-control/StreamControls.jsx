@@ -1,46 +1,86 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {useStreamControl} from './useStreamControl';
+import {useNear} from '../near-connect/useNear';
+import {
+  DropdownOpener,
+  DropdownMenu,
+  DropdownMenuDivider,
+  DropdownMenuItem,
+} from '../../components/kit';
+import {StreamStatus} from './StreamStatus';
+import {STREAM_STATUS} from './lib';
+import {Stop, Pause, Start} from '../../components/icons';
 
-export function StreamControls({output}) {
-  const controls = useStreamControl(output.stream_id);
+export function StreamControls({stream}) {
+  const near = useNear();
+  const canControl = near.near.accountId === stream.owner_id;
+  const isDead =
+    stream.status === STREAM_STATUS.INTERRUPTED ||
+    stream.status === STREAM_STATUS.FINISHED;
+  const [menuOpened, setMenuOpened] = useState(false);
+
+  const controls = useStreamControl(stream.stream_id);
 
   if (controls.loading) {
-    // TODO: cool loader
     return <span>Loading!</span>;
   }
 
-  return output.status === 'ACTIVE' ||
-    output.status === 'PAUSED' ||
-    output.status === 'INITIALIZED' ? (
-    <div className="d-flex flex-row">
-      <div>
-        {output.status === 'ACTIVE' ? (
-          <button
-            type="button"
-            className="btn btn-warning btn-sm m-1"
-            onClick={controls.pause}
-          >
-            Pause
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="btn btn-warning btn-sm m-1"
-            onClick={controls.restart}
-          >
-            Start
-          </button>
-        )}
-      </div>
-      <button
-        type="button"
-        className="btn btn-danger btn-sm m-1"
-        onClick={controls.stop}
+  if (!canControl || isDead) {
+    return <StreamStatus stream={stream} />;
+  }
+
+  return (
+    <div className="twind-relative">
+      <DropdownOpener
+        minimal
+        opened={menuOpened}
+        onClick={() => setMenuOpened(!menuOpened)}
       >
-        Stop
-      </button>
+        <StreamStatus stream={stream} />
+      </DropdownOpener>
+      <DropdownMenu opened={menuOpened} className="twind-w-36">
+        {stream.status !== STREAM_STATUS.ACTIVE ? (
+          <>
+            <DropdownMenuItem>
+              <button
+                className="twind-inline-flex twind-items-center"
+                onClick={controls.restart}
+              >
+                <Start className="twind-mr-2 twind-flex-shrink-0" />
+                <span>Start stream </span>{' '}
+              </button>
+            </DropdownMenuItem>
+            <DropdownMenuDivider />
+          </>
+        ) : null}
+        {stream.status !== STREAM_STATUS.PAUSED ? (
+          <>
+            <DropdownMenuItem>
+              <button
+                className="twind-inline-flex twind-items-center"
+                onClick={controls.pause}
+              >
+                <Pause className="twind-mr-2 twind-flex-shrink-0" />
+                <span>Pause stream</span>
+              </button>
+            </DropdownMenuItem>
+            <DropdownMenuDivider />
+          </>
+        ) : null}
+
+        <DropdownMenuItem>
+          <button
+            className="twind-inline-flex twind-items-center"
+            onClick={() => {
+              console.log('BUTTON STOP CLICKED');
+              controls.stop();
+            }}
+          >
+            <Stop className="twind-mr-2 twind-flex-shrink-0" />
+            <span> Stop stream </span>
+          </button>
+        </DropdownMenuItem>
+      </DropdownMenu>
     </div>
-  ) : (
-    <div />
   );
 }

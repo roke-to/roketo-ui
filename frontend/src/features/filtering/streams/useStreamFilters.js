@@ -1,15 +1,7 @@
 import {useMemo} from 'react';
 import {useFilter, useFilters} from '../lib';
+import {STREAM_STATUS, STREAM_DIRECTION} from '../../stream-control/lib';
 
-const STREAM_STATUS = {
-  ARCHIVED: 'ARCHIVED',
-  ACTIVE: 'ACTIVE',
-  PAUSED: 'PAUSED',
-};
-const STREAM_DIRECTION = {
-  IN: 'in',
-  OUT: 'out',
-};
 const STREAM_TYPE_FILTER = {
   ALL: 'All',
   INCOMING: 'Incoming',

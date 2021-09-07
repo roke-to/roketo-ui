@@ -5,3 +5,7 @@ export * from './Streams';
 export * from './DropdownArrowDown';
 export * from './StreamIn';
 export * from './StreamOut';
+export * from './Plus';
+export * from './Start';
+export * from './Stop';
+export * from './Pause';

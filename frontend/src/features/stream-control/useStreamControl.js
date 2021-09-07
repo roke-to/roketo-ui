@@ -5,43 +5,44 @@ export function useStreamControl(streamId) {
   const near = useNear();
   const [loading, setLoading] = React.useState(false);
 
-  async function pause(output) {
-    console.log('pausing', output);
-    const res = await near.near.contract.pause_stream(
-      {stream_id: streamId},
-      '200000000000000',
-      1,
-    );
+  async function deposit({deposit}) {
+    console.log('depositing', streamId);
+    console.log(near.near.contract);
+    await near.contractApi.depositStream({
+      streamId,
+      deposit,
+    });
+    //const res = await near.near.contract.
+  }
+
+  async function pause() {
+    console.log('pausing', streamId);
+    const res = await near.contractApi.pauseStream({
+      streamId,
+    });
     console.log('pausing res', res);
 
     return res;
   }
 
-  async function restart(output) {
-    console.log('restarting', output);
-    const res = await near.near.contract.start_stream(
-      {stream_id: streamId},
-      '200000000000000',
-      1,
-    );
+  async function restart() {
+    console.log('restarting', streamId);
+    const res = await near.contractApi.startStream({streamId: streamId});
     console.log('restarting res', res);
 
     return res;
   }
 
-  async function stop(output) {
-    console.log('stopping', output);
-    const res = await near.near.contract.stop_stream(
-      {stream_id: streamId},
-      '200000000000000',
-      1,
-    );
+  async function stop() {
+    console.log('Stop called stopping', streamId);
+    const res = await near.contractApi.stopStream({streamId: streamId});
     console.log('stopping res', res);
     return res;
   }
 
   function wrapped(fn) {
     return (...args) => {
+      console.log('wrapped', ...args);
       if (loading) return;
 
       setLoading(true);
@@ -58,5 +59,6 @@ export function useStreamControl(streamId) {
     pause: wrapped(pause),
     restart: wrapped(restart),
     stop: wrapped(stop),
+    deposit: wrapped(deposit),
   };
 }

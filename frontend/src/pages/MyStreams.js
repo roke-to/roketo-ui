@@ -133,9 +133,13 @@ export function MyStreamsPage() {
   // });
 
   return (
-    <div className="twind-container twind-p-12">
+    <div className="twind-container twind-mx-auto twind-p-12">
       <h1 className="twind-text-3xl twind-mb-12">All Streams</h1>
-      <StreamFilters items={allStreams} onFilterDone={setFiltered} />
+      <StreamFilters
+        items={allStreams}
+        onFilterDone={setFiltered}
+        className="twind-mb-10"
+      />
       {filteredItems.map((stream) => (
         <StreamCard
           stream={stream}
