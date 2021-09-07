@@ -44,23 +44,36 @@ impl From<&Account> for AccountView {
                 .iter()
                 .enumerate()
                 .filter(|(_, &amount)| amount != 0)
-                .map(|(token_id, &amount)| (Xyiming::get_token_name_by_id(token_id as u32), amount.into()))
-                .collect(),
-            cron_calls_enabled: a.cron_calls_enabled,
-            total_incoming: a.total_incoming
-                .iter()
-                .enumerate()
-                .filter(|(_, &amount)| amount != 0)
                 .map(|(token_id, &amount)| {
-                    (Xyiming::get_token_name_by_id(token_id as u32), amount.into())
+                    (
+                        Xyiming::get_token_name_by_id(token_id as u32),
+                        amount.into(),
+                    )
                 })
                 .collect(),
-            total_outgoing: a.total_outgoing
+            cron_calls_enabled: a.cron_calls_enabled,
+            total_incoming: a
+                .total_incoming
                 .iter()
                 .enumerate()
                 .filter(|(_, &amount)| amount != 0)
                 .map(|(token_id, &amount)| {
-                    (Xyiming::get_token_name_by_id(token_id as u32), amount.into())
+                    (
+                        Xyiming::get_token_name_by_id(token_id as u32),
+                        amount.into(),
+                    )
+                })
+                .collect(),
+            total_outgoing: a
+                .total_outgoing
+                .iter()
+                .enumerate()
+                .filter(|(_, &amount)| amount != 0)
+                .map(|(token_id, &amount)| {
+                    (
+                        Xyiming::get_token_name_by_id(token_id as u32),
+                        amount.into(),
+                    )
                 })
                 .collect(),
         }
@@ -92,7 +105,8 @@ impl Account {
                 }
                 let payment = input_stream.process_withdraw(self.last_action);
                 if input_stream.status == StreamStatus::Active {
-                    self.total_incoming[input_stream.token_id as usize] += input_stream.tokens_per_tick;
+                    self.total_incoming[input_stream.token_id as usize] +=
+                        input_stream.tokens_per_tick;
                 }
                 Xyiming::streams().insert(&input_stream_id, &input_stream);
                 tokens_left.insert(input_stream.token_id, payment);
@@ -122,7 +136,8 @@ impl Account {
                 }
                 output_stream.balance += deposit_needed;
                 output_stream.add_action(ActionType::Deposit(deposit_needed));
-                self.total_outgoing[output_stream.token_id as usize] += output_stream.tokens_per_tick;
+                self.total_outgoing[output_stream.token_id as usize] +=
+                    output_stream.tokens_per_tick;
                 tokens_left.insert(output_stream.token_id, current_tokens_left - deposit_needed);
                 Xyiming::streams().insert(&output_stream_id, &output_stream);
             }

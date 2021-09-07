@@ -4,8 +4,9 @@ use std::convert::TryInto;
 /// Import the generated proxy contract
 use xyiming::XyimingContract;
 use xyiming::{
-    AccountView, ActionView, StreamView, CREATE_STREAM_DEPOSIT, ERR_ACCESS_DENIED, ERR_CANNOT_START_STREAM,
-    ERR_DEPOSIT_NOT_ENOUGH, ERR_PAUSE_PAUSED, ERR_STREAM_NOT_AVAILABLE, ONE_NEAR, ONE_YOCTO,
+    AccountView, ActionView, StreamView, CREATE_STREAM_DEPOSIT, ERR_ACCESS_DENIED,
+    ERR_CANNOT_START_STREAM, ERR_DEPOSIT_NOT_ENOUGH, ERR_PAUSE_PAUSED, ERR_STREAM_NOT_AVAILABLE,
+    ONE_NEAR, ONE_YOCTO,
 };
 
 use near_sdk::json_types::{Base58CryptoHash, WrappedBalance};
@@ -86,7 +87,8 @@ impl State {
 
     pub fn view_stream_history(&self, stream_id: &str) -> Vec<ActionView> {
         let contract = &self.contract;
-        let res = view!(contract.get_stream_history(stream_id.try_into().unwrap(), 0, 100)).unwrap_json();
+        let res =
+            view!(contract.get_stream_history(stream_id.try_into().unwrap(), 0, 100)).unwrap_json();
         res
     }
 
@@ -648,7 +650,7 @@ fn withdraw_overflow() {
 
     let alice_account = state.view_account(ALICE).unwrap();
     let bob_account = state.view_account(BOB).unwrap();
-    
+
     assert!(alice_account.total_outgoing == []);
     assert!(alice_account.total_incoming == []);
     assert!(bob_account.total_outgoing == []);

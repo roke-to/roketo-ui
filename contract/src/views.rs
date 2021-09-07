@@ -18,8 +18,17 @@ impl Xyiming {
             })
     }
 
-    pub fn get_stream_history(&self, stream_id: Base58CryptoHash, from: usize, to: usize) -> Vec<ActionView> {
-        let h = Self::streams().get(&stream_id.into()).unwrap().history.to_vec();
+    pub fn get_stream_history(
+        &self,
+        stream_id: Base58CryptoHash,
+        from: usize,
+        to: usize,
+    ) -> Vec<ActionView> {
+        let h = Self::streams()
+            .get(&stream_id.into())
+            .unwrap()
+            .history
+            .to_vec();
         let mut res = vec![];
         let from = std::cmp::min(from, h.len());
         let to = std::cmp::min(to, h.len());
