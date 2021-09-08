@@ -14,6 +14,7 @@ import SendPage from './pages/Send';
 import {Header} from './components/Header';
 import {NearContext, useCreateNear} from './features/near-connect/useNear';
 import {MyStreamsPage} from './pages/MyStreams';
+import {AccountPage} from './pages/Account';
 import {AuthorizePage} from './pages/Authorize';
 
 // A wrapper for <Route> that redirects to the login
@@ -57,6 +58,14 @@ function AppFn() {
                 path="/"
               >
                 <SendPage />
+              </PrivateRoute>
+              <PrivateRoute
+                exact
+                redirect={<Redirect to="/authorize" />}
+                allowed={near.auth.signedIn}
+                path="/account"
+              >
+                <AccountPage />
               </PrivateRoute>
               <PrivateRoute
                 exact
