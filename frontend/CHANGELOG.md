@@ -1,3 +1,7 @@
+# v0.1.6 September 8, 2021
+- Add empty states for MyStreams page
+- Add sorting streams by speed and balance 
+- Add update all and withdraw button
 # v0.1.5 September 7, 2021
 - Remove receive page completely
 - Now fetching streams by id

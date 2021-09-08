@@ -21,6 +21,16 @@ export function NearContractApi(near) {
   const getCurrentAccount = () =>
     getAccount(near.walletConnection.getAccountId());
 
+  async function updateAccount() {
+    const res = await contract.update_account(
+      {
+        account_id: near.account.accountId,
+      },
+      GAS_SIZE,
+    );
+    return res;
+  }
+
   async function depositStream({streamId, deposit}) {
     const res = await contract.deposit(
       {stream_id: streamId},
@@ -95,6 +105,7 @@ export function NearContractApi(near) {
 
   return {
     getCurrentAccount,
+    updateAccount,
     getAccount,
     createStream,
     depositStream,

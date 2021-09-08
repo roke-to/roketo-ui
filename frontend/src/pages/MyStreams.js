@@ -1,10 +1,11 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {useNear} from '../features/near-connect/useNear';
-import useSWR from 'swr';
+import useSWR, {useSWRConfig} from 'swr';
 import {StreamCard} from '../components/StreamCard';
 import {StreamFilters} from '../features/filtering/streams';
 import {Button} from '../components/kit';
 import {routes} from '../lib/routing';
+import {useStreamControl} from '../features/stream-control/useStreamControl';
 
 const __INPUTS = [];
 const __OUTPUTS = [];
@@ -13,6 +14,7 @@ export function MyStreamsPage() {
   const near = useNear();
   const [token, setToken] = useState('NEAR');
   const [filteredItems, setFiltered] = useState([]);
+  const streamControl = useStreamControl();
 
   const isIncomingStream = (stream) => {
     if (stream.owner_id === near.near.accountId) {
@@ -21,7 +23,7 @@ export function MyStreamsPage() {
     return true;
   };
 
-  const {data: account} = useSWR(
+  const {data: account, mutate: mutateAccount} = useSWR(
     ['account', near.near.accountId],
     near.contractApi.getCurrentAccount,
     {
@@ -44,14 +46,24 @@ export function MyStreamsPage() {
     };
   }
 
+  async function updateAllAndWithdraw() {
+    await streamControl.updateAllAndWithdraw();
+    mutateAccount();
+  }
+
   const {data: streams} = useSWR(
     () => {
-      const key = account ? '/streams/' + account.account_id : false;
+      const key = account
+        ? ['streams', account.account_id, account.last_action]
+        : false;
       return key;
     },
     () => fetchStreams({inputs: account.inputs, outputs: account.outputs}),
   );
-  console.log('ACCOUNT', account);
+
+  useEffect(() => {
+    if (!account) return;
+  }, [account]);
 
   const inputs = streams ? streams.inputs : __INPUTS;
   const outputs = streams ? streams.outputs : __OUTPUTS;
@@ -102,13 +114,27 @@ export function MyStreamsPage() {
 
   return (
     <div className="twind-container twind-mx-auto twind-p-12">
-      <h1 className="twind-text-3xl twind-mb-12">All Streams</h1>
+      <div className="twind-flex twind-mb-12">
+        <h1 className="twind-text-3xl ">All Streams</h1>
+        <div className="twind-flex-grow"></div>
+        <Button
+          loading={streamControl.loading}
+          loadingText="Updating account..."
+          variant="main"
+          size="normal"
+          onClick={updateAllAndWithdraw}
+        >
+          Update streams and withdraw
+        </Button>
+      </div>
       <StreamFilters
         items={allStreams}
         onFilterDone={setFiltered}
         className="twind-mb-10 twind-relative twind-z-10"
       />
-      {allStreams.length === 0 ? (
+      {!streams ? (
+        <div>Loading</div>
+      ) : allStreams.length === 0 ? (
         <div className="twind-flex twind-flex-col twind-w-80 twind-mx-auto">
           <h3 className="twind-text-3xl twind-text-center twind-my-12 ">
             You dont have any streams yet.
