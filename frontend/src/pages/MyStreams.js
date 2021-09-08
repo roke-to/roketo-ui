@@ -104,7 +104,7 @@ export function MyStreamsPage() {
       <StreamFilters
         items={allStreams}
         onFilterDone={setFiltered}
-        className="twind-mb-10"
+        className="twind-mb-10 twind-relative twind-z-10"
       />
       {filteredItems.map((stream) => (
         <StreamCard
