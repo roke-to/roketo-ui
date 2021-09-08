@@ -13,7 +13,7 @@ import {Stop, Pause, Start} from '../../components/icons';
 
 export function StreamControls({stream}) {
   const near = useNear();
-  const canControl = near.near.accountId === stream.owner_id;
+  const isOutgoing = near.near.accountId === stream.owner_id;
   const isDead =
     stream.status === STREAM_STATUS.INTERRUPTED ||
     stream.status === STREAM_STATUS.FINISHED;
@@ -25,7 +25,7 @@ export function StreamControls({stream}) {
     return <span>Loading!</span>;
   }
 
-  if (!canControl || isDead) {
+  if (isDead) {
     return <StreamStatus stream={stream} />;
   }
 
@@ -39,7 +39,7 @@ export function StreamControls({stream}) {
         <StreamStatus stream={stream} />
       </DropdownOpener>
       <DropdownMenu opened={menuOpened} className="twind-w-36">
-        {stream.status !== STREAM_STATUS.ACTIVE ? (
+        {stream.status !== STREAM_STATUS.ACTIVE && isOutgoing ? (
           <>
             <DropdownMenuItem>
               <button
