@@ -1,56 +1,125 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {StreamIn, StreamOut} from './icons';
 import {intervalToDuration, formatDuration} from 'date-fns';
 import {TokenFormatter} from '../lib/formatting';
+import {ProgressBar} from './kit';
+import {StreamControls, StreamDepositButton} from '../features/stream-control';
+import {STREAM_STATUS} from '../features/stream-control/lib';
 
-const streamType = {
-  auto_deposit_enabled: false,
-  available_to_withdraw: '1664007039581600000000000',
-  balance: '10000000000000000000000000',
-  description: 'blabla',
-  owner_id: 'pinkinice.testnet',
-  receiver_id: 'pinkinice2.testnet',
-  status: 'ACTIVE',
-  stream_id: '14px69Go9gwxmmZQ3aWjdEyUeQgAYHRByJf23vLaDe82',
-  timestamp_created: '1630936004627180400',
-  token_name: 'NEAR',
-  tokens_per_tick: '400000000000',
+const formatDistanceLocale = {
+  xSeconds: '{{count}} sec',
+  xMinutes: '{{count}} min',
+  xHours: '{{count}} h',
+};
+const shortEnLocale = {
+  formatDistance: (token, count) =>
+    formatDistanceLocale[token].replace('{{count}}', count),
 };
 
+const streamType = {
+  stream_id: 'FnVkAYZu4XED3o44pZPvrnghVEMxo3GiHszUT4orjYST',
+  description: 'test stream',
+  owner_id: 'kpr.testnet',
+  receiver_id: 'pinkinice.testnet',
+  token_name: 'NEAR',
+  timestamp_created: '1630964802206727665',
+  balance: '3472735225910300000000000',
+  tokens_per_tick: '100000000000',
+  auto_deposit_enabled: false,
+  status: 'ACTIVE',
+  tokens_total_withdrawn: '27264774089700000000000',
+  available_to_withdraw: '3472735225910300000000000',
+  history: [
+    {
+      actor: 'dev-1630964633889-96006156236045',
+      action_type: 'Deposit',
+      amount: '3500000000000000000000000',
+      timestamp: '1630964802206727665',
+    },
+  ],
+  direction: 'in',
+};
+
+function DurationTimer({untilDate}) {
+  const isExpired = new Date().getTime() > untilDate.getTime();
+
+  const [duration, setDuration] = useState(
+    isExpired ? null : intervalToDuration({start: new Date(), end: untilDate}),
+  );
+  const [expired, setExpired] = useState(false);
+
+  useEffect(() => {
+    let id = setInterval(() => {
+      const isExpired = new Date().getTime() > untilDate.getTime();
+      setExpired(isExpired);
+      setDuration(null);
+
+      if (isExpired) {
+        return;
+      }
+
+      const duration = intervalToDuration({start: new Date(), end: untilDate});
+      setDuration(duration);
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, [untilDate, expired]);
+
+  /*const formatted = !duration
+    ? ''
+    : formatDuration(duration, {
+        locale: shortEnLocale,
+      }) + ' remaining';*/
+
+  const formatted = !duration
+    ? ''
+    : JSON.stringify(duration, (key, value) =>
+        value instanceof Map ? [...value] : value,
+      ) + ' remaining';
+
+  return <span>{formatted}</span>;
+}
 export function StreamCard({stream = streamType, direction, className}) {
   const tf = TokenFormatter(stream.token_name);
 
+  // time left calculations
   const secondsLeft = tf.ticksToMs(
     Math.round(
       (stream.balance - stream.available_to_withdraw) / stream.tokens_per_tick,
     ),
   );
-
   const dateEnd = new Date(new Date().getTime() + secondsLeft);
-  const duration = intervalToDuration({start: new Date(), end: dateEnd});
-  const formatted = formatDuration(duration);
+
+  // progress bar calculations
+  const full = Number(stream.balance) + Number(stream.tokens_total_withdrawn);
+  const withdrawn = Number(stream.tokens_total_withdrawn);
+  const tokensStreamed =
+    Number(stream.tokens_total_withdrawn) +
+    Number(stream.available_to_withdraw);
+
+  const progresses = [withdrawn / full, tokensStreamed / full];
 
   return (
     <div
       className={classNames(
+        'twind-grid twind-grid-cols-12 twind-gap-6 twind-justify-items-center',
         'twind-p-10 twind-bg-input twind-rounded-3xl',
         className,
       )}
     >
-      <div>
+      <div className="twind-w-full twind-col-span-12 xl:twind-col-span-5 2xl:twind-col-span-6 twind-justify-self-start">
         <div className="twind-flex twind-items-center">
-          <div className="twind-w-8 twind-h-8 twind-rounded-lg twind-bg-card2 twind-inline-flex twind-items-center twind-justify-center twind-mr-4">
+          <div className="twind-w-8 twind-h-8 twind-flex-shrink-0 twind-rounded-lg twind-bg-card2 twind-inline-flex twind-items-center twind-justify-center twind-mr-4">
             I
           </div>
-          <div className="twind-flex twind-items-end">
-            <div className="twind-text-2xl">
-              {tf.amount(stream.available_to_withdraw)} of{' '}
-              {tf.amount(stream.balance)}{' '}
+          <div className="twind-w-full twind-gap-4 twind-flex twind-items-end">
+            <div className="twind-text-2xl twind-whitespace-nowrap twind-flex-shrink-0">
+              {tf.amount(tokensStreamed)} of {tf.amount(full)}{' '}
               <span className="twind-uppercase">{stream.token_name}</span>
             </div>
 
-            <div className="twind-inline-flex twind-items-center twind-ml-4">
+            <div className="twind-inline-flex twind-items-center twind-whitespace-nowrap">
               {direction === 'out' ? <StreamOut /> : <StreamIn />}
               <span className="twind-ml-2">
                 <span>@{tf.tokensPerS(stream.tokens_per_tick)}</span>
@@ -58,9 +127,23 @@ export function StreamCard({stream = streamType, direction, className}) {
               </span>
             </div>
 
-            <div className="twind-ml-6">{formatted}</div>
+            <div className="twind-whitespace-nowrap">
+              <DurationTimer untilDate={dateEnd} />
+            </div>
           </div>
         </div>
+        <ProgressBar className="twind-mt-5" progresses={progresses} />
+      </div>
+      <div className="twind-col-span-2">
+        <div className="twind-text-gray">Receiver:</div>
+        <div>{stream.receiver_id}</div>
+      </div>
+      <div className="twind-col-span-2">
+        <div className="twind-text-gray">Status:</div>
+        <StreamControls stream={stream} />
+      </div>
+      <div className="twind-col-span-2">
+        {direction === 'out' ? <StreamDepositButton stream={stream} /> : null}
       </div>
     </div>
   );

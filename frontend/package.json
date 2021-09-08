@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "homepage": "https://near.money",
   "private": true,
   "dependencies": {
@@ -22,6 +22,7 @@
     "react-bootstrap": "^1.5.2",
     "react-dom": "^16.13.1",
     "react-infinite-scroller": "^1.2.4",
+    "react-modal": "^3.14.3",
     "react-moment": "^1.1.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
@@ -38,7 +39,11 @@
     "extends": "react-app"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",

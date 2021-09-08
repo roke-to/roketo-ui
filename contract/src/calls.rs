@@ -78,6 +78,69 @@ impl Xyiming {
         stream_id.into()
     }
 
+    #[private]
+    pub fn create_stream_ft(
+        &mut self,
+        sender_id: ValidAccountId,
+        description: Option<String>,
+        owner_id: ValidAccountId,
+        receiver_id: ValidAccountId,
+        token_name: String,
+        balance: WrappedBalance,
+        tokens_per_tick: WrappedBalance,
+        auto_deposit_enabled: bool,
+    ) -> bool {
+        // TODO log errors and return false
+        if description.is_some() && description.clone().unwrap().len() >= MAX_TEXT_FIELD {
+            return false;
+        }
+        if owner_id == receiver_id {
+            return false;
+        };
+        if auto_deposit_enabled && owner_id.as_ref() == sender_id.as_ref() {
+            return false;
+        }
+
+        let tokens_per_tick = tokens_per_tick.into();
+        // TODO generate stream_id reasonably
+        let stream_id = env::sha256(&env::block_index().to_be_bytes())
+            .as_slice()
+            .try_into()
+            .unwrap();
+
+        let token_id = Self::get_token_id_by_name(&token_name).expect(ERR_INVALID_TOKEN);
+        assert!(token_id != NEAR_TOKEN_ID, "{}", ERR_NOT_FT_TOKEN);
+
+        let stream = Stream::new(
+            stream_id,
+            description,
+            owner_id.clone().into(),
+            receiver_id.clone().into(),
+            token_id,
+            balance.into(),
+            tokens_per_tick,
+            auto_deposit_enabled,
+        );
+
+        let mut owner = Self::extract_account_or_create(owner_id.as_ref());
+        owner.update_state();
+        owner.add_output(&stream_id);
+        if stream.status == StreamStatus::Active && stream.auto_deposit_enabled {
+            owner.total_outgoing[token_id as usize] += tokens_per_tick;
+        }
+        Self::save_account_or_panic(owner_id.as_ref(), &owner);
+        let mut receiver = Self::extract_account_or_create(receiver_id.as_ref());
+        receiver.update_state();
+        receiver.add_input(&stream_id);
+        if stream.status == StreamStatus::Active {
+            receiver.total_incoming[token_id as usize] += tokens_per_tick;
+        }
+        Self::save_account_or_panic(receiver_id.as_ref(), &receiver);
+        // TODO process promise failure
+
+        true
+    }
+
     /// depositing tokens to the stream
     #[payable]
     pub fn deposit(&mut self, stream_id: Base58CryptoHash) {
@@ -92,7 +155,7 @@ impl Xyiming {
 
     /// depositing ft tokens to the stream
     #[private]
-    pub fn deposit_ft(&mut self, stream_id: Base58CryptoHash, amount: WrappedBalance) {
+    pub fn deposit_ft(&mut self, stream_id: Base58CryptoHash, amount: WrappedBalance) -> bool {
         let stream_id = stream_id.into();
         let mut stream = Self::extract_stream_or_panic(&stream_id);
         assert!(stream.token_id != NEAR_TOKEN_ID, "{}", ERR_NOT_FT_TOKEN);
@@ -100,6 +163,8 @@ impl Xyiming {
         stream.add_action(ActionType::Deposit(amount.into()));
 
         Self::streams().insert(&stream_id, &stream);
+
+        true
     }
 
     pub fn update_account(&mut self, account_id: ValidAccountId) -> Vec<Promise> {

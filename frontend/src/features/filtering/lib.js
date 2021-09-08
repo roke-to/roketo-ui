@@ -44,11 +44,6 @@ export function useFilters({items, filters}) {
           (currentFilterCount[option] = filterRunResult[option].length),
       );
 
-      console.log('FILTER_RUN_RESULT', filter.optionsArray, {
-        filterRunResult,
-        currentFilterCount,
-      });
-
       filterCounts.push(currentFilterCount);
       // set items to selected filter
       filteredItems = filterRunResult[filter.option];
@@ -58,7 +53,6 @@ export function useFilters({items, filters}) {
     setFilteredItems(filteredItems);
   }, [items, filters]);
 
-  console.log('FILTER RUN FINISHED', filterCounts);
   return {
     filterCounts,
     filteredItems,

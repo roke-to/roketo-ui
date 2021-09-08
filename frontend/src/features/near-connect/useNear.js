@@ -48,6 +48,7 @@ async function createNearInstance() {
   _near.accountId = _near.walletConnection.getAccountId();
 
   _near.account = _near.walletConnection.account();
+  _near.contractName = NearConfig.contractName;
   _near.contract = new nearAPI.Contract(
     _near.account,
     NearConfig.contractName,

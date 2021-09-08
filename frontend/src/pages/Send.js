@@ -47,7 +47,7 @@ function SendPage() {
 
     const newdeposit = formatter.amount(deposit)
 
-    const deposit =
+    const old_deposit =
         dropdownActive === 'NEAR'
         ? String(
             parseInt(
@@ -59,7 +59,7 @@ function SendPage() {
         : '100000000000000000000000';
 
 
-    console.log(dropdownActive,deposit, newdeposit)
+    console.log(dropdownActive,newdeposit, old_deposit)
     
     const speed =
     dropdownActive === 'NEAR'
@@ -75,18 +75,17 @@ function SendPage() {
                 1e9,
             ),
           );
-    const res = await near.near.contract.create_stream(
-      {
-        description: 'blabla',
-        owner_id: ownerId,
-        receiver_id: receiverId,
-        token_name: dropdownActive,
-        tokens_per_tick: speed,
-        auto_deposit_enabled: false,
-      },
-      '200000000000000',
-      deposit,
-    );
+
+    const res = await near.contractApi.createStream({
+      deposit: deposit,
+      description: 'blabla',
+      ownerId: ownerId,
+      receiverId: receiverId,
+      token: dropdownActive,
+      speed: speed,
+      autoDepositEnabled: false,
+    });
+
     console.log('create res', res);
   }
 
