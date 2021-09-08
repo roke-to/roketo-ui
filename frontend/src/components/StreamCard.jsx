@@ -1,21 +1,10 @@
 import classNames from 'classnames';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {StreamIn, StreamOut} from './icons';
-import {intervalToDuration, formatDuration} from 'date-fns';
 import {TokenFormatter} from '../lib/formatting';
 import {ProgressBar} from './kit';
 import {StreamControls, StreamDepositButton} from '../features/stream-control';
-import {STREAM_STATUS} from '../features/stream-control/lib';
-
-const formatDistanceLocale = {
-  xSeconds: '{{count}} sec',
-  xMinutes: '{{count}} min',
-  xHours: '{{count}} h',
-};
-const shortEnLocale = {
-  formatDistance: (token, count) =>
-    formatDistanceLocale[token].replace('{{count}}', count),
-};
+import {DurationTimer} from '../components/DurationTimer';
 
 const streamType = {
   stream_id: 'FnVkAYZu4XED3o44pZPvrnghVEMxo3GiHszUT4orjYST',
@@ -41,39 +30,6 @@ const streamType = {
   direction: 'in',
 };
 
-function DurationTimer({untilDate}) {
-  const isExpired = new Date().getTime() > untilDate.getTime();
-
-  const [duration, setDuration] = useState(
-    isExpired ? null : intervalToDuration({start: new Date(), end: untilDate}),
-  );
-  const [expired, setExpired] = useState(false);
-
-  useEffect(() => {
-    let id = setInterval(() => {
-      const isExpired = new Date().getTime() > untilDate.getTime();
-      setExpired(isExpired);
-      setDuration(null);
-
-      if (isExpired) {
-        return;
-      }
-
-      const duration = intervalToDuration({start: new Date(), end: untilDate});
-      setDuration(duration);
-    }, 1000);
-
-    return () => clearInterval(id);
-  }, [untilDate, expired]);
-
-  const formatted = !duration
-    ? ''
-    : formatDuration(duration, {
-        locale: shortEnLocale,
-      }) + ' remaining';
-
-  return <span>{formatted}</span>;
-}
 export function StreamCard({stream = streamType, direction, className}) {
   const tf = TokenFormatter(stream.token_name);
 
