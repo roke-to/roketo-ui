@@ -6,7 +6,7 @@ export function DropdownMenu({opened, children, className}) {
     <div
       className={classNames(
         className,
-        'twind-absolute twind-top-full twind-right-0 pt-2 twind-max-w-full',
+        'twind-absolute twind-top-full pt-2',
         opened ? 'twind-flex' : 'twind-hidden',
       )}
     >
@@ -19,12 +19,22 @@ export function DropdownMenu({opened, children, className}) {
   );
 }
 
-export function DropdownMenuItem({children}) {
-  return <div className="twind-px-3 twind-py-1">{children}</div>;
+export function DropdownMenuItem({children, className, ...rest}) {
+  return (
+    <div
+      className={classNames(
+        'twind-px-3 twind-py-1 twind-font-semibold twind-text-sm hover:twind-font-bold',
+        className,
+      )}
+      {...rest}
+    >
+      {children}
+    </div>
+  );
 }
 
 export function DropdownMenuDivider() {
   return (
-    <div className="twind-border-border twind-border-t twind-w-full twind-my-2" />
+    <div className="twind-border-dark twind-border-t twind-w-full twind-my-2" />
   );
 }

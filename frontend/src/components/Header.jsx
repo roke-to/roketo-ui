@@ -1,5 +1,4 @@
 import React from 'react';
-import {XyimingLogo} from './icons/XyimingLogo';
 import * as icons from './icons';
 import {NavLink} from './kit';
 import {NearAuthButton} from '../features/near-auth/NearAuthButton';
@@ -23,11 +22,6 @@ export function Header() {
       <li className="twind-mb-2 lg:twind-mr-2 lg:twind-mb-0">
         <NavLink to={routes.send} icon={<icons.Send />}>
           Send
-        </NavLink>
-      </li>
-      <li>
-        <NavLink icon={<icons.Receive />} to={routes.receive}>
-          Receive
         </NavLink>
       </li>
     </ul>

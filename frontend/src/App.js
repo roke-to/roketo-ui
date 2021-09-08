@@ -11,7 +11,6 @@ import {
   Redirect,
 } from 'react-router-dom';
 import SendPage from './pages/Send';
-import ReceivePage from './pages/Receive';
 import {Header} from './components/Header';
 import {NearContext, useCreateNear} from './features/near-connect/useNear';
 import {MyStreamsPage} from './pages/MyStreams';
@@ -75,14 +74,6 @@ function AppFn() {
                 path="/my_streams"
               >
                 <MyStreamsPage />
-              </PrivateRoute>
-              <PrivateRoute
-                exact
-                redirect={<Redirect to="/authorize" />}
-                allowed={near.auth.signedIn}
-                path="/receive"
-              >
-                <ReceivePage />
               </PrivateRoute>
             </Switch>
           </Router>

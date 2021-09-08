@@ -1,3 +1,13 @@
+# v0.1.5 September 7, 2021
+- Remove receive page completely
+- Now fetching streams by id
+
+# v0.1.4 September 7, 2021
+- Install and style modal component `react-modal`
+- New DesignKit Components: `Progress Bar`
+- Better interface for Dropdowns, allow customizing from outside
+- Implement all basic operations with outgoing streams
+
 # v0.1.3, September 7, 2021
 
 - New DesignKit Components: `DropdownOpener`
