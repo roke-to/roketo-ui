@@ -4,9 +4,9 @@ import {useStreamFilters} from './useStreamFilters';
 import {Filter, FilterOptionWithCounter} from '../../../components/kit';
 
 function compareBy(a, b, key) {
-  if (a[key] > b[key]) {
+  if (Number(a[key]) > Number(b[key])) {
     return -1;
-  } else if (a[key] < b[key]) {
+  } else if (Number(a[key]) < Number(b[key])) {
     return 1;
   } else {
     return 0;
