@@ -20,6 +20,8 @@ export function TokenFormatter(tokenName) {
   const MP = Math.pow(10, token.decimals);
 
   return {
+    tokenPerSecondToInt: (tps) =>
+      numbro(tps).multiply(MP).divide(TICK_TO_S).format({mantissa: 0}),
     toInt: (floatValue) =>
       numbro(floatValue).multiply(MP).format({mantissa: 0}),
     amount: (amount) =>

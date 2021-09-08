@@ -5,6 +5,7 @@ export * from './Streams';
 export * from './DropdownArrowDown';
 export * from './StreamIn';
 export * from './StreamOut';
+export * from './Tokens';
 export * from './Account';
 export * from './StreamWithdraw';
 export * from './History';
