@@ -4,15 +4,38 @@ import useSWR from 'swr';
 import {NEAR, loader, TARAS} from '../components/Helpers';
 import {FormField, Input, Button} from '../components/kit';
 import {useNear} from '../features/near-connect/useNear';
+import {DropdownMenu, DropdownMenuItem} from '../components/kit/DropdownMenu';
+import {DropdownOpener} from '../components/kit/DropdownOpener';
+import {RadioButton} from '../components/kit/RadioButton';
+import {DropdownArrowDown} from '../components/icons/DropdownArrowDown';
+import classNames from 'classnames';
+import {tokens} from '../lib/formatting';
+import {Tokens, Streams} from '../components/icons'
+import {TokenFormatter} from '../lib/formatting.js'
 
 function SendPage() {
   const near = useNear();
   const profileId = near.auth.signedAccountId;
 
-  const [token, setToken] = useState('NEAR');
+  const [dropdownOpened, setDropdownOpened] = useState(false);
+  const [dropdownActive, setDropdownActive] = useState('NEAR');
 
+  const [days, setDays] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+  const [deposit, setDeposit] = useState(0);
+  const [comment, setComment] = useState();
+
+  const tokensNames = Object.keys(tokens).filter((item) => item !== 'fallback')
+  const dropdownOnChange = (value) => {
+    console.log(value);
+    setDropdownActive(value);
+  }
+
+  const [totalSecond, setTotalSecond] = useState(days*3600+minutes*60+seconds)
+  const [speed, setSpeed] = useState((deposit/totalSecond).toFixed(3))
   function radioClick(e, token) {
-    setToken(token);
+    setDropdownActive(token);
   }
 
   async function createStreamClick(e) {
@@ -20,8 +43,12 @@ function SendPage() {
     const ownerId = document.getElementById('ownerInput').value;
     const receiverId = document.getElementById('receiverInput').value;
     // TODO
+    const formatter = TokenFormatter(dropdownActive);
+
+    const newdeposit = formatter.amount(deposit)
+
     const deposit =
-      token === 'NEAR'
+        dropdownActive === 'NEAR'
         ? String(
             parseInt(
               (parseFloat(document.getElementById('depositInput').value) +
@@ -30,8 +57,12 @@ function SendPage() {
             ),
           ) + '000000000000000'
         : '100000000000000000000000';
+
+
+    console.log(dropdownActive,deposit, newdeposit)
+    
     const speed =
-      token === 'NEAR'
+    dropdownActive === 'NEAR'
         ? String(
             parseInt(
               (parseFloat(document.getElementById('speedInput').value) + 0) *
@@ -49,7 +80,7 @@ function SendPage() {
         description: 'blabla',
         owner_id: ownerId,
         receiver_id: receiverId,
-        token_name: token,
+        token_name: dropdownActive,
         tokens_per_tick: speed,
         auto_deposit_enabled: false,
       },
@@ -74,20 +105,6 @@ function SendPage() {
   const {data: account} = useSWR(['account', profileId], fetchAccount, {
     errorRetryInterval: 250,
   });
-  const outputs = account && account.outputs ? account.outputs : [];
-  let depositList = outputs;
-
-  if (near.inited && account) {
-    depositList = outputs.map((output, id) => {
-      return (
-        <option key={id} value={id}>
-          {output.stream_id}
-        </option>
-      );
-    });
-  }
-
-  console.log('!!', depositList);
 
   return (
     <div className="twind-container twind-m-auto twind-px-5 twind-py-12">
@@ -121,62 +138,140 @@ function SendPage() {
           </Input>
         </FormField>
 
-        <FormField label="Token" className="twind-mb-4">
-          <div className="form-check mb-2">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="flexToken"
-              id="flexToken1"
-              onClick={(e) => radioClick(e, 'NEAR')}
-              checked={token === 'NEAR'}
-            />
-            <label className="form-check-label" htmlFor="flexToken1">
-              NEAR tokens
-            </label>
-          </div>
-          <div className="form-check mb-2">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="flexToken"
-              id="flexToken2"
-              onClick={(e) => radioClick(e, 'TARAS')}
-              checked={token === 'TARAS'}
-            />
-            <label className="form-check-label" htmlFor="flexToken2">
-              TARAS Supremacy Tokens
-            </label>
-          </div>
-        </FormField>
-
-        {token === 'NEAR' ? (
-          <FormField label="Initial deposit:" className="twind-mb-4">
-            <Input>
-              <input requried placeholder="0.00" id="depositInput" />
-            </Input>
+        <div className="twind-flex twind-mb-4">
+          <FormField label="Token:" className="twind-w-1/3 twind-items-center twind-relative">
+              <DropdownOpener
+                className="twind-bg-input focus-within:twind-border-blue hover:twind-border-blue twind-text-xl twind-h-14"
+                onClick={() => setDropdownOpened(!dropdownOpened)}
+              >
+      
+                <div className="twind-inline-flex">
+                          {<Tokens tokenName={dropdownActive}/>}{" "}
+                          <span>{dropdownActive}</span>
+                </div>
+              </DropdownOpener>
+        
+              <DropdownMenu opened={dropdownOpened} className="twind-z-10">
+                {tokensNames.map((option) => (
+                  <DropdownMenuItem className="twind-bg-input">
+                    <RadioButton
+                      label={
+                        <div className="twind-inline-flex">
+                          {<Tokens tokenName={option}/>}{" "}
+                          <span>{option}</span>
+                        </div>
+                        }
+                      active={dropdownActive === option}
+                      value={option}
+                      onChange={(value) => 
+                        {
+                          setDropdownOpened(false)
+                          setDropdownActive(value)
+                        }
+                      }
+                    />
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenu>
           </FormField>
-        ) : null}
+  
+          <FormField label="Amount to stream:" className="twind-w-2/3">
+              <Input>
+                <input requried placeholder="0.00" id="depositInput" 
+                value={deposit}
+                onChange={(e) => (setDeposit(e.target.value))}
+                />
+              </Input>
+            </FormField>
+         </div>
 
-        <FormField label="Streaming speed, tokens per second">
-          <Input>
-            <input
-              required
-              id="speedInput"
-              placeholder="0.03"
-              describedby="basic-addon2"
-            />
-          </Input>
-        </FormField>
 
-        <div className="twind-flex">
-          <Button variant="main" className="twind-mt-12 twind-mx-auto">
+
+         <div className="twind-block twind-mb-4">
+            <div className="twind-relative">
+              <div>Stream duration:</div>
+              <div className="twind-text-xs twind-text-gray twind-absolute twind-right-0 twind-top-1">Streaming speed: {(deposit/(days*3600+minutes*60+seconds)).toFixed(6)} {dropdownActive} / sec</div>
+            </div>
+            <div className="twind-flex" label="Stream duration">
+                  <div
+                      className='twind-w-1/3 input twind-font-semibold twind-flex twind-p-4 twind-rounded-l-lg twind-border-border twind-border twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue'
+                  >
+                    <input
+                      className='input twind-bg-input twind-w-1/3'
+                      required
+                      id="daysInput"
+                      placeholder="0"
+                      describedby="basic-addon2"
+                      value={days}
+                      onChange={(e) => {
+                        setDays(e.target.value)
+                      }}
+                    />
+                  <div className="twind-right-2 twind-opacity-100 twind-w-1/3">days</div>
+                  </div>
+                   <div
+                      className='twind-w-1/3 input twind-font-semibold twind-flex twind-p-4 twind-border-border twind-border twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue'
+                  >
+                  <input
+                      className='input twind-bg-input twind-w-1/3'
+                      required
+                    id="hourseInput"
+                    placeholder="0"
+                    describedby="basic-addon2"
+                    value={minutes}
+                    onChange={(e) => setMinutes(e.target.value)}
+                  />
+                   <div className="twind-right-2 twind-opacity-100 twind-w-1/3">hourse</div>
+                   </div>
+                   <div
+                      className='twind-w-1/3 input twind-font-semibold twind-flex twind-p-4 twind-rounded-r-lg twind-border-border twind-border twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue'
+                  >
+                  <input
+                      className='input twind-bg-input twind-w-1/3'
+                      required
+                    id="minutesInput"
+                    placeholder="0"
+                    describedby="basic-addon2"
+                    value={seconds}
+                    onChange={(e) => setSeconds(e.target.value)}
+                  />
+                  <div className="twind-right-2 twind-opacity-100 twind-w-1/3">mins</div>
+                  </div>
+            </div>
+        </div>
+
+        <FormField>
+          <label className="twind-block twind-mb-6 twind-relative">
+            <div className="twind-text-xs twind-text-gray twind-absolute twind-right-0 twind-top-1">0/255</div>
+            <div className="twind-mb-1">Comment:</div>
+            <div>
+              <label
+                  className="twind-h-24 Input twind-font-semibold twind-flex twind-p-4 twind-pt-0 twind-rounded-lg twind-border  twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue twind-border-border"
+              >
+                <input
+                  required
+                  id="commentInput"
+                  placeholder="Enter comment"
+                  describedby="basic-addon2"
+                  value={comment}
+                  onChange={(e) => {
+                    setComment(e.target.value)
+                  }}
+                />
+            </label>
+            </div>
+          </label>
+        </FormField> 
+
+        <div className="twind-flex twind-relaitive">
+          <div><p className="twind-text-left twind-text-gray twind-w-2/3 twind-text-sm">
+            You will be charged 0.1 NEAR fee for that stream
+          </p></div>
+          <Button variant="main" className="twind-mx-auto twind-right-0">
             Create Stream
           </Button>
         </div>
-        <p className="twind-text-center twind-text-gray twind-my-6">
-          You will be charged 0.006 ETH fee for that stream
-        </p>
+        
       </form>
     </div>
   );
