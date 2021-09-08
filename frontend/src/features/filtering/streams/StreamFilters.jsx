@@ -1,14 +1,44 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import classNames from 'classnames';
 import {useStreamFilters} from './useStreamFilters';
 import {Filter, FilterOptionWithCounter} from '../../../components/kit';
 
+function compareBy(a, b, key) {
+  if (a[key] > b[key]) {
+    return -1;
+  } else if (a[key] < b[key]) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+const sorts = {
+  bigBalanceFirst: {
+    label: 'With big balances',
+    fn: (a, b) => compareBy(a, b, 'balance'),
+  },
+  highSpeedFirst: {
+    label: 'With high speed',
+    fn: (a, b) => compareBy(a, b, 'tokens_per_tick'),
+  },
+  highSpeedLast: {
+    label: 'With low speed',
+    fn: (a, b) => compareBy(a, b, 'tokens_per_tick') * -1,
+  },
+};
 export function StreamFilters({items, onFilterDone, className}) {
   const filter = useStreamFilters(items);
+  const [sorting, setSorting] = useState(sorts.highSpeedFirst);
+  const sortOptions = Object.values(sorts);
 
   useEffect(() => {
-    onFilterDone(filter.result.filteredItems);
-  }, [filter.result.filteredItems, onFilterDone]);
+    const sorted = [...filter.result.filteredItems];
+    sorted.sort(sorting.fn);
+
+    console.log('sorting', sorted);
+    onFilterDone(sorted);
+  }, [filter.result.filteredItems, onFilterDone, sorting.fn]);
 
   return (
     <div className={classNames('twind-flex', className)}>
@@ -41,6 +71,20 @@ export function StreamFilters({items, onFilterDone, className}) {
               count={counts ? counts[option] : ''}
             />
           );
+        }}
+      />
+      <div className="twind-flex-grow"></div>
+      <Filter
+        minimal
+        options={sortOptions}
+        label="Show first:"
+        active={sorting}
+        onChange={setSorting}
+        renderOption={(option) => {
+          return <span>{option.label}</span>;
+        }}
+        renderActive={(option) => {
+          return <span>{option.label}</span>;
         }}
       />
     </div>
