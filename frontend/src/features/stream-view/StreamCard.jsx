@@ -1,10 +1,11 @@
 import classNames from 'classnames';
 import React from 'react';
-import {StreamIn, StreamOut} from './icons';
-import {TokenFormatter} from '../lib/formatting';
-import {ProgressBar} from './kit';
-import {StreamControls, StreamDepositButton} from '../features/stream-control';
-import {DurationTimer} from '../components/DurationTimer';
+import {StreamingSpeed} from './StreamingSpeed';
+import {ProgressBar, Button, TokenImage} from '../../components/kit';
+import {StreamControls, StreamDepositButton} from '../stream-control';
+import {DurationTimer} from '../../components/DurationTimer';
+import {routes} from '../../lib/routing';
+import {streamViewData} from './streamViewData';
 
 const streamType = {
   stream_id: 'FnVkAYZu4XED3o44pZPvrnghVEMxo3GiHszUT4orjYST',
@@ -31,24 +32,12 @@ const streamType = {
 };
 
 export function StreamCard({stream = streamType, direction, className}) {
-  const tf = TokenFormatter(stream.token_name);
-
-  // time left calculations
-  const secondsLeft = tf.ticksToMs(
-    Math.round(
-      (stream.balance - stream.available_to_withdraw) / stream.tokens_per_tick,
-    ),
-  );
-  const dateEnd = new Date(new Date().getTime() + secondsLeft);
-
-  // progress bar calculations
-  const full = Number(stream.balance) + Number(stream.tokens_total_withdrawn);
-  const withdrawn = Number(stream.tokens_total_withdrawn);
-  const tokensStreamed =
-    Number(stream.tokens_total_withdrawn) +
-    Number(stream.available_to_withdraw);
-
-  const progresses = [withdrawn / full, tokensStreamed / full];
+  const {
+    dateEnd,
+    progresses,
+    tf,
+    progress: {full, withdrawn, streamed},
+  } = streamViewData(stream);
 
   return (
     <div
@@ -60,25 +49,17 @@ export function StreamCard({stream = streamType, direction, className}) {
     >
       <div className="twind-w-full twind-col-span-12 xl:twind-col-span-5 2xl:twind-col-span-6 twind-justify-self-start">
         <div className="twind-flex twind-items-center">
-          <div className="twind-w-8 twind-h-8 twind-flex-shrink-0 twind-rounded-lg twind-bg-card2 twind-inline-flex twind-items-center twind-justify-center twind-mr-4">
-            I
-          </div>
+          <TokenImage tokenName={stream.token_name} className="twind-mr-4" />
           <div className="twind-w-full twind-gap-4 twind-flex twind-items-end">
             <div className="twind-text-2xl twind-whitespace-nowrap twind-flex-shrink-0">
-              {tf.amount(tokensStreamed)} of {tf.amount(full)}{' '}
+              {tf.amount(streamed)} of {tf.amount(full)}{' '}
               <span className="twind-uppercase">{stream.token_name}</span>
             </div>
 
-            <div className="twind-inline-flex twind-items-center twind-whitespace-nowrap">
-              {direction === 'out' ? <StreamOut /> : <StreamIn />}
-              <span className="twind-ml-2">
-                <span>@{tf.tokensPerS(stream.tokens_per_tick)}</span>
-                <span> {stream.token_name} / Sec</span>
-              </span>
-            </div>
+            <StreamingSpeed stream={stream} />
 
             <div className="twind-whitespace-nowrap">
-              <DurationTimer untilDate={dateEnd} />
+              <DurationTimer untilDate={dateEnd} suffix=" remaining" />
             </div>
           </div>
         </div>
@@ -90,10 +71,18 @@ export function StreamCard({stream = streamType, direction, className}) {
       </div>
       <div className="twind-col-span-2">
         <div className="twind-text-gray">Status:</div>
-        <StreamControls stream={stream} />
+        <StreamControls minimal stream={stream} />
       </div>
-      <div className="twind-col-span-2">
+      <div className="twind-col-span-2 twind-flex twind-items-start">
         {direction === 'out' ? <StreamDepositButton stream={stream} /> : null}
+        <Button
+          className="twind-ml-3"
+          variant="filled"
+          link
+          to={routes.stream(stream.stream_id)}
+        >
+          Inspect
+        </Button>
       </div>
     </div>
   );

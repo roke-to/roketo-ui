@@ -18,15 +18,16 @@ export function DropdownOpener({
 }) {
   const minimalClasses = minimal
     ? ''
-    : 'twind-px-4 twind-py-3 twind-border twind-border-border twind-w-36';
+    : 'twind-px-4 twind-py-3 twind-border twind-border-border twind-w-36 hover:twind-bg-hover hover:twind-border-hover';
+
   return (
     <button
       onClick={onClick}
       className={classNames(
-        'twind-cursor-pointer twind-flex twind-items-center  ',
+        'twind-cursor-pointer twind-flex twind-items-center',
         className,
         minimalClasses,
-        rounded ? 'twind-rounded-full' : 'twind-rounded-xl',
+        rounded ? 'twind-rounded-full' : 'twind-rounded-lg',
       )}
       {...rest}
     >

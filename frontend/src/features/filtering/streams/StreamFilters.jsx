@@ -36,7 +36,6 @@ export function StreamFilters({items, onFilterDone, className}) {
     const sorted = [...filter.result.filteredItems];
     sorted.sort(sorting.fn);
 
-    console.log('sorting', sorted);
     onFilterDone(sorted);
   }, [filter.result.filteredItems, onFilterDone, sorting.fn]);
 

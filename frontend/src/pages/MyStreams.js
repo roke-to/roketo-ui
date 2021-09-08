@@ -1,11 +1,11 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {useNear} from '../features/near-connect/useNear';
-import useSWR, {useSWRConfig} from 'swr';
-import {StreamCard} from '../components/StreamCard';
+import {StreamCard} from '../features/stream-view';
 import {StreamFilters} from '../features/filtering/streams';
 import {Button} from '../components/kit';
 import {routes} from '../lib/routing';
 import {useStreamControl} from '../features/stream-control/useStreamControl';
+import {useAccount, useStreams} from '../features/xyiming-resources';
 
 const __INPUTS = [];
 const __OUTPUTS = [];
@@ -15,6 +15,8 @@ export function MyStreamsPage() {
   const [token, setToken] = useState('NEAR');
   const [filteredItems, setFiltered] = useState([]);
   const streamControl = useStreamControl();
+  const accountSWR = useAccount({near});
+  const streamsSWR = useStreams({near, accountSWR});
 
   const isIncomingStream = (stream) => {
     if (stream.owner_id === near.near.accountId) {
@@ -23,51 +25,16 @@ export function MyStreamsPage() {
     return true;
   };
 
-  const {data: account, mutate: mutateAccount} = useSWR(
-    ['account', near.near.accountId],
-    near.contractApi.getCurrentAccount,
-    {
-      errorRetryInterval: 250,
-    },
-  );
-
-  async function fetchStreams({inputs, outputs}) {
-    let inputStreams = await Promise.all(
-      inputs.map((streamId) => near.contractApi.getStream({streamId})),
-    );
-
-    let outputStreams = await Promise.all(
-      outputs.map((streamId) => near.contractApi.getStream({streamId})),
-    );
-
-    return {
-      inputs: inputStreams.map((stream) => ({...stream, direction: 'in'})),
-      outputs: outputStreams.map((stream) => ({...stream, direction: 'out'})),
-    };
-  }
-
   async function updateAllAndWithdraw() {
     await streamControl.updateAllAndWithdraw();
-    mutateAccount();
+    accountSWR.mutate();
   }
 
-  const {data: streams} = useSWR(
-    () => {
-      const key = account
-        ? ['streams', account.account_id, account.last_action]
-        : false;
-      return key;
-    },
-    () => fetchStreams({inputs: account.inputs, outputs: account.outputs}),
-  );
-
-  useEffect(() => {
-    if (!account) return;
-  }, [account]);
+  const streams = streamsSWR.data;
 
   const inputs = streams ? streams.inputs : __INPUTS;
   const outputs = streams ? streams.outputs : __OUTPUTS;
-
+  console.log({inputs, outputs, streams});
   const allStreams = useMemo(() => inputs.concat(outputs), [inputs, outputs]);
 
   async function depositClick(e) {

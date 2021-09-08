@@ -10,6 +10,7 @@ const variants = {
 };
 
 const sizes = ['normal', 'big'];
+const colors = ['dark', 'light'];
 
 export function Button({
   icon,
@@ -19,11 +20,13 @@ export function Button({
   size,
   loading,
   loadingText,
+  color = 'light',
   variant = 'outlined',
   ...rest
 }) {
   let variantStyles = '';
   let sizeStyles = '';
+  let colorStyles = '';
 
   if (variant === variants.main) {
     variantStyles = 'Button--main';
@@ -36,7 +39,13 @@ export function Button({
         : '';
   } else if (variant === variants.outlined) {
     variantStyles =
-      'twind-border-solid twind-border twind-border-blue hover:twind-bg-blue twind-font-semibold twind-rounded-lg';
+      'twind-border-solid twind-border twind-font-semibold twind-rounded-lg';
+    colorStyles =
+      color === 'light'
+        ? 'twind-border-blue hover:twind-bg-blue'
+        : color === 'dark'
+        ? 'twind-border-border hover:twind-bg-hover hover:twind-border-hover'
+        : '';
   } else if (variant === variants.filled) {
     variantStyles =
       'twind-bg-dark hover:twind-bg-hover twind-font-semibold twind-rounded-lg';
@@ -50,6 +59,7 @@ export function Button({
         'twind-inline-flex twind-items-center twind-justify-center twind-p-3  twind-whitespace-nowrap',
         variantStyles,
         sizeStyles,
+        colorStyles,
         'twind-transition-all',
         className,
       )}

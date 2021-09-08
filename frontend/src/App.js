@@ -15,6 +15,8 @@ import {Header} from './components/Header';
 import {NearContext, useCreateNear} from './features/near-connect/useNear';
 import {MyStreamsPage} from './pages/MyStreams';
 import {AuthorizePage} from './pages/Authorize';
+import {StreamPage} from './pages/StreamPage';
+import {routes} from './lib/routing';
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
@@ -57,6 +59,14 @@ function AppFn() {
                 path="/"
               >
                 <SendPage />
+              </PrivateRoute>
+              <PrivateRoute
+                exact
+                redirect={<Redirect to="/authorize" />}
+                allowed={near.auth.signedIn}
+                path="/my_streams/:id"
+              >
+                <StreamPage />
               </PrivateRoute>
               <PrivateRoute
                 exact
