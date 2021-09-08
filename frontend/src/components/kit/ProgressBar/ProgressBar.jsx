@@ -19,6 +19,7 @@ export function ProgressBar({progresses, className, ...rest}) {
     >
       {p.map((progress, i) => (
         <div
+          key={i}
           className="twind-absolute twind-left-0 twind-h-full twind-rounded-lg"
           style={{
             width: progress * 100 + '%',
