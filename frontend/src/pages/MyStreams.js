@@ -3,6 +3,8 @@ import {useNear} from '../features/near-connect/useNear';
 import useSWR from 'swr';
 import {StreamCard} from '../components/StreamCard';
 import {StreamFilters} from '../features/filtering/streams';
+import {Button} from '../components/kit';
+import {routes} from '../lib/routing';
 
 const __INPUTS = [];
 const __OUTPUTS = [];
@@ -106,13 +108,30 @@ export function MyStreamsPage() {
         onFilterDone={setFiltered}
         className="twind-mb-10 twind-relative twind-z-10"
       />
-      {filteredItems.map((stream) => (
-        <StreamCard
-          stream={stream}
-          className="twind-mb-4"
-          direction={isIncomingStream(stream) ? 'in' : 'out'}
-        />
-      ))}
+      {allStreams.length === 0 ? (
+        <div className="twind-flex twind-flex-col twind-w-80 twind-mx-auto">
+          <h3 className="twind-text-3xl twind-text-center twind-my-12 ">
+            You dont have any streams yet.
+          </h3>
+          <Button variant="main" link to={routes.send}>
+            Create First Stream
+          </Button>
+        </div>
+      ) : filteredItems.length === 0 ? (
+        <h3 className="twind-text-3xl twind-text-center twind-my-12 twind-w-80 twind-mx-auto">
+          No streams matching your filters. <br />
+          Try selecting different filters!
+        </h3>
+      ) : (
+        filteredItems.map((stream) => (
+          <StreamCard
+            key={stream.stream_id}
+            stream={stream}
+            className="twind-mb-4"
+            direction={isIncomingStream(stream) ? 'in' : 'out'}
+          />
+        ))
+      )}
     </div>
   );
 }

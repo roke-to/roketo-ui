@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import {Link} from 'react-router-dom';
 import './Button.scss';
 
 const variants = {
@@ -7,11 +8,12 @@ const variants = {
   filled: 'filled',
   outlined: 'outlined',
 };
-const colors = ['dark', 'light'];
+
 export function Button({
   icon,
   children,
   className,
+  link,
   variant = 'outlined',
   ...rest
 }) {
@@ -26,9 +28,10 @@ export function Button({
     variantStyles =
       'twind-bg-dark hover:twind-bg-hover twind-font-semibold twind-rounded-lg';
   }
+  const ButtonComponent = link ? Link : 'button';
 
   return (
-    <button
+    <ButtonComponent
       className={classNames(
         'twind-inline-flex twind-items-center twind-justify-center twind-p-3  twind-whitespace-nowrap',
         variantStyles,
@@ -39,6 +42,6 @@ export function Button({
     >
       {icon ? <div className="twind-mr-2">{icon}</div> : null}
       {children}
-    </button>
+    </ButtonComponent>
   );
 }
