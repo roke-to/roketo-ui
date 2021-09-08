@@ -23,8 +23,8 @@ pub struct Account {
 #[serde(crate = "near_sdk::serde")]
 pub struct AccountView {
     pub account_id: String,
-    pub inputs: Vec<Base58CryptoHash>,
-    pub outputs: Vec<Base58CryptoHash>,
+    pub inputs: Vec<StreamId>,
+    pub outputs: Vec<StreamId>,
     pub last_action: WrappedTimestamp,
     pub total_received: Vec<(String, WrappedBalance)>,
     pub total_incoming: Vec<(String, WrappedBalance)>,
@@ -36,8 +36,8 @@ impl From<&Account> for AccountView {
     fn from(a: &Account) -> Self {
         Self {
             account_id: a.account_id.clone(),
-            inputs: a.inputs.to_vec().iter().map(|&x| x.into()).collect(),
-            outputs: a.outputs.to_vec().iter().map(|&x| x.into()).collect(),
+            inputs: a.inputs.to_vec(),
+            outputs: a.outputs.to_vec(),
             last_action: a.last_action.into(),
             total_received: a
                 .total_received
