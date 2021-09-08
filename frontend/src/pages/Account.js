@@ -17,15 +17,6 @@ const __OUTPUTS = [];
 
 export function AccountPage() {
   const near = useNear();
-  const [token, setToken] = useState('NEAR');
-  const [filteredItems, setFiltered] = useState([]);
-
-  const isIncomingStream = (stream) => {
-    if (stream.owner_id === near.near.accountId) {
-      return false;
-    }
-    return true;
-  };
 
   const {data: account} = useSWR(
     ['account', near.near.accountId],
@@ -38,8 +29,6 @@ export function AccountPage() {
   const inputs = (account && account.inputs) || __INPUTS;
   const outputs = (account && account.outputs) || __OUTPUTS;
 
-  const allStreams = useMemo(() => inputs.concat(outputs), [inputs, outputs]);
-
   console.log('ACCOUNT', account);
   console.log('INPUTS', inputs);
   console.log('OUTPUTS', outputs);
@@ -47,7 +36,7 @@ export function AccountPage() {
   return (
     <div className="twind-container mx-auto twind-p-12">
       <div className="twind-flex twind-justify-between twind-items-center twind-mb-10">
-        <h1 className="twind-text-3xl twind-mb-12">My Account</h1>
+        <h1 className="twind-text-3xl">My Account</h1>
         <div className="twind-flex twind-items-center">
           <div className="twind-mr-12 twind-text-gray twind-flex twind-items-center">
             <span className="twind-mr-2">
@@ -70,14 +59,28 @@ export function AccountPage() {
         <AccountColumn
           icon={<StreamIn />}
           header="Receiving"
+          account={account}
+          tokensField="total_incoming"
           streamsIds={inputs}
+          key="AccountInputs"
+          period="sec"
         />
         <AccountColumn
           icon={<StreamOut />}
           header="Sending"
+          account={account}
+          tokensField="total_outgoing"
           streamsIds={outputs}
+          key="AccountOutputs"
+          period="sec"
         />
-        <AccountColumn icon={<StreamWithdraw />} header="Withdrawn" />
+        <AccountColumn
+          icon={<StreamWithdraw />}
+          header="Withdrawn"
+          account={account}
+          tokensField="total_received"
+          key="AccountWithdrawn"
+        />
       </div>
     </div>
   );

@@ -3,9 +3,11 @@ import numbro from 'numbro';
 export const tokens = {
   NEAR: {
     decimals: 24,
+    name: 'Near',
   },
   TARAS: {
     decimals: 18,
+    name: 'Taras',
   },
   fallback: {
     decimals: 18,
