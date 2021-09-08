@@ -20,11 +20,12 @@ function SendPage() {
   const [dropdownOpened, setDropdownOpened] = useState(false);
   const [dropdownActive, setDropdownActive] = useState('NEAR');
 
-  const [days, setDays] = useState(0);
+  const [days, setDays] = useState(0.0);
   const [minutes, setMinutes] = useState(0);
-  const [seconds, setSeconds] = useState(0);
-  const [deposit, setDeposit] = useState(0);
+  const [hourse, setHourse] = useState(0);
+  const [deposit, setDeposit] = useState(0.0);
   const [comment, setComment] = useState();
+  const [errors, setError] = useState({});
 
   const tokensNames = Object.keys(tokens).filter((item) => item !== 'fallback')
   const dropdownOnChange = (value) => {
@@ -32,61 +33,27 @@ function SendPage() {
     setDropdownActive(value);
   }
 
-  const [totalSecond, setTotalSecond] = useState(days*3600+minutes*60+seconds)
-  const [speed, setSpeed] = useState((deposit/totalSecond).toFixed(3))
   function radioClick(e, token) {
     setDropdownActive(token);
   }
 
   async function createStreamClick(e) {
-    e.preventDefault();
+    e.preventDefault();    
+    const formatter = TokenFormatter(dropdownActive);  
+
     const ownerId = document.getElementById('ownerInput').value;
     const receiverId = document.getElementById('receiverInput').value;
-    // TODO
-    const formatter = TokenFormatter(dropdownActive);
-
-    const newdeposit = formatter.amount(deposit)
-
-    const old_deposit =
-        dropdownActive === 'NEAR'
-        ? String(
-            parseInt(
-              (parseFloat(document.getElementById('depositInput').value) +
-                1e-1) *
-                1e9,
-            ),
-          ) + '000000000000000'
-        : '100000000000000000000000';
-
-
-    console.log(dropdownActive,newdeposit, old_deposit)
-    
-    const speed =
-    dropdownActive === 'NEAR'
-        ? String(
-            parseInt(
-              (parseFloat(document.getElementById('speedInput').value) + 0) *
-                1e9,
-            ),
-          ) + '000000'
-        : String(
-            parseInt(
-              (parseFloat(document.getElementById('speedInput').value) + 0) *
-                1e9,
-            ),
-          );
+    const speed = deposit/(days*3600*24+minutes*60+hourse*3600)
 
     const res = await near.contractApi.createStream({
-      deposit: deposit,
-      description: 'blabla',
+      deposit: formatter.toInt(deposit),
+      description: comment,
       ownerId: ownerId,
       receiverId: receiverId,
       token: dropdownActive,
-      speed: speed,
+      speed: formatter.tokenPerSecondToInt(speed),
       autoDepositEnabled: false,
     });
-
-    console.log('create res', res);
   }
 
   const fetchAccount = async (...args) => {
@@ -105,6 +72,7 @@ function SendPage() {
     errorRetryInterval: 250,
   });
 
+  
   return (
     <div className="twind-container twind-m-auto twind-px-5 twind-py-12">
       <div className="twind-text-center">
@@ -189,14 +157,14 @@ function SendPage() {
          <div className="twind-block twind-mb-4">
             <div className="twind-relative">
               <div>Stream duration:</div>
-              <div className="twind-text-xs twind-text-gray twind-absolute twind-right-0 twind-top-1">Streaming speed: {(deposit/(days*3600+minutes*60+seconds)).toFixed(6)} {dropdownActive} / sec</div>
+              <div className="twind-text-xs twind-text-gray twind-absolute twind-right-0 twind-top-1">Streaming speed: {days+minutes+hourse === 0 ? 0 :(deposit/(days*3600*24+minutes*60+hourse*3600)).toFixed(6)} {dropdownActive} / sec</div>
             </div>
             <div className="twind-flex" label="Stream duration">
                   <div
                       className='twind-w-1/3 input twind-font-semibold twind-flex twind-p-4 twind-rounded-l-lg twind-border-border twind-border twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue'
                   >
                     <input
-                      className='input twind-bg-input twind-w-1/3'
+                      className='focus:twind-outline-none input twind-bg-input twind-w-1/3'
                       required
                       id="daysInput"
                       placeholder="0"
@@ -212,13 +180,13 @@ function SendPage() {
                       className='twind-w-1/3 input twind-font-semibold twind-flex twind-p-4 twind-border-border twind-border twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue'
                   >
                   <input
-                      className='input twind-bg-input twind-w-1/3'
+                      className='focus:twind-outline-none input twind-bg-input twind-w-1/3'
                       required
                     id="hourseInput"
                     placeholder="0"
                     describedby="basic-addon2"
-                    value={minutes}
-                    onChange={(e) => setMinutes(e.target.value)}
+                    value={hourse}
+                    onChange={(e) => setHourse(e.target.value)}
                   />
                    <div className="twind-right-2 twind-opacity-100 twind-w-1/3">hourse</div>
                    </div>
@@ -226,13 +194,13 @@ function SendPage() {
                       className='twind-w-1/3 input twind-font-semibold twind-flex twind-p-4 twind-rounded-r-lg twind-border-border twind-border twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue'
                   >
                   <input
-                      className='input twind-bg-input twind-w-1/3'
+                      className='focus:twind-outline-none input twind-bg-input twind-w-1/3'
                       required
                     id="minutesInput"
                     placeholder="0"
                     describedby="basic-addon2"
-                    value={seconds}
-                    onChange={(e) => setSeconds(e.target.value)}
+                    value={minutes}
+                    onChange={(e) => setMinutes(e.target.value)}
                   />
                   <div className="twind-right-2 twind-opacity-100 twind-w-1/3">mins</div>
                   </div>
@@ -241,22 +209,22 @@ function SendPage() {
 
         <FormField>
           <label className="twind-block twind-mb-6 twind-relative">
-            <div className="twind-text-xs twind-text-gray twind-absolute twind-right-0 twind-top-1">0/255</div>
+            <div className="twind-text-xs twind-text-gray twind-absolute twind-right-0 twind-top-1">{(comment && comment.length) || 0}/255</div>
             <div className="twind-mb-1">Comment:</div>
             <div>
               <label
-                  className="twind-h-24 Input twind-font-semibold twind-flex twind-p-4 twind-pt-0 twind-rounded-lg twind-border  twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue twind-border-border"
+                  className="twind-h-40 Input twind-font-semibold twind-flex twind-p-4 twind-pt-0 twind-rounded-lg twind-border  twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue twind-border-border"
               >
-                <input
-                  required
-                  id="commentInput"
+                
+                <textarea id="commentInput"
+                  className=" twind-bg-input  twind-w-full twind-h-full twind-pt-2 focus:twind-outline-none twind-resize-none"
                   placeholder="Enter comment"
-                  describedby="basic-addon2"
+                  maxlength="255"
                   value={comment}
                   onChange={(e) => {
+                    // e.target.value > 255 ? set
                     setComment(e.target.value)
-                  }}
-                />
+                  }}/>
             </label>
             </div>
           </label>
