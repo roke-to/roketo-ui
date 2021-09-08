@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "homepage": "https://near.money",
   "private": true,
   "dependencies": {
@@ -26,7 +26,7 @@
     "react-moment": "^1.1.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
-    "swr": "^0.5.4"
+    "swr": "^1.0.0"
   },
   "scripts": {
     "start": "craco start",

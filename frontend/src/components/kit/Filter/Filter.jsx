@@ -16,7 +16,9 @@ export function Filter({
   label,
   options,
   renderOption,
+  renderActive,
   active,
+  minimal,
   onChange,
   className,
 }) {
@@ -31,16 +33,16 @@ export function Filter({
     >
       <div className="twind-text-gray twind-mr-2">{label}</div>
       <DropdownOpener
+        minimal={minimal}
         rounded
         onClick={() => setOpened(!opened)}
-        className="twind-w-36"
       >
-        {active}
+        {renderActive ? renderActive(active) : active}
       </DropdownOpener>
 
       <DropdownMenu opened={opened} className="twind-right-0">
-        {options.map((option) => (
-          <DropdownMenuItem>
+        {options.map((option, i) => (
+          <DropdownMenuItem key={i}>
             <RadioButton
               label={
                 renderOption ? renderOption(option, active === option) : option

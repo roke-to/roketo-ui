@@ -14,3 +14,4 @@ export * from './Plus';
 export * from './Start';
 export * from './Stop';
 export * from './Pause';
+export * from './PlusGradient';

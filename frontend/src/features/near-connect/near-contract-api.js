@@ -21,13 +21,13 @@ export function NearContractApi(near) {
   const getCurrentAccount = () =>
     getAccount(near.walletConnection.getAccountId());
 
-  async function updateAccount({accountId}) {
+  async function updateAccount() {
     const res = await contract.update_account(
-      {account_id: accountId},
+      {
+        account_id: near.account.accountId,
+      },
       GAS_SIZE,
-      0,
     );
-
     return res;
   }
 

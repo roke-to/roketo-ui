@@ -8,3 +8,4 @@ export * from './DropdownMenu';
 export * from './DropdownOpener';
 export * from './RadioButton';
 export * from './ProgressBar';
+export * from './TokenImage';

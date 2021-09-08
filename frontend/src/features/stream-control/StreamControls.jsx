@@ -10,10 +10,11 @@ import {
 import {StreamStatus} from './StreamStatus';
 import {STREAM_STATUS} from './lib';
 import {Stop, Pause, Start} from '../../components/icons';
+import classNames from 'classnames';
 
-export function StreamControls({stream}) {
+export function StreamControls({stream, minimal, className}) {
   const near = useNear();
-  const canControl = near.near.accountId === stream.owner_id;
+  const isOutgoing = near.near.accountId === stream.owner_id;
   const isDead =
     stream.status === STREAM_STATUS.INTERRUPTED ||
     stream.status === STREAM_STATUS.FINISHED;
@@ -25,21 +26,21 @@ export function StreamControls({stream}) {
     return <span>Loading!</span>;
   }
 
-  if (!canControl || isDead) {
+  if (isDead) {
     return <StreamStatus stream={stream} />;
   }
 
   return (
-    <div className="twind-relative">
+    <div className={classNames(className, 'twind-relative twind-inline-flex')}>
       <DropdownOpener
-        minimal
+        minimal={minimal}
         opened={menuOpened}
         onClick={() => setMenuOpened(!menuOpened)}
       >
         <StreamStatus stream={stream} />
       </DropdownOpener>
       <DropdownMenu opened={menuOpened} className="twind-w-36">
-        {stream.status !== STREAM_STATUS.ACTIVE ? (
+        {stream.status !== STREAM_STATUS.ACTIVE && isOutgoing ? (
           <>
             <DropdownMenuItem>
               <button
