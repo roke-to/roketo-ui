@@ -12,7 +12,6 @@ const __OUTPUTS = [];
 
 export function MyStreamsPage() {
   const near = useNear();
-  const [token, setToken] = useState('NEAR');
   const [filteredItems, setFiltered] = useState([]);
   const streamControl = useStreamControl();
   const accountSWR = useAccount({near});
@@ -36,48 +35,6 @@ export function MyStreamsPage() {
   const outputs = streams ? streams.outputs : __OUTPUTS;
   console.log({inputs, outputs, streams});
   const allStreams = useMemo(() => inputs.concat(outputs), [inputs, outputs]);
-
-  async function depositClick(e) {
-    e.preventDefault();
-    var selectBox = document.getElementById('selectBox');
-    if (selectBox.selectedIndex > 0) {
-      const stream = outputs[selectBox.selectedIndex - 1];
-      if (token === 'NEAR') {
-        const deposit =
-          String(
-            parseInt(
-              parseFloat(document.getElementById('depositTokensInput').value) *
-                1e9,
-            ),
-          ) + '000000000000000';
-        const res = await near.near.contract.deposit(
-          {stream_id: stream.stream_id},
-          '200000000000000',
-          deposit,
-        );
-        console.log('deposit NEAR res', res);
-      } else {
-        const deposit =
-          String(
-            parseInt(
-              parseFloat(document.getElementById('depositTokensInput').value) *
-                1e9,
-            ),
-          ) + '000000000'; // get decimals per each ft contract
-        const res = await near.near.ft.ft_transfer_call(
-          {
-            receiver_id: near.near.near.config.contractName,
-            amount: deposit,
-            memo: 'xyiming transfer',
-            msg: stream.stream_id,
-          },
-          '200000000000000',
-          1,
-        );
-        console.log('deposit TARAS res', res);
-      }
-    }
-  }
 
   return (
     <div className="twind-container twind-mx-auto twind-p-12">

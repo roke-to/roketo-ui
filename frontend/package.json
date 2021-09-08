@@ -30,7 +30,7 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "craco build",
+    "build": "CI=false craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
     "deploy": "yarn build && gh-pages -d build"
@@ -39,7 +39,11 @@
     "extends": "react-app"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -50,6 +54,7 @@
     "autoprefixer": "^9.8.6",
     "gh-pages": "^2.2.0",
     "postcss": "^7.0.36",
+    "prettier": "2.3.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.9"
   }
 }

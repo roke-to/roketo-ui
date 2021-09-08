@@ -3,9 +3,11 @@ import numbro from 'numbro';
 export const tokens = {
   NEAR: {
     decimals: 24,
+    name: 'Near',
   },
   TARAS: {
     decimals: 18,
+    name: 'Taras',
   },
   fallback: {
     decimals: 18,
@@ -20,6 +22,8 @@ export function TokenFormatter(tokenName) {
   const MP = Math.pow(10, token.decimals);
 
   return {
+    tokenPerSecondToInt: (tps) =>
+      numbro(tps).multiply(MP).divide(TICK_TO_S).format({mantissa: 0}),
     toInt: (floatValue) =>
       numbro(floatValue).multiply(MP).format({mantissa: 0}),
     amount: (amount) =>

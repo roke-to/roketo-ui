@@ -10,6 +10,11 @@ export function Header() {
   const navigation = (
     <ul className="twind-flex-col lg:twind-flex-row twind-flex twind-justify-center ">
       <li className="twind-mb-2 lg:twind-mr-2 lg:twind-mb-0">
+        <NavLink to={routes.account} icon={<icons.Account />}>
+          Account
+        </NavLink>
+      </li>
+      <li className="twind-mb-2 lg:twind-mr-2 lg:twind-mb-0">
         <NavLink to={routes.myStreams} icon={<icons.Streams />}>
           My Streams
         </NavLink>

@@ -121,6 +121,25 @@ pub trait ContractB {
     ) -> StorageBalance;
 }
 
+#[derive(Deserialize, Serialize, Debug)]
+#[serde(crate = "near_sdk::serde")]
+pub enum CreateOrDeposit {
+    Create(CreateStruct),
+    Deposit(Base58CryptoHash),
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[serde(crate = "near_sdk::serde")]
+pub struct CreateStruct {
+    pub description: Option<String>,
+    pub owner_id: ValidAccountId,
+    pub receiver_id: ValidAccountId,
+    pub token_name: String,
+    pub balance: WrappedBalance,
+    pub tokens_per_tick: WrappedBalance,
+    pub auto_deposit_enabled: bool,
+}
+
 impl Xyiming {
     pub(crate) fn get_token_id_by_name(token_name: &String) -> Option<TokenId> {
         for x in 0..NUM_TOKENS {
@@ -159,5 +178,19 @@ impl Xyiming {
                 GAS_FOR_FT_TRANSFER,
             ))
         }
+    }
+
+    pub(crate) fn valid_ft_sender(sender_id: AccountId) -> bool {
+        for x in 0..NUM_TOKENS {
+            if TOKENS[x] == sender_id {
+                // TODO check ""
+                return true;
+            }
+        }
+        if sender_id == "alice" {
+            // TODO testing only
+            return true;
+        }
+        false
     }
 }

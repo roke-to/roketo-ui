@@ -4,12 +4,14 @@ use std::convert::TryInto;
 /// Import the generated proxy contract
 use xyiming::XyimingContract;
 use xyiming::{
-    AccountView, ActionView, StreamView, CREATE_STREAM_DEPOSIT, ERR_ACCESS_DENIED,
-    ERR_CANNOT_START_STREAM, ERR_DEPOSIT_NOT_ENOUGH, ERR_PAUSE_PAUSED, ERR_STREAM_NOT_AVAILABLE,
-    ONE_NEAR, ONE_YOCTO,
+    AccountView, ActionView, CreateOrDeposit, CreateStruct, StreamView, CREATE_STREAM_DEPOSIT,
+    ERR_ACCESS_DENIED, ERR_CANNOT_START_STREAM, ERR_DEPOSIT_NOT_ENOUGH, ERR_PAUSE_PAUSED,
+    ERR_STREAM_NOT_AVAILABLE, ONE_NEAR, ONE_YOCTO,
 };
 
 use near_sdk::json_types::{Base58CryptoHash, WrappedBalance};
+use near_sdk::serde_json;
+use near_sdk_sim::transaction::ExecutionStatus;
 use near_sdk_sim::{call, deploy, init_simulator, to_yocto, view, ContractAccount, UserAccount};
 
 // Load in contract bytes at runtime
@@ -972,4 +974,141 @@ fn stream_history_sanity() {
     assert!(history[3].action_type == "Withdraw");
     assert!(history[4].action_type == "Refund");
     assert!(history[5].action_type == "Stop");
+}
+
+#[test]
+fn ft_transfer_sanity() {
+    let mut state = State::new();
+    state.create_alice();
+    state.create_bob();
+    let alice = state.accounts.get(ALICE).unwrap();
+    let bob = state.accounts.get(BOB).unwrap();
+    let contract = &state.contract;
+
+    let outcome = call!(
+        alice,
+        contract.ft_on_transfer(
+            ALICE.try_into().unwrap(),
+            (123 * ONE_NEAR).into(),
+            "shit".to_string()
+        ),
+        deposit = 0
+    );
+    assert!(outcome.is_ok());
+
+    let outcome = call!(
+        alice,
+        contract.ft_on_transfer(
+            ALICE.try_into().unwrap(),
+            (123 * ONE_NEAR).into(),
+            "shit".to_string()
+        ),
+        deposit = 0
+    );
+    assert!(outcome.is_ok());
+    assert!(
+        outcome.status()
+            == ExecutionStatus::SuccessValue(
+                "\"123000000000000000000000000\""
+                    .to_string()
+                    .as_bytes()
+                    .to_vec()
+            )
+    );
+
+    // TODO enable
+    /*let cod: CreateOrDeposit = CreateOrDeposit::Deposit(
+        "425LBB7A4QvmhpdxcU1aWAHUuCRz5ShJbtFLKSWhsuaF"
+            .try_into()
+            .unwrap(),
+    );
+    let json: String = serde_json::to_string(&cod).unwrap();
+
+    println!("??? {:?}", json);
+
+    let outcome = call!(
+        alice,
+        contract.ft_on_transfer(ALICE.try_into().unwrap(), (123 * ONE_NEAR).into(), json),
+        deposit = 0
+    );
+    assert!(!outcome.is_ok());
+    println!("??? {:?}", outcome);*/
+
+    let cod: CreateOrDeposit = CreateOrDeposit::Create(CreateStruct {
+        description: Some("example".to_string()),
+        owner_id: ALICE.try_into().unwrap(),
+        receiver_id: BOB.try_into().unwrap(),
+        token_name: "DACHA".to_string(),
+        balance: (123 * ONE_NEAR).into(),
+        tokens_per_tick: ONE_NEAR_PER_TICK.into(),
+        auto_deposit_enabled: false,
+    });
+    let json: String = serde_json::to_string(&cod).unwrap();
+
+    let outcome = call!(
+        bob,
+        contract.ft_on_transfer(ALICE.try_into().unwrap(), (123 * ONE_NEAR).into(), json.clone()),
+        deposit = 0
+    );
+    assert!(!outcome.is_ok());
+    assert!(
+        format!("{:?}", outcome.status()).contains("valid_ft_sender"),
+        "received {:?}",
+        outcome.status()
+    );
+
+    let outcome = call!(
+        alice,
+        contract.ft_on_transfer(ALICE.try_into().unwrap(), (123 * ONE_NEAR).into(), json),
+        deposit = 0
+    );
+    assert!(outcome.is_ok());
+    assert!(
+        outcome.status() == ExecutionStatus::SuccessValue("\"0\"".to_string().as_bytes().to_vec())
+    );
+
+    let alice_account = state.view_account(ALICE).unwrap();
+    assert_eq!(alice_account.inputs.len(), 0);
+    assert_eq!(alice_account.outputs.len(), 1);
+    let bob_account = state.view_account(BOB).unwrap();
+    assert_eq!(bob_account.inputs.len(), 1);
+    assert_eq!(bob_account.outputs.len(), 0);
+
+    let stream_hash: Base58CryptoHash = bob_account.inputs[0].into();
+    let stream_id: String = (&stream_hash).into();
+
+    let stream = state.view_stream(&stream_id).unwrap();
+    //println!("### {:?}", stream);
+    assert!(stream.owner_id == ALICE);
+    assert!(stream.receiver_id == BOB);
+    assert!(stream.token_name == "DACHA");
+    assert!(stream.balance == (123 * ONE_NEAR).into());
+    assert!(stream.tokens_per_tick == ONE_NEAR_PER_TICK.into());
+    assert!(stream.auto_deposit_enabled == false);
+    assert!(stream.status == "ACTIVE");
+    assert!(stream.history_len == 3);
+
+    let cod: CreateOrDeposit = CreateOrDeposit::Deposit(stream_hash);
+    let json: String = serde_json::to_string(&cod).unwrap();
+
+    let outcome = call!(
+        alice,
+        contract.ft_on_transfer(ALICE.try_into().unwrap(), (20 * ONE_NEAR).into(), json),
+        deposit = 0
+    );
+    assert!(outcome.is_ok());
+    assert!(
+        outcome.status() == ExecutionStatus::SuccessValue("\"0\"".to_string().as_bytes().to_vec())
+    );
+
+    let stream = state.view_stream(&stream_id).unwrap();
+    //println!("### {:?}", stream);
+    assert!(stream.owner_id == ALICE);
+    assert!(stream.receiver_id == BOB);
+    assert!(stream.token_name == "DACHA");
+    assert!(stream.balance == (143 * ONE_NEAR).into());
+    assert!(stream.tokens_per_tick == ONE_NEAR_PER_TICK.into());
+    assert!(stream.auto_deposit_enabled == false);
+    assert!(stream.status == "ACTIVE");
+    assert!(stream.history_len == 4);
 }

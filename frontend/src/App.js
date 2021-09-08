@@ -14,6 +14,7 @@ import SendPage from './pages/Send';
 import {Header} from './components/Header';
 import {NearContext, useCreateNear} from './features/near-connect/useNear';
 import {MyStreamsPage} from './pages/MyStreams';
+import {AccountPage} from './pages/Account';
 import {AuthorizePage} from './pages/Authorize';
 import {StreamPage} from './pages/StreamPage';
 import {routes} from './lib/routing';
