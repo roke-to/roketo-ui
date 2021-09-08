@@ -16,8 +16,11 @@ use near_contract_standards::fungible_token::core_impl::ext_fungible_token;
 use near_contract_standards::fungible_token::receiver::FungibleTokenReceiver;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::{LookupMap, UnorderedSet, Vector};
-use near_sdk::json_types::{Base58CryptoHash, ValidAccountId, WrappedBalance, WrappedTimestamp};
+use near_sdk::json_types::{
+    Base58CryptoHash, ValidAccountId, WrappedBalance, WrappedTimestamp, U128,
+};
 use near_sdk::serde::{Deserialize, Serialize};
+use near_sdk::serde_json;
 use near_sdk::{
     env, ext_contract, near_bindgen, AccountId, Balance, CryptoHash, Gas, PanicOnDefault, Promise,
     PromiseOrValue, Timestamp,
@@ -30,8 +33,6 @@ near_sdk::setup_alloc!();
 pub struct Xyiming {
     // TODO put stats here
 }
-
-use near_sdk::json_types::U128;
 
 #[near_bindgen]
 impl Xyiming {
@@ -46,13 +47,41 @@ impl Xyiming {
 impl FungibleTokenReceiver for Xyiming {
     fn ft_on_transfer(
         &mut self,
-        #[allow(unused_variables)] sender_id: ValidAccountId,
+        sender_id: ValidAccountId,
         amount: U128,
         msg: String,
     ) -> PromiseOrValue<U128> {
-        let stream_id: Base58CryptoHash = msg.try_into().unwrap();
-        self.deposit_ft(stream_id, amount);
-        PromiseOrValue::Value(U128::from(0))
+        assert!(Xyiming::valid_ft_sender(env::predecessor_account_id()));
+        let key: Result<CreateOrDeposit, _> = serde_json::from_str(&msg);
+        if key.is_err() {
+            // return everything back
+            return PromiseOrValue::Value(amount);
+        }
+        match key.unwrap() {
+            CreateOrDeposit::Create(create_struct) => {
+                if self.create_stream_ft(
+                    sender_id,
+                    create_struct.description,
+                    create_struct.owner_id,
+                    create_struct.receiver_id,
+                    create_struct.token_name,
+                    create_struct.balance,
+                    create_struct.tokens_per_tick,
+                    create_struct.auto_deposit_enabled,
+                ) {
+                    PromiseOrValue::Value(U128::from(0))
+                } else {
+                    return PromiseOrValue::Value(amount);
+                }
+            }
+            CreateOrDeposit::Deposit(stream_id) => {
+                if self.deposit_ft(stream_id, amount) {
+                    PromiseOrValue::Value(U128::from(0))
+                } else {
+                    return PromiseOrValue::Value(amount);
+                }
+            }
+        }
     }
 }
 
