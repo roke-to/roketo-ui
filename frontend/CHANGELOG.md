@@ -2,6 +2,8 @@
 - Add empty states for MyStreams page
 - Add sorting streams by speed and balance 
 - Add update all and withdraw button
+- Add first iteration for StreamPage
+  
 # v0.1.5 September 7, 2021
 - Remove receive page completely
 - Now fetching streams by id
