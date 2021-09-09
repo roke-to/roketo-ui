@@ -22,11 +22,18 @@ module.exports = {
           inactive: '#F56173',
           hold: '#FFAB6A',
         },
+
+        streams: {
+          streamed: '#B54EFF',
+          withdrawn: '#FFB66A',
+        },
       },
     },
   },
   variants: {
-    extend: {},
+    extend: {
+      backgroundColor: ['active'],
+    },
   },
   plugins: [],
 };

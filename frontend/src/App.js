@@ -1,7 +1,7 @@
 import React from 'react';
 import 'error-polyfill';
-import 'bootstrap/dist/js/bootstrap.bundle';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/js/bootstrap.bundle';
+//import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.scss';
 import {
   HashRouter as Router,
@@ -38,7 +38,7 @@ function AppFn() {
 
   return (
     <NearContext.Provider value={near}>
-      <div className="twind-bg-dark text-white">
+      <div className="twind-bg-dark twind-text-white">
         {near.inited ? (
           <Router basename={process.env.PUBLIC_URL}>
             <Header />
@@ -61,14 +61,14 @@ function AppFn() {
               >
                 <SendPage />
               </PrivateRoute>
-              <PrivateRoute
+              <Route
                 exact
-                redirect={<Redirect to="/authorize" />}
-                allowed={near.auth.signedIn}
+                // redirect={<Redirect to="/authorize" />}
+                // allowed={near.auth.signedIn}
                 path="/my_streams/:id"
               >
                 <StreamPage />
-              </PrivateRoute>
+              </Route>
               <PrivateRoute
                 exact
                 redirect={<Redirect to="/authorize" />}
