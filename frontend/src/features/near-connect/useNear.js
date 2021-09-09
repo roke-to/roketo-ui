@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import * as nearAPI from 'near-api-js';
 import {NearContractApi} from './near-contract-api';
 import {NEAR_CONFIG as NearConfig} from './config';
+import {tokens} from '../../lib/formatting';
 
 export const NearContext = React.createContext({
   inited: false,
@@ -65,11 +66,22 @@ async function createNearInstance() {
     },
   );
 
-  // TODO set multiple
-  _near.ft = new nearAPI.Contract(_near.account, NearConfig.ft, {
-    viewMethods: ['ft_balance_of'],
-    changeMethods: ['ft_transfer', 'ft_transfer_call'],
-  });
+  const tokensNames = Object.keys(tokens).filter((item) => item !== 'fallback');
+  _near.fts = {};
+  for (let i = 0; i < tokensNames.length; i++) {
+    _near.fts[tokensNames[i]] = {
+      name: tokensNames[i],
+      address: tokens[tokensNames[i]].address,
+      contract: new nearAPI.Contract(
+        _near.account,
+        tokens[tokensNames[i]].address,
+        {
+          viewMethods: ['ft_balance_of'],
+          changeMethods: ['ft_transfer', 'ft_transfer_call'],
+        },
+      ),
+    };
+  }
 
   return _near;
 }

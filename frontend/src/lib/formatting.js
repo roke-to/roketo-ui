@@ -2,15 +2,32 @@ import numbro from 'numbro';
 
 export const tokens = {
   NEAR: {
-    decimals: 24,
     name: 'Near',
+    decimals: 24,
+    address: null,
+    is_mainnet: true,
+    is_testnet: true,
   },
   TARAS: {
-    decimals: 18,
     name: 'Taras',
+    decimals: 18,
+    address: 'dev-1630798753809-34755859843881',
+    is_mainnet: false,
+    is_testnet: true,
+  },
+  XYI: {
+    name: 'XYI',
+    decimals: 18,
+    address: 'xyi.tkn.near',
+    is_mainnet: true,
+    is_testnet: false,
   },
   fallback: {
+    name: null,
     decimals: 18,
+    address: null,
+    is_mainnet: false,
+    is_testnet: false,
   },
 };
 
