@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import {TokenImage, ArcProgressBar} from '../../components/kit';
 import {streamViewData, StreamingSpeed, streamDirection} from '.';
 import {StreamControls, StreamDepositButtonOutlined} from '../stream-control';
+import {StreamWithdrawButton} from '../stream-control/StreamWithdrawButton';
 
 export function StreamDashboard({stream, account}) {
   const {
@@ -24,7 +25,7 @@ export function StreamDashboard({stream, account}) {
     >
       <div className="twind--mb-32">
         <ArcProgressBar
-          className="twind-w-96 twind-h-48 "
+          className="twind-w-96 twind-h-48"
           progresses={progresses}
         />
         <div className="twind-flex twind-justify-between twind-pt-5 twind--mx-2 twind-text-gray">
@@ -52,11 +53,19 @@ export function StreamDashboard({stream, account}) {
       {isDead ? (
         ''
       ) : (
-        <div className="twind-flex">
+        <div className="twind-flex twind-relative twind-z-10">
           <StreamControls stream={stream} className="twind-mr-2" />
           {direction === 'out' ? (
             <StreamDepositButtonOutlined variant="outlined" stream={stream} />
-          ) : null}
+          ) : (
+            <StreamWithdrawButton
+              loadingText="Withdrawing..."
+              variant="outlined"
+              color="dark"
+            >
+              Withdraw from all streams
+            </StreamWithdrawButton>
+          )}
         </div>
       )}
     </div>

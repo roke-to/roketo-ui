@@ -11,6 +11,7 @@ import {routes} from '../../lib/routing';
 import {streamViewData} from './streamViewData';
 import {Link as LinkIcon} from '../../components/icons';
 import numbro from 'numbro';
+import {STREAM_STATUS} from '../stream-control/lib';
 
 const streamType = {
   stream_id: 'FnVkAYZu4XED3o44pZPvrnghVEMxo3GiHszUT4orjYST',
@@ -80,23 +81,27 @@ export function StreamCard({stream = streamType, direction, className}) {
             <StreamingSpeed stream={stream} direction={direction} />
 
             <div className="twind-whitespace-nowrap">
-              <DurationTimer untilDate={dateEnd} suffix=" remaining" />
+              {stream.status === STREAM_STATUS.PAUSED ? (
+                ''
+              ) : (
+                <DurationTimer untilDate={dateEnd} suffix=" remaining" />
+              )}
             </div>
           </div>
         </div>
         <ProgressBar className="twind-mt-5" progresses={progresses} />
-        <div className="twind-flex twind-text-sm twind-mt-3">
-          <div className="twind-mr-3">
-            <Bullet className="twind-bg-streams-streamed twind-mr-1" />
+        <div className="twind-flex twind-text-sm twind-mt-3 twind-mr-3">
+          <div className="twind-mr-4">
+            <Bullet className="twind-bg-streams-withdrawn twind-mr-1" />
             <span>
-              Streamed:{' '}
+              Withdrawn:{' '}
               <span className="twind-font-semibold">
-                {tf.amount(streamed)}{' '}
+                {tf.amount(withdrawn)}{' '}
               </span>
               <span className="twind-text-gray">
                 {' '}
                 (
-                {numbro(percentages.streamed).format({
+                {numbro(percentages.withdrawn).format({
                   output: 'percent',
                   mantissa: 1,
                 })}
@@ -105,11 +110,11 @@ export function StreamCard({stream = streamType, direction, className}) {
             </span>
           </div>
           <div>
-            <Bullet className="twind-bg-streams-withdrawn twind-mr-1" />
+            <Bullet className="twind-bg-streams-streamed twind-mr-1" />
             <span>
-              Withdrawn:{' '}
+              Streamed:{' '}
               <span className="twind-font-semibold">
-                {tf.amount(withdrawn)}{' '}
+                {tf.amount(streamed)}{' '}
               </span>
               <span className="twind-text-gray">
                 {' '}

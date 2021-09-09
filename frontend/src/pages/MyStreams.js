@@ -6,6 +6,7 @@ import {Button} from '../components/kit';
 import {routes} from '../lib/routing';
 import {useStreamControl} from '../features/stream-control/useStreamControl';
 import {useAccount, useStreams} from '../features/xyiming-resources';
+import {StreamWithdrawButton} from '../features/stream-control/StreamWithdrawButton';
 
 const __INPUTS = [];
 const __OUTPUTS = [];
@@ -13,7 +14,6 @@ const __OUTPUTS = [];
 export function MyStreamsPage() {
   const near = useNear();
   const [filteredItems, setFiltered] = useState([]);
-  const streamControl = useStreamControl();
   const accountSWR = useAccount({near});
   const streamsSWR = useStreams({near, accountSWR});
 
@@ -24,16 +24,10 @@ export function MyStreamsPage() {
     return true;
   };
 
-  async function updateAllAndWithdraw() {
-    await streamControl.updateAllAndWithdraw();
-    accountSWR.mutate();
-  }
-
   const streams = streamsSWR.data;
 
   const inputs = streams ? streams.inputs : __INPUTS;
   const outputs = streams ? streams.outputs : __OUTPUTS;
-  console.log({inputs, outputs, streams});
   const allStreams = useMemo(() => inputs.concat(outputs), [inputs, outputs]);
 
   return (
@@ -41,15 +35,9 @@ export function MyStreamsPage() {
       <div className="twind-flex twind-mb-12">
         <h1 className="twind-text-3xl ">All Streams</h1>
         <div className="twind-flex-grow"></div>
-        <Button
-          loading={streamControl.loading}
-          loadingText="Updating account..."
-          variant="main"
-          size="normal"
-          onClick={updateAllAndWithdraw}
-        >
+        <StreamWithdrawButton variant="main" size="normal">
           Update streams and withdraw
-        </Button>
+        </StreamWithdrawButton>
       </div>
       <StreamFilters
         items={allStreams}

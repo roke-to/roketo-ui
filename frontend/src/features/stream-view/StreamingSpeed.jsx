@@ -6,6 +6,8 @@ import classNames from 'classnames';
 export function StreamingSpeed({stream, direction, className, ...rest}) {
   const {tf} = streamViewData(stream);
 
+  const speedInfo = tf.tokensPerMeaningfulPeriod(stream.tokens_per_tick);
+
   return (
     <div
       className={classNames(
@@ -22,8 +24,11 @@ export function StreamingSpeed({stream, direction, className, ...rest}) {
         ''
       )}
       <span className="twind-ml-2">
-        <span>@{tf.tokensPerS(stream.tokens_per_tick)}</span>
-        <span> {stream.token_name} / Sec</span>
+        <span>@{speedInfo.formattedValue}</span>
+        <span>
+          {' '}
+          {stream.token_name} / {speedInfo.unit}
+        </span>
       </span>
     </div>
   );

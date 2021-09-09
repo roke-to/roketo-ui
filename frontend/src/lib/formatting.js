@@ -36,6 +36,13 @@ export function TokenFormatter(tokenName) {
 
   const TICK_TO_MS = Math.pow(10, 6);
   const TICK_TO_S = Math.pow(10, 9);
+  const TICK_TO_MINUTE = TICK_TO_S * 60;
+  const TICK_TO_HOUR = TICK_TO_MINUTE * 60;
+  const TICK_TO_DAY = TICK_TO_HOUR * 24;
+  const TICK_TO_WEEK = TICK_TO_DAY * 7;
+  const TICK_TO_MONTH = TICK_TO_WEEK * 4;
+  const TICK_TO_YEAR = TICK_TO_MONTH * 12;
+
   const MP = Math.pow(10, token.decimals);
 
   return {
@@ -59,6 +66,58 @@ export function TokenFormatter(tokenName) {
         optionalMantissa: true,
         trimMantissa: true,
       }),
+    tokensPerMeaningfulPeriod: (tokensPerTick) => {
+      // tries to find the best interval for display
+      // to avoid 0.0000000000000000000000000009839248 tokens per sec
+      const multipliers = [
+        TICK_TO_S,
+        TICK_TO_MINUTE,
+        TICK_TO_HOUR,
+        TICK_TO_DAY,
+        TICK_TO_WEEK,
+        TICK_TO_MONTH,
+        TICK_TO_YEAR,
+      ];
+      const unit = {
+        [TICK_TO_S]: 'second',
+        [TICK_TO_MINUTE]: 'minute',
+        [TICK_TO_HOUR]: 'hour',
+        [TICK_TO_DAY]: 'day',
+        [TICK_TO_WEEK]: 'week',
+        [TICK_TO_MONTH]: 'month',
+        [TICK_TO_YEAR]: 'year',
+      };
+      const firstGoodLookingMultiplier =
+        multipliers.find((multiplier) => {
+          const value = numbro(tokensPerTick)
+            .multiply(multiplier)
+            .divide(MP)
+            .value();
+          const isOk = value > 0.01;
+          console.log({
+            multiplier,
+            unit: unit[multiplier],
+            value,
+          });
+          return isOk;
+        }) || TICK_TO_YEAR;
+
+      console.log({
+        firstGoodLookingMultiplier,
+        unit: unit[firstGoodLookingMultiplier],
+      });
+      return {
+        formattedValue: numbro(tokensPerTick)
+          .multiply(firstGoodLookingMultiplier)
+          .divide(MP)
+          .format({
+            mantissa: 5,
+            optionalMantissa: true,
+            trimMantissa: true,
+          }),
+        unit: unit[firstGoodLookingMultiplier],
+      };
+    },
     ticksToMs: (ticks) => Math.round(ticks / TICK_TO_MS),
   };
 }

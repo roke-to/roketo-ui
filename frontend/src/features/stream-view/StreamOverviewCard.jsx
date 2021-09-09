@@ -1,5 +1,5 @@
 import React from 'react';
-import {streamViewData} from '.';
+import {StreamingSpeed, streamViewData} from '.';
 import {DurationTimer} from '../../components/DurationTimer';
 import classNames from 'classnames';
 import {format} from 'date-fns';
@@ -7,6 +7,7 @@ import numbro from 'numbro';
 import {streamDirection} from '.';
 import {Copy} from '../../components/icons';
 import copy from 'clipboard-copy';
+import {STREAM_STATUS} from '../stream-control/lib';
 
 const streamType = {
   stream_id: 'FnVkAYZu4XED3o44pZPvrnghVEMxo3GiHszUT4orjYST',
@@ -77,7 +78,11 @@ export function StreamOverviewCard({
         <VerticalData label="Receiver:">{stream.receiver_id}</VerticalData>
 
         <VerticalData label="Time Remaining:">
-          <DurationTimer untilDate={dateEnd} finishedText="Finished" />
+          {stream.status === STREAM_STATUS.PAUSED ? (
+            'Paused'
+          ) : (
+            <DurationTimer untilDate={dateEnd} finishedText="Finished" />
+          )}
         </VerticalData>
       </div>
       <div className="twind-border-t twind-border-border twind-mt-8 twind-mb-9" />
@@ -118,7 +123,7 @@ export function StreamOverviewCard({
         {tf.amount(available)} {stream.token_name}
       </HorizontalData>
       <HorizontalData label="Speed:">
-        {tf.tokensPerS(stream.tokens_per_tick)} {stream.token_name}
+        <StreamingSpeed stream={stream} direction={null} />
       </HorizontalData>
 
       {direction === 'in' ? (
