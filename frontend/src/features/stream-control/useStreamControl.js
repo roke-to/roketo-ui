@@ -19,27 +19,24 @@ export function useStreamControl(streamId) {
     console.log('update completed');
   }
 
-  async function deposit({deposit}) {
+  async function deposit({token, deposit}) {
     ensureMethodHasStreamId();
-    console.log('depositing', streamId);
-    await near.contractApi.depositStream({
-      streamId,
-      deposit,
-    });
-  }
-
-  async function deposit_ft({deposit}) {
-    console.log('depositing ft', streamId);
-    await near.near.ft.ft_transfer_call(
-      {
-        receiver_id: near.near.contractName,
-        amount: deposit,
-        memo: 'xyiming transfer',
-        msg: streamId,
-      },
-      '200000000000000',
-      1,
-    );
+    console.log('depositing', token, streamId);
+    token === 'NEAR'
+      ? await near.contractApi.depositStream({
+          streamId,
+          deposit,
+        })
+      : await near.near.fts[token].ft_transfer_call(
+          {
+            receiver_id: near.near.contractName,
+            amount: deposit,
+            memo: 'xyiming transfer',
+            msg: streamId,
+          },
+          '200000000000000',
+          1,
+        );
   }
 
   async function pause() {
@@ -91,6 +88,5 @@ export function useStreamControl(streamId) {
     restart: wrapped(restart),
     stop: wrapped(stop),
     deposit: wrapped(deposit),
-    deposit_ft: wrapped(deposit_ft),
   };
 }

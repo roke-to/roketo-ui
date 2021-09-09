@@ -6,5 +6,4 @@ export const NEAR_CONFIG = {
   nodeUrl: env.NEAR_NODE_URL,
   contractName: env.CONTRACT_NAME,
   walletUrl: env.WALLET_URL,
-  ft: env.FT_CONTRACT_NAME,
 };
