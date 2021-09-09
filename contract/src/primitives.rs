@@ -11,6 +11,7 @@ pub const ERR_NOT_NEAR_TOKEN: &str = "Only NEAR tokens allowed in this method";
 pub const ERR_NOT_FT_TOKEN: &str = "Only FT tokens allowed in this method";
 pub const ERR_TOKENS_MISMATCH: &str = "Tokens mismatch";
 pub const ERR_INVALID_TOKEN: &str = "Invalid token name";
+pub const ERR_INVALID_STREAM_STATE: &str = "Invalid stream state";
 
 pub const CREATE_STREAM_DEPOSIT: Balance = 100_000_000_000_000_000_000_000; // 0.1 NEAR
 pub const ONE_YOCTO: Balance = 1;

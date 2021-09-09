@@ -212,6 +212,41 @@ impl Xyiming {
         Self::streams().insert(&stream_id, &stream);
     }
 
+    /// Only owner can enable auto-deposit
+    #[payable]
+    pub fn change_auto_deposit(&mut self, stream_id: Base58CryptoHash, auto_deposit: bool) {
+        let stream_id = stream_id.into();
+        let stream_view = Self::streams().get(&stream_id).unwrap();
+        assert!(
+            stream_view.owner_id == env::predecessor_account_id(),
+            "{} {}",
+            ERR_ACCESS_DENIED,
+            stream_view.owner_id
+        );
+        assert!(
+            stream_view.status == StreamStatus::Active,
+            "{}, expected StreamStatus::Active",
+            ERR_INVALID_STREAM_STATE,
+        );
+
+        let mut owner = Self::extract_account_or_create(&stream_view.owner_id);
+        owner.update_state();
+        Self::save_account_or_panic(&stream_view.owner_id, &owner);
+        let mut receiver = Self::extract_account_or_create(&stream_view.receiver_id);
+        receiver.update_state();
+        Self::save_account_or_panic(&stream_view.receiver_id, &receiver);
+        // TODO process promise failure
+
+        let mut stream = Self::extract_stream_or_panic(&stream_id);
+        if auto_deposit {
+            stream.add_action(ActionType::EnableAutoDeposit);
+        } else {
+            stream.add_action(ActionType::DisableAutoDeposit);
+        }
+        stream.auto_deposit_enabled = auto_deposit;
+        Self::streams().insert(&stream_id, &stream);
+    }
+
     #[payable]
     pub fn pause_stream(&mut self, stream_id: Base58CryptoHash) {
         let stream_id = stream_id.into();
