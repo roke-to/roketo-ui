@@ -19,6 +19,17 @@ export function useStreamControl(streamId) {
     console.log('update completed');
   }
 
+  async function enable() {
+    console.log('enable', streamId);
+    // const res = await near.contractApi.enable
+  }
+
+  async function disable() {
+    ensureMethodHasStreamId();
+    console.log('disabling', streamId);
+    // const res = await near.contractApi.disable;
+  }
+
   async function deposit({token, deposit}) {
     ensureMethodHasStreamId();
     console.log('depositing', token, streamId);
@@ -88,5 +99,7 @@ export function useStreamControl(streamId) {
     restart: wrapped(restart),
     stop: wrapped(stop),
     deposit: wrapped(deposit),
+    enable: wrapped(enable),
+    disable: wrapped(disable)
   };
 }
