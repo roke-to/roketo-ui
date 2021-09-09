@@ -1047,7 +1047,11 @@ fn ft_transfer_sanity() {
 
     let outcome = call!(
         bob,
-        contract.ft_on_transfer(ALICE.try_into().unwrap(), (123 * ONE_NEAR).into(), json.clone()),
+        contract.ft_on_transfer(
+            ALICE.try_into().unwrap(),
+            (123 * ONE_NEAR).into(),
+            json.clone()
+        ),
         deposit = 0
     );
     assert!(!outcome.is_ok());

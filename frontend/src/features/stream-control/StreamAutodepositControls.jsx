@@ -6,9 +6,8 @@ import {StreamAutodepositStatus} from './StreamAutodepositStatus';
 import {STREAM_STATUS} from './lib';
 import classNames from 'classnames';
 
-
 export function StreamAutodepositButton({stream, className}) {
-  const controls = useStreamControl(stream._id);
+  const controls = useStreamControl(stream.stream_id);
   return (
     <>
       <Button
@@ -16,14 +15,15 @@ export function StreamAutodepositButton({stream, className}) {
         type="button"
         className={className}
         enabled
-        onClick={() =>stream.auto_deposit_enabled ? controls.disable(): controls.enable()}
+        onClick={() =>
+          stream.auto_deposit_enabled ? controls.disable() : controls.enable()
+        }
       >
-        {stream.auto_deposit_enabled ? 'Disable': 'Enable'}
+        {stream.auto_deposit_enabled ? 'Disable' : 'Enable'}
       </Button>
     </>
   );
 }
-
 
 export function StreamAutodepositControls({stream, minimal, className}) {
   const near = useNear();
@@ -42,10 +42,7 @@ export function StreamAutodepositControls({stream, minimal, className}) {
 
   return (
     <div className={classNames(className, 'twind-relative twind-inline-flex')}>
-        <StreamAutodepositButton
-          className="twind-py-0"
-          stream={stream}
-        />
+      <StreamAutodepositButton className="twind-py-0" stream={stream} />
     </div>
   );
 }

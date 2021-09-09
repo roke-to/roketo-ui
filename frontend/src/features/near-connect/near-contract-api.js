@@ -31,6 +31,16 @@ export function NearContractApi(near) {
     return res;
   }
 
+  async function changeAutoDeposit({streamId, autoDeposit}) {
+    const res = await contract.change_auto_deposit(
+      {stream_id: streamId, auto_deposit: autoDeposit},
+      GAS_SIZE,
+      NOT_ZERO_NEAR_AMOUNT,
+    );
+
+    return res;
+  }
+
   async function depositStream({streamId, deposit}) {
     const res = await contract.deposit(
       {stream_id: streamId},
@@ -113,5 +123,6 @@ export function NearContractApi(near) {
     startStream,
     stopStream,
     getStream,
+    changeAutoDeposit,
   };
 }

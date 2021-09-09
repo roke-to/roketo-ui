@@ -228,6 +228,12 @@ impl Xyiming {
             "{}, expected StreamStatus::Active",
             ERR_INVALID_STREAM_STATE,
         );
+        assert!(
+            stream_view.auto_deposit_enabled != auto_deposit,
+            "{}, auto_deposit_enabled is already {}",
+            ERR_INVALID_STREAM_STATE,
+            auto_deposit
+        );
 
         let mut owner = Self::extract_account_or_create(&stream_view.owner_id);
         owner.update_state();
@@ -238,13 +244,23 @@ impl Xyiming {
         // TODO process promise failure
 
         let mut stream = Self::extract_stream_or_panic(&stream_id);
+
+        if stream.auto_deposit_enabled == auto_deposit {
+            Self::streams().insert(&stream_id, &stream);
+            return;
+        }
+
+        let mut owner = Self::extract_account_or_create(&stream_view.owner_id);
         if auto_deposit {
+            owner.total_outgoing[stream.token_id as usize] += stream.tokens_per_tick;
             stream.add_action(ActionType::EnableAutoDeposit);
         } else {
+            owner.total_outgoing[stream.token_id as usize] -= stream.tokens_per_tick;
             stream.add_action(ActionType::DisableAutoDeposit);
         }
         stream.auto_deposit_enabled = auto_deposit;
         Self::streams().insert(&stream_id, &stream);
+        Self::save_account_or_panic(&stream_view.owner_id, &owner);
     }
 
     #[payable]
