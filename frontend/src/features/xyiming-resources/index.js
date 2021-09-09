@@ -73,12 +73,6 @@ export function useSingleStream({streamId}, {near, accountSWR}) {
         },
       );
 
-      if (stream.owner_id === account.account_id) {
-        stream.direction = 'out';
-      } else {
-        stream.direction = 'in';
-      }
-
       return stream;
     },
   );

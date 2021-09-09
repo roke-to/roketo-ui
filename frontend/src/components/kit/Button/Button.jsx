@@ -39,7 +39,7 @@ export function Button({
         : '';
   } else if (variant === variants.outlined) {
     variantStyles =
-      'twind-border-solid twind-border twind-font-semibold twind-rounded-lg';
+      'twind-border-solid twind-border twind-font-semibold twind-rounded-lg ';
     colorStyles =
       color === 'light'
         ? 'twind-border-blue hover:twind-bg-blue'
@@ -48,7 +48,7 @@ export function Button({
         : '';
   } else if (variant === variants.filled) {
     variantStyles =
-      'twind-bg-dark hover:twind-bg-hover twind-font-semibold twind-rounded-lg';
+      'twind-bg-dark hover:twind-bg-hover twind-font-semibold twind-rounded-lg active:twind-bg-transparent';
   }
   const ButtonComponent = link ? Link : 'button';
 

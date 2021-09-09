@@ -15,3 +15,5 @@ export * from './Start';
 export * from './Stop';
 export * from './Pause';
 export * from './PlusGradient';
+export * from './Link';
+export * from './ArrowLeft';

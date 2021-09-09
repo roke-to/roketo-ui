@@ -3,8 +3,7 @@ import {streamViewData} from '.';
 import {StreamIn, StreamOut} from '../../components/icons';
 import classNames from 'classnames';
 
-export function StreamingSpeed({stream, className, ...rest}) {
-  const direction = stream.direction;
+export function StreamingSpeed({stream, direction, className, ...rest}) {
   const {tf} = streamViewData(stream);
 
   return (
@@ -15,7 +14,13 @@ export function StreamingSpeed({stream, className, ...rest}) {
       )}
       {...rest}
     >
-      {direction === 'out' ? <StreamOut /> : <StreamIn />}
+      {direction === 'out' ? (
+        <StreamOut />
+      ) : direction === 'in' ? (
+        <StreamIn />
+      ) : (
+        ''
+      )}
       <span className="twind-ml-2">
         <span>@{tf.tokensPerS(stream.tokens_per_tick)}</span>
         <span> {stream.token_name} / Sec</span>
