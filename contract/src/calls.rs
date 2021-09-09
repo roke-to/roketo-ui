@@ -97,7 +97,7 @@ impl Xyiming {
         if owner_id == receiver_id {
             return false;
         };
-        if auto_deposit_enabled && owner_id.as_ref() == sender_id.as_ref() {
+        if auto_deposit_enabled && owner_id.as_ref() != sender_id.as_ref() {
             return false;
         }
 
