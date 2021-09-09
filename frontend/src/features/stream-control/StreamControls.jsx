@@ -39,15 +39,15 @@ export function StreamControls({stream, minimal, className}) {
       >
         <StreamStatus stream={stream} />
       </DropdownOpener>
-      <DropdownMenu opened={menuOpened} className="twind-w-36">
+      <DropdownMenu opened={menuOpened} className="twind-top-full twind-w-44">
         {stream.status !== STREAM_STATUS.ACTIVE && isOutgoing ? (
           <>
             <DropdownMenuItem>
               <button
-                className="twind-inline-flex twind-items-center"
+                className="twind-inline-flex twind-items-center twind-font-semibold"
                 onClick={controls.restart}
               >
-                <Start className="twind-mr-2 twind-flex-shrink-0" />
+                <Start className="twind-mr-4 twind-flex-shrink-0" />
                 <span>Start stream </span>{' '}
               </button>
             </DropdownMenuItem>
@@ -58,10 +58,10 @@ export function StreamControls({stream, minimal, className}) {
           <>
             <DropdownMenuItem>
               <button
-                className="twind-inline-flex twind-items-center"
+                className="twind-inline-flex twind-items-center twind-font-semibold"
                 onClick={controls.pause}
               >
-                <Pause className="twind-mr-2 twind-flex-shrink-0" />
+                <Pause className="twind-mr-4 twind-flex-shrink-0" />
                 <span>Pause stream</span>
               </button>
             </DropdownMenuItem>
@@ -71,10 +71,10 @@ export function StreamControls({stream, minimal, className}) {
 
         <DropdownMenuItem>
           <button
-            className="twind-inline-flex twind-items-center"
+            className="twind-inline-flex twind-items-center twind-font-semibold"
             onClick={controls.stop}
           >
-            <Stop className="twind-mr-2 twind-flex-shrink-0" />
+            <Stop className="twind-mr-4 twind-flex-shrink-0" />
             <span> Stop stream </span>
           </button>
         </DropdownMenuItem>

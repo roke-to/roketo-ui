@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import useSWR from 'swr';
 
 import {NEAR, loader, TARAS} from '../components/Helpers';
@@ -22,7 +22,7 @@ function SendPage() {
 
   const [days, setDays] = useState(0.0);
   const [minutes, setMinutes] = useState(0);
-  const [hourse, setHourse] = useState(0);
+  const [hours, setHours] = useState(0);
   const [deposit, setDeposit] = useState(0.0);
   const [comment, setComment] = useState();
   const [autoDeposit, setAutoDeposit] = useState(false);
@@ -45,7 +45,7 @@ function SendPage() {
 
     const ownerId = document.getElementById('ownerInput').value;
     const receiverId = document.getElementById('receiverInput').value;
-    const speed = deposit / (days * 3600 * 24 + minutes * 60 + hourse * 3600);
+    const speed = deposit / (days * 3600 * 24 + minutes * 60 + hours * 3600);
     const tokenName = dropdownActive;
 
     console.log('creating', tokenName);
@@ -98,6 +98,8 @@ function SendPage() {
     errorRetryInterval: 250,
   });
 
+  const [owner, setOwner] = useState(near.near.accountId);
+
   return (
     <div className="twind-container twind-m-auto twind-px-5 twind-py-12">
       <div className="twind-text-center">
@@ -119,7 +121,8 @@ function SendPage() {
               required
               placeholder="owner.near"
               id="ownerInput"
-              value={near.near.accountId}
+              value={owner}
+              onChange={(e) => setOwner(e.target.value)}
             />
           </Input>
         </FormField>
@@ -188,11 +191,11 @@ function SendPage() {
             <div>Stream duration:</div>
             <div className="twind-text-xs twind-text-gray twind-absolute twind-right-0 twind-top-1">
               Streaming speed:{' '}
-              {days + minutes + hourse === 0
+              {days + minutes + hours === 0
                 ? 0
                 : (
                     deposit /
-                    (days * 3600 * 24 + minutes * 60 + hourse * 3600)
+                    (days * 3600 * 24 + minutes * 60 + hours * 3600)
                   ).toFixed(6)}{' '}
               {dropdownActive} / sec
             </div>
@@ -218,14 +221,14 @@ function SendPage() {
               <input
                 className="focus:twind-outline-none input twind-bg-input twind-w-1/3"
                 required
-                id="hourseInput"
+                id="hoursInput"
                 placeholder="0"
                 describedby="basic-addon2"
-                value={hourse}
-                onChange={(e) => setHourse(e.target.value)}
+                value={hours}
+                onChange={(e) => setHours(e.target.value)}
               />
               <div className="twind-right-2 twind-opacity-100 twind-w-1/3">
-                hourse
+                hours
               </div>
             </div>
             <div className="twind-w-1/3 input twind-font-semibold twind-flex twind-p-4 twind-rounded-r-lg twind-border-border twind-border twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue">

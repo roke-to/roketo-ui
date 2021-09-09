@@ -48,21 +48,17 @@ export function TokenFormatter(tokenName) {
         mantissa: 2,
       }),
     tokensPerMS: (tokensPerTick) =>
-      numbro(tokensPerTick)
-        .multiply(TICK_TO_MS)
-        .divide(MP)
-        .format({
-          mantissa: token.decimals - 6,
-          trimMantissa: true,
-        }),
+      numbro(tokensPerTick).multiply(TICK_TO_MS).divide(MP).format({
+        mantissa: 6,
+        trimMantissa: true,
+      }),
     tokensPerS: (tokensPerTick) =>
-      numbro(tokensPerTick)
-        .multiply(TICK_TO_S)
-        .divide(MP)
-        .format({
-          mantissa: token.decimals - 6,
-          trimMantissa: true,
-        }),
+      numbro(tokensPerTick).multiply(TICK_TO_S).divide(MP).format({
+        average: true,
+        mantissa: 6,
+        optionalMantissa: true,
+        trimMantissa: true,
+      }),
     ticksToMs: (ticks) => Math.round(ticks / TICK_TO_MS),
   };
 }

@@ -20,7 +20,7 @@ function isValidDate(d) {
   return d instanceof Date && !isNaN(d);
 }
 
-export function DurationTimer({untilDate, suffix}) {
+export function DurationTimer({untilDate, suffix, finishedText}) {
   const dateValid = isValidDate(untilDate);
 
   const [expired, setExpired] = useState(
@@ -53,11 +53,14 @@ export function DurationTimer({untilDate, suffix}) {
     return <span>Invalid Date</span>;
   }
 
-  const formatted = !duration
-    ? ''
-    : formatDuration(duration, {
-        locale: shortEnLocale,
-      }) + (suffix || '');
+  if (!duration || expired) {
+    return <span>{finishedText}</span>;
+  }
+
+  const formatted =
+    formatDuration(duration, {
+      locale: shortEnLocale,
+    }) + (suffix || '');
 
   return <span>{formatted}</span>;
 }

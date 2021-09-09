@@ -4,13 +4,15 @@ import {STREAM_STATUS} from '../stream-control/lib';
 export function streamViewData(stream) {
   const tf = TokenFormatter(stream.token_name);
 
+  // public link
+
+  const link = `${window.location.origin}/#/my_streams/${stream.stream_id}`;
   // time left calculations
   const secondsLeft = tf.ticksToMs(
     Math.round(
       (stream.balance - stream.available_to_withdraw) / stream.tokens_per_tick,
     ),
   );
-
   const dateEnd = new Date(new Date().getTime() + secondsLeft);
 
   // progress bar calculations
@@ -41,6 +43,7 @@ export function streamViewData(stream) {
     tf,
     isDead,
     percentages,
+    link,
     progress: {
       full,
       withdrawn,

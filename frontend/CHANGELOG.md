@@ -1,3 +1,10 @@
+# v0.1.7 September 9, 2021
+- Get rid of bootstrap
+- Support unauthorized access by direct stream link
+- Add copying values
+- Add missing design elements for `StreamCard` and `StreamPage`
+- Add `ArcProgressBar`
+  
 # v0.1.6 September 8, 2021
 - Add empty states for MyStreams page
 - Add sorting streams by speed and balance 
