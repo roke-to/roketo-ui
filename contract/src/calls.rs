@@ -348,4 +348,10 @@ impl Xyiming {
 
         Self::streams().insert(&stream_id, &stream);
     }
+
+    /// Only owner can enable auto-deposit
+    #[payable]
+    pub fn start_cron(&mut self) -> Promise {
+        self.create_task(env::predecessor_account_id())
+    }
 }
