@@ -26,10 +26,12 @@ export function TokenFormatter(tokenName) {
       numbro(tps).multiply(MP).divide(TICK_TO_S).format({mantissa: 0}),
     toInt: (floatValue) =>
       numbro(floatValue).multiply(MP).format({mantissa: 0}),
-    amount: (amount) =>
-      numbro(amount).divide(MP).format({
-        mantissa: 2,
-      }),
+    amount: (amount, decimals = 2) =>
+      numbro(amount)
+        .divide(MP)
+        .format({
+          mantissa: decimals >= 0 && decimals < 20 ? decimals : 2,
+        }),
     tokensPerMS: (tokensPerTick) =>
       numbro(tokensPerTick)
         .multiply(TICK_TO_MS)
