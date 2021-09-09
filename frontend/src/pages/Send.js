@@ -25,6 +25,8 @@ function SendPage() {
   const [hourse, setHourse] = useState(0);
   const [deposit, setDeposit] = useState(0.0);
   const [comment, setComment] = useState();
+  const [autoDeposit, setAutoDeposit] = useState(false);
+
   const [errors, setError] = useState({});
 
   const tokensNames = Object.keys(tokens).filter((item) => item !== 'fallback')
@@ -52,7 +54,7 @@ function SendPage() {
       receiverId: receiverId,
       token: dropdownActive,
       speed: formatter.tokenPerSecondToInt(speed),
-      autoDepositEnabled: false,
+      autoDepositEnabled: autoDeposit,
     });
   }
 
@@ -231,12 +233,26 @@ function SendPage() {
         </FormField> 
 
         <div className="twind-flex twind-relaitive">
-          <div><p className="twind-text-left twind-text-gray twind-w-2/3 twind-text-sm">
+          <div>
+            <div className="twind-flex">
+              <input
+                name="autoDeposit"
+                className="twind-mr-1"
+                type="checkbox"
+                value={autoDeposit}
+                onChange={(e) => {setAutoDeposit(!autoDeposit)}}
+                />
+              <label>Enable auto deposit?</label>
+            </div>
+            <p className="twind-text-left twind-text-gray twind-w-2/3 twind-text-sm">
             You will be charged 0.1 NEAR fee for that stream
-          </p></div>
-          <Button variant="main" className="twind-mx-auto twind-right-0">
-            Create Stream
-          </Button>
+            </p>
+          </div>
+          <div className='twind-top-0'>
+            <Button variant="main" size="big" className="twind-rounded-lg">
+              Create Stream
+            </Button>
+          </div>
         </div>
         
       </form>
