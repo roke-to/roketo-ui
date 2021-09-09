@@ -21,6 +21,11 @@ export function AccountPage() {
   const near = useNear();
   const accountSWR = useAccount({near});
 
+  async function cronSubscribeClick(e) {
+    e.preventDefault();
+    await near.contractApi.startCron();
+  }
+
   const account = accountSWR.data;
 
   const inputs = (account && account.inputs) || __INPUTS;
@@ -55,7 +60,11 @@ export function AccountPage() {
             )}
           </div>
           <div>
-            <Button variant="main" className="twind-p-0">
+            <Button
+              variant="main"
+              className="twind-p-0"
+              onClick={(e) => cronSubscribeClick(e)}
+            >
               <span className="twind-mr-2">
                 <Cron />
               </span>

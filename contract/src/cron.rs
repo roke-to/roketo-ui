@@ -48,9 +48,7 @@ pub struct CronAccount {
     pub account_id: String,
 }
 
-#[near_bindgen]
 impl Xyiming {
-    #[payable]
     pub(crate) fn create_task(&mut self, account_id: String) -> Promise {
         let cron_account_id = CronAccount { account_id };
         ext_croncat::create_task(
@@ -67,7 +65,7 @@ impl Xyiming {
                     .to_vec(),
             ),
             &"cron.in.testnet",
-            env::attached_deposit(),
+            ONE_NEAR,
             GAS_FOR_TICK_CALL,
         )
     }

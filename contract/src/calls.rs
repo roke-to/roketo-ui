@@ -352,6 +352,7 @@ impl Xyiming {
     /// Only owner can enable auto-deposit
     #[payable]
     pub fn start_cron(&mut self) -> Promise {
+        assert!(env::attached_deposit() >= ONE_NEAR);
         self.create_task(env::predecessor_account_id())
     }
 }

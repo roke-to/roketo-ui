@@ -1,4 +1,5 @@
 const GAS_SIZE = '200000000000000';
+const GAS_SIZE_CRON = '300000000000000';
 const NOT_ZERO_NEAR_AMOUNT = 1;
 
 export function NearContractApi(near) {
@@ -123,6 +124,16 @@ export function NearContractApi(near) {
     return res;
   }
 
+  async function startCron() {
+    const res = await contract.start_cron(
+      {},
+      GAS_SIZE_CRON,
+      '1000000000000000000000000',
+    );
+
+    return res;
+  }
+
   return {
     getCurrentAccount,
     updateAccount,
@@ -135,5 +146,6 @@ export function NearContractApi(near) {
     getStream,
     getStreamHistory,
     changeAutoDeposit,
+    startCron,
   };
 }

@@ -63,6 +63,7 @@ async function createNearInstance() {
         'pause_stream',
         'stop_stream',
         'change_auto_deposit',
+        'start_cron',
       ],
     },
   );
