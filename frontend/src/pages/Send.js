@@ -110,8 +110,12 @@ function SendPage() {
         <div className="twind-flex twind-mb-4">
           <FormField label="Token:" className="twind-w-1/3 twind-items-center twind-relative">
               <DropdownOpener
-                className="twind-bg-input focus-within:twind-border-blue hover:twind-border-blue twind-text-xl twind-h-14"
-                onClick={() => setDropdownOpened(!dropdownOpened)}
+                minimal
+                className="twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue twind-text-xl twind-h-14 twind-px-4 twind-py-3 twind-border twind-border-border twind-w-36"
+                onClick={(e) => {
+                  e.preventDefault();    
+                  setDropdownOpened(!dropdownOpened)
+                }}
               >
       
                 <div className="twind-inline-flex">
@@ -122,7 +126,7 @@ function SendPage() {
         
               <DropdownMenu opened={dropdownOpened} className="twind-z-10">
                 {tokensNames.map((option) => (
-                  <DropdownMenuItem className="twind-bg-input">
+                  <DropdownMenuItem className="focus-within:twind-border-blue">
                     <RadioButton
                       label={
                         <div className="twind-inline-flex">
