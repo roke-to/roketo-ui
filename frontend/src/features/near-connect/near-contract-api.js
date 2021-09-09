@@ -113,6 +113,16 @@ export function NearContractApi(near) {
     return res;
   }
 
+  async function getStreamHistory({streamId, from, to}) {
+    const res = await contract.get_stream_history({
+      stream_id: streamId,
+      from: from,
+      to: to,
+    });
+
+    return res;
+  }
+
   return {
     getCurrentAccount,
     updateAccount,
@@ -123,6 +133,7 @@ export function NearContractApi(near) {
     startStream,
     stopStream,
     getStream,
+    getStreamHistory,
     changeAutoDeposit,
   };
 }

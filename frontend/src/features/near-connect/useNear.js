@@ -54,7 +54,7 @@ async function createNearInstance() {
     _near.account,
     NearConfig.contractName,
     {
-      viewMethods: ['get_account', 'get_stream'],
+      viewMethods: ['get_account', 'get_stream', 'get_stream_history'],
       changeMethods: [
         'create_stream',
         'deposit',
