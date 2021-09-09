@@ -52,7 +52,6 @@ function AppFn() {
               >
                 <AuthorizePage />
               </PrivateRoute>
-
               <PrivateRoute
                 exact
                 redirect={<Redirect to="/authorize" />}
@@ -60,6 +59,14 @@ function AppFn() {
                 path="/"
               >
                 <SendPage />
+              </PrivateRoute>
+              <PrivateRoute
+                exact
+                redirect={<Redirect to="/authorize" />}
+                allowed={near.auth.signedIn}
+                path="/account"
+              >
+                <AccountPage />
               </PrivateRoute>
               <PrivateRoute
                 exact
