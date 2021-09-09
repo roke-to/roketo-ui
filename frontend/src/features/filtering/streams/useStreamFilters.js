@@ -11,6 +11,7 @@ const STREAM_TYPE_FILTER = {
 const STREAM_STATUS_FILTER = {
   ALL: 'All',
   ACTIVE: 'Active',
+  PAUSED: 'Paused',
   ARCHIVED: 'Archived',
   [STREAM_STATUS.FINISHED]: 'Finished',
   [STREAM_STATUS.INTERRUPTED]: 'Interrupted',
@@ -22,6 +23,8 @@ export function useStreamFilters(streams) {
       [STREAM_STATUS_FILTER.ALL]: () => true,
       [STREAM_STATUS_FILTER.ACTIVE]: (stream) =>
         stream.status === STREAM_STATUS.ACTIVE,
+      [STREAM_STATUS_FILTER.PAUSED]: (stream) =>
+        stream.status === STREAM_STATUS.PAUSED,
       [STREAM_STATUS_FILTER.ARCHIVED]: (stream) =>
         stream.status === STREAM_STATUS.ARCHIVED,
       [STREAM_STATUS_FILTER[STREAM_STATUS.INTERRUPTED]]: (stream) =>
