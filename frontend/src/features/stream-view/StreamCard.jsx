@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React from 'react';
 import {StreamingSpeed} from './StreamingSpeed';
 import {ProgressBar, Button, TokenImage} from '../../components/kit';
-import {StreamControls, StreamDepositButton} from '../stream-control';
+import {StreamControls, StreamAutodepositControls, StreamDepositButton} from '../stream-control';
 import {DurationTimer} from '../../components/DurationTimer';
 import {routes} from '../../lib/routing';
 import {streamViewData} from './streamViewData';
@@ -69,14 +69,22 @@ export function StreamCard({stream = streamType, direction, className}) {
         <div className="twind-text-gray">Receiver:</div>
         <div>{stream.receiver_id}</div>
       </div>
-      <div className="twind-col-span-2">
+      <div className="twind-col-span-1">
         <div className="twind-text-gray">Status:</div>
         <StreamControls minimal stream={stream} />
       </div>
+
+      {direction === 'out' ?
+      <div className="twind-col-span-1 twind-mr-4">
+        <div className="twind-text-gray">Auto&#8209;dep:</div>
+
+         <StreamAutodepositControls minimal stream={stream}/> 
+      </div> : null}
+          
       <div className="twind-col-span-2 twind-flex twind-items-start">
         {direction === 'out' ? <StreamDepositButton stream={stream} /> : null}
         <Button
-          className="twind-ml-3"
+          className="twind-ml-2"
           variant="filled"
           link
           to={routes.stream(stream.stream_id)}
