@@ -1,8 +1,12 @@
+import {DurationTimer} from '../../components/DurationTimer';
 import {TokenFormatter} from '../../lib/formatting';
 import {STREAM_STATUS} from '../stream-control/lib';
 
 export function streamViewData(stream) {
   const tf = TokenFormatter(stream.token_name);
+
+  // public link
+  const link = `${window.location.origin}/#/my_streams/${stream.stream_id}`;
 
   // time left calculations
   const secondsLeft = tf.ticksToMs(
@@ -10,8 +14,13 @@ export function streamViewData(stream) {
       (stream.balance - stream.available_to_withdraw) / stream.tokens_per_tick,
     ),
   );
-
   const dateEnd = new Date(new Date().getTime() + secondsLeft);
+  const timer =
+    stream.status === STREAM_STATUS.PAUSED ? (
+      'Paused'
+    ) : (
+      <DurationTimer untilDate={dateEnd} suffix=" remaining" />
+    );
 
   // progress bar calculations
   const full = Number(stream.balance) + Number(stream.tokens_total_withdrawn);
@@ -41,6 +50,8 @@ export function streamViewData(stream) {
     tf,
     isDead,
     percentages,
+    link,
+    timer,
     progress: {
       full,
       withdrawn,

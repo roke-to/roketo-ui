@@ -4,5 +4,4 @@ export const env = {
   NEAR_NODE_URL: process.env.REACT_APP_NEAR_NODE_URL,
   CONTRACT_NAME: process.env.REACT_APP_CONTRACT_NAME,
   WALLET_URL: process.env.REACT_APP_WALLET_URL,
-  FT_CONTRACT_NAME: process.env.REACT_APP_FT_CONTRACT_NAME,
 };

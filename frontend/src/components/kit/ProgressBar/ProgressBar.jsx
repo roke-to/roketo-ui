@@ -1,9 +1,18 @@
 import React from 'react';
 import classNames from 'classnames';
+import {
+  CircularProgressbar,
+  CircularProgressbarWithChildren,
+  buildStyles,
+} from 'react-circular-progressbar';
 
-const COLORS = [
-  'linear-gradient(270deg, #C750FF 0%, #4743FB 100%)',
-  'linear-gradient(270deg, #FFCC69 0%, #FF8469 100%)',
+const GRADIENT_STOP = [
+  ['#4743FB', '#C750FF'],
+  ['#FFCC69', '#FF8469'],
+];
+const GRADIENTS = [
+  `linear-gradient(270deg, ${GRADIENT_STOP[0][0]} 0%, ${GRADIENT_STOP[0][1]} 100%)`,
+  `linear-gradient(270deg, ${GRADIENT_STOP[1][0]} 0%, ${GRADIENT_STOP[1][1]} 100%)`,
 ];
 
 export function ProgressBar({progresses, className, ...rest}) {
@@ -23,10 +32,73 @@ export function ProgressBar({progresses, className, ...rest}) {
           className="twind-absolute twind-left-0 twind-h-full twind-rounded-lg"
           style={{
             width: progress * 100 + '%',
-            background: COLORS[i],
+            background: GRADIENTS[i],
           }}
         ></div>
       ))}
+    </div>
+  );
+}
+
+function GradientSVG({endColor, startColor, progressValue, idCSS, rotation}) {
+  let gradientTransform = `rotate(${rotation})`;
+
+  return (
+    <svg style={{height: 0}}>
+      <defs>
+        <linearGradient id={idCSS} gradientTransform={gradientTransform}>
+          <stop offset="0%" stopColor={startColor} />
+          {progressValue > 0 && progressValue < 100 ? (
+            <stop offset={`${progressValue}%"`} stopColor={endColor} />
+          ) : null}
+          <stop offset="100%" stopColor={endColor} />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+}
+
+export function ArcProgressBar({progresses, className}) {
+  progresses.sort((a, b) => b - a);
+  const rotation = 3 / 4;
+
+  return (
+    <div className={classNames(className)}>
+      <CircularProgressbarWithChildren
+        circleRatio={0.5}
+        styles={buildStyles({
+          rotation,
+          pathColor: '#0D0B26',
+          strokeLinecap: 'round',
+        })}
+        value={1}
+        minValue={0}
+        maxValue={1}
+      >
+        {GRADIENT_STOP.map((colors, i) => (
+          <GradientSVG
+            idCSS={`__arcProgressBar_grad_${i}`}
+            rotation={i === 0 ? 90 : 90}
+            startColor={colors[0]}
+            endColor={colors[1]}
+          />
+        ))}
+        {progresses.map((progress, i) => (
+          <CircularProgressbar
+            circleRatio={0.5}
+            className="twind-absolute twind-inset-0"
+            value={progress}
+            styles={buildStyles({
+              rotation,
+              trailColor: 'transparent',
+              pathColor: `url(#__arcProgressBar_grad_${i})`,
+              strokeLinecap: 'round',
+            })}
+            minValue={0}
+            maxValue={1}
+          />
+        ))}
+      </CircularProgressbarWithChildren>
     </div>
   );
 }

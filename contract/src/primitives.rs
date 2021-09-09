@@ -182,7 +182,7 @@ impl Xyiming {
 
     pub(crate) fn valid_ft_sender(sender_id: AccountId) -> bool {
         for x in 0..NUM_TOKENS {
-            if TOKENS[x] == sender_id {
+            if TOKEN_ACCOUNTS[x] == sender_id {
                 // TODO check ""
                 return true;
             }

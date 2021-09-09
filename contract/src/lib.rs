@@ -64,7 +64,9 @@ impl FungibleTokenReceiver for Xyiming {
                     create_struct.description,
                     create_struct.owner_id,
                     create_struct.receiver_id,
+                    // TODO!!
                     create_struct.token_name,
+                    // TODO!!
                     create_struct.balance,
                     create_struct.tokens_per_tick,
                     create_struct.auto_deposit_enabled,
