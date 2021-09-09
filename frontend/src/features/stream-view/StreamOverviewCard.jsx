@@ -1,5 +1,5 @@
 import React from 'react';
-import {streamViewData} from '.';
+import {StreamingSpeed, streamViewData} from '.';
 import {DurationTimer} from '../../components/DurationTimer';
 import classNames from 'classnames';
 import {format} from 'date-fns';
@@ -118,7 +118,7 @@ export function StreamOverviewCard({
         {tf.amount(available)} {stream.token_name}
       </HorizontalData>
       <HorizontalData label="Speed:">
-        {tf.tokensPerS(stream.tokens_per_tick)} {stream.token_name}
+        <StreamingSpeed stream={stream} direction={null} />
       </HorizontalData>
 
       {direction === 'in' ? (
