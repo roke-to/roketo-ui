@@ -50,9 +50,8 @@ function AppFn() {
                 allowed={!near.auth.signedIn}
                 path="/authorize"
               >
-                <AuthorizePage />
+                  <AuthorizePage />
               </PrivateRoute>
-
               <PrivateRoute
                 exact
                 redirect={<Redirect to="/authorize" />}
@@ -61,10 +60,17 @@ function AppFn() {
               >
                 <SendPage />
               </PrivateRoute>
+              <PrivateRoute
+                exact
+                redirect={<Redirect to="/authorize" />}
+                allowed={near.auth.signedIn}
+                path="/account"
+              >
+                <AccountPage />
+              </PrivateRoute>
+
               <Route
                 exact
-                // redirect={<Redirect to="/authorize" />}
-                // allowed={near.auth.signedIn}
                 path="/my_streams/:id"
               >
                 <StreamPage />

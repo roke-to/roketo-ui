@@ -25,6 +25,8 @@ function SendPage() {
   const [hourse, setHourse] = useState(0);
   const [deposit, setDeposit] = useState(0.0);
   const [comment, setComment] = useState();
+  const [autoDeposit, setAutoDeposit] = useState(false);
+
   const [errors, setError] = useState({});
 
   const tokensNames = Object.keys(tokens).filter((item) => item !== 'fallback');
@@ -51,7 +53,7 @@ function SendPage() {
       receiverId: receiverId,
       token: dropdownActive,
       speed: formatter.tokenPerSecondToInt(speed),
-      autoDepositEnabled: false,
+      autoDepositEnabled: autoDeposit,
     });
   }
 
@@ -107,39 +109,44 @@ function SendPage() {
         </FormField>
 
         <div className="twind-flex twind-mb-4">
-          <FormField
-            label="Token:"
-            className="twind-w-1/3 twind-items-center twind-relative"
-          >
-            <DropdownOpener
-              className="twind-bg-input focus-within:twind-border-blue hover:twind-border-blue twind-text-xl twind-h-14"
-              onClick={() => setDropdownOpened(!dropdownOpened)}
-            >
-              <div className="twind-inline-flex">
-                {<Tokens tokenName={dropdownActive} />}{' '}
-                <span>{dropdownActive}</span>
-              </div>
-            </DropdownOpener>
-
-            <DropdownMenu opened={dropdownOpened} className="twind-z-10">
-              {tokensNames.map((option) => (
-                <DropdownMenuItem className="twind-bg-input">
-                  <RadioButton
-                    label={
-                      <div className="twind-inline-flex">
-                        {<Tokens tokenName={option} />} <span>{option}</span>
-                      </div>
-                    }
-                    active={dropdownActive === option}
-                    value={option}
-                    onChange={(value) => {
-                      setDropdownOpened(false);
-                      setDropdownActive(value);
-                    }}
-                  />
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenu>
+          <FormField label="Token:" className="twind-w-1/3 twind-items-center twind-relative">
+              <DropdownOpener
+                minimal
+                className="twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue twind-text-xl twind-h-14 twind-px-4 twind-py-3 twind-border twind-border-border twind-w-36"
+                onClick={(e) => {
+                  e.preventDefault();    
+                  setDropdownOpened(!dropdownOpened)
+                }}
+              >
+      
+                <div className="twind-inline-flex">
+                          {<Tokens tokenName={dropdownActive}/>}{" "}
+                          <span>{dropdownActive}</span>
+                </div>
+              </DropdownOpener>
+        
+              <DropdownMenu opened={dropdownOpened} className="twind-z-10">
+                {tokensNames.map((option) => (
+                  <DropdownMenuItem className="focus-within:twind-border-blue">
+                    <RadioButton
+                      label={
+                        <div className="twind-inline-flex">
+                          {<Tokens tokenName={option}/>}{" "}
+                          <span>{option}</span>
+                        </div>
+                        }
+                      active={dropdownActive === option}
+                      value={option}
+                      onChange={(value) => 
+                        {
+                          setDropdownOpened(false)
+                          setDropdownActive(value)
+                        }
+                      }
+                    />
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenu>
           </FormField>
 
           <FormField label="Amount to stream:" className="twind-w-2/3">
@@ -243,13 +250,25 @@ function SendPage() {
 
         <div className="twind-flex twind-relaitive">
           <div>
+            <div className="twind-flex">
+              <input
+                name="autoDeposit"
+                className="twind-mr-1"
+                type="checkbox"
+                value={autoDeposit}
+                onChange={(e) => {setAutoDeposit(!autoDeposit)}}
+                />
+              <label>Enable auto deposit?</label>
+            </div>
             <p className="twind-text-left twind-text-gray twind-w-2/3 twind-text-sm">
-              You will be charged 0.1 NEAR fee for that stream
+            You will be charged 0.1 NEAR fee for that stream
             </p>
           </div>
-          <Button variant="main" className="twind-mx-auto twind-right-0">
-            Create Stream
-          </Button>
+          <div className='twind-top-0'>
+            <Button variant="main" size="big" className="twind-rounded-lg">
+              Create Stream
+            </Button>
+          </div>
         </div>
       </form>
     </div>

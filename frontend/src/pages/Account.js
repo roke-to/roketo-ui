@@ -11,20 +11,17 @@ import {
   Cron,
 } from '../components/icons';
 import {Button} from '../components/kit';
+import {useAccount} from '../features/xyiming-resources';
+import {formatDistance, subDays} from 'date-fns';
 
 const __INPUTS = [];
 const __OUTPUTS = [];
 
 export function AccountPage() {
   const near = useNear();
+  const accountSWR = useAccount({near});
 
-  const {data: account} = useSWR(
-    ['account', near.near.accountId],
-    near.contractApi.getCurrentAccount,
-    {
-      errorRetryInterval: 250,
-    },
-  );
+  const account = accountSWR.data;
 
   const inputs = (account && account.inputs) || __INPUTS;
   const outputs = (account && account.outputs) || __OUTPUTS;
@@ -42,7 +39,20 @@ export function AccountPage() {
             <span className="twind-mr-2">
               <History />
             </span>
-            Last updated 2 hours ago
+            {account !== undefined ? (
+              <span>
+                Last updated&nbsp;
+                {formatDistance(
+                  new Date(account.last_action / 1000 / 1000),
+                  new Date(),
+                  {
+                    addSuffix: true,
+                  },
+                )}
+              </span>
+            ) : (
+              ''
+            )}
           </div>
           <div>
             <Button variant="main" className="twind-p-0">
