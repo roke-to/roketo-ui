@@ -11,6 +11,7 @@ import {routes} from '../../lib/routing';
 import {streamViewData} from './streamViewData';
 import {Link as LinkIcon} from '../../components/icons';
 import numbro from 'numbro';
+import {STREAM_STATUS} from '../stream-control/lib';
 
 const streamType = {
   stream_id: 'FnVkAYZu4XED3o44pZPvrnghVEMxo3GiHszUT4orjYST',
@@ -80,14 +81,18 @@ export function StreamCard({stream = streamType, direction, className}) {
             <StreamingSpeed stream={stream} direction={direction} />
 
             <div className="twind-whitespace-nowrap">
-              <DurationTimer untilDate={dateEnd} suffix=" remaining" />
+              {stream.status === STREAM_STATUS.PAUSED ? (
+                ''
+              ) : (
+                <DurationTimer untilDate={dateEnd} suffix=" remaining" />
+              )}
             </div>
           </div>
         </div>
         <ProgressBar className="twind-mt-5" progresses={progresses} />
         <div className="twind-flex twind-text-sm twind-mt-3 twind-mr-3">
           <div className="twind-mr-4">
-            <Bullet className="twind-bg-streams-withdrawn" />
+            <Bullet className="twind-bg-streams-withdrawn twind-mr-1" />
             <span>
               Withdrawn:{' '}
               <span className="twind-font-semibold">
