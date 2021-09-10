@@ -12,7 +12,7 @@ export const DropdownArrowDown = (props) => (
     <path
       d="M1.37378 0.739731L6.11885 5.4848L10.8639 0.739731"
       stroke="white"
-      stroke-width="1.5"
+      strokeWidth="1.5"
     />
   </svg>
 );
