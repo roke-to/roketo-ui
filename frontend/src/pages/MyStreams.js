@@ -4,9 +4,10 @@ import {StreamCard} from '../features/stream-view';
 import {StreamFilters} from '../features/filtering/streams';
 import {Button} from '../components/kit';
 import {routes} from '../lib/routing';
-import {useStreamControl} from '../features/stream-control/useStreamControl';
 import {useAccount, useStreams} from '../features/xyiming-resources';
 import {StreamWithdrawButton} from '../features/stream-control/StreamWithdrawButton';
+import {PageError} from '../components/PageError';
+import {STREAM_STATUS} from '../features/stream-control/lib';
 
 const __INPUTS = [];
 const __OUTPUTS = [];
@@ -28,7 +29,11 @@ export function MyStreamsPage() {
 
   const inputs = streams ? streams.inputs : __INPUTS;
   const outputs = streams ? streams.outputs : __OUTPUTS;
-  const allStreams = useMemo(() => inputs.concat(outputs), [inputs, outputs]);
+  const allStreams = useMemo(() => {
+    const concatted = inputs.concat(outputs);
+    return concatted;
+  }, [inputs, outputs]);
+  const error = accountSWR.error || streamsSWR.error;
 
   return (
     <div className="twind-container twind-mx-auto twind-p-12">
@@ -44,7 +49,17 @@ export function MyStreamsPage() {
         onFilterDone={setFiltered}
         className="twind-mb-10 twind-relative twind-z-10"
       />
-      {!streams ? (
+
+      {error ? (
+        <PageError
+          className="twind-max-w-2xl twind-mx-auto twind-my-32"
+          message={error.message}
+          onRetry={() => {
+            accountSWR.mutate();
+            streamsSWR.mutate();
+          }}
+        />
+      ) : !streams ? (
         <div>Loading</div>
       ) : allStreams.length === 0 ? (
         <div className="twind-flex twind-flex-col twind-w-80 twind-mx-auto">

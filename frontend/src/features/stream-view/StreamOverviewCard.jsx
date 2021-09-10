@@ -54,11 +54,10 @@ export function StreamOverviewCard({
   ...rest
 }) {
   const {
-    dateEnd,
     tf,
     percentages,
+    timestampEnd,
     progress: {full, streamed, withdrawn, left, available},
-    progresses,
   } = streamViewData(stream);
 
   let direction = streamDirection({
@@ -81,7 +80,10 @@ export function StreamOverviewCard({
           {stream.status === STREAM_STATUS.PAUSED ? (
             'Paused'
           ) : (
-            <DurationTimer untilDate={dateEnd} finishedText="Finished" />
+            <DurationTimer
+              untilTimestamp={timestampEnd}
+              finishedText="Finished"
+            />
           )}
         </VerticalData>
       </div>

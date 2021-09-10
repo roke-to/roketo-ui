@@ -18,6 +18,7 @@ const GRADIENTS = [
 export function ProgressBar({progresses, className, ...rest}) {
   let p = [...progresses];
   p.sort((a, b) => b - a);
+
   return (
     <div
       className={classNames(

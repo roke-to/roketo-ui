@@ -64,7 +64,6 @@ export function AccountColumn({
   const tokensData = account !== undefined ? account[tokensField] : [];
 
   const periodsOptions = useFilter({options: PERIODS});
-  console.log('PERIODS', periodsOptions);
 
   const [opened, setOpened] = useState(false);
   const [timePeriod] = useState('sec');

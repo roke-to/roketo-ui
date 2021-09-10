@@ -22,6 +22,7 @@ export function DropdownOpener({
 
   return (
     <button
+      type="button"
       onClick={onClick}
       className={classNames(
         'twind-cursor-pointer twind-flex twind-items-center',

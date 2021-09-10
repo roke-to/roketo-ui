@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import classNames from 'classnames';
 import {useStreamFilters} from './useStreamFilters';
 import {Filter, FilterOptionWithCounter} from '../../../components/kit';
+import {STREAM_STATUS} from '../../stream-control/lib';
 
 function compareBy(a, b, key) {
   if (Number(a[key]) > Number(b[key])) {
@@ -26,16 +27,31 @@ const sorts = {
     label: 'With low speed',
     fn: (a, b) => compareBy(a, b, 'tokens_per_tick') * -1,
   },
+  mostRecent: {
+    label: 'Most recent',
+    fn: (a, b) => compareBy(a, b, 'timestamp_created'),
+  },
 };
+const statusPriority = [
+  STREAM_STATUS.INITIALIZED,
+  STREAM_STATUS.ACTIVE,
+  STREAM_STATUS.PAUSED,
+  STREAM_STATUS.INTERRUPTED,
+  STREAM_STATUS.FINISHED,
+];
+function defaultStreamSort(a, b) {
+  return statusPriority.indexOf(a.status) - statusPriority.indexOf(b.status);
+}
+
 export function StreamFilters({items, onFilterDone, className}) {
   const filter = useStreamFilters(items);
-  const [sorting, setSorting] = useState(sorts.highSpeedFirst);
+  const [sorting, setSorting] = useState(sorts.mostRecent);
   const sortOptions = Object.values(sorts);
 
   useEffect(() => {
     const sorted = [...filter.result.filteredItems];
+    sorted.sort(defaultStreamSort);
     sorted.sort(sorting.fn);
-
     onFilterDone(sorted);
   }, [filter.result.filteredItems, onFilterDone, sorting.fn]);
 

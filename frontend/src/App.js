@@ -17,7 +17,6 @@ import {MyStreamsPage} from './pages/MyStreams';
 import {AccountPage} from './pages/Account';
 import {AuthorizePage} from './pages/Authorize';
 import {StreamPage} from './pages/StreamPage';
-import {routes} from './lib/routing';
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
@@ -26,7 +25,6 @@ function PrivateRoute({children, allowed, redirect, ...rest}) {
     <Route
       {...rest}
       render={({location}) => {
-        console.log(`Render ${rest.path}, allowed? ${allowed}`);
         return allowed ? children : redirect;
       }}
     />
@@ -50,7 +48,7 @@ function AppFn() {
                 allowed={!near.auth.signedIn}
                 path="/authorize"
               >
-                  <AuthorizePage />
+                <AuthorizePage />
               </PrivateRoute>
               <PrivateRoute
                 exact
@@ -69,10 +67,7 @@ function AppFn() {
                 <AccountPage />
               </PrivateRoute>
 
-              <Route
-                exact
-                path="/my_streams/:id"
-              >
+              <Route exact path="/my_streams/:id">
                 <StreamPage />
               </Route>
               <PrivateRoute

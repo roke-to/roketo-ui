@@ -13,6 +13,7 @@ import {
 import {Button} from '../components/kit';
 import {useAccount} from '../features/xyiming-resources';
 import {formatDistance, subDays} from 'date-fns';
+import {PageError} from '../components/PageError';
 
 const __INPUTS = [];
 const __OUTPUTS = [];
@@ -35,8 +36,10 @@ export function AccountPage() {
   console.log('INPUTS', inputs);
   console.log('OUTPUTS', outputs);
 
+  const pageError = accountSWR.error;
+
   return (
-    <div className="twind-container mx-auto twind-p-12">
+    <div className="twind-container twind-mx-auto twind-p-12">
       <div className="twind-flex twind-justify-between twind-items-center twind-mb-10">
         <h1 className="twind-text-3xl">My Account</h1>
         <div className="twind-flex twind-items-center">
@@ -62,6 +65,7 @@ export function AccountPage() {
           <div>
             <Button
               variant="main"
+              size="normal"
               className="twind-p-0"
               onClick={(e) => cronSubscribeClick(e)}
             >
@@ -74,33 +78,41 @@ export function AccountPage() {
         </div>
       </div>
 
-      <div className="twind-grid twind-grid-cols-3 twind-gap-4">
-        <AccountColumn
-          icon={<StreamIn />}
-          header="Receiving"
-          account={account}
-          tokensField="total_incoming"
-          streamsIds={inputs}
-          key="AccountInputs"
-          period="sec"
+      {pageError ? (
+        <PageError
+          className="twind-max-w-2xl twind-mx-auto twind-my-32"
+          message={pageError.message}
+          messaonClick={accountSWR.mutate}
         />
-        <AccountColumn
-          icon={<StreamOut />}
-          header="Sending"
-          account={account}
-          tokensField="total_outgoing"
-          streamsIds={outputs}
-          key="AccountOutputs"
-          period="sec"
-        />
-        <AccountColumn
-          icon={<StreamWithdraw />}
-          header="Withdrawn"
-          account={account}
-          tokensField="total_received"
-          key="AccountWithdrawn"
-        />
-      </div>
+      ) : (
+        <div className="twind-grid twind-grid-cols-3 twind-gap-4">
+          <AccountColumn
+            icon={<StreamIn />}
+            header="Receiving"
+            account={account}
+            tokensField="total_incoming"
+            streamsIds={inputs}
+            key="AccountInputs"
+            period="sec"
+          />
+          <AccountColumn
+            icon={<StreamOut />}
+            header="Sending"
+            account={account}
+            tokensField="total_outgoing"
+            streamsIds={outputs}
+            key="AccountOutputs"
+            period="sec"
+          />
+          <AccountColumn
+            icon={<StreamWithdraw />}
+            header="Withdrawn"
+            account={account}
+            tokensField="total_received"
+            key="AccountWithdrawn"
+          />
+        </div>
+      )}
     </div>
   );
 }
