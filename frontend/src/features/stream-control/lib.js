@@ -11,5 +11,14 @@ export const STREAM_DIRECTION = {
 };
 export const STREAM_AUTODEPOSIT_STATUS = {
   ENABLED: 'enabled',
-  DISABLED: 'disabled'
-}
+  DISABLED: 'disabled',
+};
+
+export const STREAM_ACTION_TYPE = {
+  INIT: 'Init',
+  DEPOSIT: 'Deposit',
+  START: 'Start',
+  WITHDRAW: 'Withdraw',
+  PAUSE: 'Pause',
+  STOP: 'Stop',
+};
