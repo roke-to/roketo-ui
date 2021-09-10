@@ -1,6 +1,7 @@
 import React from 'react';
 import {Button} from '../../components/kit';
 import {useNearAuth} from './useNearAuth';
+import {Tokens} from '../../components/icons';
 
 export function NearAuthButton(props) {
   const {inited, logout, login, accountId, signedIn} = useNearAuth();

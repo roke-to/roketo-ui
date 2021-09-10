@@ -1,15 +1,15 @@
 import {STREAM_AUTODEPOSIT_STATUS} from './lib';
 import classNames from 'classnames';
 
-export function StreamAutodepositStatus({stream, className, ...rest}) {
+export function StreamAutodepositStatus({stream, className, disableMsg, enableMsg,...rest}) {
   const bindings = {
     [STREAM_AUTODEPOSIT_STATUS.ENABLED]: {
       colorClass: 'twind-text-special-hold',
-      label: 'Enabled',
+      label: disableMsg || 'Enabled',
     },
     [STREAM_AUTODEPOSIT_STATUS.DISABLED]: {
       colorClass: 'twind-text-special-active',
-      label: 'Disabled',
+      label: enableMsg || 'Disabled',
     },
   };
 

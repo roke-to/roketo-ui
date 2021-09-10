@@ -10,32 +10,24 @@ function SendPage() {
   const profileId = near.auth.signedAccountId;
 
   async function createStreamClick(values) {
-    const {
-      owner: ownerId,
-      receiver: receiverId,
-      autoDeposit,
-      comment,
-      deposit,
-      speed,
-      token: tokenName,
-    } = values;
-    const formatter = TokenFormatter(tokenName);
+    const {owner, receiver, autoDeposit, comment, deposit, speed, token} =
+      values;
+    const formatter = TokenFormatter(token);
 
-    console.log('creating', tokenName);
-    console.log('token', near.near.fts[tokenName]);
-
+    console.log('creating', token);
+    console.log('token', near.near.fts[token]);
     const res =
-      tokenName === 'NEAR'
+      token === 'NEAR'
         ? await near.contractApi.createStream({
             deposit: formatter.toInt(deposit),
             description: comment,
-            ownerId: ownerId,
-            receiverId: receiverId,
-            token: tokenName,
+            ownerId: owner,
+            receiverId: receiver,
+            token: token,
             speed: String(speed),
             autoDepositEnabled: autoDeposit,
           })
-        : await near.near.fts[tokenName].contract.ft_transfer_call(
+        : await near.near.fts[token].contract.ft_transfer_call(
             {
               receiver_id: near.near.contractName,
               amount: deposit,
@@ -43,9 +35,9 @@ function SendPage() {
               msg: JSON.stringify({
                 Create: {
                   description: comment,
-                  owner_id: ownerId,
-                  receiver_id: receiverId,
-                  token_name: tokenName,
+                  owner_id: owner,
+                  receiver_id: receiver,
+                  token_name: token,
                   balance: formatter.toInt(deposit),
                   tokens_per_tick: String(speed),
                   auto_deposit_enabled: autoDeposit,

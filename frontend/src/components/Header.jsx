@@ -7,10 +7,10 @@ import {routes} from '../lib/routing';
 import LogoText from '../images/logo_stream_with_text.svg';
 import {useBool} from '../lib/useBool';
 
-export function Header() {
+export function Header({signedIn}) {
   const menuControl = useBool(false);
 
-  const navigation = (
+  const navigation = signedIn ? (
     <ul className="twind-flex-col lg:twind-flex-row twind-flex twind-justify-center ">
       <li className="twind-mb-2 lg:twind-mr-2 lg:twind-mb-0">
         <NavLink
@@ -40,6 +40,8 @@ export function Header() {
         </NavLink>
       </li>
     </ul>
+  ) : (
+    ''
   );
 
   const logo = (
@@ -49,40 +51,62 @@ export function Header() {
   );
 
   return (
-    <div className="twind-py-4 twind-px-6">
+    <div
+      className={
+        'twind-py-4 twind-px-6 ' +
+        (!signedIn ? 'twind-absolute twind-w-full twind-pt-8' : '')
+      }
+    >
       <div
         className={classNames(
-          'twind-hidden lg:twind-grid twind-items-center twind-grid-cols-3 twind-gap-3 ',
+          signedIn
+            ? 'twind-hidden lg:twind-grid twind-items-center twind-grid-cols-3 twind-gap-3 '
+            : 'twind-hidden lg:twind-flex twind-justify-center',
         )}
       >
         {logo}
         {navigation}
-        <div className="twind-flex twind-justify-end">
-          <NearAuthButton />
-        </div>
+
+        {signedIn ? (
+          <div className="twind-flex twind-justify-end">
+            <NearAuthButton />
+          </div>
+        ) : (
+          ''
+        )}
       </div>
 
       <div className={classNames('lg:twind-hidden')}>
-        <div className="twind-flex twind-justify-between">
+        <div
+          className={
+            signedIn
+              ? 'twind-flex twind-justify-between'
+              : 'twind-flex twind-justify-center'
+          }
+        >
           {logo}
 
-          <button
-            className="twind-p-1"
-            onClick={menuControl.toggle}
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <div
-              className={classNames(
-                'burger-menu',
-                menuControl.on ? 'burger-menu--active' : '',
-              )}
-            />
-          </button>
+          {signedIn ? (
+            <button
+              className="twind-p-1"
+              onClick={menuControl.toggle}
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <div
+                className={classNames(
+                  'burger-menu',
+                  menuControl.on ? 'burger-menu--active' : '',
+                )}
+              />
+            </button>
+          ) : (
+            ''
+          )}
         </div>
         <div
           className={classNames(

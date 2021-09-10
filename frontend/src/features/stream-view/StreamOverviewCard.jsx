@@ -135,6 +135,9 @@ export function StreamOverviewCard({
       ) : (
         ''
       )}
+      <HorizontalData label="Auto-deposit:">
+        {stream.auto_deposit_enabled ? 'Enabled': 'Disabled'}
+      </HorizontalData>
 
       <HorizontalData label="Stream ID:">
         <div className="twind-inline-block twind-w-24 twind-overflow-ellipsis twind-overflow-hidden">

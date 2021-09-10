@@ -1,8 +1,6 @@
-import React, {useMemo, useState} from 'react';
+import React from 'react';
 import {useNear} from '../features/near-connect/useNear';
-import useSWR from 'swr';
 import {AccountColumn} from '../components/AccountColumn';
-import {StreamFilters} from '../features/filtering/streams';
 import {
   StreamIn,
   StreamOut,
@@ -12,7 +10,7 @@ import {
 } from '../components/icons';
 import {Button} from '../components/kit';
 import {useAccount} from '../features/xyiming-resources';
-import {formatDistance, subDays} from 'date-fns';
+import {formatDistance} from 'date-fns';
 import {PageError} from '../components/PageError';
 
 const __INPUTS = [];
@@ -91,7 +89,7 @@ export function AccountPage() {
             header="Receiving"
             account={account}
             tokensField="total_incoming"
-            streamsIds={inputs}
+            streamsType="inputs"
             key="AccountInputs"
             period="sec"
           />
@@ -100,7 +98,7 @@ export function AccountPage() {
             header="Sending"
             account={account}
             tokensField="total_outgoing"
-            streamsIds={outputs}
+            streamsType="outputs"
             key="AccountOutputs"
             period="sec"
           />
@@ -110,6 +108,7 @@ export function AccountPage() {
             account={account}
             tokensField="total_received"
             key="AccountWithdrawn"
+            showPeriod={false}
           />
         </div>
       )}
