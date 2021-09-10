@@ -2,12 +2,14 @@ use std::convert::TryInto;
 
 mod account;
 mod calls;
+mod cron;
 mod primitives;
 mod stream;
 mod views;
 
 pub use crate::account::*;
 pub use crate::calls::*;
+pub use crate::cron::*;
 pub use crate::primitives::*;
 pub use crate::stream::*;
 pub use crate::views::*;
@@ -17,7 +19,7 @@ use near_contract_standards::fungible_token::receiver::FungibleTokenReceiver;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::{LookupMap, UnorderedSet, Vector};
 use near_sdk::json_types::{
-    Base58CryptoHash, ValidAccountId, WrappedBalance, WrappedTimestamp, U128,
+    Base58CryptoHash, Base64VecU8, ValidAccountId, WrappedBalance, WrappedTimestamp, U128,
 };
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::serde_json;

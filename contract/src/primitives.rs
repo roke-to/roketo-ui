@@ -11,12 +11,14 @@ pub const ERR_NOT_NEAR_TOKEN: &str = "Only NEAR tokens allowed in this method";
 pub const ERR_NOT_FT_TOKEN: &str = "Only FT tokens allowed in this method";
 pub const ERR_TOKENS_MISMATCH: &str = "Tokens mismatch";
 pub const ERR_INVALID_TOKEN: &str = "Invalid token name";
+pub const ERR_INVALID_STREAM_STATE: &str = "Invalid stream state";
 
 pub const CREATE_STREAM_DEPOSIT: Balance = 100_000_000_000_000_000_000_000; // 0.1 NEAR
 pub const ONE_YOCTO: Balance = 1;
 pub const ONE_NEAR: Balance = 1_000_000_000_000_000_000_000_000; // 1 NEAR
 pub const MAX_TEXT_FIELD: usize = 255;
 pub const GAS_FOR_FT_TRANSFER: Gas = 10_000_000_000_000;
+pub const GAS_FOR_TICK_CALL: Gas = 250_000_000_000_000;
 
 pub type StreamId = CryptoHash;
 pub type TokenId = u32;

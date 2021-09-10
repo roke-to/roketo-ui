@@ -6,6 +6,16 @@ async function fetchStream({streamId}, {near}) {
   return stream;
 }
 
+async function fetchStreamHistory({streamId}, {near}) {
+  let streamHistory = await near.contractApi.getStreamHistory({
+    streamId,
+    from: 0,
+    to: 100,
+  });
+
+  return streamHistory;
+}
+
 async function fetchStreams({inputs, outputs}, {near}) {
   let inputStreams = await Promise.all(
     inputs.map((streamId) => near.contractApi.getStream({streamId})),
@@ -74,6 +84,28 @@ export function useSingleStream({streamId}, {near, accountSWR}) {
       );
 
       return stream;
+    },
+  );
+
+  return swr;
+}
+
+export function useSingleStreamHistory({streamId}, {near}) {
+  const swr = useSWR(
+    () => {
+      const key = streamId ? ['stream_history', streamId] : false;
+
+      return key;
+    },
+    async () => {
+      let streamHistory = await fetchStreamHistory(
+        {streamId: streamId},
+        {
+          near,
+        },
+      );
+
+      return streamHistory;
     },
   );
 

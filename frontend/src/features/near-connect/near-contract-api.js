@@ -1,4 +1,5 @@
 const GAS_SIZE = '200000000000000';
+const GAS_SIZE_CRON = '300000000000000';
 const NOT_ZERO_NEAR_AMOUNT = 1;
 
 export function NearContractApi(near) {
@@ -28,6 +29,16 @@ export function NearContractApi(near) {
       },
       GAS_SIZE,
     );
+    return res;
+  }
+
+  async function changeAutoDeposit({streamId, autoDeposit}) {
+    const res = await contract.change_auto_deposit(
+      {stream_id: streamId, auto_deposit: autoDeposit},
+      GAS_SIZE,
+      NOT_ZERO_NEAR_AMOUNT,
+    );
+
     return res;
   }
 
@@ -116,6 +127,26 @@ export function NearContractApi(near) {
     return res;
   }
 
+  async function getStreamHistory({streamId, from, to}) {
+    const res = await contract.get_stream_history({
+      stream_id: streamId,
+      from: from,
+      to: to,
+    });
+
+    return res;
+  }
+
+  async function startCron() {
+    const res = await contract.start_cron(
+      {},
+      GAS_SIZE_CRON,
+      '1000000000000000000000000',
+    );
+
+    return res;
+  }
+
   return {
     getCurrentAccount,
     updateAccount,
@@ -127,5 +158,8 @@ export function NearContractApi(near) {
     stopStream,
     getStream,
     change_auto_deposit,
+    getStreamHistory,
+    changeAutoDeposit,
+    startCron,
   };
 }

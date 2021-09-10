@@ -16,7 +16,9 @@ export function StreamAutodepositButton({stream, className, disableMsg, enableMs
         type="button"
         className={className}
         enabled
-        onClick={() =>stream.auto_deposit_enabled ? controls.disable(): controls.enable()}
+        onClick={() =>
+          stream.auto_deposit_enabled ? controls.disable() : controls.enable()
+        }
       >
         {stream.auto_deposit_enabled ? disableMsg || 'Disable': enableMsg || 'Enable'}
       </Button>

@@ -21,6 +21,11 @@ export function AccountPage() {
   const near = useNear();
   const accountSWR = useAccount({near});
 
+  async function cronSubscribeClick(e) {
+    e.preventDefault();
+    await near.contractApi.startCron();
+  }
+
   const account = accountSWR.data;
 
   const inputs = (account && account.inputs) || __INPUTS;
@@ -31,7 +36,7 @@ export function AccountPage() {
   console.log('OUTPUTS', outputs);
 
   return (
-    <div className="twind-container mx-auto twind-p-12">
+    <div className="twind-container twind-mx-auto twind-p-12">
       <div className="twind-flex twind-justify-between twind-items-center twind-mb-10">
         <h1 className="twind-text-3xl">My Account</h1>
         <div className="twind-flex twind-items-center">
@@ -55,7 +60,11 @@ export function AccountPage() {
             )}
           </div>
           <div>
-            <Button variant="main" className="twind-p-0">
+            <Button
+              variant="main"
+              className="twind-p-0"
+              onClick={(e) => cronSubscribeClick(e)}
+            >
               <span className="twind-mr-2">
                 <Cron />
               </span>
@@ -71,7 +80,7 @@ export function AccountPage() {
           header="Receiving"
           account={account}
           tokensField="total_incoming"
-          streamsIds={inputs}
+          streamsType="inputs"
           key="AccountInputs"
           period="sec"
         />
@@ -80,7 +89,7 @@ export function AccountPage() {
           header="Sending"
           account={account}
           tokensField="total_outgoing"
-          streamsIds={outputs}
+          streamsType="outputs"
           key="AccountOutputs"
           period="sec"
         />
@@ -90,6 +99,7 @@ export function AccountPage() {
           account={account}
           tokensField="total_received"
           key="AccountWithdrawn"
+          showPeriod={false}
         />
       </div>
     </div>

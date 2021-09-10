@@ -7,7 +7,11 @@ import {
   StreamOverviewCard,
   streamDirection,
 } from '../features/stream-view';
-import {useAccount, useSingleStream} from '../features/xyiming-resources';
+import {
+  useAccount,
+  useSingleStream,
+  useSingleStreamHistory,
+} from '../features/xyiming-resources';
 import {StreamDashboard} from '../features/stream-view/StreamDashboard';
 import copy from 'clipboard-copy';
 import {Link as LinkIcon, ArrowLeft} from '../components/icons';
@@ -67,8 +71,17 @@ export function StreamPage() {
       accountSWR,
     },
   );
+  const streamHistorySWR = useSingleStreamHistory(
+    {streamId: params.id},
+    {
+      near,
+    },
+  );
   const account = accountSWR.data;
   const stream = streamSWR.data;
+  let streamHistory = streamHistorySWR.data || [];
+
+  console.log('!!!', streamHistory);
 
   if (streamSWR.error || accountSWR.error) {
     return <div>Error!</div>;
@@ -77,6 +90,26 @@ export function StreamPage() {
     return <div>Loading</div>;
   }
   const {link} = streamViewData(stream);
+
+  streamHistory = streamHistory.map((value, key) => {
+    console.log(value);
+    return (
+      <div className="twind-flex twind-flex-col lg:twind-flex-row twind-justify-between">
+        <div className="twind-max-w-xl twind-w-full twind-mt-10">
+          {value.actor}
+        </div>
+        <div className="twind-max-w-xl twind-w-full twind-mt-10">
+          {value.action_type}
+        </div>
+        <div className="twind-max-w-xl twind-w-full twind-mt-10">
+          {value.amount}
+        </div>
+        <div className="twind-max-w-xl twind-w-full twind-mt-10">
+          {value.timestamp}
+        </div>
+      </div>
+    );
+  });
 
   return (
     <div className="twind-container twind-mx-auto twind-p-12">
@@ -98,6 +131,7 @@ export function StreamPage() {
           account={account}
         />
       </div>
+      {streamHistory}
     </div>
   );
 }
