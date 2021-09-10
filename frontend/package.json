@@ -13,6 +13,7 @@
     "dotenv": "^10.0.0",
     "error-polyfill": "^0.1.2",
     "faker": "^5.5.3",
+    "formik": "^2.2.9",
     "local-storage": "^2.0.0",
     "moment": "^2.29.1",
     "near-api-js": "^0.37.0",
@@ -28,7 +29,8 @@
     "react-moment": "^1.1.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
-    "swr": "^1.0.0"
+    "swr": "^1.0.0",
+    "yup": "^0.32.9"
   },
   "scripts": {
     "start": "craco start",
