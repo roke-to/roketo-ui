@@ -24,10 +24,7 @@ impl Xyiming {
         from: u64,
         to: u64,
     ) -> Vec<ActionView> {
-        let h = Self::streams()
-            .get(&stream_id.into())
-            .unwrap()
-            .history;
+        let h = Self::streams().get(&stream_id.into()).unwrap().history;
         let mut res = vec![];
         let from = std::cmp::min(from, h.len());
         let to = std::cmp::min(to, h.len());

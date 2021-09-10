@@ -36,6 +36,11 @@ impl Xyiming {
             assert!(false, "Caller must own auto-deposited streams");
         }
         let tokens_per_tick = tokens_per_tick.into();
+        assert!(tokens_per_tick > 0, "tokens_per_tick should be positive");
+        assert!(
+            tokens_per_tick <= 1_000_000_000_000_000_000,
+            "tokens_per_tick cannot be more than 1e18"
+        );
         // TODO generate stream_id reasonably
         let stream_id = env::sha256(&env::block_index().to_be_bytes())
             .as_slice()
@@ -100,8 +105,12 @@ impl Xyiming {
         if auto_deposit_enabled && owner_id.as_ref() != sender_id.as_ref() {
             return false;
         }
-
         let tokens_per_tick = tokens_per_tick.into();
+        assert!(tokens_per_tick > 0, "tokens_per_tick should be positive");
+        assert!(
+            tokens_per_tick <= 1_000_000_000_000_000_000,
+            "tokens_per_tick cannot be more than 1e18"
+        );
         // TODO generate stream_id reasonably
         let stream_id = env::sha256(&env::block_index().to_be_bytes())
             .as_slice()
