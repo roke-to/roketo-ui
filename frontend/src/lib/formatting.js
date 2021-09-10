@@ -33,7 +33,6 @@ export const tokens = {
 
 export function TokenFormatter(tokenName) {
   let token = tokens[tokenName] || tokens.fallback;
-
   const TICK_TO_MS = Math.pow(10, 6);
   const TICK_TO_S = Math.pow(10, 9);
   const TICK_TO_MINUTE = TICK_TO_S * 60;
@@ -45,21 +44,37 @@ export function TokenFormatter(tokenName) {
 
   const MP = Math.pow(10, token.decimals);
 
+  const bigValueFormatter = Intl.NumberFormat('en-US', {
+    minimumIntegerDigits: 1,
+    maximumFractionDigits: 10,
+    minimumFractionDigits: 1,
+  });
+  const smallValueFormatter = Intl.NumberFormat('en-US', {
+    minimumSignificantDigits: 2,
+    maximumSignificantDigits: 4,
+    maximumFractionDigits: token.decimals,
+  });
+
+  const chooseFormatter = (value) => {
+    if (value >= 1) {
+      return bigValueFormatter;
+    } else {
+      return smallValueFormatter;
+    }
+  };
+
   return {
     tokenPerSecondToInt: (tps) =>
       numbro(tps).multiply(MP).divide(TICK_TO_S).format({mantissa: 0}),
     toInt: (floatValue) =>
       numbro(floatValue).multiply(MP).format({mantissa: 0}),
     amount: (amount, decimals = token.decimals) => {
-      const formatter = Intl.NumberFormat('en-US', {
-        minimumSignificantDigits: 2,
-        maximumSignificantDigits: 6,
-        minimumFractionDigits: 2,
-      });
       // .format({
       // mantissa: decimals >= 0 && decimals < 20 ? decimals : 2,
       //  });
-      return formatter.format(numbro(amount).divide(MP).value());
+      const value = numbro(amount).divide(MP).value();
+      const formatted = chooseFormatter(value).format(value);
+      return formatted;
     },
     tokensPerMS: (tokensPerTick) =>
       numbro(tokensPerTick).multiply(TICK_TO_MS).divide(MP).format({
@@ -104,22 +119,24 @@ export function TokenFormatter(tokenName) {
           return isOk;
         }) || TICK_TO_YEAR;
 
+      const value = numbro(tokensPerTick)
+        .multiply(firstGoodLookingMultiplier)
+        .divide(MP)
+        .value();
+
       return {
-        formattedValue: numbro(tokensPerTick)
-          .multiply(firstGoodLookingMultiplier)
-          .divide(MP)
-          .format({
-            mantissa: 5,
-            optionalMantissa: true,
-            trimMantissa: true,
-          }),
+        formattedValue: chooseFormatter(value).format(value),
         unit: unit[firstGoodLookingMultiplier],
       };
     },
     ticksToMs: (ticks) => Math.round(ticks / TICK_TO_MS),
+    secondsToTicks: (seconds) => seconds * TICK_TO_S,
+    speedPerSecondToTick: (speedPerSec) =>
+      numbro(speedPerSec).multiply(TICK_TO_S).value(),
   };
 }
 
+window.tf = TokenFormatter;
 export function timestamp(value) {
   return {
     fromNanosec() {

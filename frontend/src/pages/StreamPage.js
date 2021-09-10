@@ -18,6 +18,7 @@ import copy from 'clipboard-copy';
 import {Link as LinkIcon, ArrowLeft} from '../components/icons';
 import {routes} from '../lib/routing';
 import classNames from 'classnames';
+import {PageError} from '../components/PageError';
 
 function BackButton({to, className, ...rest}) {
   return (
@@ -94,9 +95,8 @@ export function StreamPage() {
   const stream = streamSWR.data;
   let streamHistory = streamHistorySWR.data || [];
 
-  if (streamSWR.error || accountSWR.error) {
-    return <div>Error!</div>;
-  }
+  const pageError = streamSWR.error || accountSWR.error;
+
   if (!stream || !account) {
     return <div>Loading</div>;
   }
@@ -108,32 +108,45 @@ export function StreamPage() {
         <BackButton to={routes.myStreams} />
       </div>
 
-      <div className="twind-flex twind-flex-col lg:twind-flex-row twind-justify-between">
-        <div className="twind-flex twind-flex-col twind-items-center twind-flex-grow">
-          <StreamDashboard stream={stream} account={account} />
-          <StreamCopyUrlBlock
-            link={link}
-            className="twind-max-w-xl twind-w-full twind-mt-28"
-          />
-        </div>
-        <StreamOverviewCard
-          className="twind-mt-10 lg:twind-mt-0 lg:twind-w-1/3 twind-self-start"
-          stream={stream}
-          account={account}
+      {pageError ? (
+        <PageError
+          className="twind-max-w-2xl twind-mx-auto twind-my-32"
+          message={pageError.message}
+          onRetry={() => {
+            accountSWR.mutate();
+            streamSWR.mutate();
+          }}
         />
-      </div>
+      ) : (
+        <>
+          <div className="twind-flex twind-flex-col lg:twind-flex-row twind-justify-between">
+            <div className="twind-flex twind-flex-col twind-items-center twind-flex-grow">
+              <StreamDashboard stream={stream} account={account} />
+              <StreamCopyUrlBlock
+                link={link}
+                className="twind-max-w-xl twind-w-full twind-mt-28"
+              />
+            </div>
+            <StreamOverviewCard
+              className="twind-mt-10 lg:twind-mt-0 lg:twind-w-1/3 twind-self-start"
+              stream={stream}
+              account={account}
+            />
+          </div>
 
-      <StreamActionHistory
-        pageSize={PAGE_SIZE}
-        loading={!streamHistorySWR.data}
-        stream={stream}
-        history={streamHistory}
-        className="twind-mx-auto twind-max-w-6xl twind-my-24 twind-w-full"
-        onPrevPageClick={prevPage}
-        onNextPageClick={nextPage}
-        maxPage={maxPage}
-        currentPage={currentPage}
-      />
+          <StreamActionHistory
+            pageSize={PAGE_SIZE}
+            loading={!streamHistorySWR.data}
+            stream={stream}
+            history={streamHistory}
+            className="twind-mx-auto twind-max-w-6xl twind-my-24 twind-w-full"
+            onPrevPageClick={prevPage}
+            onNextPageClick={nextPage}
+            maxPage={maxPage}
+            currentPage={currentPage}
+          />
+        </>
+      )}
     </div>
   );
 }

@@ -1,6 +1,9 @@
 .Input {
 }
 
+.Input > * {
+  flex-grow: 1;
+}
 .Input input {
   background-color: transparent;
   color: white;

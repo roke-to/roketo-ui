@@ -46,10 +46,6 @@ export function AccountColumn({
     streams = allStreams ? allStreams.outputs : [];
   }
 
-  console.log('STREAMS TYPE', streamsType);
-  console.log('ALL STREAMS', allStreams);
-  console.log('STREAMS', streams);
-
   let streamGroups = {};
   if (streams !== undefined) {
     streamGroups = streams.reduce((groups, item) => {
@@ -60,6 +56,13 @@ export function AccountColumn({
     }, {});
   }
 
+  console.log('AccountColumn', {
+    streamsType,
+    tokensField,
+    streams,
+    allStreams,
+    streamGroups,
+  });
   const tokensData = account !== undefined ? account[tokensField] : [];
 
   const periodsOptions = useFilter({options: PERIODS});

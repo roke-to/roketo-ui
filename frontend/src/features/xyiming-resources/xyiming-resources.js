@@ -8,11 +8,6 @@ async function fetchStream({streamId}, {near}) {
 }
 
 async function fetchStreamHistory({streamId, from, to}, {near}) {
-  console.log('fetchStreamHistory', {
-    streamId,
-    from,
-    to,
-  });
   let streamHistory = await near.contractApi.getStreamHistory({
     streamId,
     from,
@@ -121,7 +116,6 @@ export function useSingleStreamHistory(
       const key = stream
         ? ['stream_history', stream.stream_id, account.last_action, page]
         : false;
-      console.log('useSingleStreamHistory', key);
 
       return key;
     },
@@ -151,7 +145,6 @@ export function useSingleStreamHistory(
       const key = stream
         ? ['stream_history', stream.stream_id, account.last_action, page + 1]
         : false;
-      console.log('useSingleStreamHistory', key);
 
       return key;
     },

@@ -12,9 +12,8 @@ export function StreamAutodepositStatus({stream, className, disableMsg, enableMs
       label: enableMsg || 'Disabled',
     },
   };
-  
-  const status = stream.auto_deposit_enabled ? 'enabled' : 'disabled' 
-  console.log(status, stream.auto_deposit_enabled)
+
+  const status = stream.auto_deposit_enabled ? 'enabled' : 'disabled';
   const binding = bindings[status] || {};
 
   return (

@@ -20,7 +20,8 @@ function isValidDate(d) {
   return d instanceof Date && !isNaN(d);
 }
 
-export function DurationTimer({untilDate, suffix, finishedText}) {
+export function useDurationTimer({untilTimestamp}) {
+  const untilDate = new Date(untilTimestamp);
   const dateValid = isValidDate(untilDate);
 
   const [expired, setExpired] = useState(
@@ -31,6 +32,9 @@ export function DurationTimer({untilDate, suffix, finishedText}) {
   );
 
   useEffect(() => {
+    console.log('USE EFFECT RUN AGAIN', {untilTimestamp});
+    const untilDate = new Date(untilTimestamp);
+
     if (!isValidDate(untilDate)) return;
 
     let id = setInterval(() => {
@@ -47,7 +51,19 @@ export function DurationTimer({untilDate, suffix, finishedText}) {
     }, 1000);
 
     return () => clearInterval(id);
-  }, [untilDate, expired]);
+  }, [untilTimestamp, expired]);
+
+  return {
+    duration,
+    dateValid,
+    expired,
+  };
+}
+
+export function DurationTimer({untilTimestamp, suffix, finishedText}) {
+  const {duration, dateValid, expired} = useDurationTimer({
+    untilTimestamp,
+  });
 
   if (!dateValid) {
     return <span>Invalid Date</span>;
@@ -56,7 +72,6 @@ export function DurationTimer({untilDate, suffix, finishedText}) {
   if (!duration || expired) {
     return <span>{finishedText}</span>;
   }
-
   const formatted =
     formatDuration(duration, {
       locale: shortEnLocale,

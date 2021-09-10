@@ -5,7 +5,11 @@ import {Link} from 'react-router-dom';
 
 import {StreamingSpeed} from './StreamingSpeed';
 import {ProgressBar, Button, TokenImage} from '../../components/kit';
-import {StreamControls, StreamAutodepositControls, StreamDepositButton} from '../stream-control';
+import {
+  StreamControls,
+  StreamAutodepositControls,
+  StreamDepositButton,
+} from '../stream-control';
 import {DurationTimer} from '../../components/DurationTimer';
 import {routes} from '../../lib/routing';
 import {streamViewData} from './streamViewData';
@@ -53,6 +57,7 @@ export function StreamCard({stream = streamType, direction, className}) {
     dateEnd,
     progresses,
     tf,
+    timestampEnd,
     percentages,
     progress: {full, withdrawn, streamed},
     link,
@@ -84,7 +89,10 @@ export function StreamCard({stream = streamType, direction, className}) {
               {stream.status === STREAM_STATUS.PAUSED ? (
                 ''
               ) : (
-                <DurationTimer untilDate={dateEnd} suffix=" remaining" />
+                <DurationTimer
+                  untilTimestamp={timestampEnd}
+                  suffix=" remaining"
+                />
               )}
             </div>
           </div>
@@ -139,13 +147,12 @@ export function StreamCard({stream = streamType, direction, className}) {
           <div className="twind-text-gray">Status:</div>
           <StreamControls className="twind-w-full" minimal stream={stream} />
         </div>
-      {
-        direction === 'out' ?
+        {direction === 'out' ? (
           <div className="twind-col-span-1 twind-mr-4">
-          <div className="twind-text-gray">Auto&#8209;dep:</div>
-          <StreamAutodepositControls minimal stream={stream} buttonClassName="twind-py-0"/> 
-          </div> : null
-      }
+            <div className="twind-text-gray">Auto&#8209;dep:</div>
+            <StreamAutodepositControls minimal stream={stream} />
+          </div>
+        ) : null}
         <div className="twind-flex twind-items-start twind-justify-end twind-w-52">
           {direction === 'out' ? <StreamDepositButton stream={stream} /> : null}
           <Button
