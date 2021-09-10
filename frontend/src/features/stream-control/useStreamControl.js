@@ -20,14 +20,19 @@ export function useStreamControl(streamId) {
   }
 
   async function enable() {
+    ensureMethodHasStreamId();
     console.log('enable', streamId);
-    // const res = await near.contractApi.enable
+    const res = await near.contractApi.change_auto_deposit({streamId: streamId, auto_deposit: true});
+    console.log(res);
+    return res;
   }
 
   async function disable() {
     ensureMethodHasStreamId();
     console.log('disabling', streamId);
-    // const res = await near.contractApi.disable;
+    const res = await near.contractApi.change_auto_deposit({streamId: streamId, auto_deposit: false});
+    console.log(res);
+    return res;
   }
 
   async function deposit({token, deposit}) {

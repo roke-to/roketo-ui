@@ -7,8 +7,8 @@ import {STREAM_STATUS} from './lib';
 import classNames from 'classnames';
 
 
-export function StreamAutodepositButton({stream, className}) {
-  const controls = useStreamControl(stream._id);
+export function StreamAutodepositButton({stream, className, disableMsg, enableMsg}) {
+  const controls = useStreamControl(stream.stream_id);
   return (
     <>
       <Button
@@ -18,14 +18,14 @@ export function StreamAutodepositButton({stream, className}) {
         enabled
         onClick={() =>stream.auto_deposit_enabled ? controls.disable(): controls.enable()}
       >
-        {stream.auto_deposit_enabled ? 'Disable': 'Enable'}
+        {stream.auto_deposit_enabled ? disableMsg || 'Disable': enableMsg || 'Enable'}
       </Button>
     </>
   );
 }
 
 
-export function StreamAutodepositControls({stream, minimal, className}) {
+export function StreamAutodepositControls({stream, minimal, className, disableMsg, enableMsg, buttonClassName}) {
   const near = useNear();
   const isDead =
     stream.status === STREAM_STATUS.INTERRUPTED ||
@@ -37,14 +37,16 @@ export function StreamAutodepositControls({stream, minimal, className}) {
   }
 
   if (isDead) {
-    return <StreamAutodepositStatus stream={stream} />;
+    return <StreamAutodepositStatus stream={stream} enableMsg={enableMsg} disableMsg={disableMsg}/>;
   }
 
   return (
     <div className={classNames(className, 'twind-relative twind-inline-flex')}>
         <StreamAutodepositButton
-          className="twind-py-0"
+          className={classNames(buttonClassName)}
           stream={stream}
+          enableMsg={enableMsg}
+          disableMsg={disableMsg}
         />
     </div>
   );

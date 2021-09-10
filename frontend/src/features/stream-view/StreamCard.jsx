@@ -143,7 +143,7 @@ export function StreamCard({stream = streamType, direction, className}) {
         direction === 'out' ?
           <div className="twind-col-span-1 twind-mr-4">
           <div className="twind-text-gray">Auto&#8209;dep:</div>
-          <StreamAutodepositControls minimal stream={stream}/> 
+          <StreamAutodepositControls minimal stream={stream} buttonClassName="twind-py-0"/> 
           </div> : null
       }
         <div className="twind-flex twind-items-start twind-justify-end twind-w-52">
