@@ -33,6 +33,7 @@ module.exports = {
   variants: {
     extend: {
       backgroundColor: ['active'],
+      borderRadius: ['first', 'last'],
     },
   },
   plugins: [],

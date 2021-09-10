@@ -11,8 +11,8 @@ export const ArrowLeft = () => (
     <path
       d="M7.44798 12.8541L1.86072 7.26685L7.44798 1.67958"
       stroke="white"
-      stroke-width="2"
-      stroke-linecap="round"
+      strokeWidth="2"
+      strokeLinecap="round"
     />
   </svg>
 );

@@ -13,8 +13,8 @@ export const PlusGradient = (props) => (
     <path
       d="M14.7506 10.7635L14.7506 14.7314M14.7506 18.6993L14.7506 14.7314M14.7506 14.7314L18.7185 14.7314M14.7506 14.7314L10.7827 14.7314"
       stroke="#1F1D37"
-      stroke-width="2.5"
-      stroke-linecap="round"
+      strokeWidth="2.5"
+      strokeLinecap="round"
     />
     <defs>
       <linearGradient

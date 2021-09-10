@@ -11,8 +11,8 @@ export const StreamWithdraw = () => (
     <path
       d="M10.0818 9.73921L10.0818 21.718M10.0818 21.718L18.5945 13.2589M10.0818 21.718L1.5691 13.2589M10.0823 4.3827L10.0823 1.78194"
       stroke="#8DA6FF"
-      stroke-width="2"
-      stroke-linecap="round"
+      strokeWidth="2"
+      strokeLinecap="round"
     />
   </svg>
 );

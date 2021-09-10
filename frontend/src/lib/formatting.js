@@ -50,12 +50,17 @@ export function TokenFormatter(tokenName) {
       numbro(tps).multiply(MP).divide(TICK_TO_S).format({mantissa: 0}),
     toInt: (floatValue) =>
       numbro(floatValue).multiply(MP).format({mantissa: 0}),
-    amount: (amount, decimals = 2) =>
-      numbro(amount)
-        .divide(MP)
-        .format({
-          mantissa: decimals >= 0 && decimals < 20 ? decimals : 2,
-        }),
+    amount: (amount, decimals = token.decimals) => {
+      const formatter = Intl.NumberFormat('en-US', {
+        minimumSignificantDigits: 2,
+        maximumSignificantDigits: 6,
+        minimumFractionDigits: 2,
+      });
+      // .format({
+      // mantissa: decimals >= 0 && decimals < 20 ? decimals : 2,
+      //  });
+      return formatter.format(numbro(amount).divide(MP).value());
+    },
     tokensPerMS: (tokensPerTick) =>
       numbro(tokensPerTick).multiply(TICK_TO_MS).divide(MP).format({
         mantissa: 6,
@@ -96,18 +101,9 @@ export function TokenFormatter(tokenName) {
             .divide(MP)
             .value();
           const isOk = value > 0.01;
-          console.log({
-            multiplier,
-            unit: unit[multiplier],
-            value,
-          });
           return isOk;
         }) || TICK_TO_YEAR;
 
-      console.log({
-        firstGoodLookingMultiplier,
-        unit: unit[firstGoodLookingMultiplier],
-      });
       return {
         formattedValue: numbro(tokensPerTick)
           .multiply(firstGoodLookingMultiplier)
@@ -121,5 +117,13 @@ export function TokenFormatter(tokenName) {
       };
     },
     ticksToMs: (ticks) => Math.round(ticks / TICK_TO_MS),
+  };
+}
+
+export function timestamp(value) {
+  return {
+    fromNanosec() {
+      return value / 1000 / 1000;
+    },
   };
 }

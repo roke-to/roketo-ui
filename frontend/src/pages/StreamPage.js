@@ -6,6 +6,7 @@ import {
   streamViewData,
   StreamOverviewCard,
   streamDirection,
+  StreamActionHistory,
 } from '../features/stream-view';
 import {
   useAccount,
@@ -59,6 +60,7 @@ function StreamCopyUrlBlock({className, link, ...rest}) {
     </div>
   );
 }
+
 export function StreamPage() {
   const near = useNear();
   const params = useParams();
@@ -71,17 +73,26 @@ export function StreamPage() {
       accountSWR,
     },
   );
-  const streamHistorySWR = useSingleStreamHistory(
-    {streamId: params.id},
+  const PAGE_SIZE = 10;
+
+  const {
+    swr: streamHistorySWR,
+    nextPage,
+    prevPage,
+    maxPage,
+    currentPage,
+  } = useSingleStreamHistory(
+    {pageSize: 10},
     {
       near,
+      accountSWR,
+      streamSWR,
     },
   );
+
   const account = accountSWR.data;
   const stream = streamSWR.data;
   let streamHistory = streamHistorySWR.data || [];
-
-  console.log('!!!', streamHistory);
 
   if (streamSWR.error || accountSWR.error) {
     return <div>Error!</div>;
@@ -90,26 +101,6 @@ export function StreamPage() {
     return <div>Loading</div>;
   }
   const {link} = streamViewData(stream);
-
-  streamHistory = streamHistory.map((value, key) => {
-    console.log(value);
-    return (
-      <div className="twind-flex twind-flex-col lg:twind-flex-row twind-justify-between">
-        <div className="twind-max-w-xl twind-w-full twind-mt-10">
-          {value.actor}
-        </div>
-        <div className="twind-max-w-xl twind-w-full twind-mt-10">
-          {value.action_type}
-        </div>
-        <div className="twind-max-w-xl twind-w-full twind-mt-10">
-          {value.amount}
-        </div>
-        <div className="twind-max-w-xl twind-w-full twind-mt-10">
-          {value.timestamp}
-        </div>
-      </div>
-    );
-  });
 
   return (
     <div className="twind-container twind-mx-auto twind-p-12">
@@ -131,7 +122,18 @@ export function StreamPage() {
           account={account}
         />
       </div>
-      {streamHistory}
+
+      <StreamActionHistory
+        pageSize={PAGE_SIZE}
+        loading={!streamHistorySWR.data}
+        stream={stream}
+        history={streamHistory}
+        className="twind-mx-auto twind-max-w-6xl twind-my-24 twind-w-full"
+        onPrevPageClick={prevPage}
+        onNextPageClick={nextPage}
+        maxPage={maxPage}
+        currentPage={currentPage}
+      />
     </div>
   );
 }

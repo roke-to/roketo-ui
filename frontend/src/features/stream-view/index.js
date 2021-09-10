@@ -4,3 +4,4 @@ export * from './StreamingSpeed';
 export * from './StreamOverviewCard';
 export * from './lib';
 export * from './StreamDashboard';
+export * from './StreamActionHistory';
