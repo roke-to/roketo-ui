@@ -41,7 +41,7 @@ function AppFn() {
       <div className="twind-bg-dark twind-text-white">
         {near.inited ? (
           <Router basename={process.env.PUBLIC_URL}>
-            <Header />
+            <Header signedIn={near.auth.signedIn} />
 
             <Switch>
               <PrivateRoute
@@ -50,7 +50,7 @@ function AppFn() {
                 allowed={!near.auth.signedIn}
                 path="/authorize"
               >
-                  <AuthorizePage />
+                <AuthorizePage />
               </PrivateRoute>
               <PrivateRoute
                 exact
@@ -69,10 +69,7 @@ function AppFn() {
                 <AccountPage />
               </PrivateRoute>
 
-              <Route
-                exact
-                path="/my_streams/:id"
-              >
+              <Route exact path="/my_streams/:id">
                 <StreamPage />
               </Route>
               <PrivateRoute
