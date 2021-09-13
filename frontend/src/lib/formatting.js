@@ -46,8 +46,8 @@ export function TokenFormatter(tokenName) {
 
   const bigValueFormatter = Intl.NumberFormat('en-US', {
     minimumIntegerDigits: 1,
-    maximumFractionDigits: 10,
-    minimumFractionDigits: 1,
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
   });
   const smallValueFormatter = Intl.NumberFormat('en-US', {
     minimumSignificantDigits: 2,
@@ -55,11 +55,18 @@ export function TokenFormatter(tokenName) {
     maximumFractionDigits: token.decimals,
   });
 
-  const chooseFormatter = (value) => {
-    if (value >= 1) {
-      return bigValueFormatter;
+  const formatSmartly = (value) => {
+    if (value < 1) {
+      return smallValueFormatter.format(value);
+    } else if (value < 1000000) {
+      return bigValueFormatter.format(value);
     } else {
-      return smallValueFormatter;
+      return numbro(value).format({
+        mantissa: 3,
+        trimMantissa: true,
+        optionalMantissa: true,
+        average: true,
+      });
     }
   };
 
@@ -69,25 +76,23 @@ export function TokenFormatter(tokenName) {
     toInt: (floatValue) =>
       numbro(floatValue).multiply(MP).format({mantissa: 0}),
     amount: (amount, decimals = token.decimals) => {
-      // .format({
-      // mantissa: decimals >= 0 && decimals < 20 ? decimals : 2,
-      //  });
       const value = numbro(amount).divide(MP).value();
-      const formatted = chooseFormatter(value).format(value);
+      const formatted = formatSmartly(value);
       return formatted;
     },
-    tokensPerMS: (tokensPerTick) =>
-      numbro(tokensPerTick).multiply(TICK_TO_MS).divide(MP).format({
-        mantissa: 6,
-        trimMantissa: true,
-      }),
-    tokensPerS: (tokensPerTick) =>
-      numbro(tokensPerTick).multiply(TICK_TO_S).divide(MP).format({
-        average: true,
-        mantissa: 6,
-        optionalMantissa: true,
-        trimMantissa: true,
-      }),
+    tokensPerMS: (tokensPerTick) => {
+      const value = numbro(tokensPerTick).multiply(TICK_TO_MS).divide(MP);
+      return formatSmartly(value);
+    },
+    tokensPerS: (tokensPerTick) => {
+      const value = numbro(tokensPerTick)
+        .multiply(TICK_TO_S)
+        .divide(MP)
+        .value();
+
+      return formatSmartly(value);
+    },
+
     tokensPerMeaningfulPeriod: (tokensPerTick) => {
       // tries to find the best interval for display
       // to avoid 0.0000000000000000000000000009839248 tokens per sec
@@ -125,7 +130,7 @@ export function TokenFormatter(tokenName) {
         .value();
 
       return {
-        formattedValue: chooseFormatter(value).format(value),
+        formattedValue: formatSmartly(value),
         unit: unit[firstGoodLookingMultiplier],
       };
     },
