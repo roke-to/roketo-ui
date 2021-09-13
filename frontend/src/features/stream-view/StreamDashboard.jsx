@@ -3,7 +3,11 @@ import classNames from 'classnames';
 
 import {TokenImage, ArcProgressBar} from '../../components/kit';
 import {streamViewData, StreamingSpeed, streamDirection} from '.';
-import {StreamControls, StreamAutodepositControls, StreamDepositButtonOutlined} from '../stream-control';
+import {
+  StreamControls,
+  StreamAutodepositControls,
+  StreamDepositButtonOutlined,
+} from '../stream-control';
 import {StreamWithdrawButton} from '../stream-control/StreamWithdrawButton';
 
 export function StreamDashboard({stream, account}) {
@@ -55,11 +59,17 @@ export function StreamDashboard({stream, account}) {
       ) : (
         <div className="twind-flex twind-relative twind-z-10">
           <StreamControls stream={stream} className="twind-mr-2" />
-          {direction === 'out' ?
+          {direction === 'out' ? (
             <div className="twind-col-span-1 twind-mr-2">
-            <StreamAutodepositControls minimal stream={stream} enableMsg="Enable auto-deposit" disableMsg="Disable auto-deposit" buttonClassName="twind-border twind-border-border twind-p-4 twind-mr-0"/> 
-            </div> : null
-          }
+              <StreamAutodepositControls
+                minimal
+                stream={stream}
+                enableMsg="Enable auto-deposit"
+                disableMsg="Disable auto-deposit"
+                buttonClassName="twind-border twind-border-border twind-p-4 twind-mr-0"
+              />
+            </div>
+          ) : null}
           {direction === 'out' ? (
             <StreamDepositButtonOutlined variant="outlined" stream={stream} />
           ) : (
