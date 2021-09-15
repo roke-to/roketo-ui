@@ -136,6 +136,104 @@ pub fn start_cron(&mut self) -> Promise;
 ```
 Takes no args in the current version of the contract. Will be updated later.
 
+### Get account view
+
+```rust
+pub fn get_account(&self, account_id: ValidAccountId) -> Option<AccountView>;
+```
+- `account_id` is a valid account id. Returns `None` if the account does not exist.
+
+### Get stream view
+
+```rust
+pub fn get_stream(&self, stream_id: Base58CryptoHash) -> Option<StreamView>;
+```
+- `stream_id` is a valid stream id. Returns `None` if the stream does not exist
+
+### Get stream history
+
+```rust
+pub fn get_stream_history(
+    &self,
+    stream_id: Base58CryptoHash,
+    from: u64,
+    to: u64,
+) -> Vec<ActionView>;
+```
+- `stream_id` is a valid stream id.
+- `from` and `to` represents the range, `history[from..to]` will be returned.
+
+## View structs
+
+### AccountView
+
+```rust
+pub struct AccountView {
+    pub account_id: String,
+    pub inputs: Vec<Base58CryptoHash>,
+    pub outputs: Vec<Base58CryptoHash>,
+    pub last_action: WrappedTimestamp,
+    pub total_received: Vec<(String, WrappedBalance)>,
+    pub total_incoming: Vec<(String, WrappedBalance)>,
+    pub total_outgoing: Vec<(String, WrappedBalance)>,
+    pub cron_calls_enabled: bool,
+}
+```
+- `account_id` of the requested account.
+- `inputs` is a vector of hashes corresponds to the incoming streams.
+- `outputs` is a vector of hashes corresponds to the outgoing streams.
+- `last_action` is a timestamp of the last update called for the account.
+- `total_received` is a vector of pairs represents tokens received name and amount since account creation.
+- `total_incoming` is a vector of pairs represents tokens incoming name and amount per tick.
+- `total_outgoing` is a vector of pairs represents tokens outgoing name and amount per tick.
+- `cron_calls_enabled` is a flag to allow or disallow cron jobs creation. Currently unused.
+
+### StreamView
+
+```rust
+pub struct StreamView {
+    pub stream_id: Option<Base58CryptoHash>,
+    pub description: Option<String>,
+    pub owner_id: String,
+    pub receiver_id: String,
+    pub token_name: String,
+    pub timestamp_created: WrappedTimestamp,
+    pub balance: WrappedBalance,
+    pub tokens_per_tick: WrappedBalance,
+    pub auto_deposit_enabled: bool,
+    pub status: String,
+    pub tokens_total_withdrawn: WrappedBalance,
+    pub available_to_withdraw: WrappedBalance,
+    pub history_len: u64,
+}
+```
+- `stream_id` of the requested stream.
+- `description` is a description text field.
+- `owner_id`.
+- `receiver_id`.
+- `token_name` is a valid and whitelisted token name.
+- `timestamp_created` is a timestamp when the stream has been created.
+- `auto_deposit_enabled` flag for auto-deposit bool value.
+- `status` is the status of the stream, see below.
+- `tokens_total_withdrawn` is the amount of how many tokens has been withdrawn from the stream for all the period of its activity.
+- `available_to_withdraw` is the amount of how many tokens can be withdrawn by receiver if `update_account` is called.
+- `history_len` is a number of records in the stream history. See details below.
+
+### ActionView
+
+```rust
+pub struct ActionView {
+    pub actor: String,
+    pub action_type: String,
+    pub amount: Option<WrappedBalance>,
+    pub timestamp: WrappedTimestamp,
+}
+```
+- `actor` is the executor of the action.
+- `action_type` is a type of the action, see Stream History below.
+- `amount` of tokens, is applicable.
+- `timestamp` of the action.
+
 ## Stream states
 
 Any stream may be in the one of the following states:
@@ -145,6 +243,21 @@ Any stream may be in the one of the following states:
 - `interrupted`. Stream is stopped by the owner. Cannot be restarted.
 - `finished`. Stream is stopped by the receiver, manually or natually, by withdrawing all tokens from the stream. Cannot be restarted.
 
-## How does it work
+## Stream history
 
-TODO
+Stream history is the complete list of operations happened with any stream.
+Getting stream history is possible with view method `get_stream_history`, see above.
+
+### Actions
+
+- `init`. Create a stream.
+- `Deposit`. Amount of tokens received to deposit.
+- `Withdraw`. Amount of tokens withdrawn.
+- `Refund`. Amount of tokens returned to the owner in case of stopping the stream.
+- `Start`. Start the stream.
+- `Pause`. Pause the stream.
+- `Stop`. Stop the stream.
+- `EnableAutoDeposit`. Enable auto-deposit.
+- `DisableAutoDeposit`. Disable auto-deposit.
+
+Several actions may be applied in one transaction due to following the invariant of keeping the valid state of the accounts.
