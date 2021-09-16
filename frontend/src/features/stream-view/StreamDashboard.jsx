@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import {TokenImage, ArcProgressBar} from '../../components/kit';
+import {TokenImage, ArcProgressBar, Tooltip} from '../../components/kit';
 import {streamViewData, StreamingSpeed, streamDirection} from '.';
 import {
   StreamControls,
@@ -9,11 +9,13 @@ import {
   StreamDepositButtonOutlined,
 } from '../stream-control';
 import {StreamWithdrawButton} from '../stream-control/StreamWithdrawButton';
+import {StreamProgressPercentage} from './StreamProgressPercentage';
 
 export function StreamDashboard({stream, account}) {
   const {
     tf,
     progresses,
+    percentages,
     isDead,
     progress: {full, withdrawn, streamed},
   } = streamViewData(stream);
@@ -28,10 +30,38 @@ export function StreamDashboard({stream, account}) {
       )}
     >
       <div className="twind--mb-32">
-        <ArcProgressBar
-          className="twind-w-96 twind-h-48"
-          progresses={progresses}
-        />
+        <Tooltip
+          align={{offset: [0, -20]}}
+          offset={{top: 20}}
+          overlay={
+            <div className="twind-text-left">
+              <StreamProgressPercentage
+                className="twind-whitespace-nowrap twind-mb-2"
+                label="Withdrawn"
+                colorClass="twind-bg-streams-withdrawn"
+                formattedFloatValue={
+                  tf.amount(withdrawn) + ' ' + stream.token_name
+                }
+                percentageValue={percentages.withdrawn}
+              />
+              <StreamProgressPercentage
+                className="twind-whitespace-nowrap"
+                label="Streamed"
+                colorClass="twind-bg-streams-streamed"
+                formattedFloatValue={
+                  tf.amount(streamed) + ' ' + stream.token_name
+                }
+                percentageValue={percentages.streamed}
+              />
+            </div>
+          }
+        >
+          <ArcProgressBar
+            className="twind-w-96 twind-h-48"
+            progresses={progresses}
+          />
+        </Tooltip>
+
         <div className="twind-flex twind-justify-between twind-pt-5 twind--mx-2 twind-text-gray">
           <div className="twind-w-10 twind-text-center"> 0%</div>
           <div className="twind-w-10 twind-text-center"> 100%</div>
