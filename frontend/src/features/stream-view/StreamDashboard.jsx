@@ -72,7 +72,7 @@ export function StreamDashboard({stream, account}) {
           ) : null}
           {direction === 'out' ? (
             <StreamDepositButtonOutlined variant="outlined" stream={stream} />
-          ) : (
+          ) : direction === 'in' ? (
             <StreamWithdrawButton
               loadingText="Withdrawing..."
               variant="outlined"
@@ -80,7 +80,7 @@ export function StreamDashboard({stream, account}) {
             >
               Withdraw from all streams
             </StreamWithdrawButton>
-          )}
+          ) : null}
         </div>
       )}
     </div>
