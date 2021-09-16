@@ -3,6 +3,7 @@ import {tokens, TokenFormatter} from '../lib/formatting';
 import {utils} from 'near-api-js';
 import numbro from 'numbro';
 import {Tokens} from './icons';
+import classNames from 'classnames';
 
 export function AccountStreamCard({
   token,
@@ -10,6 +11,7 @@ export function AccountStreamCard({
   streamsLength,
   period = '',
   showPeriod = true,
+  className,
 }) {
   const formatter = TokenFormatter(token);
 
@@ -31,7 +33,12 @@ export function AccountStreamCard({
   balance = balance * multiplier;
 
   return (
-    <div className="twind-w-full twind-h-24 twind-rounded-lg twind-bg-input twind-flex twind-items-center twind-width-full twind-p-6 twind-mr-4">
+    <div
+      className={classNames(
+        'twind-w-full twind-h-24 twind-rounded-lg twind-bg-input twind-flex twind-items-center twind-width-full twind-p-6',
+        className,
+      )}
+    >
       <div className="twind-w-full twind-flex twind-items-center">
         <div className="twind-w-12 twind-mr-12">
           <span className="twind-flex-shrink-0 twind-rounded-full twind-bg-card2 twind-inline-flex twind-items-center twind-justify-center twind-w-12 twind-h-12">

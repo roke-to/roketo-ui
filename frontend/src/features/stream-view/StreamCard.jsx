@@ -138,7 +138,7 @@ export function StreamCard({stream = streamType, direction, className}) {
         </div>
       </Link>
       <div className="twind-hidden xl:twind-block"></div>
-      <div className="twind-flex twind-gap-5 twind-justify-between xl:twind-justify-end twind-col-span-12 xl:twind-col-span-5 twind-w-full twind-items-center">
+      <div className="twind-flex twind-gap-5 twind-justify-between xl:twind-justify-end twind-col-span-12 xl:twind-col-span-5 twind-w-full twind-items-center twind-flex-wrap md:twind-flex-nowrap">
         <div className="twind-w-44">
           <div className="twind-text-gray">Receiver:</div>
           <div className="twind-break-words">{stream.receiver_id}</div>
@@ -156,7 +156,7 @@ export function StreamCard({stream = streamType, direction, className}) {
         <div className="twind-flex twind-items-start twind-justify-end twind-w-52">
           {direction === 'out' ? <StreamDepositButton stream={stream} /> : null}
           <Button
-            className="twind-ml-3"
+            className="twind-ml-3 twind-flex-grow"
             variant="filled"
             onClick={() => copy(link)}
             to={routes.stream(stream.stream_id)}

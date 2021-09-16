@@ -32,6 +32,7 @@ export function AccountColumn({
   streamsType,
   period,
   showPeriod = true,
+  className,
 }) {
   const near = useNear();
   const accountSWR = useAccount({near});
@@ -70,7 +71,7 @@ export function AccountColumn({
   const selectedPeriod = periodsOptions.option;
 
   return (
-    <div>
+    <div className={className}>
       <h2 className="twind-text-xl twind-mb-6 twind-flex twind-items-center">
         <span className="twind-mr-3">{icon}</span>
         {header}
@@ -112,6 +113,7 @@ export function AccountColumn({
             }
             period={selectedPeriod}
             showPeriod={showPeriod}
+            className="twind-mb-4"
           />
         ))}
       </div>
