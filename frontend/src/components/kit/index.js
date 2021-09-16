@@ -10,3 +10,4 @@ export * from './RadioButton';
 export * from './ProgressBar';
 export * from './TokenImage';
 export * from './Tooltip';
+export * from './Bullet';

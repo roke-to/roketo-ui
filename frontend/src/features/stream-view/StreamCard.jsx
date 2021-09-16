@@ -4,7 +4,7 @@ import copy from 'clipboard-copy';
 import {Link} from 'react-router-dom';
 
 import {StreamingSpeed} from './StreamingSpeed';
-import {ProgressBar, Button, TokenImage} from '../../components/kit';
+import {ProgressBar, Button, TokenImage, Bullet} from '../../components/kit';
 import {
   StreamControls,
   StreamAutodepositControls,
@@ -16,6 +16,7 @@ import {streamViewData} from './streamViewData';
 import {Link as LinkIcon} from '../../components/icons';
 import numbro from 'numbro';
 import {STREAM_STATUS} from '../stream-control/lib';
+import {StreamProgressPercentage} from './StreamProgressPercentage';
 
 const streamType = {
   stream_id: 'FnVkAYZu4XED3o44pZPvrnghVEMxo3GiHszUT4orjYST',
@@ -41,17 +42,6 @@ const streamType = {
   direction: 'in',
 };
 
-function Bullet({className, ...rest}) {
-  return (
-    <div
-      className={classNames(
-        'twind-inline-block twind-w-2 twind-h-2 twind-flex-shrink-9 twind-rounded-full',
-        className,
-      )}
-      {...rest}
-    ></div>
-  );
-}
 export function StreamCard({stream = streamType, direction, className}) {
   const {
     dateEnd,
@@ -99,42 +89,19 @@ export function StreamCard({stream = streamType, direction, className}) {
         </div>
         <ProgressBar className="twind-mt-5" progresses={progresses} />
         <div className="twind-flex twind-text-sm twind-mt-3 twind-mr-3">
-          <div className="twind-mr-4">
-            <Bullet className="twind-bg-streams-withdrawn twind-mr-1" />
-            <span>
-              Withdrawn:{' '}
-              <span className="twind-font-semibold">
-                {tf.amount(withdrawn)}{' '}
-              </span>
-              <span className="twind-text-gray">
-                {' '}
-                (
-                {numbro(percentages.withdrawn).format({
-                  output: 'percent',
-                  mantissa: 1,
-                })}
-                )
-              </span>
-            </span>
-          </div>
-          <div>
-            <Bullet className="twind-bg-streams-streamed twind-mr-1" />
-            <span>
-              Streamed:{' '}
-              <span className="twind-font-semibold">
-                {tf.amount(streamed)}{' '}
-              </span>
-              <span className="twind-text-gray">
-                {' '}
-                (
-                {numbro(percentages.streamed).format({
-                  output: 'percent',
-                  mantissa: 1,
-                })}
-                )
-              </span>
-            </span>
-          </div>
+          <StreamProgressPercentage
+            className="twind-mr-4"
+            label="Withdrawn"
+            colorClass="twind-bg-streams-withdrawn"
+            formattedFloatValue={tf.amount(withdrawn) + ' ' + stream.token_name}
+            percentageValue={percentages.withdrawn}
+          />
+          <StreamProgressPercentage
+            label="Streamed"
+            colorClass="twind-bg-streams-streamed"
+            formattedFloatValue={tf.amount(streamed) + ' ' + stream.token_name}
+            percentageValue={percentages.streamed}
+          />
         </div>
       </Link>
       <div className="twind-hidden xl:twind-block"></div>
@@ -154,9 +121,11 @@ export function StreamCard({stream = streamType, direction, className}) {
           </div>
         ) : null}
         <div className="twind-flex twind-items-start twind-justify-end twind-w-52">
-          {direction === 'out' ? <StreamDepositButton stream={stream} /> : null}
+          {direction === 'out' ? (
+            <StreamDepositButton className="twind-flex-grow" stream={stream} />
+          ) : null}
           <Button
-            className="twind-ml-3 twind-flex-grow"
+            className="twind-ml-3"
             variant="filled"
             onClick={() => copy(link)}
             to={routes.stream(stream.stream_id)}

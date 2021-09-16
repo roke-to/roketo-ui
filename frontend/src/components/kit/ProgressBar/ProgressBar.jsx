@@ -59,12 +59,12 @@ function GradientSVG({endColor, startColor, progressValue, idCSS, rotation}) {
   );
 }
 
-export function ArcProgressBar({progresses, className}) {
+export function ArcProgressBar({progresses, className, ...rest}) {
   progresses.sort((a, b) => b - a);
   const rotation = 3 / 4;
 
   return (
-    <div className={classNames(className)}>
+    <div className={classNames(className)} {...rest}>
       <CircularProgressbarWithChildren
         circleRatio={0.5}
         styles={buildStyles({
