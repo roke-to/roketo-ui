@@ -20,6 +20,7 @@
     "near-seed-phrase": "^0.1.1",
     "node-sass": "^4.0.0",
     "numbro": "^2.3.5",
+    "rc-tooltip": "^5.1.1",
     "react": "^16.13.1",
     "react-bootstrap": "^1.5.2",
     "react-circular-progressbar": "^2.0.4",
@@ -59,6 +60,7 @@
     "gh-pages": "^2.2.0",
     "postcss": "^7.0.36",
     "prettier": "2.3.2",
+    "tailwind-css-variables": "^3.0.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.9"
   }
 }

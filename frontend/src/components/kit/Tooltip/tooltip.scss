@@ -1,0 +1,50 @@
+@import 'rc-tooltip/assets/bootstrap_white.css';
+
+.rc-tooltip {
+  //max-width: 224px !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+.rc-tooltip.rc-tooltip {
+  opacity: 1;
+}
+
+.rc-tooltip-placement-bottom .rc-tooltip-arrow {
+  border-bottom-color: var(--twind-color-hover) !important;
+}
+.rc-tooltip-placement-top .rc-tooltip-arrow {
+  border-top-color: var(--twind-color-hover) !important;
+}
+.rc-tooltip-placement-left .rc-tooltip-arrow {
+  border-left-color: var(--twind-color-hover) !important;
+}
+.rc-tooltip-placement-right .rc-tooltip-arrow {
+  border-right-color: var(--twind-color-hover) !important;
+}
+
+.rc-tooltip-inner {
+  min-width: 170px !important;
+  max-width: 224px !important;
+  border-radius: 10px !important;
+  padding: 12px 24px !important;
+  background-color: var(--twind-color-hover) !important;
+  color: var(--twind-color-white) !important;
+  border: 0 !important;
+  font-size: 13px !important;
+  font-weight: normal !important;
+  line-height: 16px !important;
+  text-align: center !important;
+  box-shadow: 0px 2px 4px rgba(37, 37, 37, 0.05) !important;
+}
+
+.Tooltip__defaultIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  width: 20px;
+  height: 20px;
+  font-weight: 600;
+  border: 1px solid;
+}
