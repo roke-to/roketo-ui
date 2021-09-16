@@ -57,31 +57,32 @@ export function StreamDashboard({stream, account}) {
       {isDead ? (
         ''
       ) : (
-        <div className="twind-flex twind-relative twind-z-10">
-          <StreamControls stream={stream} className="twind-mr-2" />
+        <>
+          <div className="twind-flex twind-relative twind-z-10">
+            <StreamControls stream={stream} className="twind-mr-2" />
+
+            {/* render withdraw of add funds button */}
+            {direction === 'out' ? (
+              <StreamDepositButtonOutlined variant="outlined" stream={stream} />
+            ) : direction === 'in' ? (
+              <StreamWithdrawButton
+                loadingText="Withdrawing..."
+                variant="outlined"
+                color="dark"
+              >
+                Withdraw from all streams
+              </StreamWithdrawButton>
+            ) : null}
+          </div>
           {direction === 'out' ? (
-            <div className="twind-col-span-1 twind-mr-2">
-              <StreamAutodepositControls
-                minimal
-                stream={stream}
-                enableMsg="Enable auto-deposit"
-                disableMsg="Disable auto-deposit"
-                buttonClassName="twind-border twind-border-border twind-p-4 twind-mr-0"
-              />
-            </div>
+            <StreamAutodepositControls
+              stream={stream}
+              enableMsg="Enable auto-deposit"
+              disableMsg="Disable auto-deposit"
+              className="twind-mt-4 twind-w-72"
+            />
           ) : null}
-          {direction === 'out' ? (
-            <StreamDepositButtonOutlined variant="outlined" stream={stream} />
-          ) : direction === 'in' ? (
-            <StreamWithdrawButton
-              loadingText="Withdrawing..."
-              variant="outlined"
-              color="dark"
-            >
-              Withdraw from all streams
-            </StreamWithdrawButton>
-          ) : null}
-        </div>
+        </>
       )}
     </div>
   );

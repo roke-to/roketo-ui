@@ -32,7 +32,6 @@ export function useDurationTimer({untilTimestamp}) {
   );
 
   useEffect(() => {
-    console.log('USE EFFECT RUN AGAIN', {untilTimestamp});
     const untilDate = new Date(untilTimestamp);
 
     if (!isValidDate(untilDate)) return;
@@ -72,6 +71,11 @@ export function DurationTimer({untilTimestamp, suffix, finishedText}) {
   if (!duration || expired) {
     return <span>{finishedText}</span>;
   }
+
+  if (duration.days || duration.weeks || duration.months || duration.years) {
+    duration.seconds = 0;
+  }
+
   const formatted =
     formatDuration(duration, {
       locale: shortEnLocale,

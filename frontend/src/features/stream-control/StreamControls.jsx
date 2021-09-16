@@ -29,7 +29,9 @@ export function StreamControls({stream, minimal, className}) {
     return (
       <StreamStatus
         className={classNames(
-          'twind-border twind-border-border twind-p-4 twind-px-6 twind-rounded-lg',
+          minimal
+            ? ''
+            : 'twind-border twind-border-border twind-p-4 twind-px-6 twind-rounded-lg',
           className,
         )}
         stream={stream}
@@ -37,16 +39,18 @@ export function StreamControls({stream, minimal, className}) {
     );
   }
 
+  const opened = menuOpened && !controls.loading;
+
   return (
     <div className={classNames(className, 'twind-relative twind-inline-flex')}>
       <DropdownOpener
         minimal={minimal}
-        opened={menuOpened || !controls.loading}
+        opened={opened}
         onClick={() => setMenuOpened(!menuOpened)}
       >
         {controls.loading ? 'Loading...' : <StreamStatus stream={stream} />}
       </DropdownOpener>
-      <DropdownMenu opened={menuOpened} className="twind-top-full twind-w-44">
+      <DropdownMenu opened={opened} className="twind-top-full twind-w-44">
         {stream.status !== STREAM_STATUS.ACTIVE && isOutgoing ? (
           <>
             <DropdownMenuItem>
