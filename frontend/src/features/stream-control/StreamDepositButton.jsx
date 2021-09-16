@@ -50,7 +50,7 @@ function useDepositButton({stream}) {
     modalControl,
   };
 }
-export function StreamDepositButton({stream}) {
+export function StreamDepositButton({stream, className}) {
   const depositButton = useDepositButton({stream});
   return (
     <>
@@ -58,6 +58,7 @@ export function StreamDepositButton({stream}) {
         variant="filled"
         type="button"
         onClick={depositButton.modalControl.turnOn}
+        className={className}
       >
         <Plus className="twind-mr-2" />
         Add funds
