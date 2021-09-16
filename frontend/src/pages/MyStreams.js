@@ -52,7 +52,7 @@ export function MyStreamsPage() {
 
       {error ? (
         <PageError
-          className="twind-max-w-2xl twind-mx-auto twind-my-32"
+          className="twind-max-w-2xl twind-mx-auto twind-py-32"
           message={error.message}
           onRetry={() => {
             accountSWR.mutate();

@@ -78,7 +78,7 @@ export function AccountPage() {
 
       {pageError ? (
         <PageError
-          className="twind-max-w-2xl twind-mx-auto twind-my-32"
+          className="twind-max-w-2xl twind-mx-auto twind-py-32"
           message={pageError.message}
           messaonClick={accountSWR.mutate}
         />
