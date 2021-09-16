@@ -62,6 +62,29 @@ function StreamCopyUrlBlock({className, link, ...rest}) {
   );
 }
 
+const streamType = {
+  stream_id: 'FnVkAYZu4XED3o44pZPvrnghVEMxo3GiHszUT4orjYST',
+  description: 'test stream',
+  owner_id: 'kpr.testnet',
+  receiver_id: 'pinkinice.testnet',
+  token_name: 'NEAR',
+  timestamp_created: '1630964802206727665',
+  balance: '3472735225910300000000000',
+  tokens_per_tick: '100000000000',
+  auto_deposit_enabled: false,
+  status: 'ACTIVE',
+  tokens_total_withdrawn: '27264774089700000000000',
+  available_to_withdraw: '3472735225910300000000000',
+  history: [
+    {
+      actor: 'dev-1630964633889-96006156236045',
+      action_type: 'Deposit',
+      amount: '3500000000000000000000000',
+      timestamp: '1630964802206727665',
+    },
+  ],
+};
+
 export function StreamPage() {
   const near = useNear();
   const params = useParams();
@@ -96,56 +119,65 @@ export function StreamPage() {
   let streamHistory = streamHistorySWR.data || [];
 
   const pageError = streamSWR.error || accountSWR.error;
+  const pageReady = stream && account;
 
-  if (!stream || !account) {
-    return <div>Loading</div>;
+  if (pageError) {
+    return (
+      <PageError
+        className="twind-max-w-2xl twind-mx-auto twind-py-32"
+        message={pageError.message}
+        onRetry={() => {
+          accountSWR.mutate();
+          streamSWR.mutate();
+        }}
+      />
+    );
   }
-  const {link} = streamViewData(stream);
+
+  const renderStreamData = () => {
+    const {link} = streamViewData(stream);
+    return (
+      <>
+        <div className="twind-flex twind-flex-col lg:twind-flex-row twind-justify-between">
+          <div className="twind-flex twind-flex-col twind-items-center twind-flex-grow">
+            <StreamDashboard stream={stream} account={account} />
+            <StreamCopyUrlBlock
+              link={link}
+              className="twind-max-w-xl twind-w-full twind-mt-28"
+            />
+          </div>
+          <StreamOverviewCard
+            className="twind-mt-10 twind-w-full lg:twind-mt-0 lg:twind-w-1/3 twind-self-start"
+            stream={stream}
+            account={account}
+          />
+        </div>
+        <StreamActionHistory
+          pageSize={PAGE_SIZE}
+          loading={!streamHistorySWR.data}
+          stream={stream}
+          history={streamHistory}
+          className="twind-mx-auto twind-max-w-6xl twind-my-24 twind-w-full"
+          onPrevPageClick={prevPage}
+          onNextPageClick={nextPage}
+          maxPage={maxPage}
+          currentPage={currentPage}
+        />
+      </>
+    );
+  };
 
   return (
     <div className="twind-container twind-mx-auto twind-p-12">
       <div className="twind-mb-10">
         <BackButton to={routes.myStreams} />
       </div>
-
-      {pageError ? (
-        <PageError
-          className="twind-max-w-2xl twind-mx-auto twind-my-32"
-          message={pageError.message}
-          onRetry={() => {
-            accountSWR.mutate();
-            streamSWR.mutate();
-          }}
-        />
+      {!pageReady ? (
+        <div className="twind-py-32 twind-text-center twind-text-gray twind-text-2xl">
+          Loading...
+        </div>
       ) : (
-        <>
-          <div className="twind-flex twind-flex-col lg:twind-flex-row twind-justify-between">
-            <div className="twind-flex twind-flex-col twind-items-center twind-flex-grow">
-              <StreamDashboard stream={stream} account={account} />
-              <StreamCopyUrlBlock
-                link={link}
-                className="twind-max-w-xl twind-w-full twind-mt-28"
-              />
-            </div>
-            <StreamOverviewCard
-              className="twind-mt-10 lg:twind-mt-0 lg:twind-w-1/3 twind-self-start"
-              stream={stream}
-              account={account}
-            />
-          </div>
-
-          <StreamActionHistory
-            pageSize={PAGE_SIZE}
-            loading={!streamHistorySWR.data}
-            stream={stream}
-            history={streamHistory}
-            className="twind-mx-auto twind-max-w-6xl twind-my-24 twind-w-full"
-            onPrevPageClick={prevPage}
-            onNextPageClick={nextPage}
-            maxPage={maxPage}
-            currentPage={currentPage}
-          />
-        </>
+        renderStreamData()
       )}
     </div>
   );

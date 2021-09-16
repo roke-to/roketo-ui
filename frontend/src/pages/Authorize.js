@@ -1,15 +1,11 @@
 import React from 'react';
 import {NearAuthButton} from '../features/near-auth/NearAuthButton';
-import {useNear} from '../features/near-connect/useNear';
-import {Redirect} from 'react-router-dom';
 
 export function AuthorizePage() {
-  const near = useNear();
-
   return (
-    <div className="twind-flex twind-h-screen">
+    <div className="twind-flex twind-h-screen twind-mx-3">
       <div
-        className="lg:twind-m-auto twind-mx-4 twind-my-auto lg:twind-w-2/5 twind-bg-gray-90 twind-rounded-3xl twind-p-5"
+        className="lg:twind-m-auto twind-mx-auto twind-my-auto lg:twind-w-2/5 twind-bg-gray-90 twind-rounded-3xl twind-p-5"
         style={{'background-color': '#0D0B26'}}
       >
         <div className="twind-my-24 twind-text-center">

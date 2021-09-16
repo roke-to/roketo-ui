@@ -39,7 +39,7 @@ function AppFn() {
       <div className="twind-bg-dark twind-text-white">
         {near.inited ? (
           <Router basename={process.env.PUBLIC_URL}>
-            <Header signedIn={near.auth.signedIn} />
+            <Header />
 
             <Switch>
               <PrivateRoute

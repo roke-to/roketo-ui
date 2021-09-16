@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownOpener,
   RadioButton,
+  Tooltip,
 } from '../../components/kit';
 import {Tokens} from '../../components/icons';
 import {tokens, TokenFormatter} from '../../lib/formatting';
@@ -179,7 +180,15 @@ export function CreateStreamForm({account, onSubmit}) {
                   meta,
                 }) => (
                   <FormField
-                    label="Amount to stream:"
+                    label={
+                      <span>
+                        <span>Stream initial deposit:</span>
+                        <Tooltip
+                          className="twind-ml-2"
+                          overlay="Funds which will be used to create an initial stream for a set period. This deposit can be extended in manual or automatical mode."
+                        />
+                      </span>
+                    }
                     className="twind-w-2/3"
                     error={meta.error}
                   >
@@ -201,7 +210,13 @@ export function CreateStreamForm({account, onSubmit}) {
                   <FormField
                     label={
                       <div className="twind-relative">
-                        <div>Stream duration:</div>
+                        <div>
+                          Period to unlock the initial deposit:{' '}
+                          <Tooltip
+                            className="twind-ml-2"
+                            overlay="In case of no extensions for an initial deposit after this period will be reached reciever will be able to withdraw whole initial deposit and close the stream. "
+                          />
+                        </div>
                         <div className="twind-text-xs twind-text-gray twind-absolute twind-right-0 twind-top-1">
                           Streaming speed: {formatter.tokensPerS(field.value)}{' '}
                           {values.token} / sec
@@ -268,7 +283,13 @@ export function CreateStreamForm({account, onSubmit}) {
                     className="twind-mr-1"
                     type="checkbox"
                   />
-                  <span>Enable auto deposit?</span>
+                  <span>
+                    Enable auto deposit?{' '}
+                    <Tooltip
+                      className="twind-ml-2"
+                      overlay="Check this if you want make this stream infinite extending getting deposits from income streams with saving initial stream speed."
+                    />
+                  </span>
                 </label>
 
                 <p className="twind-text-left twind-text-gray twind-w-2/3 twind-text-sm">

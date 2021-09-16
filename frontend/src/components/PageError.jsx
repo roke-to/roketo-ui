@@ -23,11 +23,11 @@ export function PageError({message, onRetry, className, ...rest}) {
         />
       )}
 
-      <h1 className="twind-text-4xl twind-font-semibold twind-mb-6">
-        Something is broken! Thanks you!
+      <h1 className="twind-text-4xl twind-font-semibold twind-mb-6 twind-mt-10">
+        Something is broken.
       </h1>
       <p className="twind-text-gray twind-mb-4">
-        Finally we have something to fix!
+        Finally we have something to fix
       </p>
       {message && (
         <code className="twind-p-4 twind-border-special-inactive twind-border twind-block twind-text-special-inactive twind-text-xs twind-mb-4">
@@ -40,7 +40,7 @@ export function PageError({message, onRetry, className, ...rest}) {
         className="twind-mt-10"
         onClick={onRetry}
       >
-        Try again!
+        Try again
       </Button>
       <p className="twind-text-xs twind-text-gray twind-mt-2">
         (that probably wont help)

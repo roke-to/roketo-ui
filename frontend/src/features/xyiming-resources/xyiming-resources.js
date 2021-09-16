@@ -85,6 +85,10 @@ export function useSingleStream({streamId}, {near, accountSWR}) {
 
       return stream;
     },
+    {
+      errorRetryInterval: 2000,
+      errorRetryCount: 3,
+    },
   );
 
   return swr;

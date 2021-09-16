@@ -22,7 +22,6 @@ module.exports = {
           inactive: '#F56173',
           hold: '#FFAB6A',
         },
-
         streams: {
           streamed: '#B54EFF',
           withdrawn: '#FFB66A',
@@ -36,5 +35,14 @@ module.exports = {
       borderRadius: ['first', 'last'],
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-css-variables')(
+      {
+        // modules
+      },
+      {
+        // options
+      },
+    ),
+  ],
 };

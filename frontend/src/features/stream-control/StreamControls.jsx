@@ -14,8 +14,10 @@ import classNames from 'classnames';
 
 export function StreamControls({stream, minimal, className}) {
   const near = useNear();
-
   const isOutgoing = near.near.accountId === stream.owner_id;
+  const isIncoming = near.near.accountId === stream.receiver_id;
+  const isExternalStream = !isOutgoing && !isIncoming;
+
   const isDead =
     stream.status === STREAM_STATUS.INTERRUPTED ||
     stream.status === STREAM_STATUS.FINISHED;
@@ -23,8 +25,16 @@ export function StreamControls({stream, minimal, className}) {
 
   const controls = useStreamControl(stream.stream_id);
 
-  if (isDead) {
-    return <StreamStatus stream={stream} />;
+  if (isDead || isExternalStream) {
+    return (
+      <StreamStatus
+        className={classNames(
+          'twind-border twind-border-border twind-p-4 twind-px-6 twind-rounded-lg',
+          className,
+        )}
+        stream={stream}
+      />
+    );
   }
 
   return (
