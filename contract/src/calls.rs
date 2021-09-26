@@ -1,7 +1,7 @@
 use crate::*;
 
 #[near_bindgen]
-impl Xyiming {
+impl Roketo {
     /// creates a stream
     /// if NEAR tokens-based, the attached deposit may be used to fill the stream up instantly
     #[payable]

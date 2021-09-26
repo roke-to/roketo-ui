@@ -9,7 +9,7 @@ const {
   FT_TOKEN,
 } = require("./utils");
 
-class Xyiming {
+class Roketo {
   async init() {
     this.keyStore = await createKeyStore();
     console.log(this.keyStore);
@@ -85,5 +85,5 @@ class Xyiming {
 }
 
 module.exports = {
-  Xyiming,
+  Roketo,
 };

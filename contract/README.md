@@ -7,7 +7,7 @@ Other files contains of helpers and primitives.
 
 ### Build
 
-Run `build.sh`. It will put the compiled contract into `res` folder named `xyiming.wasm`.
+Run `build.sh`. It will put the compiled contract into `res` folder named `roketo.wasm`.
 
 ### Tests
 

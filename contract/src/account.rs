@@ -46,7 +46,7 @@ impl From<&Account> for AccountView {
                 .filter(|(_, &amount)| amount != 0)
                 .map(|(token_id, &amount)| {
                     (
-                        Xyiming::get_token_name_by_id(token_id as u32),
+                        Roketo::get_token_name_by_id(token_id as u32),
                         amount.into(),
                     )
                 })
@@ -59,7 +59,7 @@ impl From<&Account> for AccountView {
                 .filter(|(_, &amount)| amount != 0)
                 .map(|(token_id, &amount)| {
                     (
-                        Xyiming::get_token_name_by_id(token_id as u32),
+                        Roketo::get_token_name_by_id(token_id as u32),
                         amount.into(),
                     )
                 })
@@ -71,7 +71,7 @@ impl From<&Account> for AccountView {
                 .filter(|(_, &amount)| amount != 0)
                 .map(|(token_id, &amount)| {
                     (
-                        Xyiming::get_token_name_by_id(token_id as u32),
+                        Roketo::get_token_name_by_id(token_id as u32),
                         amount.into(),
                     )
                 })
@@ -98,9 +98,9 @@ impl Account {
             self.total_incoming = vec![0; NUM_TOKENS];
             self.total_outgoing = vec![0; NUM_TOKENS];
             for input_stream_id in self.inputs.iter() {
-                let mut input_stream = Xyiming::extract_stream_or_panic(&input_stream_id);
+                let mut input_stream = Roketo::extract_stream_or_panic(&input_stream_id);
                 if input_stream.status != StreamStatus::Active {
-                    Xyiming::streams().insert(&input_stream_id, &input_stream);
+                    Roketo::streams().insert(&input_stream_id, &input_stream);
                     continue;
                 }
                 let payment = input_stream.process_withdraw(self.last_action);
@@ -108,22 +108,22 @@ impl Account {
                     self.total_incoming[input_stream.token_id as usize] +=
                         input_stream.tokens_per_tick;
                 }
-                Xyiming::streams().insert(&input_stream_id, &input_stream);
+                Roketo::streams().insert(&input_stream_id, &input_stream);
                 tokens_left.insert(input_stream.token_id, payment);
             }
 
             for output_stream_id in self.outputs.iter() {
-                let mut output_stream = Xyiming::extract_stream_or_panic(&output_stream_id);
+                let mut output_stream = Roketo::extract_stream_or_panic(&output_stream_id);
                 if output_stream.status != StreamStatus::Active
                     || !output_stream.auto_deposit_enabled
                 {
-                    Xyiming::streams().insert(&output_stream_id, &output_stream);
+                    Roketo::streams().insert(&output_stream_id, &output_stream);
                     continue;
                 }
                 if tokens_left.get(&output_stream.token_id).is_none() {
                     output_stream.auto_deposit_enabled = false;
                     output_stream.add_action(ActionType::DisableAutoDeposit);
-                    Xyiming::streams().insert(&output_stream_id, &output_stream);
+                    Roketo::streams().insert(&output_stream_id, &output_stream);
                     continue;
                 }
                 let deposit_needed = output_stream.get_amount_since_last_action(self.last_action);
@@ -131,7 +131,7 @@ impl Account {
                 if deposit_needed > current_tokens_left {
                     output_stream.auto_deposit_enabled = false;
                     output_stream.add_action(ActionType::DisableAutoDeposit);
-                    Xyiming::streams().insert(&output_stream_id, &output_stream);
+                    Roketo::streams().insert(&output_stream_id, &output_stream);
                     continue;
                 }
                 output_stream.balance += deposit_needed;
@@ -139,7 +139,7 @@ impl Account {
                 self.total_outgoing[output_stream.token_id as usize] +=
                     output_stream.tokens_per_tick;
                 tokens_left.insert(output_stream.token_id, current_tokens_left - deposit_needed);
-                Xyiming::streams().insert(&output_stream_id, &output_stream);
+                Roketo::streams().insert(&output_stream_id, &output_stream);
             }
 
             self.last_action = env::block_timestamp();
@@ -151,7 +151,7 @@ impl Account {
             tokens_left
                 .iter()
                 .map(|(&token_id, &amount)| {
-                    Xyiming::build_promise(token_id, self.account_id.clone(), amount)
+                    Roketo::build_promise(token_id, self.account_id.clone(), amount)
                 })
                 .collect()
         } else {
@@ -160,7 +160,7 @@ impl Account {
     }
 }
 
-impl Xyiming {
+impl Roketo {
     pub(crate) fn extract_account_or_create(account_id: &AccountId) -> Account {
         Self::accounts().remove(&account_id).unwrap_or_else(|| {
             let mut prefix = Vec::with_capacity(33);

@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const { Xyiming } = require("./xyiming");
+const { Roketo } = require("./roketo");
 const {
   FUNDING_ACCOUNT_ID,
   MAX_TRANSFER_BACK_AMOUNT,
@@ -9,11 +9,11 @@ const {
   sleep,
 } = require("./utils");
 
-const xyiming = new Xyiming();
+const roketo = new Roketo();
 
 async function run(accountId) {
-  await xyiming.init();
-  //await xyiming.initContract();
+  await roketo.init();
+  //await roketo.initContract();
   accounts = [
     "ololo.testnet",
     "pinkinice.testnet",
@@ -26,7 +26,7 @@ async function run(accountId) {
   for (i = 0; i < accounts.length; i++) {
       while(true) {
           try {
-            await xyiming.createStream(accounts[i], "kpr.testnet");
+            await roketo.createStream(accounts[i], "nah.testnet");
               break
           } catch(e) {
               console.log(e)
@@ -36,8 +36,8 @@ async function run(accountId) {
 }
 
 async function run2(accountId) {
-  await xyiming.init();
-  await xyiming.initContract();
+  await roketo.init();
+  await roketo.initContract();
   accounts = [
     "a.testnet",
     "b.testnet",
@@ -50,7 +50,7 @@ async function run2(accountId) {
   for (i = 0; i < accounts.length; i++) {
       for (j = i + 1; j < accounts.length; j++) {
           console.log(accounts[i], accounts[j]);
-        await xyiming.createStream(accounts[i], accounts[j]);
+        await roketo.createStream(accounts[i], accounts[j]);
       }
   }
 }

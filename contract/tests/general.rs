@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::convert::TryInto;
 
 /// Import the generated proxy contract
-use xyiming::XyimingContract;
-use xyiming::{
+use roketo::RoketoContract;
+use roketo::{
     AccountView, ActionView, CreateOrDeposit, CreateStruct, StreamView, CREATE_STREAM_DEPOSIT,
     ERR_ACCESS_DENIED, ERR_CANNOT_START_STREAM, ERR_DEPOSIT_NOT_ENOUGH, ERR_PAUSE_PAUSED,
     ERR_STREAM_NOT_AVAILABLE, ONE_NEAR, ONE_YOCTO,
@@ -16,10 +16,10 @@ use near_sdk_sim::{call, deploy, init_simulator, to_yocto, view, ContractAccount
 
 // Load in contract bytes at runtime
 near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
-  CONTRACT_WASM_BYTES => "res/xyiming.wasm",
+  CONTRACT_WASM_BYTES => "res/roketo.wasm",
 }
 
-const CONTRACT_ID: &str = "xyiming";
+const CONTRACT_ID: &str = "roketo";
 
 // const ERR_ASSERT: Option<&str> = Some("assertion failed");
 // const ERR_UNWRAP: Option<&str> = Some("called `Option::unwrap()`");
@@ -34,7 +34,7 @@ const ONE_NEAR_PER_TICK: u128 = ONE_NEAR / 1_000_000_000;
 
 struct State {
     pub root: UserAccount,
-    pub contract: ContractAccount<XyimingContract>,
+    pub contract: ContractAccount<RoketoContract>,
     pub accounts: HashMap<String, UserAccount>,
 }
 
@@ -43,7 +43,7 @@ impl State {
         let root = init_simulator(None);
 
         let deployed_contract = deploy!(
-            contract: XyimingContract,
+            contract: RoketoContract,
             contract_id: CONTRACT_ID,
             bytes: &CONTRACT_WASM_BYTES,
             signer_account: root,

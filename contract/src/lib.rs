@@ -32,12 +32,12 @@ near_sdk::setup_alloc!();
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
-pub struct Xyiming {
+pub struct Roketo {
     // TODO put stats here
 }
 
 #[near_bindgen]
-impl Xyiming {
+impl Roketo {
     #[init]
     pub fn new() -> Self {
         // init the contract
@@ -46,14 +46,14 @@ impl Xyiming {
 }
 
 #[near_bindgen]
-impl FungibleTokenReceiver for Xyiming {
+impl FungibleTokenReceiver for Roketo {
     fn ft_on_transfer(
         &mut self,
         sender_id: ValidAccountId,
         amount: U128,
         msg: String,
     ) -> PromiseOrValue<U128> {
-        assert!(Xyiming::valid_ft_sender(env::predecessor_account_id()));
+        assert!(Roketo::valid_ft_sender(env::predecessor_account_id()));
         let key: Result<CreateOrDeposit, _> = serde_json::from_str(&msg);
         if key.is_err() {
             // return everything back
@@ -89,7 +89,7 @@ impl FungibleTokenReceiver for Xyiming {
     }
 }
 
-impl Xyiming {
+impl Roketo {
     /// Accounts
     pub(crate) fn accounts() -> LookupMap<AccountId, Account> {
         LookupMap::new(b"a".to_vec())

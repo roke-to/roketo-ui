@@ -48,7 +48,7 @@ pub struct CronAccount {
     pub account_id: String,
 }
 
-impl Xyiming {
+impl Roketo {
     pub(crate) fn create_task(&mut self, account_id: String) -> Promise {
         let cron_account_id = CronAccount { account_id };
         ext_croncat::create_task(

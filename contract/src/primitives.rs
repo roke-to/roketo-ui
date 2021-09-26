@@ -142,7 +142,7 @@ pub struct CreateStruct {
     pub auto_deposit_enabled: bool,
 }
 
-impl Xyiming {
+impl Roketo {
     pub(crate) fn get_token_id_by_name(token_name: &String) -> Option<TokenId> {
         for x in 0..NUM_TOKENS {
             if TOKENS[x] == token_name {

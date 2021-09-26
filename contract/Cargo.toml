@@ -1,7 +1,7 @@
 [package]
-name = "xyiming"
+name = "roketo"
 version = "0.1.0"
-authors = ["Kikimora Labs <kpr@near.org>"]
+authors = ["Kikimora Labs <hello@kikimora.tech>"]
 edition = "2018"
 
 [lib]

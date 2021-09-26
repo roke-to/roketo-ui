@@ -40,7 +40,7 @@ impl From<&Stream> for StreamView {
             description: s.description.clone(),
             owner_id: s.owner_id.clone(),
             receiver_id: s.receiver_id.clone(),
-            token_name: Xyiming::get_token_name_by_id(s.token_id),
+            token_name: Roketo::get_token_name_by_id(s.token_id),
             timestamp_created: s.timestamp_created.into(),
             balance: s.balance.into(),
             tokens_per_tick: s.tokens_per_tick.into(),
@@ -50,7 +50,7 @@ impl From<&Stream> for StreamView {
             available_to_withdraw: std::cmp::min(
                 s.balance,
                 s.get_amount_since_last_action(
-                    Xyiming::accounts().get(&s.receiver_id).unwrap().last_action,
+                    Roketo::accounts().get(&s.receiver_id).unwrap().last_action,
                 ),
             )
             .into(),
@@ -98,7 +98,7 @@ impl Stream {
             stream.add_action(ActionType::Deposit(initial_balance));
             stream.add_action(ActionType::Start);
         }
-        Xyiming::streams().insert(&stream_id, &stream);
+        Roketo::streams().insert(&stream_id, &stream);
         stream
     }
 
@@ -137,7 +137,7 @@ impl Stream {
     }
 }
 
-impl Xyiming {
+impl Roketo {
     pub(crate) fn extract_stream_or_panic(stream_id: &StreamId) -> Stream {
         Self::streams()
             .remove(&stream_id)
