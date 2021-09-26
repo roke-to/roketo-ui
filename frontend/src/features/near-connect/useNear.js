@@ -107,7 +107,7 @@ export function useCreateNear() {
   };
 
   async function login() {
-    const appTitle = 'Streaming Xyiming';
+    const appTitle = 'Roketo Token Streaming Service';
 
     await near.walletConnection.requestSignIn(
       NearConfig.contractName,
