@@ -1,3 +1,5 @@
+> 🔴 THIS IS HACKATHON VERSION OF CONTRACT THAT DON'T USED IN MAINNET
+
 # Roke.to dApp
 
 Direct X-to-Y tokens streaming with no 3rd parties. Forget about paydays and boost control of your payment flows on a new level.
