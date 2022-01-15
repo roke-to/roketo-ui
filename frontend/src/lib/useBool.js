@@ -9,5 +9,6 @@ export function useBool(initial) {
     toggle: () => setOn(!on),
     turnOff: () => setOn(false),
     turnOn: () => setOn(true),
+    setOn,
   };
 }

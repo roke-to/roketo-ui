@@ -26,7 +26,6 @@ export function MyStreamsPage() {
   };
 
   const streams = streamsSWR.data;
-
   const inputs = streams ? streams.inputs : __INPUTS;
   const outputs = streams ? streams.outputs : __OUTPUTS;
   const allStreams = useMemo(() => {
@@ -36,10 +35,10 @@ export function MyStreamsPage() {
   const error = accountSWR.error || streamsSWR.error;
 
   return (
-    <div className="twind-container twind-mx-auto twind-p-12">
-      <div className="twind-flex twind-mb-12">
-        <h1 className="twind-text-3xl ">All Streams</h1>
-        <div className="twind-flex-grow"></div>
+    <div className="container mx-auto p-12">
+      <div className="flex mb-12">
+        <h1 className="text-3xl ">All Streams</h1>
+        <div className="flex-grow"></div>
         <StreamWithdrawButton variant="main" size="normal">
           Update streams and withdraw
         </StreamWithdrawButton>
@@ -47,12 +46,12 @@ export function MyStreamsPage() {
       <StreamFilters
         items={allStreams}
         onFilterDone={setFiltered}
-        className="twind-mb-10 twind-relative twind-z-10"
+        className="mb-10 relative z-10"
       />
 
       {error ? (
         <PageError
-          className="twind-max-w-2xl twind-mx-auto twind-py-32"
+          className="max-w-2xl mx-auto py-32"
           message={error.message}
           onRetry={() => {
             accountSWR.mutate();
@@ -62,8 +61,8 @@ export function MyStreamsPage() {
       ) : !streams ? (
         <div>Loading</div>
       ) : allStreams.length === 0 ? (
-        <div className="twind-flex twind-flex-col twind-w-80 twind-mx-auto">
-          <h3 className="twind-text-3xl twind-text-center twind-my-12 ">
+        <div className="flex flex-col w-80 mx-auto">
+          <h3 className="text-3xl text-center my-12 ">
             You dont have any streams yet.
           </h3>
           <Button variant="main" link to={routes.send}>
@@ -71,16 +70,16 @@ export function MyStreamsPage() {
           </Button>
         </div>
       ) : filteredItems.length === 0 ? (
-        <h3 className="twind-text-3xl twind-text-center twind-my-12 twind-w-80 twind-mx-auto">
+        <h3 className="text-3xl text-center my-12 w-80 mx-auto">
           No streams matching your filters. <br />
           Try selecting different filters!
         </h3>
       ) : (
         filteredItems.map((stream) => (
           <StreamCard
-            key={stream.stream_id}
+            key={stream.id}
             stream={stream}
-            className="twind-mb-4"
+            className="mb-4"
             direction={isIncomingStream(stream) ? 'in' : 'out'}
           />
         ))

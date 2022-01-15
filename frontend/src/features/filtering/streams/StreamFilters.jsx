@@ -56,9 +56,9 @@ export function StreamFilters({items, onFilterDone, className}) {
   }, [filter.result.filteredItems, onFilterDone, sorting.fn]);
 
   return (
-    <div className={classNames('md:twind-flex', className)}>
+    <div className={classNames('md:flex', className)}>
       <Filter
-        className="twind-mr-5 twind-z-10"
+        className="mr-5 z-10"
         options={filter.directionFilter.optionsArray}
         label="Type:"
         active={filter.directionFilter.option}
@@ -74,7 +74,7 @@ export function StreamFilters({items, onFilterDone, className}) {
         }}
       />
       <Filter
-        className="twind-z-10"
+        className="z-10"
         options={filter.statusFilter.optionsArray}
         label="Status:"
         active={filter.statusFilter.option}
@@ -89,9 +89,9 @@ export function StreamFilters({items, onFilterDone, className}) {
           );
         }}
       />
-      <div className="twind-flex-grow"></div>
+      <div className="flex-grow"></div>
       <Filter
-        className="twind-mt-3 md:twind-mt-0"
+        className="mt-3 md:mt-0"
         minimal
         options={sortOptions}
         label="Show first:"

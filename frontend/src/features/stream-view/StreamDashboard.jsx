@@ -10,86 +10,69 @@ import {
 } from '../stream-control';
 import {StreamWithdrawButton} from '../stream-control/StreamWithdrawButton';
 import {StreamProgressPercentage} from './StreamProgressPercentage';
+import {useTokenFormatter} from '../../lib/useTokenFormatter';
 
 export function StreamDashboard({stream, account}) {
+  const tf = useTokenFormatter(stream.ticker);
+
   const {
-    tf,
     progresses,
     percentages,
     isDead,
     progress: {full, withdrawn, streamed},
-  } = streamViewData(stream);
+  } = streamViewData(stream, tf);
   const direction = streamDirection({stream, account});
 
   return (
-    <div
-      className={classNames(
-        'twind-flex',
-        'twind-flex-col',
-        'twind-items-center',
-      )}
-    >
-      <div className="twind--mb-32">
+    <div className={classNames('flex', 'flex-col', 'items-center')}>
+      <div className="-mb-32">
         <Tooltip
           align={{offset: [0, -20]}}
           offset={{top: 20}}
           overlay={
-            <div className="twind-text-left">
+            <div className="text-left">
               <StreamProgressPercentage
-                className="twind-whitespace-nowrap twind-mb-2"
+                className="whitespace-nowrap mb-2"
                 label="Withdrawn"
-                colorClass="twind-bg-streams-withdrawn"
-                formattedFloatValue={
-                  tf.amount(withdrawn) + ' ' + stream.token_name
-                }
+                colorClass="bg-streams-withdrawn"
+                formattedFloatValue={tf.amount(withdrawn) + ' ' + stream.ticker}
                 percentageValue={percentages.withdrawn}
               />
               <StreamProgressPercentage
-                className="twind-whitespace-nowrap"
+                className="whitespace-nowrap"
                 label="Streamed"
-                colorClass="twind-bg-streams-streamed"
-                formattedFloatValue={
-                  tf.amount(streamed) + ' ' + stream.token_name
-                }
+                colorClass="bg-streams-streamed"
+                formattedFloatValue={tf.amount(streamed) + ' ' + stream.ticker}
                 percentageValue={percentages.streamed}
               />
             </div>
           }
         >
-          <ArcProgressBar
-            className="twind-w-96 twind-h-48"
-            progresses={progresses}
-          />
+          <ArcProgressBar className="w-96 h-48" progresses={progresses} />
         </Tooltip>
 
-        <div className="twind-flex twind-justify-between twind-pt-5 twind--mx-2 twind-text-gray">
-          <div className="twind-w-10 twind-text-center"> 0%</div>
-          <div className="twind-w-10 twind-text-center"> 100%</div>
+        <div className="flex justify-between pt-5 -mx-2 text-gray">
+          <div className="w-10 text-center"> 0%</div>
+          <div className="w-10 text-center"> 100%</div>
         </div>
       </div>
 
-      <TokenImage
-        size={14}
-        tokenName={stream.token_name}
-        className="twind-mb-8"
-      />
-      <div className="twind-text-6xl twind-font-semibold">
-        {tf.amount(streamed)}
-      </div>
-      <div className="twind-text-gray twind-font-semibold">
-        of {tf.amount(full)} {stream.token_name}
+      <TokenImage size={14} tokenName={stream.ticker} className="mb-8" />
+      <div className="text-6xl font-semibold">{tf.amount(streamed)}</div>
+      <div className="text-gray font-semibold">
+        of {tf.amount(full)} {stream.ticker}
       </div>
       <StreamingSpeed
         stream={stream}
         direction={direction}
-        className="twind-mt-6 twind-mb-6"
+        className="mt-6 mb-6"
       />
       {isDead ? (
         ''
       ) : (
         <>
-          <div className="twind-flex twind-relative twind-z-10">
-            <StreamControls stream={stream} className="twind-mr-2" />
+          <div className="flex relative z-10">
+            <StreamControls stream={stream} className="mr-2" />
 
             {/* render withdraw of add funds button */}
             {direction === 'out' ? (
@@ -109,7 +92,7 @@ export function StreamDashboard({stream, account}) {
               stream={stream}
               enableMsg="Enable auto-deposit"
               disableMsg="Disable auto-deposit"
-              className="twind-mt-4 twind-w-72"
+              className="mt-4 w-72"
             />
           ) : null}
         </>

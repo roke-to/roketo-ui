@@ -10,16 +10,16 @@ import {useRouteMatch} from 'react-router';
 
 function MinifiedHeader() {
   const logo = (
-    <div className="twind-flex twind-justify-start twind-items-center">
-      <img src={LogoText} alt="xyiming logo" />
+    <div className="flex justify-start items-center">
+      <img src={LogoText} alt="rocketo logo" />
     </div>
   );
   return (
     <div
       className={classNames(
-        'twind-py-4 twind-px-6',
-        'twind-absolute twind-w-full twind-pt-8',
-        'twind-flex twind-justify-center',
+        'py-4 px-6',
+        'absolute w-full pt-8',
+        'flex justify-center',
       )}
     >
       {logo}
@@ -31,8 +31,8 @@ function FullHeader() {
   const menuControl = useBool(false);
 
   const navigation = (
-    <ul className="twind-flex-col lg:twind-flex-row twind-flex twind-justify-center ">
-      <li className="twind-mb-2 lg:twind-mr-2 lg:twind-mb-0">
+    <ul className="flex-col lg:flex-row flex justify-center ">
+      <li className="mb-2 lg:mr-2 lg:mb-0">
         <NavLink
           onClick={menuControl.turnOff}
           to={routes.account}
@@ -41,7 +41,7 @@ function FullHeader() {
           Account
         </NavLink>
       </li>
-      <li className="twind-mb-2 lg:twind-mr-2 lg:twind-mb-0">
+      <li className="mb-2 lg:mr-2 lg:mb-0">
         <NavLink
           onClick={menuControl.turnOff}
           to={routes.myStreams}
@@ -50,7 +50,7 @@ function FullHeader() {
           My Streams
         </NavLink>
       </li>
-      <li className="twind-mb-2 lg:twind-mr-2 lg:twind-mb-0">
+      <li className="mb-2 lg:mr-2 lg:mb-0">
         <NavLink
           onClick={menuControl.turnOff}
           to={routes.send}
@@ -63,32 +63,30 @@ function FullHeader() {
   );
 
   const logo = (
-    <div className="twind-flex twind-justify-start twind-items-center">
-      <img src={LogoText} alt="xyiming logo" />
+    <div className="flex justify-start items-center">
+      <img src={LogoText} alt="rocketo logo" />
     </div>
   );
 
   return (
-    <div className={'twind-py-4 twind-px-6 twind-w-full twind-pt-8'}>
+    <div className={'py-4 px-6 w-full pt-8'}>
       <div
-        className={classNames(
-          'twind-hidden lg:twind-grid twind-items-center twind-grid-cols-3 twind-gap-3 ',
-        )}
+        className={classNames('hidden lg:grid items-center grid-cols-3 gap-3 ')}
       >
         {logo}
         {navigation}
 
-        <div className="twind-flex twind-justify-end">
+        <div className="flex justify-end">
           <NearAuthButton />
         </div>
       </div>
 
-      <div className={classNames('lg:twind-hidden')}>
-        <div className="twind-flex twind-justify-between">
+      <div className={classNames('lg:hidden')}>
+        <div className="flex justify-between">
           {logo}
 
           <button
-            className="twind-p-1"
+            className="p-1"
             onClick={menuControl.toggle}
             type="button"
             data-bs-toggle="collapse"
@@ -106,10 +104,7 @@ function FullHeader() {
           </button>
         </div>
         <div
-          className={classNames(
-            menuControl.on ? 'twind-block' : 'twind-hidden',
-            'twind-mt-4',
-          )}
+          className={classNames(menuControl.on ? 'block' : 'hidden', 'mt-4')}
         >
           {navigation}
           <NearAuthButton className="mt-4" />

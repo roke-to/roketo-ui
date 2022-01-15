@@ -12,16 +12,15 @@ export function useStreamControl(streamId) {
   const near = useNear();
   const [loading, setLoading] = React.useState(false);
 
-  async function updateAllAndWithdraw() {
-    console.log('updating all account');
-
-    await near.contractApi.updateAccount({});
-    console.log('update completed');
+  async function updateAllAndWithdraw({tokensWithoutStorage = 0}) {
+    console.debug('updating all account');
+    await near.contractApi.updateAccount({tokensWithoutStorage});
+    console.debug('update completed');
   }
 
   async function enable() {
     ensureMethodHasStreamId();
-    console.log('enable', streamId);
+    console.debug('enable', streamId);
     const res = await near.contractApi.changeAutoDeposit({
       streamId,
       autoDeposit: true,
@@ -30,7 +29,7 @@ export function useStreamControl(streamId) {
 
   async function disable() {
     ensureMethodHasStreamId();
-    console.log('disabling', streamId);
+    console.debug('disabling', streamId);
     const res = await near.contractApi.changeAutoDeposit({
       streamId,
       autoDeposit: false,
@@ -39,49 +38,55 @@ export function useStreamControl(streamId) {
 
   async function deposit({token, deposit}) {
     ensureMethodHasStreamId();
-    console.log('depositing', token, streamId);
-    token === 'NEAR'
-      ? await near.contractApi.depositStream({
-          streamId,
-          deposit,
-        })
-      : await near.near.fts[token].ft_transfer_call(
-          {
-            receiver_id: near.near.contractName,
-            amount: deposit,
-            memo: 'xyiming transfer',
-            msg: streamId,
-          },
-          '200000000000000',
-          1,
-        );
+    console.debug('depositing', token, streamId);
+
+    await near.contractApi.depositStream({
+      token,
+      deposit,
+      streamId,
+    });
+    // token === 'NEAR'
+    //   ? await near.contractApi.depositStream({
+    //       streamId,
+    //       deposit,
+    //     })
+    //   : await near.near.fts[token].ft_transfer_call(
+    //       {
+    //         receiver_id: near.near.contractName,
+    //         amount: deposit,
+    //         memo: 'xyiming transfer',
+    //         msg: streamId,
+    //       },
+    //       '200000000000000',
+    //       1,
+    //     );
   }
 
   async function pause() {
     ensureMethodHasStreamId();
-    console.log('pausing', streamId);
+    console.debug('pausing', streamId);
     const res = await near.contractApi.pauseStream({
       streamId,
     });
-    console.log('pausing res', res);
+    console.debug('pausing res', res);
 
     return res;
   }
 
   async function restart() {
     ensureMethodHasStreamId();
-    console.log('restarting', streamId);
+    console.debug('restarting', streamId);
     const res = await near.contractApi.startStream({streamId: streamId});
-    console.log('restarting res', res);
+    console.debug('restarting res', res);
 
     return res;
   }
 
   async function stop() {
     ensureMethodHasStreamId();
-    console.log('Stop called stopping', streamId);
+    console.debug('Stop called stopping', streamId);
     const res = await near.contractApi.stopStream({streamId: streamId});
-    console.log('stopping res', res);
+    console.debug('stopping res', res);
     return res;
   }
 

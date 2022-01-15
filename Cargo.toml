@@ -1,0 +1,26 @@
+[package]
+name = "roketo"
+version = "1.0.0"
+authors = ["Alex Kouprin <hello@kikimora.tech>"]
+edition = "2018"
+
+[dev-dependencies]
+near-contract-standards = "=4.0.0-pre.6"
+near-sdk = "=4.0.0-pre.6"
+near-sdk-sim = "=4.0.0-pre.6"
+
+contract = { path = "./contract" }
+
+[profile.release]
+codegen-units=1
+# Tell `rustc` to optimize for small code size
+opt-level = "s"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true
+
+[workspace]
+members = [
+    "contract",
+]

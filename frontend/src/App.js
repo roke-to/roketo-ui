@@ -34,10 +34,12 @@ function PrivateRoute({children, allowed, redirect, ...rest}) {
 function AppFn() {
   const near = useCreateNear();
 
+  const inited = near.inited;
+
   return (
     <NearContext.Provider value={near}>
-      <div className="twind-bg-dark twind-text-white">
-        {near.inited ? (
+      <div className="bg-dark text-white">
+        {inited ? (
           <Router basename={process.env.PUBLIC_URL}>
             <Header />
 
@@ -67,14 +69,14 @@ function AppFn() {
                 <AccountPage />
               </PrivateRoute>
 
-              <Route exact path="/my_streams/:id">
+              <Route exact path="/streams/:id">
                 <StreamPage />
               </Route>
               <PrivateRoute
                 exact
                 redirect={<Redirect to="/authorize" />}
                 allowed={near.auth.signedIn}
-                path="/my_streams"
+                path="/streams"
               >
                 <MyStreamsPage />
               </PrivateRoute>

@@ -1,8 +1,8 @@
 export const routes = {
   authorize: '/authorize',
   account: '/account',
-  myStreams: '/my_streams',
+  myStreams: '/streams',
   send: '/',
   receive: '/receive',
-  stream: (id) => `/my_streams/${id}`,
+  stream: (id) => `/streams/${id}`,
 };

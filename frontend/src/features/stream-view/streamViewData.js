@@ -1,11 +1,12 @@
-import {TokenFormatter} from '../../lib/formatting';
+import {isFundable} from '.';
 import {STREAM_STATUS} from '../stream-control/lib';
+import {isDead} from './lib';
 
-export function streamViewData(stream) {
-  const tf = TokenFormatter(stream.token_name);
+export function streamViewData(stream, tokenFormatter) {
+  const tf = tokenFormatter;
 
   // public link
-  const link = `${window.location.origin}/#/my_streams/${stream.stream_id}`;
+  const link = `${window.location.origin}/#/streams/${stream.id}`;
 
   // time left calculations
   const secondsLeft = tf.ticksToMs(
@@ -35,18 +36,16 @@ export function streamViewData(stream) {
     available: available / full,
   };
 
-  const isDead =
-    stream.status === STREAM_STATUS.FINISHED ||
-    stream.status === STREAM_STATUS.INTERRUPTED;
-
   return {
     dateEnd,
     progresses,
     tf,
-    isDead,
+    isDead: isDead(stream),
+    isFundable: isFundable(stream),
     percentages,
     link,
     timestampEnd,
+    secondsLeft,
     progress: {
       full,
       withdrawn,

@@ -12,11 +12,10 @@ export function StreamProgressPercentage({
 }) {
   return (
     <div className={className} {...rest}>
-      <Bullet className={classNames(colorClass, 'twind-mr-1')} />
+      <Bullet className={classNames(colorClass, 'mr-1')} />
       <span>
-        {label}:{' '}
-        <span className="twind-font-semibold">{formattedFloatValue} </span>
-        <span className="twind-text-gray">
+        {label}: <span className="font-semibold">{formattedFloatValue} </span>
+        <span className="text-gray">
           {' '}
           (
           {numbro(percentageValue).format({

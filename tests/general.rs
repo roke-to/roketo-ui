@@ -1,18 +1,18 @@
-use std::collections::HashMap;
+/*use std::collections::HashMap;
 use std::convert::TryInto;
 
 /// Import the generated proxy contract
 use roketo::RoketoContract;
 use roketo::{
-    AccountView, ActionView, CreateOrDeposit, CreateStruct, StreamView, CREATE_STREAM_DEPOSIT,
-    ERR_ACCESS_DENIED, ERR_CANNOT_START_STREAM, ERR_DEPOSIT_NOT_ENOUGH, ERR_PAUSE_PAUSED,
-    ERR_STREAM_NOT_AVAILABLE, ONE_NEAR, ONE_YOCTO,
+    AccountView, ActionView, CreateOrDeposit, CreateStruct, RoketoView, StreamView,
+    ERR_ACCESS_DENIED, ERR_CANNOT_START_STREAM, ERR_PAUSE_PAUSED, ERR_STREAM_NOT_AVAILABLE,
+    ONE_MILLI, ONE_NEAR, ONE_YOCTO,
 };
 
 use near_sdk::json_types::{Base58CryptoHash, WrappedBalance};
 use near_sdk::serde_json;
 use near_sdk_sim::transaction::ExecutionStatus;
-use near_sdk_sim::{call, deploy, init_simulator, to_yocto, view, ContractAccount, UserAccount};
+use near_sdk_sim::{call, deploy, init_simulator, view, ContractAccount, UserAccount};
 
 // Load in contract bytes at runtime
 near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
@@ -29,8 +29,8 @@ const BOB: &str = "bob";
 #[allow(dead_code)]
 const CAROL: &str = "carol";
 const DEFAULT_DESCRIPTION: &str = "default description";
-const DEFAULT_TOKEN_NAME: &str = "NEAR";
 const ONE_NEAR_PER_TICK: u128 = ONE_NEAR / 1_000_000_000;
+const INIT_BALANCE: u128 = 1_000_000_000 * ONE_NEAR;
 
 struct State {
     pub root: UserAccount,
@@ -47,8 +47,8 @@ impl State {
             contract_id: CONTRACT_ID,
             bytes: &CONTRACT_WASM_BYTES,
             signer_account: root,
-            deposit: to_yocto("1000000000"),
-            init_method: new()
+            deposit: INIT_BALANCE,
+            init_method: test_new()
         );
         let state = State {
             root,
@@ -60,19 +60,28 @@ impl State {
         state
     }
 
+    fn create_common_user(&mut self, name: &str) {
+        let user = self.root.create_user(name.into(), INIT_BALANCE);
+        let contract = &self.contract;
+        let outcome = call!(
+            user,
+            contract.set_external_update_flag(true),
+            deposit = ONE_YOCTO
+        );
+        outcome.assert_success();
+        self.accounts.insert(name.into(), user);
+    }
+
     pub fn create_alice(&mut self) {
-        let alice = self.root.create_user(ALICE.into(), to_yocto("1000000000"));
-        self.accounts.insert(ALICE.into(), alice);
+        self.create_common_user(ALICE);
     }
 
     pub fn create_bob(&mut self) {
-        let bob = self.root.create_user(BOB.into(), to_yocto("1000000000"));
-        self.accounts.insert(BOB.into(), bob);
+        self.create_common_user(BOB);
     }
 
     pub fn create_carol(&mut self) {
-        let carol = self.root.create_user(CAROL.into(), to_yocto("1000000000"));
-        self.accounts.insert(CAROL.into(), carol);
+        self.create_common_user(CAROL);
     }
 
     pub fn view_account(&self, account_id: &str) -> Option<AccountView> {
@@ -96,7 +105,7 @@ impl State {
 
     pub fn do_create_stream(
         &self,
-        owner_id: &str,
+        owner: &UserAccount,
         receiver_id: &str,
         tokens_per_tick: u128,
         err: Option<&str>,
@@ -104,16 +113,15 @@ impl State {
         let contract = &self.contract;
 
         let outcome = call!(
-            self.root,
+            owner,
             contract.create_stream(
                 Some(DEFAULT_DESCRIPTION.to_string()),
-                owner_id.try_into().unwrap(),
                 receiver_id.try_into().unwrap(),
-                DEFAULT_TOKEN_NAME.to_string(),
                 tokens_per_tick.into(),
+                true,
                 false
             ),
-            deposit = CREATE_STREAM_DEPOSIT + 123 * ONE_NEAR
+            deposit = 123 * ONE_NEAR
         );
 
         if let Some(msg) = err {
@@ -137,7 +145,7 @@ impl State {
         let outcome = call!(
             caller,
             contract.stop_stream(stream_id.try_into().unwrap()),
-            deposit = ONE_YOCTO
+            deposit = ONE_MILLI
         );
 
         if let Some(msg) = err {
@@ -178,7 +186,8 @@ impl State {
         let contract = &self.contract;
         let outcome = call!(
             self.root,
-            contract.update_account(account_id.try_into().unwrap())
+            contract.update_account(account_id.try_into().unwrap()),
+            deposit = ONE_MILLI
         );
 
         if let Some(msg) = err {
@@ -197,7 +206,11 @@ impl State {
     {
         let contract = &self.contract;
 
-        let outcome = call!(caller, contract.pause_stream(stream_id.try_into().unwrap()));
+        let outcome = call!(
+            caller,
+            contract.pause_stream(stream_id.try_into().unwrap()),
+            deposit = ONE_MILLI
+        );
 
         if let Some(msg) = err {
             assert!(
@@ -215,7 +228,38 @@ impl State {
     {
         let contract = &self.contract;
 
-        let outcome = call!(caller, contract.start_stream(stream_id.try_into().unwrap()));
+        let outcome = call!(
+            caller,
+            contract.start_stream(stream_id.try_into().unwrap()),
+            deposit = ONE_MILLI
+        );
+
+        if let Some(msg) = err {
+            assert!(
+                format!("{:?}", outcome.status()).contains(msg),
+                "received {:?}",
+                outcome.status()
+            );
+            assert!(!outcome.is_ok(), "Should panic");
+        } else {
+            outcome.assert_success();
+        }
+    }
+
+    pub fn do_change_autodeposit(
+        &self,
+        caller: &UserAccount,
+        stream_id: &str,
+        value: bool,
+        err: Option<&str>,
+    ) {
+        let contract = &self.contract;
+
+        let outcome = call!(
+            caller,
+            contract.change_auto_deposit(stream_id.try_into().unwrap(), value),
+            deposit = ONE_MILLI
+        );
 
         if let Some(msg) = err {
             assert!(
@@ -255,9 +299,11 @@ fn init_sanity() {
 
 #[test]
 fn create_stream() {
-    let state = State::new();
+    let mut state = State::new();
+    state.create_alice();
+    let alice = state.accounts.get(ALICE).unwrap();
 
-    let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+    let stream_id = state.do_create_stream(alice, BOB, ONE_NEAR_PER_TICK, None);
     let stream = state.view_stream(&stream_id).unwrap();
     // TODO check all stream fields
     assert_eq!(stream.owner_id, ALICE);
@@ -265,51 +311,32 @@ fn create_stream() {
 
 #[test]
 fn create_stream_check_users() {
-    let state = State::new();
+    let mut state = State::new();
+    state.create_alice();
+    let alice = state.accounts.get(ALICE).unwrap();
 
-    let alice_account = state.view_account(ALICE);
-    assert!(alice_account.is_none());
-    let bob_account = state.view_account(BOB);
-    assert!(bob_account.is_none());
     let carol_account = state.view_account(CAROL);
     assert!(carol_account.is_none());
 
-    let _stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+    let _stream_id = state.do_create_stream(alice, BOB, ONE_NEAR_PER_TICK, None);
 
     // TODO check all user fields
     let alice_account = state.view_account(ALICE).unwrap();
-    assert_eq!(alice_account.inputs.len(), 0);
-    assert_eq!(alice_account.outputs.len(), 1);
+    assert_eq!(alice_account.dynamic_inputs.len(), 0);
+    assert_eq!(alice_account.dynamic_outputs.len(), 0);
+    assert_eq!(alice_account.static_streams.len(), 1);
     let bob_account = state.view_account(BOB).unwrap();
-    assert_eq!(bob_account.inputs.len(), 1);
-    assert_eq!(bob_account.outputs.len(), 0);
+    assert_eq!(bob_account.dynamic_inputs.len(), 1);
+    assert_eq!(bob_account.dynamic_outputs.len(), 0);
+    assert_eq!(bob_account.static_streams.len(), 0);
     let carol_account = state.view_account(CAROL);
     assert!(carol_account.is_none());
-}
 
-#[test]
-fn create_stream_insufficient_funds() {
-    let state = State::new();
-    let contract = &state.contract;
-
-    let outcome = call!(
-        state.root,
-        contract.create_stream(
-            Some(DEFAULT_DESCRIPTION.to_string()),
-            ALICE.try_into().unwrap(),
-            BOB.try_into().unwrap(),
-            DEFAULT_TOKEN_NAME.to_string(),
-            ONE_NEAR_PER_TICK.into(),
-            true
-        ),
-        deposit = CREATE_STREAM_DEPOSIT - 1
-    );
-    assert!(
-        format!("{:?}", outcome.status()).contains(ERR_DEPOSIT_NOT_ENOUGH),
-        "received {:?}",
-        outcome.status()
-    );
-    assert!(!outcome.is_ok(), "Should panic");
+    state.create_carol();
+    let carol_account = state.view_account(CAROL).unwrap();
+    assert_eq!(carol_account.dynamic_inputs.len(), 0);
+    assert_eq!(carol_account.dynamic_outputs.len(), 0);
+    assert_eq!(carol_account.static_streams.len(), 0);
 }
 
 #[test]
@@ -320,7 +347,7 @@ fn create_stream_stop_stream() {
     let alice = state.accounts.get(ALICE).unwrap();
     let bob = state.accounts.get(BOB).unwrap();
 
-    let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+    let stream_id = state.do_create_stream(alice, BOB, ONE_NEAR_PER_TICK, None);
     state.do_stop(&state.root, &stream_id, Some(ERR_ACCESS_DENIED));
 
     state.do_stop(&alice, &stream_id, None);
@@ -331,26 +358,27 @@ fn create_stream_stop_stream() {
 
 #[test]
 fn create_stream_instant_deposit() {
-    let state = State::new();
+    let mut state = State::new();
+    state.create_alice();
+    let alice = state.accounts.get(ALICE).unwrap();
     let contract = &state.contract;
 
     let outcome = call!(
-        state.root,
+        alice,
         contract.create_stream(
             Some(DEFAULT_DESCRIPTION.to_string()),
-            ALICE.try_into().unwrap(),
             BOB.try_into().unwrap(),
-            DEFAULT_TOKEN_NAME.to_string(),
             ONE_NEAR_PER_TICK.into(),
+            true,
             false
         ),
-        deposit = CREATE_STREAM_DEPOSIT + 123 * ONE_NEAR
+        deposit = 123 * ONE_NEAR
     );
     assert!(outcome.is_ok());
 
     let stream_id: String = (&outcome.unwrap_json::<Base58CryptoHash>()).into();
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.balance == (123 * ONE_NEAR).into());
+    assert!(stream.balance == (123 * ONE_NEAR - 10 * ONE_MILLI).into());
     assert!(stream.status == "ACTIVE");
 }
 
@@ -364,16 +392,15 @@ fn create_stream_then_deposit_then_start() {
     let contract = &state.contract;
 
     let outcome = call!(
-        state.root,
+        alice,
         contract.create_stream(
             Some(DEFAULT_DESCRIPTION.to_string()),
-            ALICE.try_into().unwrap(),
             BOB.try_into().unwrap(),
-            DEFAULT_TOKEN_NAME.to_string(),
             ONE_NEAR_PER_TICK.into(),
+            false,
             false
         ),
-        deposit = CREATE_STREAM_DEPOSIT
+        deposit = 10 * ONE_MILLI
     );
     assert!(outcome.is_ok());
 
@@ -404,27 +431,31 @@ fn withdraw_sanity() {
     let alice = state.accounts.get(ALICE).unwrap();
     let bob = state.accounts.get(BOB).unwrap();
 
-    let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+    let stream_id = state.do_create_stream(alice, BOB, ONE_NEAR_PER_TICK, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.balance == (123 * ONE_NEAR).into());
+    assert!(stream.balance == (123 * ONE_NEAR - 10 * ONE_MILLI).into());
 
     state.do_update_account(ALICE, None);
 
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.balance == (123 * ONE_NEAR).into());
+    assert!(stream.balance == (123 * ONE_NEAR - 10 * ONE_MILLI).into());
     assert!(stream.status == "ACTIVE");
 
     state.do_update_account(BOB, None);
 
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(u128::from(stream.balance) < 123 * ONE_NEAR);
+    assert!(u128::from(stream.balance) < 123 * ONE_NEAR - 10 * ONE_MILLI);
     assert!(u128::from(stream.balance) > 0);
     assert!(stream.status == "ACTIVE");
 
     assert!(
-        bob.account().unwrap().amount + u128::from(stream.balance)
-            == alice.account().unwrap().amount + 123 * ONE_NEAR
+        bob.account().unwrap().amount + u128::from(stream.balance) < INIT_BALANCE + 123 * ONE_NEAR
     );
+    assert!(
+        bob.account().unwrap().amount + u128::from(stream.balance) > INIT_BALANCE + 122 * ONE_NEAR
+    );
+    assert!(bob.account().unwrap().amount < INIT_BALANCE + 123 * ONE_NEAR);
+    assert!(bob.account().unwrap().amount > INIT_BALANCE);
 }
 
 #[test]
@@ -437,22 +468,19 @@ fn withdraw_all() {
     let contract = &state.contract;
 
     let outcome = call!(
-        state.root,
+        alice,
         contract.create_stream(
             Some(DEFAULT_DESCRIPTION.to_string()),
-            ALICE.try_into().unwrap(),
             BOB.try_into().unwrap(),
-            DEFAULT_TOKEN_NAME.to_string(),
             ONE_NEAR_PER_TICK.into(),
+            true,
             false
         ),
-        deposit = CREATE_STREAM_DEPOSIT + 20 * ONE_NEAR
+        deposit = 20 * ONE_NEAR + 10 * ONE_MILLI
     );
     assert!(outcome.is_ok());
 
     let stream_id: String = (&outcome.unwrap_json::<Base58CryptoHash>()).into();
-
-    assert!(bob.account().unwrap().amount == alice.account().unwrap().amount);
 
     state.do_update_account(BOB, None);
 
@@ -472,7 +500,8 @@ fn withdraw_all() {
     assert!(stream.tokens_total_withdrawn == (20 * ONE_NEAR).into());
     assert!(stream.status == "FINISHED");
 
-    assert!(bob.account().unwrap().amount == alice.account().unwrap().amount + 20 * ONE_NEAR);
+    assert!(bob.account().unwrap().amount < INIT_BALANCE + 20 * ONE_NEAR);
+    assert!(bob.account().unwrap().amount > INIT_BALANCE + 19 * ONE_NEAR);
 }
 
 #[test]
@@ -483,7 +512,7 @@ fn withdraw_then_stop() {
     let alice = state.accounts.get(ALICE).unwrap();
     let bob = state.accounts.get(BOB).unwrap();
 
-    let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+    let stream_id = state.do_create_stream(alice, BOB, ONE_NEAR_PER_TICK, None);
 
     state.do_update_account(BOB, None);
 
@@ -498,10 +527,10 @@ fn withdraw_then_stop() {
     state.do_stop(alice, &stream_id, Some(ERR_STREAM_NOT_AVAILABLE));
     state.do_stop(bob, &stream_id, Some(ERR_STREAM_NOT_AVAILABLE));
 
-    assert!(alice.account().unwrap().amount > bob.account().unwrap().amount + 100 * ONE_NEAR);
-    assert!(bob.account().unwrap().amount > to_yocto("1000000000"));
+    state.do_update_account(ALICE, None);
 
-    //println!("%%% {:?} {:?}", alice.account().unwrap().amount, bob.account().unwrap().amount);
+    assert!(alice.account().unwrap().amount + 100 * ONE_NEAR > INIT_BALANCE);
+    assert!(bob.account().unwrap().amount > INIT_BALANCE);
 }
 
 #[test]
@@ -512,7 +541,7 @@ fn pause_sanity() {
     let alice = state.accounts.get(ALICE).unwrap();
     let bob = state.accounts.get(BOB).unwrap();
 
-    let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+    let stream_id = state.do_create_stream(alice, BOB, ONE_NEAR_PER_TICK, None);
 
     state.do_start(alice, &stream_id, Some(ERR_CANNOT_START_STREAM));
     let prev_alice_balance = alice.account().unwrap().amount;
@@ -520,7 +549,8 @@ fn pause_sanity() {
 
     state.do_pause(alice, &stream_id, None);
     assert!(alice.account().unwrap().amount < prev_alice_balance);
-    assert!(bob.account().unwrap().amount > prev_bob_balance);
+    assert!(alice.account().unwrap().amount + ONE_NEAR > prev_alice_balance);
+    assert!(bob.account().unwrap().amount == prev_bob_balance);
 
     let stream = state.view_stream(&stream_id).unwrap();
     let stream_balance = u128::from(stream.balance);
@@ -528,17 +558,18 @@ fn pause_sanity() {
     assert!(u128::from(stream.balance) > 0);
     assert!(stream.status == "PAUSED");
 
-    state.do_pause(alice, &stream_id, Some(ERR_PAUSE_PAUSED));
-    state.do_pause(bob, &stream_id, Some(ERR_PAUSE_PAUSED));
-
     let prev_alice_balance = alice.account().unwrap().amount;
-    let prev_bob_balance = bob.account().unwrap().amount;
-
     state.do_update_account(ALICE, None);
     state.do_update_account(BOB, None);
-
     assert!(alice.account().unwrap().amount == prev_alice_balance);
+    assert!(bob.account().unwrap().amount > prev_bob_balance);
+
+    let prev_bob_balance = bob.account().unwrap().amount;
+    state.do_update_account(BOB, None);
     assert!(bob.account().unwrap().amount == prev_bob_balance);
+
+    state.do_pause(alice, &stream_id, Some(ERR_PAUSE_PAUSED));
+    state.do_pause(bob, &stream_id, Some(ERR_PAUSE_PAUSED));
 
     state.do_start(bob, &stream_id, Some(ERR_ACCESS_DENIED));
     let prev_bob_balance = bob.account().unwrap().amount;
@@ -569,7 +600,7 @@ fn account_view_sanity() {
     let bob = state.accounts.get(BOB).unwrap();
     let contract = &state.contract;
 
-    let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+    let stream_id = state.do_create_stream(alice, BOB, ONE_NEAR_PER_TICK, None);
 
     let alice_account = state.view_account(ALICE).unwrap();
     let bob_account = state.view_account(BOB).unwrap();
@@ -585,13 +616,12 @@ fn account_view_sanity() {
         bob,
         contract.create_stream(
             Some(DEFAULT_DESCRIPTION.to_string()),
-            BOB.try_into().unwrap(),
             ALICE.try_into().unwrap(),
-            DEFAULT_TOKEN_NAME.to_string(),
             (ONE_NEAR_PER_TICK / 2).into(),
+            true,
             true
         ),
-        deposit = CREATE_STREAM_DEPOSIT + 20 * ONE_NEAR
+        deposit = 20 * ONE_NEAR
     );
     assert!(outcome.is_ok());
 
@@ -644,11 +674,11 @@ fn withdraw_overflow() {
     let mut state = State::new();
     state.create_alice();
     state.create_bob();
-    let _alice = state.accounts.get(ALICE).unwrap();
+    let alice = state.accounts.get(ALICE).unwrap();
     let bob = state.accounts.get(BOB).unwrap();
     let contract = &state.contract;
 
-    let _stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+    let _stream_id = state.do_create_stream(alice, BOB, ONE_NEAR_PER_TICK, None);
 
     let alice_account = state.view_account(ALICE).unwrap();
     let bob_account = state.view_account(BOB).unwrap();
@@ -665,13 +695,12 @@ fn withdraw_overflow() {
         bob,
         contract.create_stream(
             Some(DEFAULT_DESCRIPTION.to_string()),
-            BOB.try_into().unwrap(),
             ALICE.try_into().unwrap(),
-            DEFAULT_TOKEN_NAME.to_string(),
             (10 * ONE_NEAR_PER_TICK).into(),
+            true,
             true
         ),
-        deposit = CREATE_STREAM_DEPOSIT + 20 * ONE_NEAR
+        deposit = 20 * ONE_NEAR
     );
     assert!(outcome.is_ok());
 
@@ -718,7 +747,7 @@ fn withdraw_overflow() {
 }
 
 #[test]
-fn incoming_outgoing_sanity() {
+fn autodeposit_sanity() {
     let mut state = State::new();
     state.create_alice();
     state.create_bob();
@@ -726,7 +755,7 @@ fn incoming_outgoing_sanity() {
     let bob = state.accounts.get(BOB).unwrap();
     let contract = &state.contract;
 
-    let _stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+    let _stream_id = state.do_create_stream(alice, BOB, ONE_NEAR_PER_TICK, None);
 
     let alice_account = state.view_account(ALICE).unwrap();
     let bob_account = state.view_account(BOB).unwrap();
@@ -742,13 +771,12 @@ fn incoming_outgoing_sanity() {
         bob,
         contract.create_stream(
             Some(DEFAULT_DESCRIPTION.to_string()),
-            BOB.try_into().unwrap(),
             ALICE.try_into().unwrap(),
-            DEFAULT_TOKEN_NAME.to_string(),
             (ONE_NEAR_PER_TICK / 2).into(),
+            true,
             true
         ),
-        deposit = CREATE_STREAM_DEPOSIT + 10 * ONE_NEAR
+        deposit = 10 * ONE_NEAR
     );
     assert!(outcome.is_ok());
 
@@ -847,19 +875,6 @@ fn incoming_outgoing_sanity() {
         bob_account.total_incoming
             == [("NEAR".to_string(), WrappedBalance::from(ONE_NEAR_PER_TICK))]
     );
-
-    assert!(
-        alice.account().unwrap().amount + bob.account().unwrap().amount
-            < 2 * to_yocto("1000000000") + (123 + 20) * ONE_NEAR
-    );
-    assert!(
-        alice.account().unwrap().amount + bob.account().unwrap().amount
-            > 2 * to_yocto("1000000000")
-    );
-
-    //println!("@@@ {:?}", alice_account);
-
-    //println!("%%% {:?} {:?}", alice.account().unwrap().amount, bob.account().unwrap().amount);
 }
 
 #[test]
@@ -871,7 +886,7 @@ fn stream_history_sanity() {
     let bob = state.accounts.get(BOB).unwrap();
     let contract = &state.contract;
 
-    let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+    let stream_id = state.do_create_stream(alice, BOB, ONE_NEAR_PER_TICK, None);
     let stream = state.view_stream(&stream_id).unwrap();
     assert!(stream.history_len == 3);
     let history = state.view_stream_history(&stream_id);
@@ -885,40 +900,41 @@ fn stream_history_sanity() {
 
     state.do_update_account(BOB, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.history_len == 4);
+    assert!(stream.history_len == 5);
     let history = state.view_stream_history(&stream_id);
-    assert!(history[3].action_type == "Withdraw");
+    assert!(history[3].action_type == "Update");
+    assert!(history[4].action_type == "Withdraw");
 
     state.do_pause(alice, &stream_id, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.history_len == 6);
+    assert!(stream.history_len == 8);
     let history = state.view_stream_history(&stream_id);
-    assert!(history[4].action_type == "Withdraw");
-    assert!(history[5].action_type == "Pause");
+    assert!(history[5].action_type == "Update");
+    assert!(history[6].action_type == "Withdraw");
+    assert!(history[7].action_type == "Pause");
 
     state.do_start(&alice, &stream_id, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.history_len == 7);
+    assert!(stream.history_len == 9);
     let history = state.view_stream_history(&stream_id);
-    assert!(history[6].action_type == "Start");
+    assert!(history[8].action_type == "Start");
 
     state.do_deposit(&stream_id, 123 * ONE_NEAR, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.history_len == 8);
+    assert!(stream.history_len == 10);
     let history = state.view_stream_history(&stream_id);
-    assert!(history[7].action_type == "Deposit");
+    assert!(history[9].action_type == "Deposit");
 
     let outcome = call!(
         bob,
         contract.create_stream(
             Some(DEFAULT_DESCRIPTION.to_string()),
-            BOB.try_into().unwrap(),
             ALICE.try_into().unwrap(),
-            DEFAULT_TOKEN_NAME.to_string(),
             (ONE_NEAR_PER_TICK / 2).into(),
+            true,
             true
         ),
-        deposit = CREATE_STREAM_DEPOSIT + ONE_NEAR
+        deposit = ONE_NEAR
     );
     assert!(outcome.is_ok());
     let stream_id: String = (&outcome.unwrap_json::<Base58CryptoHash>()).into();
@@ -927,16 +943,17 @@ fn stream_history_sanity() {
     assert!(stream.history_len == 4);
     let history = state.view_stream_history(&stream_id);
     assert!(history[0].action_type == "Init");
-    assert!(history[1].action_type == "Auto-deposit enabled");
-    assert!(history[2].action_type == "Deposit");
-    assert!(history[3].action_type == "Start");
+    assert!(history[1].action_type == "Deposit");
+    assert!(history[2].action_type == "Start");
+    assert!(history[3].action_type == "Auto-deposit enabled");
 
     state.do_update_account(BOB, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.auto_deposit_enabled);
-    assert!(stream.history_len == 5);
+    assert!(stream.is_auto_deposit_enabled);
+    assert!(stream.history_len == 6);
     let history = state.view_stream_history(&stream_id);
-    assert!(history[4].action_type == "Deposit");
+    assert!(history[4].action_type == "Update");
+    assert!(history[5].action_type == "Deposit");
 
     for _ in 0..10 {
         state.sdk_sim_tick_tock();
@@ -944,10 +961,11 @@ fn stream_history_sanity() {
 
     state.do_update_account(BOB, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.auto_deposit_enabled);
-    assert!(stream.history_len == 6);
+    assert!(stream.is_auto_deposit_enabled);
+    assert!(stream.history_len == 8);
     let history = state.view_stream_history(&stream_id);
-    assert!(history[5].action_type == "Deposit");
+    assert!(history[6].action_type == "Update");
+    assert!(history[7].action_type == "Deposit");
 
     for _ in 0..3 {
         state.sdk_sim_tick_tock();
@@ -955,25 +973,27 @@ fn stream_history_sanity() {
 
     state.do_update_account(ALICE, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(!stream.auto_deposit_enabled);
-    assert!(stream.history_len == 9);
+    assert!(!stream.is_auto_deposit_enabled);
+    assert!(stream.history_len == 12);
     let history = state.view_stream_history(&stream_id);
-    assert!(history[6].action_type == "Withdraw");
-    assert!(history[7].action_type == "Auto-deposit disabled");
-    assert!(history[8].action_type == "Stop");
+    assert!(history[8].action_type == "Update");
+    assert!(history[9].action_type == "Withdraw");
+    assert!(history[10].action_type == "Auto-deposit disabled");
+    assert!(history[11].action_type == "Stop");
 
-    let stream_id = state.do_create_stream(ALICE, BOB, ONE_NEAR_PER_TICK, None);
+    let stream_id = state.do_create_stream(alice, BOB, ONE_NEAR_PER_TICK, None);
 
     state.do_stop(&bob, &stream_id, None);
     let stream = state.view_stream(&stream_id).unwrap();
-    assert!(stream.history_len == 6);
+    assert!(stream.history_len == 7);
     let history = state.view_stream_history(&stream_id);
     assert!(history[0].action_type == "Init");
     assert!(history[1].action_type == "Deposit");
     assert!(history[2].action_type == "Start");
-    assert!(history[3].action_type == "Withdraw");
-    assert!(history[4].action_type == "Refund");
-    assert!(history[5].action_type == "Stop");
+    assert!(history[3].action_type == "Update");
+    assert!(history[4].action_type == "Withdraw");
+    assert!(history[5].action_type == "Refund");
+    assert!(history[6].action_type == "Stop");
 }
 
 #[test]
@@ -1036,12 +1056,12 @@ fn ft_transfer_sanity() {
 
     let cod: CreateOrDeposit = CreateOrDeposit::Create(CreateStruct {
         description: Some("example".to_string()),
-        owner_id: ALICE.try_into().unwrap(),
         receiver_id: BOB.try_into().unwrap(),
-        token_name: "DACHA".to_string(),
+        token_name: "ALICETOKEN".to_string(),
         balance: (123 * ONE_NEAR).into(),
         tokens_per_tick: ONE_NEAR_PER_TICK.into(),
-        auto_deposit_enabled: false,
+        is_auto_start_enabled: true,
+        is_auto_deposit_enabled: false,
     });
     let json: String = serde_json::to_string(&cod).unwrap();
 
@@ -1054,11 +1074,16 @@ fn ft_transfer_sanity() {
         ),
         deposit = 0
     );
-    assert!(!outcome.is_ok());
+    assert!(outcome.is_ok());
+    // Invalid sender bob
     assert!(
-        format!("{:?}", outcome.status()).contains("valid_ft_sender"),
-        "received {:?}",
         outcome.status()
+            == ExecutionStatus::SuccessValue(
+                "\"123000000000000000000000000\""
+                    .to_string()
+                    .as_bytes()
+                    .to_vec()
+            )
     );
 
     let outcome = call!(
@@ -1072,28 +1097,30 @@ fn ft_transfer_sanity() {
     );
 
     let alice_account = state.view_account(ALICE).unwrap();
-    assert_eq!(alice_account.inputs.len(), 0);
-    assert_eq!(alice_account.outputs.len(), 1);
+    assert_eq!(alice_account.dynamic_inputs.len(), 0);
+    assert_eq!(alice_account.dynamic_outputs.len(), 0);
+    assert_eq!(alice_account.static_streams.len(), 1);
     let bob_account = state.view_account(BOB).unwrap();
-    assert_eq!(bob_account.inputs.len(), 1);
-    assert_eq!(bob_account.outputs.len(), 0);
+    assert_eq!(bob_account.dynamic_inputs.len(), 1);
+    assert_eq!(bob_account.dynamic_outputs.len(), 0);
+    assert_eq!(bob_account.static_streams.len(), 0);
 
-    let stream_hash: Base58CryptoHash = bob_account.inputs[0].into();
+    let stream_hash: Base58CryptoHash = bob_account.dynamic_inputs[0].into();
     let stream_id: String = (&stream_hash).into();
 
     let stream = state.view_stream(&stream_id).unwrap();
-    //println!("### {:?}", stream);
     assert!(stream.owner_id == ALICE);
     assert!(stream.receiver_id == BOB);
-    assert!(stream.token_name == "DACHA");
+    assert!(stream.ticker == "ALICETOKEN");
     assert!(stream.balance == (123 * ONE_NEAR).into());
     assert!(stream.tokens_per_tick == ONE_NEAR_PER_TICK.into());
-    assert!(stream.auto_deposit_enabled == false);
+    assert!(stream.is_auto_deposit_enabled == false);
     assert!(stream.status == "ACTIVE");
     assert!(stream.history_len == 3);
 
     let cod: CreateOrDeposit = CreateOrDeposit::Deposit(stream_hash);
     let json: String = serde_json::to_string(&cod).unwrap();
+    println!("### {:?}", json);
 
     let outcome = call!(
         alice,
@@ -1106,13 +1133,170 @@ fn ft_transfer_sanity() {
     );
 
     let stream = state.view_stream(&stream_id).unwrap();
-    //println!("### {:?}", stream);
     assert!(stream.owner_id == ALICE);
     assert!(stream.receiver_id == BOB);
-    assert!(stream.token_name == "DACHA");
+    assert!(stream.ticker == "ALICETOKEN");
     assert!(stream.balance == (143 * ONE_NEAR).into());
     assert!(stream.tokens_per_tick == ONE_NEAR_PER_TICK.into());
-    assert!(stream.auto_deposit_enabled == false);
+    assert!(stream.is_auto_deposit_enabled == false);
     assert!(stream.status == "ACTIVE");
     assert!(stream.history_len == 4);
 }
+
+#[test]
+fn dao_sanity() {
+    let mut state = State::new();
+    state.create_alice();
+    state.create_bob();
+    let contract = &state.contract;
+    let alice = state.accounts.get(ALICE).unwrap();
+    let bob = state.accounts.get(BOB).unwrap();
+
+    let res: RoketoView = view!(contract.get_status()).unwrap_json();
+    assert!(res.tokens[0].commission_percentage == 0.1);
+
+    let outcome = call!(
+        bob,
+        contract.dao_set_token_commission(0, ONE_NEAR.into(), 7.into(), 123.into()),
+        deposit = ONE_YOCTO
+    );
+    assert!(!outcome.is_ok());
+
+    let outcome = call!(
+        alice,
+        contract.dao_set_token_commission(0, ONE_NEAR.into(), 7.into(), 123.into()),
+        deposit = ONE_YOCTO
+    );
+    assert!(outcome.is_ok());
+
+    let res: RoketoView = view!(contract.get_status()).unwrap_json();
+    assert!(res.tokens[0].commission_on_create == ONE_NEAR.into());
+    assert!(res.tokens[0].commission_percentage == 700 as f32 / 123 as f32);
+
+    assert!(res.num_tokens_listed == 4);
+
+    let outcome = call!(
+        alice,
+        contract.dao_token_listing(
+            "a".into(),
+            "b".into(),
+            "keton.near".try_into().unwrap(),
+            926.into(),
+            3.into(),
+            270.into()
+        ),
+        deposit = ONE_YOCTO
+    );
+    assert!(outcome.is_ok());
+
+    let res: RoketoView = view!(contract.get_status()).unwrap_json();
+    assert!(res.num_tokens_listed == 5);
+    assert!(res.tokens[4].name == "a");
+    assert!(res.tokens[4].ticker == "b");
+    assert!(res.tokens[4].account_id == "keton.near");
+    assert!(res.tokens[4].commission_on_create == 926.into());
+    assert!(res.tokens[4].commission_percentage == 10 as f32 / 9 as f32);
+    assert!(res.tokens[4].total_commission == 0.into());
+    assert!(res.tokens[4].is_active);
+
+    let outcome = call!(
+        alice,
+        contract.dao_set_token_active_flag(4, false),
+        deposit = ONE_YOCTO
+    );
+    assert!(outcome.is_ok());
+
+    let res: RoketoView = view!(contract.get_status()).unwrap_json();
+    assert!(res.num_tokens_listed == 5);
+    assert!(res.tokens[4].name == "a");
+    assert!(res.tokens[4].ticker == "b");
+    assert!(res.tokens[4].account_id == "keton.near");
+    assert!(!res.tokens[4].is_active);
+
+    assert!(res.operational_commission == ONE_MILLI.into());
+
+    let outcome = call!(
+        alice,
+        contract.dao_set_operational_commission((2 * ONE_MILLI).into()),
+        deposit = ONE_YOCTO
+    );
+    assert!(outcome.is_ok());
+    let res: RoketoView = view!(contract.get_status()).unwrap_json();
+    assert!(res.operational_commission == (2 * ONE_MILLI).into());
+}
+
+#[test]
+fn vietnam_withdraw() {
+    let mut state = State::new();
+    state.create_alice();
+    state.create_bob();
+    let alice = state.accounts.get(ALICE).unwrap();
+    let bob = state.accounts.get(BOB).unwrap();
+    let contract = &state.contract;
+
+    let outcome = call!(
+        alice,
+        contract.create_stream(
+            Some(DEFAULT_DESCRIPTION.to_string()),
+            BOB.try_into().unwrap(),
+            ONE_NEAR_PER_TICK.into(),
+            true,
+            true
+        ),
+        deposit = 20 * ONE_NEAR + 10 * ONE_MILLI
+    );
+    assert!(outcome.is_ok());
+
+    let stream_id: String = (&outcome.unwrap_json::<Base58CryptoHash>()).into();
+
+    let bob_account = state.view_account(BOB).unwrap();
+    println!("BBB {:?}", bob_account);
+
+    for _ in 0..3 {
+        state.sdk_sim_tick_tock();
+    }
+
+    //state.do_update_account(ALICE, None);
+    let outcome = call!(
+        alice,
+        contract.create_stream(
+            Some(DEFAULT_DESCRIPTION.to_string()),
+            BOB.try_into().unwrap(),
+            (1 * ONE_NEAR_PER_TICK).into(),
+            true,
+            true
+        ),
+        deposit = 20 * ONE_NEAR + 10 * ONE_MILLI
+    );
+    assert!(outcome.is_ok());
+
+    let stream_id_2: String = (&outcome.unwrap_json::<Base58CryptoHash>()).into();
+
+    let stream = state.view_stream(&stream_id).unwrap();
+    println!("###1 {:?}", stream);
+    let bob_account = state.view_account(BOB).unwrap();
+    println!("BBB {:?}", bob_account);
+
+    for _ in 0..25 {
+        state.sdk_sim_tick_tock();
+    }
+
+    state.do_change_autodeposit(alice, &stream_id, true, None);
+
+    //state.do_update_account(BOB, None);
+
+    let stream = state.view_stream(&stream_id).unwrap();
+    println!("###1 {:?}", stream);
+    let stream2 = state.view_stream(&stream_id_2).unwrap();
+    println!("###2 {:?}", stream2);
+    let bob_account = state.view_account(BOB).unwrap();
+    println!("BBB {:?}", bob_account);
+    println!("BBB BALANCE {:?}", bob.account().unwrap().amount);
+    /*assert!(stream.balance == 0.into());
+    assert!(stream.tokens_total_withdrawn == (20 * ONE_NEAR).into());
+    assert!(stream.status == "FINISHED");
+
+    assert!(bob.account().unwrap().amount < INIT_BALANCE + 20 * ONE_NEAR);
+    assert!(bob.account().unwrap().amount > INIT_BALANCE + 19 * ONE_NEAR);*/
+}
+*/

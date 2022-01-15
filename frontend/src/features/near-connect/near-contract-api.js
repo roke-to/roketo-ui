@@ -1,33 +1,54 @@
+import BigNumber from 'bignumber.js';
+
 const GAS_SIZE = '200000000000000';
 const GAS_SIZE_CRON = '300000000000000';
-const NOT_ZERO_NEAR_AMOUNT = 1;
+const STORAGE_DEPOSIT = 1e22;
 
-export function NearContractApi(near) {
-  console.log('NearContractApi', near);
+const EMPTY_ACCOUNT = (id) => ({
+  account_id: id,
+  dynamic_inputs: [],
+  dynamic_outputs: [],
+  static_streams: [],
+  last_action: null,
+  ready_to_withdraw: [],
+  total_incoming: [],
+  total_outgoing: [],
+  total_received: [],
+  is_external_update_enabled: false,
+  cron_task: null,
+});
 
-  const contract = near.contract;
-
+export function NearContractApi({
+  contract,
+  ft,
+  walletConnection,
+  account,
+  operationalCommission,
+  tokens,
+}) {
   const getAccount = async (accountId) => {
+    const fallback = EMPTY_ACCOUNT(accountId);
     try {
-      if (!accountId) {
-        return [];
-      }
-      return await contract.get_account({account_id: accountId});
+      let account = await contract.get_account({account_id: accountId});
+      return account || fallback;
     } catch (e) {
-      console.log('near error', e);
+      console.debug('near error', e);
     }
-    return [];
+    return fallback;
   };
 
-  const getCurrentAccount = () =>
-    getAccount(near.walletConnection.getAccountId());
+  const getCurrentAccount = () => getAccount(walletConnection.getAccountId());
 
-  async function updateAccount() {
+  async function updateAccount({tokensWithoutStorage = 0}) {
     const res = await contract.update_account(
       {
-        account_id: near.account.accountId,
+        account_id: account.accountId,
       },
       GAS_SIZE,
+      new BigNumber(STORAGE_DEPOSIT)
+        .multipliedBy(tokensWithoutStorage)
+        .plus(operationalCommission)
+        .toFixed(),
     );
     return res;
   }
@@ -36,27 +57,38 @@ export function NearContractApi(near) {
     const res = await contract.change_auto_deposit(
       {stream_id: streamId, auto_deposit: autoDeposit},
       GAS_SIZE,
-      NOT_ZERO_NEAR_AMOUNT,
+      operationalCommission,
     );
 
     return res;
   }
 
-  async function depositStream({streamId, deposit}) {
-    const res = await contract.deposit(
-      {stream_id: streamId},
-      GAS_SIZE,
-      deposit,
-    );
+  async function depositStream({streamId, token, deposit}) {
+    if (token === 'NEAR') {
+      await contract.deposit({stream_id: streamId}, GAS_SIZE, deposit);
+    } else {
+      const tokenContract = ft[token].contract;
 
-    return res;
+      await tokenContract.ft_transfer_call(
+        {
+          receiver_id: contract.contractId,
+          amount: deposit,
+          memo: 'xyiming transfer',
+          msg: JSON.stringify({
+            Deposit: streamId,
+          }),
+        },
+        GAS_SIZE,
+        1,
+      );
+    }
   }
 
   async function pauseStream({streamId}) {
     const res = await contract.pause_stream(
       {stream_id: streamId},
       GAS_SIZE,
-      NOT_ZERO_NEAR_AMOUNT,
+      operationalCommission,
     );
 
     return res;
@@ -66,7 +98,7 @@ export function NearContractApi(near) {
     const res = await contract.start_stream(
       {stream_id: streamId},
       GAS_SIZE,
-      NOT_ZERO_NEAR_AMOUNT,
+      operationalCommission,
     );
 
     return res;
@@ -76,34 +108,73 @@ export function NearContractApi(near) {
     const res = await contract.stop_stream(
       {stream_id: streamId},
       GAS_SIZE,
-      NOT_ZERO_NEAR_AMOUNT,
+      operationalCommission,
     );
     return res;
   }
 
-  async function createStream({
-    deposit,
-    ownerId,
-    receiverId,
-    token,
-    speed,
-    description,
-    autoDepositEnabled = false,
-  }) {
-    const res = await contract.create_stream(
-      {
-        owner_id: ownerId,
-        receiver_id: receiverId,
-        token_name: token,
-        tokens_per_tick: speed,
-        auto_deposit_enabled: autoDepositEnabled,
-        description,
-      },
-      GAS_SIZE,
+  async function createStream(
+    {
       deposit,
-    );
+      receiverId,
+      token,
+      speed,
+      description,
+      autoDepositEnabled = false,
+      isAutoStartEnabled = true,
+    },
+    {callbackUrl} = {},
+  ) {
+    let res;
+    const createCommission = tokens[token].commission_on_create;
 
-    return res;
+    try {
+      if (token === 'NEAR') {
+        // contract.methodName({ args, gas?, amount?, callbackUrl?, meta? })
+        res = await contract.create_stream({
+          args: {
+            owner_id: walletConnection.getAccountId(),
+            receiver_id: receiverId,
+            token_name: token,
+            tokens_per_tick: speed,
+            description,
+            is_auto_deposit_enabled: autoDepositEnabled,
+            is_auto_start_enabled: isAutoStartEnabled,
+          },
+          gas: GAS_SIZE,
+          amount: new BigNumber(deposit).plus(createCommission).toFixed(),
+          callbackUrl,
+        });
+      } else {
+        const tokenContract = ft[token].contract;
+        res = await tokenContract.ft_transfer_call({
+          args: {
+            receiver_id: contract.contractId,
+            amount: new BigNumber(deposit).plus(createCommission).toFixed(),
+            memo: 'Roketo transfer',
+            msg: JSON.stringify({
+              Create: {
+                description: description,
+                owner_id: walletConnection.getAccountId(),
+                receiver_id: receiverId,
+                token_name: token,
+                tokens_per_tick: speed,
+                balance: deposit,
+                is_auto_deposit_enabled: autoDepositEnabled,
+                is_auto_start_enabled: isAutoStartEnabled,
+              },
+            }),
+          },
+          gas: GAS_SIZE,
+          amount: 1,
+          callbackUrl,
+        });
+      }
+      return res;
+    } catch (error) {
+      console.debug(error);
+      throw error;
+    }
   }
 
   async function getStream({streamId}) {
@@ -113,15 +184,15 @@ export function NearContractApi(near) {
 
     return res;
   }
-  
+
   async function change_auto_deposit({streamId, auto_deposit}) {
     const res = await contract.change_auto_deposit(
-    {
-      stream_id: streamId,
-      auto_deposit: auto_deposit,
-    },
-    GAS_SIZE,
-    NOT_ZERO_NEAR_AMOUNT
+      {
+        stream_id: streamId,
+        auto_deposit: auto_deposit,
+      },
+      GAS_SIZE,
+      operationalCommission,
     );
 
     return res;
@@ -141,15 +212,26 @@ export function NearContractApi(near) {
     const res = await contract.start_cron(
       {},
       GAS_SIZE_CRON,
-      '1000000000000000000000000',
+      operationalCommission,
     );
 
     return res;
   }
 
+  /**
+   * fetches general info about contract: Supported FT tokens, commision %
+   */
+  async function getStatus() {
+    const res = await contract.get_status({});
+    return res;
+  }
+
   return {
+    getStatus,
+    // account methods
     getCurrentAccount,
     updateAccount,
+    // stream methods
     getAccount,
     createStream,
     depositStream,
@@ -160,6 +242,7 @@ export function NearContractApi(near) {
     change_auto_deposit,
     getStreamHistory,
     changeAutoDeposit,
+    // cron methods
     startCron,
   };
 }

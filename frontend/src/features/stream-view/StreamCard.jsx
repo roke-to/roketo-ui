@@ -4,7 +4,7 @@ import copy from 'clipboard-copy';
 import {Link} from 'react-router-dom';
 
 import {StreamingSpeed} from './StreamingSpeed';
-import {ProgressBar, Button, TokenImage, Bullet} from '../../components/kit';
+import {ProgressBar, Button, TokenImage} from '../../components/kit';
 import {
   StreamControls,
   StreamAutodepositControls,
@@ -14,70 +14,74 @@ import {DurationTimer} from '../../components/DurationTimer';
 import {routes} from '../../lib/routing';
 import {streamViewData} from './streamViewData';
 import {Link as LinkIcon} from '../../components/icons';
-import numbro from 'numbro';
-import {STREAM_STATUS} from '../stream-control/lib';
 import {StreamProgressPercentage} from './StreamProgressPercentage';
+import {isIdling} from '.';
+import {useTokenFormatter} from '../../lib/useTokenFormatter';
+import {formatDuration, intervalToDuration} from 'date-fns';
+import {shortEnLocale} from '../../lib/date';
 
 const streamType = {
-  stream_id: 'FnVkAYZu4XED3o44pZPvrnghVEMxo3GiHszUT4orjYST',
-  description: 'test stream',
-  owner_id: 'kpr.testnet',
-  receiver_id: 'pinkinice.testnet',
-  token_name: 'NEAR',
-  timestamp_created: '1630964802206727665',
-  balance: '3472735225910300000000000',
-  tokens_per_tick: '100000000000',
-  auto_deposit_enabled: false,
+  id: '51ofCnrPfZ8WA4NWJAnGYvNM1yqDfsVQqpaoxkYz3aZE',
+  description: 'qweqweqwe',
+  owner_id: 'ggoshanov.testnet',
+  receiver_id: 'sdf.testnet',
+  ticker: 'NEAR',
+  timestamp_created: '1633966709524321545',
+  balance: '1990000000000000000000000',
+  tokens_per_tick: '33333333333333',
+  is_auto_deposit_enabled: true,
   status: 'ACTIVE',
-  tokens_total_withdrawn: '27264774089700000000000',
-  available_to_withdraw: '3472735225910300000000000',
-  history: [
-    {
-      actor: 'dev-1630964633889-96006156236045',
-      action_type: 'Deposit',
-      amount: '3500000000000000000000000',
-      timestamp: '1630964802206727665',
-    },
-  ],
-  direction: 'in',
+  tokens_total_withdrawn: '0',
+  available_to_withdraw: '1990000000000000000000000',
+  history_len: 4,
+  direction: 'out',
 };
 
 export function StreamCard({stream = streamType, direction, className}) {
+  const tf = useTokenFormatter(stream.ticker);
+
   const {
     dateEnd,
     progresses,
-    tf,
     timestampEnd,
     percentages,
     progress: {full, withdrawn, streamed},
     link,
-  } = streamViewData(stream);
+  } = streamViewData(stream, tf);
+
+  const duration = intervalToDuration({
+    start: new Date(),
+    end: dateEnd,
+  });
+  let timeLeft = formatDuration(duration, {
+    locale: shortEnLocale,
+  });
 
   return (
     <div
       className={classNames(
-        'twind-grid twind-grid-cols-12 twind-gap-6 twind-justify-items-center',
-        'twind-p-10 twind-bg-input twind-rounded-3xl',
+        'grid grid-cols-12 gap-6 justify-items-center',
+        'p-10 bg-input rounded-3xl',
         className,
       )}
     >
       <Link
-        to={routes.stream(stream.stream_id)}
-        className="twind-w-full twind-col-span-12 xl:twind-col-span-6 twind-justify-self-start"
+        to={routes.stream(stream.id)}
+        className="w-full col-span-12 xl:col-span-6 justify-self-start"
       >
-        <div className="twind-flex twind-items-center">
-          <TokenImage tokenName={stream.token_name} className="twind-mr-4" />
-          <div className="twind-w-full twind-gap-4 twind-flex twind-items-end twind-flex-wrap">
-            <div className="twind-text-2xl twind-whitespace-nowrap twind-flex-shrink-0">
+        <div className="flex items-center">
+          <TokenImage tokenName={stream.ticker} className="mr-4" />
+          <div className="w-full gap-4 flex items-end flex-wrap">
+            <div className="text-2xl whitespace-nowrap flex-shrink-0">
               {tf.amount(streamed)} of {tf.amount(full)}{' '}
-              <span className="twind-uppercase">{stream.token_name}</span>
+              <span className="uppercase">{stream.ticker}</span>
             </div>
 
             <StreamingSpeed stream={stream} direction={direction} />
 
-            <div className="twind-whitespace-nowrap">
-              {stream.status === STREAM_STATUS.PAUSED ? (
-                ''
+            <div className="whitespace-nowrap">
+              {isIdling(stream) ? (
+                timeLeft
               ) : (
                 <DurationTimer
                   untilTimestamp={timestampEnd}
@@ -87,48 +91,55 @@ export function StreamCard({stream = streamType, direction, className}) {
             </div>
           </div>
         </div>
-        <ProgressBar className="twind-mt-5" progresses={progresses} />
-        <div className="twind-flex twind-text-sm twind-mt-3 twind-mr-3">
+        <ProgressBar className="mt-5" progresses={progresses} />
+        <div className="flex text-sm mt-3 mr-3">
           <StreamProgressPercentage
-            className="twind-mr-4"
+            className="mr-4"
             label="Withdrawn"
-            colorClass="twind-bg-streams-withdrawn"
-            formattedFloatValue={tf.amount(withdrawn) + ' ' + stream.token_name}
+            colorClass="bg-streams-withdrawn"
+            formattedFloatValue={tf.amount(withdrawn) + ' ' + stream.ticker}
             percentageValue={percentages.withdrawn}
           />
           <StreamProgressPercentage
             label="Streamed"
-            colorClass="twind-bg-streams-streamed"
-            formattedFloatValue={tf.amount(streamed) + ' ' + stream.token_name}
+            colorClass="bg-streams-streamed"
+            formattedFloatValue={tf.amount(streamed) + ' ' + stream.ticker}
             percentageValue={percentages.streamed}
           />
         </div>
       </Link>
-      <div className="twind-hidden xl:twind-block"></div>
-      <div className="twind-flex twind-gap-5 twind-justify-between xl:twind-justify-end twind-col-span-12 xl:twind-col-span-5 twind-w-full twind-items-center twind-flex-wrap md:twind-flex-nowrap">
-        <div className="twind-w-44">
-          <div className="twind-text-gray">Receiver:</div>
-          <div className="twind-break-words">{stream.receiver_id}</div>
-        </div>
-        <div className="twind-w-24">
-          <div className="twind-text-gray">Status:</div>
-          <StreamControls className="twind-w-full" minimal stream={stream} />
+      <div className="hidden xl:block"></div>
+      <div className="flex gap-5 justify-between xl:justify-end col-span-12 xl:col-span-5 w-full items-center flex-wrap md:flex-nowrap">
+        {direction === 'in' ? (
+          <div className="w-44">
+            <div className="text-gray">Sender:</div>
+            <div className="break-words">{stream.owner_id}</div>
+          </div>
+        ) : (
+          <div className="w-44">
+            <div className="text-gray">Receiver:</div>
+            <div className="break-words">{stream.receiver_id}</div>
+          </div>
+        )}
+        <div className="w-24">
+          <div className="text-gray">Status:</div>
+          <StreamControls className="w-full" minimal stream={stream} />
         </div>
         {direction === 'out' ? (
-          <div className="twind-col-span-1 twind-mr-4">
-            <div className="twind-text-gray">Auto&#8209;dep:</div>
+          <div className="col-span-1 mr-4">
+            <div className="text-gray">Auto&#8209;dep:</div>
             <StreamAutodepositControls minimal stream={stream} />
           </div>
         ) : null}
-        <div className="twind-flex twind-items-start twind-justify-end twind-w-52">
+        <div className="flex items-start justify-end w-52">
           {direction === 'out' ? (
-            <StreamDepositButton className="twind-flex-grow" stream={stream} />
+            <StreamDepositButton className="flex-grow" stream={stream} />
           ) : null}
           <Button
-            className="twind-ml-3"
+            className="ml-3"
             variant="filled"
             onClick={() => copy(link)}
-            to={routes.stream(stream.stream_id)}
+            to={routes.stream(stream.id)}
           >
             <LinkIcon />
           </Button>

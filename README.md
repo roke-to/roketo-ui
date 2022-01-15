@@ -1,5 +1,3 @@
-> 🔴 THIS IS HACKATHON VERSION OF CONTRACT THAT DON'T USED IN MAINNET
-
 # Roke.to dApp
 
 Direct X-to-Y tokens streaming with no 3rd parties. Forget about paydays and boost control of your payment flows on a new level.
@@ -17,3 +15,4 @@ Developed by [Kikimora Labs](https://kikimora.ch/).
 - [Roke.to dApp](https://app.roke.to/)
 - [Docs](https://docs.roke.to/)
 - [Cover letter for Jury](https://docs.google.com/document/d/1Ct9lsAe2l7s6GB-eCTNo5woS6xy9iLsd7KagfmgxVgA/edit)
+# roketo

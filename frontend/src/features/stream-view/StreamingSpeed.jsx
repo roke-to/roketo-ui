@@ -1,17 +1,16 @@
 import React from 'react';
-import {streamViewData} from '.';
 import {StreamIn, StreamOut} from '../../components/icons';
 import classNames from 'classnames';
+import {useTokenFormatter} from '../../lib/useTokenFormatter';
 
 export function StreamingSpeed({stream, direction, className, ...rest}) {
-  const {tf} = streamViewData(stream);
-
+  const tf = useTokenFormatter(stream.ticker);
   const speedInfo = tf.tokensPerMeaningfulPeriod(stream.tokens_per_tick);
 
   return (
     <div
       className={classNames(
-        'twind-inline-flex twind-items-center twind-whitespace-nowrap',
+        'inline-flex items-center whitespace-nowrap',
         className,
       )}
       {...rest}
@@ -23,11 +22,11 @@ export function StreamingSpeed({stream, direction, className, ...rest}) {
       ) : (
         ''
       )}
-      <span className="twind-ml-2">
+      <span className="ml-2">
         <span>@{speedInfo.formattedValue}</span>
         <span>
           {' '}
-          {stream.token_name} / {speedInfo.unit}
+          {stream.ticker} / {speedInfo.unit}
         </span>
       </span>
     </div>

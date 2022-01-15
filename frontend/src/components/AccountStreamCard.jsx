@@ -1,9 +1,10 @@
 import React from 'react';
-import {tokens, TokenFormatter} from '../lib/formatting';
 import {utils} from 'near-api-js';
 import numbro from 'numbro';
-import {Tokens} from './icons';
+import {TokenIcon} from './icons';
 import classNames from 'classnames';
+import {useNear} from '../features/near-connect/useNear';
+import {TokenImage} from './kit';
 
 export function AccountStreamCard({
   token,
@@ -13,8 +14,9 @@ export function AccountStreamCard({
   showPeriod = true,
   className,
 }) {
-  const formatter = TokenFormatter(token);
-
+  const near = useNear();
+  const tokenMeta = near.tokens.get(token);
+  console.debug(tokenMeta);
   let multiplier = 1;
   switch (period) {
     case 'min':
@@ -35,30 +37,33 @@ export function AccountStreamCard({
   return (
     <div
       className={classNames(
-        'twind-w-full twind-h-24 twind-rounded-lg twind-bg-input twind-flex twind-items-center twind-width-full twind-p-6',
+        'w-full rounded-lg bg-input flex items-center width-full p-6',
         className,
       )}
     >
-      <div className="twind-w-full twind-flex twind-items-center">
-        <div className="twind-w-12 twind-mr-12">
-          <span className="twind-flex-shrink-0 twind-rounded-full twind-bg-card2 twind-inline-flex twind-items-center twind-justify-center twind-w-12 twind-h-12">
-            {Tokens(token)}
-          </span>
-        </div>
-        <div className="">
-          <div className="twind-font-bold">
-            {tokens[token].name}, {token}
+      <div className="w-full lg:flex items-center">
+        <div className="flex items-center">
+          <div className="w-12 mr-4">
+            <span className="flex-shrink-0 rounded-full bg-card2 inline-flex items-center justify-center w-12 h-12">
+              <TokenImage tokenName={token} />
+            </span>
           </div>
-          {streamsLength > 0 ? (
-            <div className="twind-text-gray twind-text-sm">
-              from {streamsLength} steams
+          <div className="">
+            <div className="font-bold">
+              {tokenMeta.metadata.name}, {token}
             </div>
-          ) : (
-            ''
-          )}
+            {streamsLength > 0 ? (
+              <div className="text-gray text-sm">
+                from {streamsLength} steams
+              </div>
+            ) : (
+              ''
+            )}
+          </div>
         </div>
-        <div className="twind-ml-auto">
-          <span className=" twind-text-3xl">
+
+        <div className="ml-auto lg:mt-0 mt-4">
+          <span className=" text-3xl">
             {balance < 0.001 ? '<0.001' : numbro(balance).format({mantissa: 3})}
           </span>
           {showPeriod ? <span>{period !== '' ? '/' + period : ''}</span> : ''}

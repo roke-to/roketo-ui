@@ -1,0 +1,1 @@
+a2fc8b07c2dfa66db648f871aa4aca92331dcf95dd2fc9af48bc7a9657a0ba0b  ./res/roketo.wasm

@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Formik, Field} from 'formik';
 import * as Yup from 'yup';
 
-import {FormField, Input, Button} from '../../components/kit';
+import {FormField, Input, Button, TokenImage} from '../../components/kit';
 import {useNear} from '../near-connect/useNear';
 import {
   DropdownMenu,
@@ -11,31 +11,60 @@ import {
   RadioButton,
   Tooltip,
 } from '../../components/kit';
-import {Tokens} from '../../components/icons';
-import {tokens, TokenFormatter} from '../../lib/formatting';
+import {TokenFormatter} from '../../lib/formatting';
 import {StreamSpeedCalcField} from './StreamSpeedCalcField';
+import {env} from '../../lib/environment';
 
-const CreateStreamFormSchema = Yup.object().shape({
-  owner: Yup.string().required('Owner is a required'),
-  receiver: Yup.string().required('Receiver is a required'),
-  token: Yup.string().required(),
-  deposit: Yup.number().required().moreThan(0, 'Deposit should be more than 0'),
-  speed: Yup.number().required().moreThan(0, 'Choose stream duration'),
-  autoDeposit: Yup.boolean(),
-  comment: Yup.string().max(255),
-});
+const CreateStreamFormSchema = ({near, accountId}) =>
+  Yup.object().shape({
+    receiver: Yup.string()
+      .required('Receiver is a required')
+      .test(
+        'receiver-not-equal-owner',
+        'Receiver can not be the same as owner',
+        (value) => {
+          return value !== accountId;
+        },
+      )
+      .test(
+        'receiver-is-valida-address',
+        'Address does not exists',
+        async (value) => {
+          try {
+            await near.near.near.connection.provider.query({
+              request_type: 'view_account',
+              finality: 'final',
+              account_id: value,
+            });
+            return true;
+          } catch (error) {
+            return false;
+          }
+        },
+      ),
+    token: Yup.string().required(),
+    deposit: Yup.number()
+      .required()
+      .moreThan(0, 'Deposit should be more than 0'),
+    speed: Yup.number().required().moreThan(0, 'Choose stream duration'),
+    autoDeposit: Yup.boolean(),
+    comment: Yup.string().max(255),
+  });
 
 export function CreateStreamForm({account, onSubmit}) {
   const near = useNear();
-  const profileId = near.auth.signedAccountId;
+  const schema = CreateStreamFormSchema({
+    accountId: near.near.walletConnection.getAccountId(),
+    near,
+  });
 
   const [dropdownOpened, setDropdownOpened] = useState(false);
 
   const [submitError, setError] = useState(null);
 
-  const tokensNames = Object.keys(tokens).filter((item) => item !== 'fallback');
-
+  const tokensNames = near.tokens.tickers;
   const formikOnSubmit = async (...args) => {
+    console.debug('Formik submit', ...args);
     try {
       let res = await onSubmit(...args);
       return res;
@@ -46,15 +75,15 @@ export function CreateStreamForm({account, onSubmit}) {
   return (
     <Formik
       initialValues={{
-        owner: profileId,
         receiver: '',
         token: 'NEAR',
         speed: 0,
         deposit: 0,
         autoDeposit: false,
+        autoStart: true,
         comment: '',
       }}
-      validationSchema={CreateStreamFormSchema}
+      validationSchema={schema}
       onSubmit={formikOnSubmit}
       validateOnBlur={false}
       validateOnChange={false}
@@ -67,34 +96,12 @@ export function CreateStreamForm({account, onSubmit}) {
         handleSubmit,
         isSubmitting,
       }) => {
-        const formatter = TokenFormatter(values.token);
+        const tokenMeta = near.roketo.tokenMeta(values.token);
+        const formatter = TokenFormatter(
+          near.tokens.get(values.token).metadata.decimals,
+        );
         return (
-          <form
-            className="twind-max-w-lg twind-mx-auto twind-w-full"
-            onSubmit={handleSubmit}
-          >
-            <Field name="owner">
-              {({
-                field, // { name, value, onChange, onBlur }
-                form: {touched, errors}, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
-                meta,
-              }) => (
-                <FormField
-                  label="Owner:"
-                  className="twind-mb-4"
-                  error={meta.error}
-                >
-                  <Input>
-                    <input
-                      placeholder="owner.near"
-                      id="ownerInput"
-                      {...field}
-                    />
-                  </Input>
-                </FormField>
-              )}
-            </Field>
-
+          <form className="max-w-lg mx-auto w-full" onSubmit={handleSubmit}>
             <Field name="receiver">
               {({
                 field, // { name, value, onChange, onBlur }
@@ -103,12 +110,12 @@ export function CreateStreamForm({account, onSubmit}) {
               }) => (
                 <FormField
                   label="Receiver:"
-                  className="twind-mb-4"
+                  className="mb-4"
                   error={meta.error}
                 >
                   <Input>
                     <input
-                      placeholder="owner.near"
+                      placeholder={'receiver.' + env.ACCOUNT_SUFFIX}
                       id="ownerInput"
                       {...field}
                     />
@@ -117,7 +124,7 @@ export function CreateStreamForm({account, onSubmit}) {
               )}
             </Field>
 
-            <div className="twind-flex twind-mb-4">
+            <div className="flex mb-4">
               <Field name="token">
                 {({
                   field, // { name, value, onChange, onBlur }
@@ -126,35 +133,45 @@ export function CreateStreamForm({account, onSubmit}) {
                 }) => (
                   <FormField
                     label="Token:"
-                    className="twind-w-1/3 twind-items-center twind-relative"
+                    className="w-1/3 items-center relative"
                     error={meta.error}
                   >
                     <DropdownOpener
                       minimal
-                      className="twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue twind-text-xl twind-h-14 twind-px-4 twind-py-3 twind-border twind-border-border twind-w-36"
-                      onClick={() => {
-                        setDropdownOpened(!dropdownOpened);
-                      }}
+                      className="bg-input text-white focus-within:border-blue hover:border-blue text-xl h-14 px-4 py-3 border border-border w-36"
+                      onChange={setDropdownOpened}
                     >
-                      <div className="twind-inline-flex">
-                        {<Tokens tokenName={field.value} />}{' '}
+                      <div className="inline-flex items-center">
+                        {
+                          <TokenImage
+                            tokenName={field.value}
+                            className="mr-1"
+                          />
+                        }{' '}
                         <span>{field.value}</span>
                       </div>
                     </DropdownOpener>
 
                     <DropdownMenu
                       opened={dropdownOpened}
-                      className="twind-z-10"
+                      className="z-10"
+                      onClose={() => setDropdownOpened(false)}
                     >
                       {tokensNames.map((option) => (
                         <DropdownMenuItem
-                          className="focus-within:twind-border-blue"
+                          className="focus-within:border-blue"
                           key={option}
                         >
                           <RadioButton
                             label={
-                              <div className="twind-inline-flex">
-                                {<Tokens tokenName={option} />}{' '}
+                              <div className="inline-flex items-center">
+                                {
+                                  <TokenImage
+                                    size={6}
+                                    tokenName={option}
+                                    className="mr-1"
+                                  />
+                                }{' '}
                                 <span>{option}</span>
                               </div>
                             }
@@ -184,12 +201,12 @@ export function CreateStreamForm({account, onSubmit}) {
                       <span>
                         <span>Stream initial deposit:</span>
                         <Tooltip
-                          className="twind-ml-2"
+                          className="ml-2"
                           overlay="Funds which will be used to create an initial stream for a set period. This deposit can be extended in manual or automatical mode."
                         />
                       </span>
                     }
-                    className="twind-w-2/3"
+                    className="w-2/3"
                     error={meta.error}
                   >
                     <Input>
@@ -200,7 +217,7 @@ export function CreateStreamForm({account, onSubmit}) {
               </Field>
             </div>
 
-            <div className="twind-block twind-mb-4">
+            <div className="block mb-4">
               <Field name="speed">
                 {({
                   field, // { name, value, onChange, onBlur }
@@ -209,15 +226,15 @@ export function CreateStreamForm({account, onSubmit}) {
                 }) => (
                   <FormField
                     label={
-                      <div className="twind-relative">
+                      <div className="relative">
                         <div>
                           Period to unlock the initial deposit:{' '}
                           <Tooltip
-                            className="twind-ml-2"
+                            className="ml-2"
                             overlay="In case of no extensions for an initial deposit after this period will be reached reciever will be able to withdraw whole initial deposit and close the stream. "
                           />
                         </div>
-                        <div className="twind-text-xs twind-text-gray twind-absolute twind-right-0 twind-top-1">
+                        <div className="text-xs text-gray absolute right-0 top-1">
                           Streaming speed: {formatter.tokensPerS(field.value)}{' '}
                           {values.token} / sec
                         </div>
@@ -246,21 +263,21 @@ export function CreateStreamForm({account, onSubmit}) {
                 meta,
               }) => (
                 <FormField
-                  className="twind-mb-6"
+                  className="mb-6"
                   error={meta.error}
                   label={
-                    <div className="twind-flex twind-justify-between twind-items-center">
-                      <div className="twind-mb-1">Comment:</div>
-                      <div className="twind-text-xs twind-text-gray">
+                    <div className="flex justify-between items-center">
+                      <div className="mb-1">Comment:</div>
+                      <div className="text-xs text-gray">
                         {(field.value && field.value.length) || 0}/255
                       </div>
                     </div>
                   }
                 >
-                  <label className="twind-h-40 Input twind-font-semibold twind-flex twind-p-4 twind-pt-0 twind-rounded-lg twind-border  twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue twind-border-border">
+                  <label className="h-40 Input font-semibold flex p-4 pt-0 rounded-lg border  bg-input text-white focus-within:border-blue hover:border-blue border-border">
                     <textarea
                       id="commentInput"
-                      className=" twind-bg-input  twind-w-full twind-h-full twind-pt-2 focus:twind-outline-none twind-resize-none"
+                      className=" bg-input  w-full h-full pt-2 focus:outline-none resize-none"
                       placeholder="Enter comment"
                       maxLength="255"
                       {...field}
@@ -271,29 +288,37 @@ export function CreateStreamForm({account, onSubmit}) {
             </Field>
 
             {submitError && (
-              <p className="twind-text-special-inactive twind-my-4">
+              <p className="text-special-inactive my-4">
                 Submit error: {submitError.message}
               </p>
             )}
-            <div className="twind-flex twind-relaitive">
+            <div className="flex relaitive">
               <div>
-                <label className="twind-flex">
-                  <Field
-                    name="autoDeposit"
-                    className="twind-mr-1"
-                    type="checkbox"
-                  />
+                <label className="flex">
+                  <Field name="autoDeposit" className="mr-1" type="checkbox" />
                   <span>
                     Enable auto deposit?{' '}
                     <Tooltip
-                      className="twind-ml-2"
+                      className="ml-2"
                       overlay="Check this if you want make this stream infinite extending getting deposits from income streams with saving initial stream speed."
                     />
                   </span>
                 </label>
+                <label className="flex">
+                  <Field name="autoStart" className="mr-1" type="checkbox" />
+                  <span>
+                    Start stream immediately?{' '}
+                    <Tooltip
+                      className="ml-2"
+                      overlay="Check this if you want this stream to start transfering funds immediatly."
+                    />
+                  </span>
+                </label>
 
-                <p className="twind-text-left twind-text-gray twind-w-2/3 twind-text-sm">
-                  You will be charged 0.1 NEAR fee for that stream
+                <p className="text-left text-gray w-2/3 text-sm">
+                  You will be charged{' '}
+                  {formatter.amount(tokenMeta.commission_on_create)}{' '}
+                  {tokenMeta.ticker} fee for that stream
                 </p>
               </div>
 
@@ -301,7 +326,7 @@ export function CreateStreamForm({account, onSubmit}) {
                 disabled={isSubmitting}
                 variant="main"
                 size="big"
-                className="twind-rounded-lg"
+                className="rounded-lg"
               >
                 Create Stream
               </Button>

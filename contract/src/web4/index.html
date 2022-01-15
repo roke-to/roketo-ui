@@ -1,0 +1,357 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Orderly</title>
+    <style>
+         * { font-family: Arial, Helvetica, sans-serif; }
+         body { padding: 0px; margin: 0px; }
+    </style>
+</head>
+<body>
+    <div style='padding: 10px; background-color: black; color: white'>
+        <b>Orderly</b><span id='logged_in_controls' style='display:none'> &nbsp; | &nbsp; <a style='color: skyblue' href='#' onclick='deposit()'>Deposit</a> &nbsp; | &nbsp; <a style='color: skyblue' href='#' onclick='addToken()'>Register Token</a></span> &nbsp; | &nbsp; <a style='color: skyblue' href=/src>Source Code</a><span style='float: right; display: none' id='logged_in'><span id=whoami></span> <a style='color: skyblue' href='#' onclick='logout()'>Log out</a></span></div><br>
+<div id='login' style='padding: 10px'>
+    To start using the app, <button onclick='login()'>Login with NEAR</button><br><br>
+</div>
+<div id='app' style='display:none; padding: 10px'>
+    <div id='register_account' style='display:none'>Your account is not registered with Orderly.<br>
+        Click <button onclick='registerAccount()'>here</button> to register. It will cost Ⓝ 0.01 to cover storage costs.<br>
+    </div>
+    <div id='balances' style='display:none'></div>
+    <div id='trade' style='display:none'></div>
+    <div id='orders' style='display:none'></div>
+</div>
+<br>
+
+<script src="https://cdn.jsdelivr.net/npm/near-api-js@0.41.0/dist/near-api-js.js"></script>
+<script>
+
+let contractName = "orderly.near";
+let appName = "Orderly";
+
+window.nearConfig = {
+    networkId: 'mainnet',
+    nodeUrl: 'https://rpc.mainnet.near.org',
+    contractName: contractName,
+    walletUrl: 'https://wallet.near.org',
+    helperUrl: 'https://helper.mainnet.near.org'
+};
+
+
+function login() {
+    walletAccount.requestSignIn(contractName, appName);
+}
+
+function logout() {
+    walletAccount.signOut();
+    window.location.replace(window.location.origin + window.location.pathname);
+}
+
+function registerAccount() {
+    window.contract.register_account({'access_key': null, 'store_orders': true}, 30000000000000, "10000000000000000000000").then(m => window.location.href='/').catch(alert);
+}
+
+function addToken() {
+    let tokenAddress = prompt("Token address:");
+    if (tokenAddress) {
+        window.contract.register_token({'token_address': tokenAddress}, 100000000000000, "100000000000000000000000").then("Done").catch(alert);
+    }
+}
+
+function tokenMetadata(tokenAddress) {
+    return window.contract.account.viewFunction(tokenAddress, 'ft_metadata', {})
+}
+
+function convertAmount(amount, decimals) {
+    let tokens = amount.split('.');
+    if (tokens.length == 1) tokens.push('0');
+    let manyZeroes = "00000000000000000000000000000000000000000000000000";
+    return tokens[0] + tokens[1] + manyZeroes.substring(0, decimals - tokens[1].length);
+}
+
+function convertAmountBack(amount, decimals) {
+    let a = 0;
+    let b = amount;
+    while (amount.length > decimals) {
+        a = a * 10 + parseInt(amount[0]);
+        amount = amount.substring(1);
+    }
+    while (amount.length < decimals) {
+        amount = "0" + amount;
+    }
+    return a + '.' + amount.substring(0, 3);
+}
+
+function deposit() {
+    let tokenAddress = prompt("Token address:", 'wrap.near');
+    if (!tokenAddress) return;
+    tokenMetadata(tokenAddress).then(function(metadata) {
+        let amount = prompt("Depositing " + metadata.symbol + ". Amount (e.g. 0.5):", 1);
+        if (!amount) return;
+
+        amount = convertAmount(amount, metadata.decimals);
+        window.contract.account.signAndSendTransaction(tokenAddress, [nearApi.transactions.functionCall('ft_transfer_call', {'receiver_id': 'orderly.near', 'amount': amount, 'memo': '', 'msg': ''}, 100000000000000, 1)]);
+    }).catch(alert);
+}
+
+function withdrawAmount(tokenAddress, tokenName, amount) {
+    document.getElementById('balances').innerHTML = '<i>Withdrawing...</i>';
+    window.contract.withdraw({'account_id': window.walletAccount.getAccountId(), 'token_address': tokenAddress, 'amount': amount}, 200000000000000).then(showAccount).catch(alert);
+}
+
+function withdraw(tokenAddress, tokenName, decimals) {
+    let amount = prompt("Withdrawing " + tokenName + ". Amount (e.g. 0.5):", 1);
+    if (!amount) return;
+
+    withdrawAmount(tokenAddress, tokenName, convertAmount(amount, decimals));
+}
+
+function trade(tokenAddress, tokenName, decimals) {
+    let otherTokenAddress = prompt("Address of the token to trade against:", "wrap.near");
+    if (!otherTokenAddress) return;
+
+    window.contract.does_pair_exist({'token_address1': tokenAddress, 'token_address2': otherTokenAddress}).then(function(b) {
+        if (!b) {
+            let el = document.getElementById('trade');
+            el.style.display = '';
+            el.innerHTML = '<br><hr size=1 color=black>The pair is not registered on Orderly.<br>Click ';
+            let btn = el.appendChild(document.createElement('button'));
+            btn.innerText = 'here'
+            btn.onclick = function() {
+                el.innerHTML = '<i>Registering the pair ...</i>';
+                let p1 = window.contract.get_token_id({'token_address': tokenAddress});
+                let p2 = window.contract.get_token_id({'token_address': otherTokenAddress});
+
+                Promise.all([p1, p2]).then(function(tokenIds) {
+                    window.contract.register_pair({
+                        'token_id1': tokenIds[0],
+                        'token_id2': tokenIds[1],
+                    }, 100000000000000, "200000000000000000000000").then(function() { tradeInner(tokenAddress, tokenName, decimals, otherTokenAddress) }).catch(alert)
+                }).catch(alert);
+            }
+            el.appendChild(document.createElement('span')).innerText = ' to register it. It will cost Ⓝ 0.2 to cover storage costs.';
+        } else {
+            tradeInner(tokenAddress, tokenName, decimals, otherTokenAddress);
+        }
+    }).catch(alert);
+
+}
+
+function tradeInner(tokenAddress, tokenName, decimals, otherTokenAddress) {
+    tokenMetadata(otherTokenAddress).then(function(metadata) {
+        let el = document.getElementById('trade');
+        el.style.display = '';
+        el.innerHTML = '<br><hr size=1 color=black>';
+
+        let t1 = {'address': tokenAddress, 'symbol': tokenName, 'decimals': decimals};
+        let t2 = {'address': otherTokenAddress, 'symbol': metadata.symbol, 'decimals': metadata.decimals};
+
+        for (let tokensOuter of [[t1, t2], [t2, t1]]) {
+            let tokens = tokensOuter;
+
+            let b1 = el.appendChild(document.createElement('b'));
+            b1.innerText = 'Sell ' + tokens[0].symbol + ', buy ' + tokens[1].symbol + ':\n';
+
+            let table = el.appendChild(document.createElement('table'));
+            let tbody = table.appendChild(document.createElement('tbody'));
+
+            let tr2 = tbody.appendChild(document.createElement('tr'));
+            let tr1 = tbody.appendChild(document.createElement('tr'));
+
+            tr1.appendChild(document.createElement('td')).innerText = 'Amount of ' + tokens[0].symbol + ' to sell (max): ';
+            let sellInput = tr1.appendChild(document.createElement('td')).appendChild(document.createElement('input'));
+
+            tr2.appendChild(document.createElement('td')).innerText = 'Amount of ' + tokens[1].symbol + ' to buy: ';
+            let buyInput = tr2.appendChild(document.createElement('td')).appendChild(document.createElement('input'));
+
+            sellInput.value = '0';
+            buyInput.value = '0';
+
+            let buttons = el.appendChild(document.createElement('span'));
+            let mOrder = buttons.appendChild(document.createElement('button'));
+            let lOrder = buttons.appendChild(document.createElement('button'));
+
+            mOrder.innerText = 'Market Order';
+            lOrder.style.marginLeft = '5px';
+            lOrder.innerText = 'Limit Order';
+
+            let order = function(method, then) {
+                buttons.innerHTML = '<i>Placing order ...</i>'
+
+                let p1 = window.contract.get_token_id({'token_address': tokens[0].address});
+                let p2 = window.contract.get_token_id({'token_address': tokens[1].address});
+
+                Promise.all([p1, p2]).then(function(tokenIds) {
+                    window.contract[method]({
+                        'account_id': window.walletAccount.getAccountId(),
+                        'want_token_id': tokenIds[1],
+                        'want_amount': convertAmount(buyInput.value, tokens[1].decimals),
+                        'provide_token_id': tokenIds[0],
+                        'provide_amount': convertAmount(sellInput.value, tokens[0].decimals),
+                        'provide_max_amount': convertAmount(sellInput.value, tokens[0].decimals),
+                        'max_orders_to_match': 10,
+                    }).then(then).catch(alert)
+                }).catch(alert);
+            };
+
+            function postOrder(result) {
+                if (result['Err'] !== undefined) {
+                    alert(result['Err']);
+                } else {
+                    showAccount();
+                    // TODO
+                    console.log(result);
+                }
+
+                buttons.innerHTML = '';
+                buttons.appendChild(mOrder);
+                buttons.appendChild(lOrder);
+            }
+
+            mOrder.onclick = function() { order('market_order', postOrder) }
+            lOrder.onclick = function() { order('limit_order', postOrder) }
+
+            el.appendChild(document.createElement('br'));
+            el.appendChild(document.createElement('br'));
+        }
+    });
+}
+
+function showAccount() {
+    let el = document.getElementById('balances');
+    el.style.display = '';
+    el.innerHTML = '';
+
+    let ordersEl = document.getElementById('orders');
+    ordersEl.style.display = '';
+    ordersEl.innerHTML = '';
+
+    window.contract.get_all_account_balances({'account_id': window.walletAccount.getAccountId()}).then(function(balances) {
+        if (balances.length == 0) {
+            el.innerHTML = 'You do not have any tokens on Orderly. <button onclick="deposit()">Deposit</button>';
+        } else {
+            let table = el.appendChild(document.createElement('table'));
+            let tbody = table.appendChild(document.createElement('tbody'));
+            for (let row of balances) {
+                tokenMetadata(row[0]).then(function(metadata) {
+                    let tokenAddress = row[0];
+                    let tokenBalance = row[1];
+
+                    let tr = tbody.appendChild(document.createElement('tr'));
+                    let tdName = tr.appendChild(document.createElement('td'));
+                    let tdBalance = tr.appendChild(document.createElement('td'));
+                    let tdActions = tr.appendChild(document.createElement('td'));
+
+                    let tokenA = tdName.appendChild(document.createElement('a'));
+                    tokenA.href = 'https://explorer.mainnet.near.org/accounts/' + row[0];
+                    tokenA.innerText = metadata.name;
+                    tdName.appendChild(document.createElement('span')).innerText = ' (' + metadata.symbol + '):';
+                    tdBalance.innerText = convertAmountBack(row[1], metadata.decimals);
+                    tdBalance.style.fontWeight = 'bold';
+
+                    let tBtn = tdActions.appendChild(document.createElement('button'));
+                    tBtn.style.marginLeft = '5px';
+                    tBtn.innerText = 'Trade';
+                    tBtn.onclick = function() { trade(tokenAddress, metadata.symbol, metadata.decimals); }
+
+                    let wBtn = tdActions.appendChild(document.createElement('button'));
+                    wBtn.style.marginLeft = '5px';
+                    wBtn.innerText = 'Withdraw';
+                    wBtn.onclick = function() { withdraw(tokenAddress, metadata.symbol, metadata.decimals); }
+
+                    let waBtn = tdActions.appendChild(document.createElement('button'));
+                    waBtn.style.marginLeft = '5px';
+                    waBtn.innerText = 'Withdraw All';
+                    waBtn.onclick = function() { withdrawAmount(tokenAddress, metadata.symbol, tokenBalance); }
+                });
+            }
+        }
+    }).catch(alert);
+
+    window.contract.get_account_orders({'account_id': walletAccount.getAccountId(), 'num_orders': 10}).then(function(orders) {
+        if (orders.length > 0) {
+            ordersEl.innerHTML = '<br><hr size=1 color=black><b>Last orders:</b><br>';
+
+            let table = ordersEl.appendChild(document.createElement('table'));
+            let tbody = table.appendChild(document.createElement('tbody'));
+            let tr = tbody.appendChild(document.createElement('tr'));
+            let sellingTd = tr.appendChild(document.createElement('td'));
+            sellingTd.innerHTML = '<u>Selling</u>';
+            tr.appendChild(document.createElement('td'));
+            let buyingTd =tr.appendChild(document.createElement('td'));
+            buyingTd.innerHTML = '<u>Buying</u>';
+            sellingTd.colSpan = 2;
+            buyingTd.colSpan = 2;
+            sellingTd.align = 'center';
+            buyingTd.align = 'center';
+
+            for (let order of orders) {
+                let tr = tbody.appendChild(document.createElement('tr'));
+                let p1 = tokenMetadata(order[0]);
+                let p2 = tokenMetadata(order[1]);
+                Promise.all([p1, p2]).then(function(metadatas) {
+                    tr.appendChild(document.createElement('td')).innerText = metadatas[1].symbol;
+                    tr.appendChild(document.createElement('td')).innerHTML = '<b>' + convertAmountBack(order[3], metadatas[1].decimals) + '</b>'
+                    tr.appendChild(document.createElement('td')).innerHTML = '&nbsp; &rarr; &nbsp;'
+                    tr.appendChild(document.createElement('td')).innerText = metadatas[0].symbol;
+                    tr.appendChild(document.createElement('td')).innerHTML = '<b>' + convertAmountBack(order[2], metadatas[0].decimals) + '</b>'
+
+                    let cancelBtn = tr.appendChild(document.createElement('button'));
+                    cancelBtn.innerText = 'Cancel';
+                    cancelBtn.onclick = function() {
+                        cancelBtn.disabled = true;
+                        cancelBtn.innerText = 'Cancelling ...';
+
+                        let p1 = window.contract.get_token_id({'token_address': order[0]});
+                        let p2 = window.contract.get_token_id({'token_address': order[1]});
+
+                        Promise.all([p1, p2]).then(function(tokenIds) {
+                            window.contract.cancel_order({
+                                'account_id': window.walletAccount.getAccountId(),
+                                'wanted_token_id': tokenIds[0],
+                                'wanted_amount': order[2],
+                                'provided_token_id': tokenIds[1],
+                                'provided_amount': order[3],
+                                'order_ord': order[4],
+                            }).then(showAccount).catch(alert)
+                        }).catch(alert);
+                    }
+                });
+            }
+        }
+    }).catch(alert);
+}
+
+
+async function connect() {
+    window.near = await nearApi.connect(Object.assign(nearConfig, { deps: { keyStore: new nearApi.keyStores.BrowserLocalStorageKeyStore() }}));
+  
+    // Needed to access wallet login
+    window.walletAccount = new nearApi.WalletConnection(window.near);
+    window.accountId = walletAccount.getAccountId();
+
+    // Initializing our contract APIs by contract name and configuration.
+    window.contract = await new nearApi.Contract(walletAccount.account(), nearConfig.contractName, {
+        viewMethods: ['is_account_registered', 'get_all_account_balances', 'get_token_id', 'does_pair_exist', 'get_account_orders'],
+        changeMethods: ['register_account', 'register_token', 'withdraw', 'limit_order', 'market_order', 'cancel_order', 'register_pair'],
+        sender: window.walletAccount.getAccountId()
+    });
+
+    if (walletAccount.isSignedIn()) {
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('app').style.display = '';
+        document.getElementById('logged_in_controls').style.display = '';
+        document.getElementById('logged_in').style.display = '';
+        document.getElementById('whoami').innerText = walletAccount.getAccountId();
+
+        window.contract.is_account_registered({'account_id': walletAccount.getAccountId()}).then(function(x) { if (x) { showAccount() } else { document.getElementById('register_account').style.display = '' } }).catch(alert);
+    }
+}
+
+window.nearInitPromise = connect()
+    .catch(console.error);
+
+</script>
+</body>
+</html>
+

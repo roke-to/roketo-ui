@@ -1,4 +1,5 @@
 import React from 'react';
+import {useNear} from '../../features/near-connect/useNear';
 const NearTokenImage = (props) => (
   <svg
     version="1.0"
@@ -39,11 +40,20 @@ const FallbackTokenIamge = (props) => (
   </svg>
 );
 
-export function Tokens({tokenName, className, ...rest}) {
+export function TokenIcon({tokenName, className, ...rest}) {
+  const near = useNear();
+  const image = near.tokens.get(tokenName).metadata.icon;
+
   const tokens = {
     NEAR: NearTokenImage,
     fallback: FallbackTokenIamge,
   };
+
+  if (image) {
+    return (
+      <img src={image} alt={tokenName} className={className} {...rest}></img>
+    );
+  }
   const Component = tokens[tokenName] || tokens['fallback'];
   return <Component className={className} {...rest}></Component>;
 }

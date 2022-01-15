@@ -1,102 +1,69 @@
+use std::collections::{HashMap, HashSet};
 use std::convert::TryInto;
 
 mod account;
-mod calls;
-mod cron;
+mod aurora;
+mod dao;
+mod err;
+mod interface;
 mod primitives;
+mod stats;
 mod stream;
-mod views;
+mod stream_ops;
+mod token;
+mod web4;
 
 pub use crate::account::*;
-pub use crate::calls::*;
-pub use crate::cron::*;
+pub use crate::aurora::*;
+pub use crate::dao::*;
+pub use crate::err::*;
+pub use crate::interface::*;
 pub use crate::primitives::*;
+pub use crate::stats::*;
 pub use crate::stream::*;
-pub use crate::views::*;
+pub use crate::stream_ops::*;
+pub use crate::token::*;
+pub use crate::web4::*;
 
 use near_contract_standards::fungible_token::core_impl::ext_fungible_token;
 use near_contract_standards::fungible_token::receiver::FungibleTokenReceiver;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::collections::{LookupMap, UnorderedSet, Vector};
-use near_sdk::json_types::{
-    Base58CryptoHash, Base64VecU8, ValidAccountId, WrappedBalance, WrappedTimestamp, U128,
-};
+use near_sdk::collections::{LazyOption, UnorderedMap, UnorderedSet};
+use near_sdk::json_types::{Base58CryptoHash, U128};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::serde_json;
 use near_sdk::{
-    env, ext_contract, near_bindgen, AccountId, Balance, CryptoHash, Gas, PanicOnDefault, Promise,
-    PromiseOrValue, Timestamp,
+    assert_one_yocto, env, ext_contract, log, near_bindgen, AccountId, Balance, BorshStorageKey,
+    CryptoHash, Gas, PanicOnDefault, Promise, PromiseOrValue, Timestamp, ONE_NEAR, ONE_YOCTO,
 };
 
-near_sdk::setup_alloc!();
+#[derive(BorshSerialize, BorshStorageKey)]
+enum StorageKey {
+    Accounts,
+    Stats,
+    Streams,
+    ActiveStreams { account_id: AccountId },
+    InactiveStreams { account_id: AccountId },
+}
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
-pub struct Roketo {
-    // TODO put stats here
+pub struct Contract {
+    pub dao: Dao,
+    pub accounts: UnorderedMap<AccountId, VAccount>,
+    pub streams: UnorderedMap<StreamId, VStream>,
+    pub stats: LazyOption<VStats>,
 }
 
 #[near_bindgen]
-impl Roketo {
+impl Contract {
     #[init]
-    pub fn new() -> Self {
-        // init the contract
-        Self {}
-    }
-}
-
-#[near_bindgen]
-impl FungibleTokenReceiver for Roketo {
-    fn ft_on_transfer(
-        &mut self,
-        sender_id: ValidAccountId,
-        amount: U128,
-        msg: String,
-    ) -> PromiseOrValue<U128> {
-        assert!(Roketo::valid_ft_sender(env::predecessor_account_id()));
-        let key: Result<CreateOrDeposit, _> = serde_json::from_str(&msg);
-        if key.is_err() {
-            // return everything back
-            return PromiseOrValue::Value(amount);
+    pub fn new(dao_id: AccountId) -> Self {
+        Self {
+            dao: Dao::new(dao_id),
+            accounts: UnorderedMap::new(StorageKey::Accounts),
+            streams: UnorderedMap::new(StorageKey::Streams),
+            stats: LazyOption::new(StorageKey::Stats, Some(&Stats::default().into())),
         }
-        match key.unwrap() {
-            CreateOrDeposit::Create(create_struct) => {
-                if self.create_stream_ft(
-                    sender_id,
-                    create_struct.description,
-                    create_struct.owner_id,
-                    create_struct.receiver_id,
-                    // TODO!!
-                    create_struct.token_name,
-                    // TODO!!
-                    create_struct.balance,
-                    create_struct.tokens_per_tick,
-                    create_struct.auto_deposit_enabled,
-                ) {
-                    PromiseOrValue::Value(U128::from(0))
-                } else {
-                    return PromiseOrValue::Value(amount);
-                }
-            }
-            CreateOrDeposit::Deposit(stream_id) => {
-                if self.deposit_ft(stream_id, amount) {
-                    PromiseOrValue::Value(U128::from(0))
-                } else {
-                    return PromiseOrValue::Value(amount);
-                }
-            }
-        }
-    }
-}
-
-impl Roketo {
-    /// Accounts
-    pub(crate) fn accounts() -> LookupMap<AccountId, Account> {
-        LookupMap::new(b"a".to_vec())
-    }
-
-    /// Streams
-    pub(crate) fn streams() -> LookupMap<StreamId, Stream> {
-        LookupMap::new(b"c".to_vec())
     }
 }

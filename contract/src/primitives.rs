@@ -1,198 +1,137 @@
 use crate::*;
 
-pub const ERR_DEPOSIT_NOT_ENOUGH: &str = "Attached deposit is not enough, expected";
-pub const ERR_ACCESS_DENIED: &str = "Caller has no access, expected";
-pub const ERR_STREAM_NOT_AVAILABLE: &str = "Stream not exist or terminated";
-pub const ERR_PAUSE_PAUSED: &str = "Cannot pause paused stream";
-pub const ERR_CANNOT_START_STREAM: &str = "Cannot start stream, invalid stream status";
-pub const ERR_TEXT_FIELD_TOO_LONG: &str = "Text field is too long";
-pub const ERR_CRON_CALLS_DISABLED: &str = "Cron calls disabled";
-pub const ERR_NOT_NEAR_TOKEN: &str = "Only NEAR tokens allowed in this method";
-pub const ERR_NOT_FT_TOKEN: &str = "Only FT tokens allowed in this method";
-pub const ERR_TOKENS_MISMATCH: &str = "Tokens mismatch";
-pub const ERR_INVALID_TOKEN: &str = "Invalid token name";
-pub const ERR_INVALID_STREAM_STATE: &str = "Invalid stream state";
+pub const NO_DEPOSIT: Balance = 0;
 
-pub const CREATE_STREAM_DEPOSIT: Balance = 100_000_000_000_000_000_000_000; // 0.1 NEAR
-pub const ONE_YOCTO: Balance = 1;
-pub const ONE_NEAR: Balance = 1_000_000_000_000_000_000_000_000; // 1 NEAR
-pub const MAX_TEXT_FIELD: usize = 255;
-pub const GAS_FOR_FT_TRANSFER: Gas = 10_000_000_000_000;
-pub const GAS_FOR_TICK_CALL: Gas = 250_000_000_000_000;
+pub const MAX_DESCRIPTION_LEN: usize = 255;
+
+pub const MIN_STREAMING_SPEED: u128 = 1;
+pub const MAX_STREAMING_SPEED: u128 = 1_000_000_000_000_000_000_000_000_000; // 1e27, TODO check limits
+
+pub const TICKS_PER_SECOND: u128 = 1_000_000_000;
+pub const ONE_TERA: u64 = Gas::ONE_TERA.0; // TODO near-sdk version is useless now
+
+pub const DEFAULT_COMMISSION_UNLISTED: Balance = ONE_NEAR / 10; // 0.1 NEAR
+
+// Explanation on default storage balance and gas needs.
+// Normally it's enough to take 0.00125 NEAR for storage deposit
+// and ~10 TGas for transfers and storage deposit
+// for most regular fungible tokens based on NEP-141 standard.
+// However, custom tokens may reqiure high amounts of NEAR
+// for storage uses and needs more gas for complex calculations
+// happens within transfers.
+// To allow those custom tokens be transferable by the contract,
+// the default limits were increased deliberately.
+pub const DEFAULT_STORAGE_BALANCE: Balance = ONE_NEAR;
+pub const DEFAULT_GAS_FOR_FT_TRANSFER: Gas = Gas(50 * ONE_TERA);
+pub const DEFAULT_GAS_FOR_STORAGE_DEPOSIT: Gas = Gas(25 * ONE_TERA);
+// In cases to avoid high storage deposit and gas needs,
+// or if the defaults are not enough for you token,
+// ask DAO to whitelist the token with proper values.
+
+pub const MIN_GAS_FOR_PROCESS_ACTION: Gas = Gas(100 * ONE_TERA);
+pub const MIN_GAS_FOR_AURORA_TRANFSER: Gas = Gas(70 * ONE_TERA);
 
 pub type StreamId = CryptoHash;
-pub type TokenId = u32;
 
-pub const NUM_TOKENS: usize = 3;
-pub const NEAR_TOKEN_ID: TokenId = 0;
-
-// TODO use DAO way to update whitelisted tokens or/and take them from ref.finance
-pub const TOKENS: [&'static str; NUM_TOKENS] = ["NEAR", "DACHA", "TARAS"];
-
-pub const TOKEN_ACCOUNTS: [&'static str; NUM_TOKENS] =
-    ["", "dacha.tkn.near", "dev-1630798753809-34755859843881"];
-
-#[derive(BorshDeserialize, BorshSerialize, PartialEq)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, PartialEq, Debug)]
+#[serde(crate = "near_sdk::serde")]
 pub enum StreamStatus {
     Initialized,
     Active,
     Paused,
-    Interrupted,
-    Finished,
+    Finished { reason: StreamFinishReason },
+}
+
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, PartialEq, Debug)]
+#[serde(crate = "near_sdk::serde")]
+pub enum StreamFinishReason {
+    StoppedByOwner,
+    StoppedByReceiver,
+    FinishedNatually,
+    FinishedBecauseCannotBeExtended,
 }
 
 impl StreamStatus {
-    pub(crate) fn to_string(&self) -> String {
-        match self {
-            StreamStatus::Initialized => "INITIALIZED".to_string(),
-            StreamStatus::Active => "ACTIVE".to_string(),
-            StreamStatus::Paused => "PAUSED".to_string(),
-            StreamStatus::Interrupted => "INTERRUPTED".to_string(),
-            StreamStatus::Finished => "FINISHED".to_string(),
-        }
-    }
-
     pub(crate) fn is_terminated(&self) -> bool {
         match self {
             StreamStatus::Initialized => false,
             StreamStatus::Active => false,
             StreamStatus::Paused => false,
-            StreamStatus::Interrupted => true,
-            StreamStatus::Finished => true,
+            StreamStatus::Finished { reason: _ } => true,
         }
     }
 }
 
-#[derive(BorshDeserialize, BorshSerialize)]
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
+#[serde(crate = "near_sdk::serde")]
 pub enum ActionType {
     Init,
-    Deposit(Balance),
-    Withdraw(Balance),
-    Refund(Balance),
     Start,
     Pause,
-    Stop,
-    EnableAutoDeposit,
-    DisableAutoDeposit,
+    Withdraw,
+    Stop { reason: StreamFinishReason },
 }
 
-#[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
-pub struct Action {
-    pub actor: AccountId,
-    pub action_type: ActionType,
-    pub timestamp: Timestamp,
-}
+pub mod u128_dec_format {
+    use near_sdk::serde::de;
+    use near_sdk::serde::{Deserialize, Deserializer, Serializer};
 
-#[derive(Deserialize, Serialize, Debug)]
-#[serde(crate = "near_sdk::serde")]
-pub struct ActionView {
-    pub actor: String,
-    pub action_type: String,
-    pub amount: Option<WrappedBalance>,
-    pub timestamp: WrappedTimestamp,
-}
+    pub fn serialize<S>(num: &u128, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&num.to_string())
+    }
 
-impl From<&Action> for ActionView {
-    fn from(a: &Action) -> Self {
-        let (action_type, amount) = match a.action_type {
-            ActionType::Init => ("Init".to_string(), None),
-            ActionType::Deposit(amount) => ("Deposit".to_string(), Some(amount)),
-            ActionType::Withdraw(amount) => ("Withdraw".to_string(), Some(amount)),
-            ActionType::Refund(amount) => ("Refund".to_string(), Some(amount)),
-            ActionType::Start => ("Start".to_string(), None),
-            ActionType::Pause => ("Pause".to_string(), None),
-            ActionType::Stop => ("Stop".to_string(), None),
-            ActionType::EnableAutoDeposit => ("Auto-deposit enabled".to_string(), None),
-            ActionType::DisableAutoDeposit => ("Auto-deposit disabled".to_string(), None),
-        };
-        Self {
-            actor: a.actor.clone(),
-            action_type,
-            amount: amount.map(|a| a.into()),
-            timestamp: a.timestamp.into(),
-        }
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<u128, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        String::deserialize(deserializer)?
+            .parse()
+            .map_err(de::Error::custom)
     }
 }
 
-#[ext_contract]
-pub trait ContractB {
-    fn storage_deposit(
-        &mut self,
-        account_id: Option<AccountId>,
-        registration_only: Option<bool>,
-    ) -> StorageBalance;
-}
+pub mod u64_dec_format {
+    use near_sdk::serde::de;
+    use near_sdk::serde::{Deserialize, Deserializer, Serializer};
 
-#[derive(Deserialize, Serialize, Debug)]
-#[serde(crate = "near_sdk::serde")]
-pub enum CreateOrDeposit {
-    Create(CreateStruct),
-    Deposit(Base58CryptoHash),
-}
-
-#[derive(Deserialize, Serialize, Debug)]
-#[serde(crate = "near_sdk::serde")]
-pub struct CreateStruct {
-    pub description: Option<String>,
-    pub owner_id: ValidAccountId,
-    pub receiver_id: ValidAccountId,
-    pub token_name: String,
-    pub balance: WrappedBalance,
-    pub tokens_per_tick: WrappedBalance,
-    pub auto_deposit_enabled: bool,
-}
-
-impl Roketo {
-    pub(crate) fn get_token_id_by_name(token_name: &String) -> Option<TokenId> {
-        for x in 0..NUM_TOKENS {
-            if TOKENS[x] == token_name {
-                return Some(x as u32);
-            }
-        }
-        None
+    pub fn serialize<S>(num: &u64, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&num.to_string())
     }
 
-    pub(crate) fn get_token_name_by_id(token_id: TokenId) -> String {
-        TOKENS[token_id as usize].to_string()
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<u64, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        String::deserialize(deserializer)?
+            .parse()
+            .map_err(de::Error::custom)
+    }
+}
+
+pub mod b58_dec_format {
+    use near_sdk::json_types::Base58CryptoHash;
+    use near_sdk::serde::{Deserialize, Deserializer, Serializer};
+    use near_sdk::CryptoHash;
+
+    pub fn serialize<S>(val: &CryptoHash, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        // TODO please do it with no intermediate serialization if possible
+        serializer.serialize_str(&String::from(&Base58CryptoHash::from(*val)))
     }
 
-    pub(crate) fn build_promise(
-        token_id: TokenId,
-        recipient: AccountId,
-        amount: Balance,
-    ) -> Promise {
-        if token_id == NEAR_TOKEN_ID {
-            Promise::new(recipient).transfer(amount)
-        } else {
-            contract_b::storage_deposit(
-                Some(recipient.clone()),
-                Some(true),
-                &TOKEN_ACCOUNTS[token_id as usize],
-                ONE_NEAR,
-                GAS_FOR_FT_TRANSFER,
-            )
-            .then(ext_fungible_token::ft_transfer(
-                recipient,
-                U128(amount),
-                None,
-                &TOKEN_ACCOUNTS[token_id as usize],
-                ONE_YOCTO,
-                GAS_FOR_FT_TRANSFER,
-            ))
-        }
-    }
-
-    pub(crate) fn valid_ft_sender(sender_id: AccountId) -> bool {
-        for x in 0..NUM_TOKENS {
-            if TOKEN_ACCOUNTS[x] == sender_id {
-                // TODO check ""
-                return true;
-            }
-        }
-        if sender_id == "alice" {
-            // TODO testing only
-            return true;
-        }
-        false
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<CryptoHash, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        // TODO same as above
+        Ok(Base58CryptoHash::deserialize(deserializer)?.into())
     }
 }

@@ -3,28 +3,21 @@ import classNames from 'classnames';
 
 export function RadioButton({active, label, value, onChange}) {
   return (
-    <label className="twind-inline-flex twind-items-center twind-whitespace-nowrap">
+    <label className="inline-flex items-center whitespace-nowrap">
       <input
         type="radio"
-        className="twind-invisible twind-w-0 twind-h-0 twind-absolute"
+        className="invisible w-0 h-0 absolute"
         checked={active}
         onChange={() => onChange(value)}
       />
       <div
         className={classNames(
-          active
-            ? 'twind-border-blue twind-border-4'
-            : 'twind-border-border twind-border-2',
-          'twind-border-full twind-w-3 twind-h-3 twind-rounded-full',
+          active ? 'border-blue border-4' : 'border-border border-2',
+          'border-full w-3 h-3 rounded-full',
         )}
       ></div>
 
-      <div
-        className={classNames(
-          active ? 'twind-font-semibold' : '',
-          'twind-ml-3',
-        )}
-      >
+      <div className={classNames(active ? 'font-semibold' : '', 'ml-3 flex')}>
         {label}
       </div>
     </label>

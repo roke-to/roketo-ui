@@ -28,7 +28,7 @@ export function StreamAutodepositControls({
   const isDead =
     stream.status === STREAM_STATUS.INTERRUPTED ||
     stream.status === STREAM_STATUS.FINISHED;
-  const controls = useStreamControl(stream.stream_id);
+  const controls = useStreamControl(stream.id);
   const menu = useBool(false);
   const opened = menu.on && !controls.loading;
 
@@ -43,12 +43,12 @@ export function StreamAutodepositControls({
   }
 
   return (
-    <div className={classNames(className, 'twind-relative twind-inline-flex')}>
+    <div className={classNames(className, 'relative inline-flex')}>
       <DropdownOpener
         minimal={minimal}
         opened={opened}
-        onClick={menu.toggle}
-        className="twind-flex-grow"
+        onChange={menu.setOn}
+        className="flex-grow"
       >
         <StreamAutodepositStatus
           stream={stream}
@@ -56,24 +56,28 @@ export function StreamAutodepositControls({
           disableMsg={disableMsg}
         />
       </DropdownOpener>
-      <DropdownMenu opened={opened} className="twind-top-full twind-w-44">
-        {stream.auto_deposit_enabled ? (
+      <DropdownMenu
+        opened={opened}
+        className="top-full w-44"
+        onClose={menu.turnOff}
+      >
+        {stream.is_auto_deposit_enabled ? (
           <DropdownMenuItem>
             <button
-              className="twind-inline-flex twind-items-center twind-font-semibold twind-w-full"
+              className="inline-flex items-center font-semibold w-full"
               onClick={controls.disable}
             >
-              <Pause className="twind-mr-4 twind-flex-shrink-0" />
+              <Pause className="mr-4 flex-shrink-0" />
               <span>Disable</span>
             </button>
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem>
             <button
-              className="twind-inline-flex twind-items-center twind-font-semibold twind-w-full"
+              className="inline-flex items-center font-semibold w-full"
               onClick={controls.enable}
             >
-              <Start className="twind-mr-4 twind-flex-shrink-0" />
+              <Start className="mr-4 flex-shrink-0" />
               <span>Enable</span>
             </button>
           </DropdownMenuItem>

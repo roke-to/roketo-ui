@@ -1,19 +1,26 @@
 import React, {useContext, useEffect, useState} from 'react';
 import * as nearAPI from 'near-api-js';
-import {NearContractApi} from './near-contract-api';
 import {NEAR_CONFIG as NearConfig} from './config';
-import {tokens} from '../../lib/formatting';
+import {RoketoApi} from './RoketoApi';
+import {NearContractApi} from './near-contract-api';
+import {Croncat} from '../croncat';
+import {Tokens} from '../ft-tokens/TokenMeta';
+
+const NEAR_OBJECT_TYPE = {
+  keyStore: null,
+  near: null,
+  walletConnection: null,
+  accountId: null,
+  account: null,
+};
 
 export const NearContext = React.createContext({
   inited: false,
-  near: {
-    keyStore: null,
-    near: null,
-    walletConnection: null,
-    accountId: null,
-    contract: null,
-    ft: null,
-  },
+  near: NEAR_OBJECT_TYPE,
+  roketo: new RoketoApi({}),
+  croncat: new Croncat({}),
+  tokens: new Tokens({}),
+
   auth: {
     signedIn: false,
     signedAccountId: null,
@@ -29,15 +36,7 @@ async function createNearInstance() {
   const near = await nearAPI.connect(
     Object.assign({deps: {keyStore}}, NearConfig),
   );
-
-  const _near = {
-    keyStore: null,
-    near: null,
-    walletConnection: null,
-    accountId: null,
-    contract: null,
-    ft: null,
-  };
+  const _near = NEAR_OBJECT_TYPE;
 
   _near.keyStore = keyStore;
   _near.near = near;
@@ -47,59 +46,18 @@ async function createNearInstance() {
     NearConfig.contractName,
   );
   _near.accountId = _near.walletConnection.getAccountId();
-
   _near.account = _near.walletConnection.account();
-  _near.contractName = NearConfig.contractName;
-  _near.contract = new nearAPI.Contract(
-    _near.account,
-    NearConfig.contractName,
-    {
-      viewMethods: ['get_account', 'get_stream', 'get_stream_history'],
-      changeMethods: [
-        'create_stream',
-        'deposit',
-        'update_account',
-        'start_stream',
-        'pause_stream',
-        'stop_stream',
-        'change_auto_deposit',
-        'start_cron',
-      ],
-    },
-  );
-
-  const tokensNames = Object.keys(tokens).filter((item) => item !== 'fallback');
-  _near.fts = {};
-  for (let i = 0; i < tokensNames.length; i++) {
-    _near.fts[tokensNames[i]] = {
-      name: tokensNames[i],
-      address: tokens[tokensNames[i]].address,
-      contract: new nearAPI.Contract(
-        _near.account,
-        tokens[tokensNames[i]].address,
-        {
-          viewMethods: ['ft_balance_of'],
-          changeMethods: ['ft_transfer', 'ft_transfer_call'],
-        },
-      ),
-    };
-  }
 
   return _near;
 }
 
 export function useCreateNear() {
   const apiRef = React.useRef(null);
+  const croncatRef = React.useRef(null);
+  const tokensRef = React.useRef(null);
 
   const [inited, setInited] = useState(false);
-  const [near, setNear] = useState({
-    keyStore: null,
-    near: null,
-    walletConnection: null,
-    accountId: null,
-    contract: null,
-    ft: null,
-  });
+  const [near, setNear] = useState(NEAR_OBJECT_TYPE);
 
   const auth = {
     signedIn: !!near.accountId,
@@ -135,8 +93,36 @@ export function useCreateNear() {
   useEffect(() => {
     const init = async () => {
       const _near = await createNearInstance();
+      const near = _near.near;
 
-      apiRef.current = NearContractApi(_near);
+      console.debug('Create Near');
+      const roketo = new RoketoApi({
+        account: _near.account,
+        walletConnection: _near.walletConnection,
+      });
+
+      console.debug('Create Roketo');
+      await roketo.init();
+
+      const croncat = new Croncat({
+        wallet: _near.walletConnection,
+        operationalCommission: roketo.status.operational_commission,
+        contractId: roketo._contract.contractId,
+        near: _near.near,
+      });
+      console.debug('Create Croncat');
+
+      const tokens = new Tokens({
+        tokens: roketo.status.tokens,
+        account: _near.walletConnection.account(),
+      });
+
+      await tokens.init();
+      console.debug('Create ft-tokens');
+      apiRef.current = roketo;
+      croncatRef.current = croncat;
+      tokensRef.current = tokens;
+
       setNear(_near);
       setInited(true);
     };
@@ -147,7 +133,10 @@ export function useCreateNear() {
   return {
     auth,
     near,
-    contractApi: apiRef.current,
+    roketo: apiRef.current,
+    contractApi: apiRef.current ? apiRef.current.api : null,
+    croncat: croncatRef.current,
+    tokens: tokensRef.current,
     inited,
     login,
     logout,

@@ -1,3 +1,8 @@
 .Button--main {
   background: linear-gradient(90deg, #4743fb -2.16%, #c750ff 100%);
 }
+
+.Button--disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}

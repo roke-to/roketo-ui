@@ -1,6 +1,5 @@
 module.exports = {
   purge: [],
-  prefix: 'twind-',
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {

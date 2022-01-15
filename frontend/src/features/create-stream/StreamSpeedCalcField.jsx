@@ -1,9 +1,9 @@
 import {useEffect, useState} from 'react';
-import {TokenFormatter} from '../../lib/formatting';
 import {usePrev} from '../../lib/usePrev';
+import {useTokenFormatter} from '../../lib/useTokenFormatter';
 
 export function StreamSpeedCalcField({onChange, deposit = 0, token}) {
-  const formatter = TokenFormatter(token);
+  const formatter = useTokenFormatter(token);
 
   const [days, setDays] = useState(0.0);
   const [minutes, setMinutes] = useState(0);
@@ -37,35 +37,35 @@ export function StreamSpeedCalcField({onChange, deposit = 0, token}) {
   }, [tokensPerTick, onChange, prevSpeed]);
 
   return (
-    <div className="twind-flex" label="Stream duration">
-      <label className="twind-w-1/3 input twind-font-semibold twind-flex twind-p-4 twind-rounded-l-lg twind-border-border twind-border twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue">
+    <div className="flex" label="Stream duration">
+      <label className="w-1/3 input font-semibold flex p-4 rounded-l-lg border-border border bg-input text-white focus-within:border-blue hover:border-blue">
         <input
-          className="focus:twind-outline-none input twind-bg-input twind-w-1/3"
+          className="focus:outline-none input bg-input w-1/3"
           placeholder="0"
           value={days}
           onChange={(e) => {
             setDays(e.target.value);
           }}
         />
-        <div className="twind-right-2 twind-opacity-100 twind-w-1/3">days</div>
+        <div className="right-2 opacity-100 w-1/3">days</div>
       </label>
-      <label className="twind-w-1/3 input twind-font-semibold twind-flex twind-p-4 twind-border-border twind-border twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue">
+      <label className="w-1/3 input font-semibold flex p-4 border-border border bg-input text-white focus-within:border-blue hover:border-blue">
         <input
-          className="focus:twind-outline-none input twind-bg-input twind-w-1/3"
+          className="focus:outline-none input bg-input w-1/3"
           placeholder="0"
           value={hours}
           onChange={(e) => setHours(e.target.value)}
         />
-        <div className="twind-right-2 twind-opacity-100 twind-w-1/3">hours</div>
+        <div className="right-2 opacity-100 w-1/3">hours</div>
       </label>
-      <label className="twind-w-1/3 input twind-font-semibold twind-flex twind-p-4 twind-rounded-r-lg twind-border-border twind-border twind-bg-input twind-text-white focus-within:twind-border-blue hover:twind-border-blue">
+      <label className="w-1/3 input font-semibold flex p-4 rounded-r-lg border-border border bg-input text-white focus-within:border-blue hover:border-blue">
         <input
-          className="focus:twind-outline-none input twind-bg-input twind-w-1/3"
+          className="focus:outline-none input bg-input w-1/3"
           placeholder="0"
           value={minutes}
           onChange={(e) => setMinutes(e.target.value)}
         />
-        <div className="twind-right-2 twind-opacity-100 twind-w-1/3">mins</div>
+        <div className="right-2 opacity-100 w-1/3">mins</div>
       </label>
     </div>
   );

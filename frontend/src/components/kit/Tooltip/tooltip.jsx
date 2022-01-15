@@ -3,11 +3,11 @@ import './tooltip.scss';
 import RCTooltip from 'rc-tooltip';
 import React from 'react';
 
-export function Tooltip({children, html, overlay, ...rest}) {
+export function Tooltip({placement = 'top', children, html, overlay, ...rest}) {
   return (
     <RCTooltip
       // @ts-ignore
-      placement="top"
+      placement={placement}
       overlay={
         html ? <div dangerouslySetInnerHTML={{__html: html}}></div> : overlay
       }

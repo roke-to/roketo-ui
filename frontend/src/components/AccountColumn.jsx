@@ -50,20 +50,20 @@ export function AccountColumn({
   let streamGroups = {};
   if (streams !== undefined) {
     streamGroups = streams.reduce((groups, item) => {
-      const group = groups[item.token_name] || [];
+      const group = groups[item.ticker] || [];
       group.push(item);
-      groups[item.token_name] = group;
+      groups[item.ticker] = group;
       return groups;
     }, {});
   }
 
-  console.log('AccountColumn', {
-    streamsType,
-    tokensField,
-    streams,
-    allStreams,
-    streamGroups,
-  });
+  // console.debug('AccountColumn', {
+  //   streamsType,
+  //   tokensField,
+  //   streams,
+  //   allStreams,
+  //   streamGroups,
+  // });
   const tokensData = account !== undefined ? account[tokensField] : [];
 
   const periodsOptions = useFilter({options: PERIODS});
@@ -72,20 +72,20 @@ export function AccountColumn({
 
   return (
     <div className={className}>
-      <h2 className="twind-text-xl twind-mb-6 twind-flex twind-items-center">
-        <span className="twind-mr-3">{icon}</span>
+      <h2 className="text-xl mb-6 flex items-center">
+        <span className="mr-3">{icon}</span>
         {header}
-        <span className="twind-ml-2">
+        <span className="ml-2">
           {showPeriod ? (
-            <div className="twind-inline-flex twind-items-center twind-relative">
-              <DropdownOpener
-                minimal={true}
-                rounded
-                onClick={() => setOpened(!opened)}
-              >
+            <div className="inline-flex items-center relative">
+              <DropdownOpener minimal={true} rounded onChange={setOpened}>
                 {periodsOptions.options[selectedPeriod]}
               </DropdownOpener>
-              <DropdownMenu opened={opened} className="twind-right-0">
+              <DropdownMenu
+                opened={opened}
+                className="right-0"
+                onClose={() => setOpened(false)}
+              >
                 {periodsOptions.optionsArray.map((option, i) => (
                   <DropdownMenuItem key={i}>
                     <RadioButton
@@ -113,7 +113,7 @@ export function AccountColumn({
             }
             period={selectedPeriod}
             showPeriod={showPeriod}
-            className="twind-mb-4"
+            className="mb-4"
           />
         ))}
       </div>

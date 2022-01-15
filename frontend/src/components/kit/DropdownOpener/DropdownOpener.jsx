@@ -11,35 +11,31 @@ export function DropdownOpener({
   opened,
   className,
   children,
-  onClick,
+  onChange,
   rounded,
   minimal,
   ...rest
 }) {
   const minimalClasses = minimal
     ? ''
-    : 'twind-px-4 twind-py-3 twind-border twind-border-border twind-w-36 hover:twind-bg-hover hover:twind-border-hover';
+    : 'px-4 py-3 border border-border w-36 hover:bg-hover hover:border-hover';
 
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={() => onChange(!opened)}
       className={classNames(
-        'twind-cursor-pointer twind-flex twind-items-center',
+        'cursor-pointer flex items-center',
         className,
         minimalClasses,
-        rounded ? 'twind-rounded-full' : 'twind-rounded-lg',
+        rounded ? 'rounded-full' : 'rounded-lg',
       )}
       {...rest}
     >
       {children}
-      <div className="twind-flex-grow"></div>
+      <div className="flex-grow"></div>
       <DropdownArrowDown
-        className={classNames(
-          'twind-ml-2',
-          'twind-transform',
-          opened ? 'twind-rotate-180' : '',
-        )}
+        className={classNames('ml-2', 'transform', opened ? 'rotate-180' : '')}
       />
     </button>
   );

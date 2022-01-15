@@ -12,6 +12,8 @@ import {Button} from '../components/kit';
 import {useAccount} from '../features/xyiming-resources';
 import {formatDistance} from 'date-fns';
 import {PageError} from '../components/PageError';
+import {CroncatButton} from '../features/croncat/CroncatButton';
+import useSWR from 'swr';
 
 const __INPUTS = [];
 const __OUTPUTS = [];
@@ -20,32 +22,44 @@ export function AccountPage() {
   const near = useNear();
   const accountSWR = useAccount({near});
 
+  // const balanceSWR = useSWR(
+  //   () => {
+  //     return true;
+  //   },
+  //   async () => {
+  //     const tokenBalances = await Promise.all(
+  //       near.tokens.tickers.map(async (ticker) => {
+  //         return {balance: await near.tokens.balance(ticker), ticker};
+  //       }),
+  //     );
+  //     return tokenBalances;
+  //   },
+  // );
+  // console.debug(balanceSWR.error);
+
   async function cronSubscribeClick(e) {
     e.preventDefault();
     await near.contractApi.startCron();
   }
 
   const account = accountSWR.data;
-
+  console.debug(account);
   const inputs = (account && account.inputs) || __INPUTS;
   const outputs = (account && account.outputs) || __OUTPUTS;
-
-  console.log('ACCOUNT', account);
-  console.log('INPUTS', inputs);
-  console.log('OUTPUTS', outputs);
 
   const pageError = accountSWR.error;
 
   return (
-    <div className="twind-container twind-mx-auto twind-p-12">
-      <div className="twind-flex twind-justify-between twind-items-center twind-mb-10">
-        <h1 className="twind-text-3xl">My Account</h1>
-        <div className="twind-flex twind-items-center">
-          <div className="twind-mr-12 twind-text-gray twind-flex twind-items-center">
-            <span className="twind-mr-2">
-              <History />
-            </span>
-            {account !== undefined ? (
+    <div className="container mx-auto p-12">
+      <div className="md:flex justify-between items-center mb-10">
+        <h1 className="text-3xl">My Account</h1>
+        <div className="flex items-center md:mt-0 mt-4">
+          {account && account.last_action !== null ? (
+            <div className="mr-12 text-gray flex items-center">
+              <span className="mr-2">
+                <History />
+              </span>
+
               <span>
                 Last updated&nbsp;
                 {formatDistance(
@@ -56,34 +70,23 @@ export function AccountPage() {
                   },
                 )}
               </span>
-            ) : (
-              ''
-            )}
-          </div>
-          <div>
-            <Button
-              variant="main"
-              size="normal"
-              className="twind-p-0"
-              onClick={(e) => cronSubscribeClick(e)}
-            >
-              <span className="twind-mr-2">
-                <Cron />
-              </span>
-              Subscribe to CRON
-            </Button>
-          </div>
+            </div>
+          ) : (
+            ''
+          )}
+
+          <CroncatButton />
         </div>
       </div>
 
       {pageError ? (
         <PageError
-          className="twind-max-w-2xl twind-mx-auto twind-py-32"
+          className="max-w-2xl mx-auto py-32"
           message={pageError.message}
-          messaonClick={accountSWR.mutate}
+          onRetry={accountSWR.mutate}
         />
       ) : (
-        <div className="twind-grid twind-grid-cols-3 twind-gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <AccountColumn
             icon={<StreamIn />}
             header="Receiving"

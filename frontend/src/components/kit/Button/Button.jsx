@@ -19,6 +19,7 @@ export function Button({
   link,
   size,
   loading,
+  disabled,
   loadingText,
   color = 'light',
   variant = 'outlined',
@@ -30,37 +31,36 @@ export function Button({
 
   if (variant === variants.main) {
     variantStyles = 'Button--main';
-
     sizeStyles =
       size === 'normal'
-        ? 'twind-px-5 twind-py-4  twind-rounded-2xl twind-font-semibold'
+        ? 'px-5 py-4  rounded-2xl font-semibold'
         : size === 'big'
-        ? 'twind-px-12 twind-py-6 twind-rounded-3xl twind-font-bold'
+        ? 'px-12 py-6 rounded-3xl font-bold'
         : '';
   } else if (variant === variants.outlined) {
-    variantStyles =
-      'twind-border-solid twind-border twind-font-semibold twind-rounded-lg ';
+    variantStyles = 'border-solid border font-semibold rounded-lg ';
     colorStyles =
       color === 'light'
-        ? 'twind-border-blue hover:twind-bg-blue'
+        ? 'border-blue hover:bg-blue'
         : color === 'dark'
-        ? 'twind-border-border hover:twind-bg-hover hover:twind-border-hover'
+        ? 'border-border hover:bg-hover hover:border-hover'
         : '';
   } else if (variant === variants.filled) {
     variantStyles =
-      'twind-bg-dark hover:twind-bg-hover twind-font-semibold twind-rounded-lg active:twind-bg-transparent';
+      'bg-dark hover:bg-hover font-semibold rounded-lg active:bg-transparent';
   }
   const ButtonComponent = link ? Link : 'button';
 
   return (
     <ButtonComponent
-      disabled={loading}
+      disabled={loading || disabled}
       className={classNames(
-        'twind-inline-flex twind-items-center twind-justify-center twind-p-3  twind-whitespace-nowrap',
+        'inline-flex items-center justify-center p-3  whitespace-nowrap',
         variantStyles,
         sizeStyles,
         colorStyles,
-        'twind-transition-all',
+        disabled ? 'Button--disabled' : '',
+        'transition-all',
         className,
       )}
       {...rest}
@@ -69,7 +69,7 @@ export function Button({
         loadingText
       ) : (
         <>
-          {icon ? <div className="twind-mr-2">{icon}</div> : null}
+          {icon ? <div className="mr-2">{icon}</div> : null}
           {children}
         </>
       )}

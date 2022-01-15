@@ -5,7 +5,7 @@ export function Bullet({className, ...rest}) {
   return (
     <div
       className={classNames(
-        'twind-inline-block twind-w-2 twind-h-2 twind-flex-shrink-9 twind-rounded-full',
+        'inline-block w-2 h-2 flex-shrink-9 rounded-full',
         className,
       )}
       {...rest}

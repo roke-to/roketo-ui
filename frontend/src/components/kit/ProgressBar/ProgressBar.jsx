@@ -22,7 +22,7 @@ export function ProgressBar({progresses, className, ...rest}) {
   return (
     <div
       className={classNames(
-        'twind-relative twind-h-3 twind-rounded-r-md twind-rounded-l-lg twind-bg-progressBar',
+        'relative h-3 rounded-r-md rounded-l-lg bg-progressBar',
         className,
       )}
       {...rest}
@@ -30,7 +30,7 @@ export function ProgressBar({progresses, className, ...rest}) {
       {p.map((progress, i) => (
         <div
           key={i}
-          className="twind-absolute twind-left-0 twind-h-full twind-rounded-lg"
+          className="absolute left-0 h-full rounded-lg"
           style={{
             width: progress * 100 + '%',
             background: GRADIENTS[i],
@@ -87,7 +87,7 @@ export function ArcProgressBar({progresses, className, ...rest}) {
         {progresses.map((progress, i) => (
           <CircularProgressbar
             circleRatio={0.5}
-            className="twind-absolute twind-inset-0"
+            className="absolute inset-0"
             value={progress}
             styles={buildStyles({
               rotation,

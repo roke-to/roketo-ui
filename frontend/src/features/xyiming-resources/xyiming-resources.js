@@ -1,5 +1,8 @@
 import {useState} from 'react';
 import useSWR from 'swr';
+import {STREAM_DIRECTION, STREAM_STATUS} from '../stream-control/lib';
+import {identifyStreamsDirection} from './lib';
+import React from 'react';
 
 async function fetchStream({streamId}, {near}) {
   let stream = await near.contractApi.getStream({streamId});
@@ -17,18 +20,19 @@ async function fetchStreamHistory({streamId, from, to}, {near}) {
   return streamHistory;
 }
 
-async function fetchStreams({inputs, outputs}, {near}) {
-  let inputStreams = await Promise.all(
-    inputs.map((streamId) => near.contractApi.getStream({streamId})),
+async function fetchStreams(streams, {near}) {
+  const fetchedStreams = await Promise.all(
+    streams.map((streamId) => near.contractApi.getStream({streamId})),
   );
 
-  let outputStreams = await Promise.all(
-    outputs.map((streamId) => near.contractApi.getStream({streamId})),
+  const identified = identifyStreamsDirection(
+    fetchedStreams,
+    near.near.account.accountId,
   );
 
   return {
-    inputs: inputStreams.map((stream) => ({...stream, direction: 'in'})),
-    outputs: outputStreams.map((stream) => ({...stream, direction: 'out'})),
+    inputs: identified.filter((s) => s.direction === STREAM_DIRECTION.IN),
+    outputs: identified.filter((s) => s.direction === STREAM_DIRECTION.OUT),
   };
 }
 
@@ -56,7 +60,11 @@ export function useStreams({near, accountSWR}) {
     },
     () =>
       fetchStreams(
-        {inputs: account.inputs, outputs: account.outputs},
+        [
+          ...account.dynamic_inputs,
+          ...account.dynamic_outputs,
+          ...account.static_streams,
+        ],
         {
           near,
         },
@@ -91,6 +99,21 @@ export function useSingleStream({streamId}, {near, accountSWR}) {
     },
   );
 
+  const stream = swr.data || {};
+
+  const isCompleted = stream.balance === stream.available_to_withdraw;
+
+  React.useEffect(() => {
+    const startPoller = () => {
+      return setInterval(swr.mutate, 1000);
+    };
+
+    if (stream.status === STREAM_STATUS.ACTIVE && !isCompleted) {
+      let id = startPoller();
+      return () => clearInterval(id);
+    }
+  }, [stream.status, isCompleted, swr]);
+
   return swr;
 }
 
@@ -101,7 +124,7 @@ export function useSingleStreamHistory(
   const PAGE_SIZE = pageSize;
   const account = accountSWR.data;
   const stream = streamSWR.data;
-  const streamId = stream ? stream.stream_id : null;
+  const streamId = stream ? stream.id : null;
   const [page, setPage] = useState(0);
   const ready = !!stream;
 
@@ -118,7 +141,7 @@ export function useSingleStreamHistory(
   const swr = useSWR(
     () => {
       const key = stream
-        ? ['stream_history', stream.stream_id, account.last_action, page]
+        ? ['stream_history', stream.id, account.last_action, page]
         : false;
 
       return key;
@@ -138,7 +161,7 @@ export function useSingleStreamHistory(
     },
     {
       onError: (error, key) => {
-        console.log('useSingleStreamHistory error', error);
+        console.debug('useSingleStreamHistory error', error);
       },
     },
   );
@@ -147,7 +170,7 @@ export function useSingleStreamHistory(
   const swr2 = useSWR(
     () => {
       const key = stream
-        ? ['stream_history', stream.stream_id, account.last_action, page + 1]
+        ? ['stream_history', stream.id, account.last_action, page + 1]
         : false;
 
       return key;

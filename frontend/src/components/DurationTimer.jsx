@@ -1,24 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {intervalToDuration, formatDuration, isValid} from 'date-fns';
-
-const formatDistanceLocale = {
-  xYears: '{{count}} years',
-  xMonths: '{{count}} months',
-  xDays: '{{count}}d',
-  xSeconds: '{{count}}s',
-  xMinutes: '{{count}}m',
-  xHours: '{{count}}h',
-};
-
-const shortEnLocale = {
-  formatDistance: (token, count) => {
-    return formatDistanceLocale[token].replace('{{count}}', count);
-  },
-};
-
-function isValidDate(d) {
-  return d instanceof Date && !isNaN(d);
-}
+import {intervalToDuration, formatDuration} from 'date-fns';
+import {shortEnLocale, isValidDate} from '../lib/date';
 
 export function useDurationTimer({untilTimestamp}) {
   const untilDate = new Date(untilTimestamp);

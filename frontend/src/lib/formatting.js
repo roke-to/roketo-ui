@@ -1,5 +1,4 @@
 import numbro from 'numbro';
-
 export const tokens = {
   NEAR: {
     name: 'Near',
@@ -7,20 +6,6 @@ export const tokens = {
     address: null,
     is_mainnet: true,
     is_testnet: true,
-  },
-  TARAS: {
-    name: 'Taras',
-    decimals: 18,
-    address: 'dev-1630798753809-34755859843881',
-    is_mainnet: false,
-    is_testnet: true,
-  },
-  XYI: {
-    name: 'XYI',
-    decimals: 18,
-    address: 'xyi.tkn.near',
-    is_mainnet: true,
-    is_testnet: false,
   },
   fallback: {
     name: null,
@@ -31,8 +16,7 @@ export const tokens = {
   },
 };
 
-export function TokenFormatter(tokenName) {
-  let token = tokens[tokenName] || tokens.fallback;
+export function TokenFormatter(tokenDecimals) {
   const TICK_TO_MS = Math.pow(10, 6);
   const TICK_TO_S = Math.pow(10, 9);
   const TICK_TO_MINUTE = TICK_TO_S * 60;
@@ -42,7 +26,7 @@ export function TokenFormatter(tokenName) {
   const TICK_TO_MONTH = TICK_TO_WEEK * 4;
   const TICK_TO_YEAR = TICK_TO_MONTH * 12;
 
-  const MP = Math.pow(10, token.decimals);
+  const MP = Math.pow(10, tokenDecimals);
 
   const bigValueFormatter = Intl.NumberFormat('en-US', {
     minimumIntegerDigits: 1,
@@ -52,7 +36,7 @@ export function TokenFormatter(tokenName) {
   const smallValueFormatter = Intl.NumberFormat('en-US', {
     minimumSignificantDigits: 2,
     maximumSignificantDigits: 4,
-    maximumFractionDigits: token.decimals,
+    maximumFractionDigits: tokenDecimals,
   });
 
   const formatSmartly = (value) => {
@@ -75,7 +59,7 @@ export function TokenFormatter(tokenName) {
       numbro(tps).multiply(MP).divide(TICK_TO_S).format({mantissa: 0}),
     toInt: (floatValue) =>
       numbro(floatValue).multiply(MP).format({mantissa: 0}),
-    amount: (amount, decimals = token.decimals) => {
+    amount: (amount, decimals = tokenDecimals) => {
       const value = numbro(amount).divide(MP).value();
       const formatted = formatSmartly(value);
       return formatted;
