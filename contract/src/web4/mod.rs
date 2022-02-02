@@ -130,8 +130,6 @@ impl Contract {
             return Web4Response::plain(include_str!("../token.rs").to_string());
         } else if path == "/API.md" {
             return Web4Response::plain(include_str!("../../API.md").to_string());
-        } else if path == "/SHA.md" {
-            return Web4Response::plain(include_str!("../../SHA.md").to_string());
         } else if path == "/Cargo.toml" {
             return Web4Response::plain(include_str!("../../Cargo.toml").to_string());
         }
