@@ -120,16 +120,16 @@ impl Contract {
         let mut promises = vec![];
 
         if action_type == ActionType::Init {
-            debug_assert!(owner.inactive_streams.insert(&stream.id));
-            debug_assert!(receiver.inactive_streams.insert(&stream.id));
+            assert!(owner.inactive_streams.insert(&stream.id));
+            assert!(receiver.inactive_streams.insert(&stream.id));
         } else {
             debug_assert!(!stream.status.is_terminated());
             match action_type {
                 ActionType::Start => {
-                    debug_assert!(owner.inactive_streams.remove(&stream.id));
-                    debug_assert!(receiver.inactive_streams.remove(&stream.id));
-                    debug_assert!(owner.active_streams.insert(&stream.id));
-                    debug_assert!(receiver.active_streams.insert(&stream.id));
+                    assert!(owner.inactive_streams.remove(&stream.id));
+                    assert!(receiver.inactive_streams.remove(&stream.id));
+                    assert!(owner.active_streams.insert(&stream.id));
+                    assert!(receiver.active_streams.insert(&stream.id));
                     *owner
                         .total_outgoing
                         .entry(stream.token_account_id.clone())
@@ -143,10 +143,10 @@ impl Contract {
                 ActionType::Pause => {
                     debug_assert_eq!(stream.status, StreamStatus::Active);
                     promises.push(self.process_payment(stream, &mut receiver)?);
-                    debug_assert!(owner.active_streams.remove(&stream.id));
-                    debug_assert!(receiver.active_streams.remove(&stream.id));
-                    debug_assert!(owner.inactive_streams.insert(&stream.id));
-                    debug_assert!(receiver.inactive_streams.insert(&stream.id));
+                    assert!(owner.active_streams.remove(&stream.id));
+                    assert!(receiver.active_streams.remove(&stream.id));
+                    assert!(owner.inactive_streams.insert(&stream.id));
+                    assert!(receiver.inactive_streams.insert(&stream.id));
                     *owner
                         .total_outgoing
                         .get_mut(&stream.token_account_id)
@@ -163,10 +163,10 @@ impl Contract {
                 ActionType::Stop { reason } => {
                     if stream.status == StreamStatus::Active {
                         promises.push(self.process_payment(stream, &mut receiver)?);
-                        debug_assert!(owner.active_streams.remove(&stream.id));
-                        debug_assert!(receiver.active_streams.remove(&stream.id));
-                        debug_assert!(owner.inactive_streams.insert(&stream.id));
-                        debug_assert!(receiver.inactive_streams.insert(&stream.id));
+                        assert!(owner.active_streams.remove(&stream.id));
+                        assert!(receiver.active_streams.remove(&stream.id));
+                        assert!(owner.inactive_streams.insert(&stream.id));
+                        assert!(receiver.inactive_streams.insert(&stream.id));
                         *owner
                             .total_outgoing
                             .get_mut(&stream.token_account_id)
@@ -198,10 +198,10 @@ impl Contract {
                                 reason: StreamFinishReason::FinishedNatually
                             }
                         );
-                        debug_assert!(owner.active_streams.remove(&stream.id));
-                        debug_assert!(receiver.active_streams.remove(&stream.id));
-                        debug_assert!(owner.inactive_streams.insert(&stream.id));
-                        debug_assert!(receiver.inactive_streams.insert(&stream.id));
+                        assert!(owner.active_streams.remove(&stream.id));
+                        assert!(receiver.active_streams.remove(&stream.id));
+                        assert!(owner.inactive_streams.insert(&stream.id));
+                        assert!(receiver.inactive_streams.insert(&stream.id));
                         *owner
                             .total_outgoing
                             .get_mut(&stream.token_account_id)

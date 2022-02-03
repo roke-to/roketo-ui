@@ -1,3 +1,68 @@
+mod setup;
+
+use crate::setup::*;
+
+fn basic_setup() -> (Env, Tokens, Users) {
+    let e = Env::init();
+    let tokens = Tokens::init(&e);
+    e.setup_assets(&tokens);
+
+    let users = Users::init(&e);
+    e.mint_tokens(&tokens, &users.alice);
+    storage_deposit(
+        &users.alice,
+        &e.contract.account_id(),
+        &users.alice.account_id(),
+        d(1, 23),
+    );
+    e.mint_tokens(&tokens, &users.bob);
+    storage_deposit(
+        &users.bob,
+        &e.contract.account_id(),
+        &users.bob.account_id(),
+        d(1, 23),
+    );
+
+    (e, tokens, users)
+}
+
+#[test]
+fn test_init_env() {
+    let e = Env::init();
+    let _tokens = Tokens::init(&e);
+    let _users = Users::init(&e);
+}
+
+#[test]
+fn test_mint_tokens() {
+    let e = Env::init();
+    let tokens = Tokens::init(&e);
+    let users = Users::init(&e);
+    e.mint_tokens(&tokens, &users.alice);
+}
+
+#[test]
+fn test_dev_setup() {
+    let e = Env::init();
+    let tokens = Tokens::init(&e);
+    e.setup_assets(&tokens);
+
+    let dao = e.get_dao();
+    assert_eq!(dao.tokens.len(), 5);
+
+    let stats = e.get_stats();
+    assert_eq!(stats.listed_tokens.len(), 5);
+
+    let (_, s) = e.get_token(&tokens.aurora);
+    assert!(s.is_some());
+
+    let (_, s) = e.get_token(&tokens.aurora);
+    assert!(s.is_some());
+
+    let (_, s) = e.get_token(&tokens.dacha);
+    assert!(s.is_none());
+}
+
 /*use std::collections::HashMap;
 use std::convert::TryInto;
 

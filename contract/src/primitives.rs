@@ -13,6 +13,7 @@ pub const ONE_TERA: u64 = Gas::ONE_TERA.0; // TODO near-sdk version is useless n
 pub const DEFAULT_COMMISSION_UNLISTED: Balance = ONE_NEAR / 10; // 0.1 NEAR
 
 // Explanation on default storage balance and gas needs.
+//
 // Normally it's enough to take 0.00125 NEAR for storage deposit
 // and ~10 TGas for transfers and storage deposit
 // for most regular fungible tokens based on NEP-141 standard.

@@ -11,11 +11,16 @@ impl Contract {
         Ok(())
     }
 
+    #[allow(unused_mut)]
     #[payable]
-    pub fn dao_update_token(&mut self, token: Token) -> Result<(), ContractError> {
+    pub fn dao_update_token(&mut self, mut token: Token) -> Result<(), ContractError> {
         self.dao.check_owner()?;
 
-        self.dao.tokens.remove(&token.account_id);
+        if self.dao.tokens.remove(&token.account_id).is_none() {
+            self.stats_add_token(token.account_id.clone());
+        }
+        // `is_listed` is skipped by serde
+        token.is_listed = true;
         self.dao.tokens.insert(token.account_id.clone(), token);
 
         Ok(())

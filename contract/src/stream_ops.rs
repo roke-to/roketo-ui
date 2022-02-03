@@ -105,14 +105,13 @@ impl Contract {
             && stream.balance > 0
             && stream.is_expirable
         {
-            debug_assert!(self
-                .process_action(
-                    &mut stream,
-                    ActionType::Stop {
-                        reason: StreamFinishReason::FinishedBecauseCannotBeExtended,
-                    },
-                )?
-                .is_empty());
+            let action = self.process_action(
+                &mut stream,
+                ActionType::Stop {
+                    reason: StreamFinishReason::FinishedBecauseCannotBeExtended,
+                },
+            )?;
+            debug_assert!(action.is_empty());
             self.save_stream(&stream_id, stream)?;
             return Err(ContractError::StreamExpired {
                 stream_id: stream_id.into(),

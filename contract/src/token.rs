@@ -6,6 +6,7 @@ use crate::*;
 pub struct Token {
     pub account_id: AccountId,
 
+    #[serde(skip)]
     pub is_listed: bool,
 
     // taken in current fts in case of listed token
@@ -13,10 +14,8 @@ pub struct Token {
     pub commission_on_create: Balance,
 
     // percentage of tokens taken for commission
-    #[serde(with = "u128_dec_format")]
-    pub commission_numerator: u128,
-    #[serde(with = "u128_dec_format")]
-    pub commission_denominator: u128,
+    pub commission_numerator: u32,
+    pub commission_denominator: u32,
 
     #[serde(with = "u128_dec_format")]
     pub collected_commission: Balance,
@@ -44,7 +43,8 @@ impl Token {
     }
 
     pub(crate) fn apply_commission(&self, amount: Balance) -> (Balance, Balance) {
-        let commission = amount / self.commission_denominator * self.commission_numerator;
+        let commission =
+            amount / self.commission_denominator as Balance * self.commission_numerator as Balance;
         (amount - commission, commission)
     }
 }

@@ -18,12 +18,25 @@ pub struct AccountView {
 
 #[near_bindgen]
 impl Contract {
+    pub fn get_stats(self) -> Stats {
+        let mut stats: Stats = self.stats.get().unwrap().into();
+        stats.total_listed_tokens = stats.listed_tokens.len() as u32;
+        stats
+    }
+
     pub fn get_dao(self) -> Dao {
         self.dao
     }
 
-    pub fn get_stats(self) -> Stats {
-        self.stats.get().unwrap().into()
+    pub fn get_token(self, token_account_id: AccountId) -> (Token, Option<TokenStats>) {
+        (
+            self.dao
+                .get_token(&token_account_id)
+                .unwrap_or(Token::new_unlisted(&token_account_id)),
+            (Stats::from(self.stats.get().unwrap()))
+                .listed_tokens
+                .remove(&token_account_id),
+        )
     }
 
     pub fn get_stream(&self, stream_id: Base58CryptoHash) -> Result<Stream, ContractError> {

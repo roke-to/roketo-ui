@@ -34,7 +34,7 @@ pub struct Stats {
     #[serde(with = "u128_dec_format")]
     pub total_active_streams: u128,
 
-    pub total_tokens: u32,
+    #[borsh_skip]
     pub total_listed_tokens: u32,
 }
 
@@ -58,6 +58,16 @@ impl From<Stats> for VStats {
 }
 
 impl Contract {
+    pub(crate) fn stats_add_token(&mut self, token_account_id: AccountId) {
+        let mut stats: Stats = self.stats.take().unwrap().into();
+        assert!(stats
+            .listed_tokens
+            .insert(token_account_id, TokenStats::default())
+            .is_none());
+        self.stats.set(&stats.into());
+        //assert!(false);
+    }
+
     pub(crate) fn stats_inc_accounts(&mut self) {
         let mut stats: Stats = self.stats.take().unwrap().into();
         stats.total_accounts += 1;
