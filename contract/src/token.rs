@@ -121,12 +121,15 @@ impl Contract {
                     left: env::prepaid_gas() - env::used_gas(),
                 });
             }
-            if env::attached_deposit() < token.storage_balance_needed {
+            // We agreed to compensate storage_deposit for all created streams.
+            //
+            // TODO: needs 2 * storage_balance + 2 in case of stop stream
+            /* if env::attached_deposit() < token.storage_balance_needed {
                 return Err(ContractError::InsufficientDeposit {
                     expected: token.storage_balance_needed,
                     received: env::attached_deposit(),
                 });
-            }
+            } */
             Ok(fungible_token_contract::storage_deposit(
                 Some(recipient.clone()),
                 Some(true),

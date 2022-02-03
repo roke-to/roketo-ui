@@ -13,6 +13,7 @@ pub struct AccountView {
 
     pub deposit: U128,
 
+    pub last_created_stream: Option<Base58CryptoHash>,
     pub is_cron_allowed: bool,
 }
 
@@ -40,8 +41,9 @@ impl Contract {
     }
 
     pub fn get_stream(&self, stream_id: Base58CryptoHash) -> Result<Stream, ContractError> {
+        let stream_id = stream_id.into();
         self.streams
-            .get(&stream_id.into())
+            .get(&stream_id)
             .map(|v| Ok(v.into()))
             .unwrap_or(Err(ContractError::UnreachableStream { stream_id }))
     }
@@ -75,6 +77,7 @@ impl Contract {
                         .collect(),
 
                     deposit: v.deposit.into(),
+                    last_created_stream: v.last_created_stream.map(|w| w.into()),
                     is_cron_allowed: v.is_cron_allowed,
                 })
             })

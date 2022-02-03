@@ -1,6 +1,7 @@
 mod setup;
 
 use crate::setup::*;
+use contract::{StreamFinishReason, StreamStatus};
 
 fn basic_setup() -> (Env, Tokens, Users) {
     let e = Env::init();
@@ -9,20 +10,9 @@ fn basic_setup() -> (Env, Tokens, Users) {
 
     let users = Users::init(&e);
     e.mint_tokens(&tokens, &users.alice);
-    storage_deposit(
-        &users.alice,
-        &e.contract.account_id(),
-        &users.alice.account_id(),
-        d(1, 23),
-    );
     e.mint_tokens(&tokens, &users.bob);
-    storage_deposit(
-        &users.bob,
-        &e.contract.account_id(),
-        &users.bob.account_id(),
-        d(1, 23),
-    );
 
+    // e.show_balances(&users, &tokens);
     (e, tokens, users)
 }
 
@@ -61,6 +51,59 @@ fn test_dev_setup() {
 
     let (_, s) = e.get_token(&tokens.dacha);
     assert!(s.is_none());
+}
+
+#[test]
+fn test_stream_sanity() {
+    let (e, tokens, users) = basic_setup();
+
+    let amount = d(100, 24);
+    let period_sec = 100;
+    e.create_stream(
+        &users.alice,
+        &users.charlie,
+        &tokens.wnear,
+        amount,
+        period_sec,
+    );
+
+    e.skip_time(period_sec);
+
+    let dao = e.get_dao();
+    let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
+    let amount_after_create = amount - dao_token.commission_on_create;
+    let stream_id = e.get_account(&users.alice).last_created_stream.unwrap();
+    let stream = e.get_stream(&stream_id);
+
+    assert_eq!(stream.balance, amount_after_create);
+    assert_eq!(stream.owner_id, users.alice.account_id());
+    assert_eq!(stream.receiver_id, users.charlie.account_id());
+    assert_eq!(stream.tokens_per_sec * period_sec as u128, amount);
+    assert_eq!(stream.tokens_total_withdrawn, 0);
+    assert_eq!(stream.status, StreamStatus::Active);
+
+    assert!(e.stop_stream(&users.alice, &stream_id).is_ok());
+
+    let amount_after_stop = amount_after_create
+        - amount_after_create * dao_token.commission_numerator as u128
+            / dao_token.commission_denominator as u128;
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(stream.balance, 0);
+    assert_eq!(stream.owner_id, users.alice.account_id());
+    assert_eq!(stream.receiver_id, users.charlie.account_id());
+    assert_eq!(stream.tokens_per_sec * period_sec as u128, amount);
+    assert_eq!(stream.tokens_total_withdrawn, amount_after_create);
+    assert_eq!(
+        stream.status,
+        StreamStatus::Finished {
+            reason: StreamFinishReason::FinishedNatually
+        }
+    );
+
+    assert_eq!(
+        u128::from(e.get_balance(&tokens.wnear, &users.charlie)),
+        amount_after_stop
+    );
 }
 
 /*use std::collections::HashMap;

@@ -18,14 +18,12 @@ pub use crate::account::*;
 pub use crate::aurora::*;
 pub use crate::dao::*;
 pub use crate::err::*;
-pub use crate::interface::*;
+pub use crate::interface::token_calls::*;
+pub use crate::interface::views::*;
 pub use crate::primitives::*;
 pub use crate::stats::*;
 pub use crate::stream::*;
-pub use crate::stream_ops::*;
 pub use crate::token::*;
-pub use crate::unit_tests::*;
-pub use crate::web4::*;
 
 use near_contract_standards::fungible_token::core_impl::ext_fungible_token;
 use near_contract_standards::fungible_token::receiver::FungibleTokenReceiver;

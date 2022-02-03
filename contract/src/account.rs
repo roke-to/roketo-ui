@@ -13,6 +13,7 @@ pub struct Account {
 
     pub deposit: Balance,
 
+    pub last_created_stream: Option<StreamId>,
     pub is_cron_allowed: bool,
 }
 
@@ -63,6 +64,7 @@ impl Contract {
                 total_outgoing: HashMap::new(),
                 total_received: HashMap::new(),
                 deposit: 0,
+                last_created_stream: None,
                 is_cron_allowed: false,
             }
         })

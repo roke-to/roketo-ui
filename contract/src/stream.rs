@@ -122,6 +122,7 @@ impl Contract {
         if action_type == ActionType::Init {
             assert!(owner.inactive_streams.insert(&stream.id));
             assert!(receiver.inactive_streams.insert(&stream.id));
+            owner.last_created_stream = Some(stream.id);
         } else {
             debug_assert!(!stream.status.is_terminated());
             match action_type {
@@ -249,7 +250,7 @@ impl Contract {
         match self.streams.remove(&stream_id) {
             Some(vstream) => Ok(vstream.into()),
             None => Err(ContractError::UnreachableStream {
-                stream_id: (*stream_id).into(),
+                stream_id: *stream_id,
             }),
         }
     }

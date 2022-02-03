@@ -1,6 +1,7 @@
 use crate::*;
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, PartialEq, Debug)]
+#[cfg_attr(not(target_arch = "wasm32"), derive(Deserialize))]
 #[serde(crate = "near_sdk::serde")]
 pub enum ContractError {
     Unknown,
@@ -48,37 +49,49 @@ pub enum ContractError {
         left: Gas,
     },
     InsufficientDeposit {
+        #[serde(with = "u128_dec_format")]
         expected: Balance,
+        #[serde(with = "u128_dec_format")]
         received: Balance,
     },
     InsufficientBalance {
         token_account_id: AccountId,
+        #[serde(with = "u128_dec_format")]
         requested: Balance,
+        #[serde(with = "u128_dec_format")]
         left: Balance,
     },
     InsufficientNearBalance {
+        #[serde(with = "u128_dec_format")]
         requested: Balance,
+        #[serde(with = "u128_dec_format")]
         left: Balance,
     },
     UnreachableAccount {
         account_id: AccountId,
     },
     UnreachableStream {
-        stream_id: Base58CryptoHash,
+        #[serde(with = "b58_dec_format")]
+        stream_id: CryptoHash,
     },
     StreamTerminated {
-        stream_id: Base58CryptoHash,
+        #[serde(with = "b58_dec_format")]
+        stream_id: CryptoHash,
     },
     StreamExpired {
-        stream_id: Base58CryptoHash,
+        #[serde(with = "b58_dec_format")]
+        stream_id: CryptoHash,
     },
     DescriptionTooLong {
         max_description_len: usize,
         received: usize,
     },
     InvalidStreamingSpeed {
+        #[serde(with = "u128_dec_format")]
         min_streaming_speed: u128,
+        #[serde(with = "u128_dec_format")]
         max_streaming_speed: u128,
+        #[serde(with = "u128_dec_format")]
         received: u128,
     },
     DataCorruption,

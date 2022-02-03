@@ -15,10 +15,8 @@ pub struct TokenStats {
     #[serde(with = "u128_dec_format")]
     pub total_commission_collected: Balance,
 
-    #[serde(with = "u128_dec_format")]
-    pub streams: u128,
-    #[serde(with = "u128_dec_format")]
-    pub active_streams: u128,
+    pub streams: u32,
+    pub active_streams: u32,
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Default)]
@@ -27,12 +25,9 @@ pub struct TokenStats {
 pub struct Stats {
     pub listed_tokens: HashMap<AccountId, TokenStats>,
 
-    #[serde(with = "u128_dec_format")]
-    pub total_accounts: u128,
-    #[serde(with = "u128_dec_format")]
-    pub total_streams: u128,
-    #[serde(with = "u128_dec_format")]
-    pub total_active_streams: u128,
+    pub total_accounts: u32,
+    pub total_streams: u32,
+    pub total_active_streams: u32,
 
     #[borsh_skip]
     pub total_listed_tokens: u32,

@@ -1,17 +1,16 @@
 use near_contract_standards::fungible_token::metadata::{FungibleTokenMetadata, FT_METADATA_SPEC};
-use near_sdk::json_types::U128;
+use near_sdk::json_types::{Base58CryptoHash, U128};
 use near_sdk::serde_json::json;
 use near_sdk::{env, serde_json, AccountId, Balance, Timestamp, ONE_YOCTO};
 use near_sdk_sim::runtime::GenesisConfig;
 use near_sdk_sim::{
     deploy, init_simulator, to_yocto, ContractAccount, ExecutionResult, UserAccount,
 };
-use std::convert::TryInto;
 
 use contract::ContractContract as RoketoContract;
 use contract::{
-    Dao, Stats, Stream, Token, TokenStats, DEFAULT_GAS_FOR_FT_TRANSFER,
-    DEFAULT_GAS_FOR_STORAGE_DEPOSIT,
+    AccountView, ContractError, CreateRequest, Dao, Stats, Stream, Token, TokenStats,
+    TransferCallRequest, DEFAULT_GAS_FOR_FT_TRANSFER, DEFAULT_GAS_FOR_STORAGE_DEPOSIT,
 };
 
 near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
@@ -87,7 +86,7 @@ pub fn ft_storage_deposit(
     );
 }
 
-pub fn to_nano(timestamp: u32) -> Timestamp {
+pub fn to_nano(timestamp: u64) -> Timestamp {
     Timestamp::from(timestamp) * 10u64.pow(9)
 }
 
@@ -156,8 +155,8 @@ impl Env {
             .function_call(
                 self.contract.contract.dao_update_token(Token {
                     account_id: self.roketo_token.account_id(),
-                    is_listed: false,                                 // unused
-                    commission_on_create: 10_000_000_000_000_000_000, // 10 tokens
+                    is_listed: false, // unused
+                    commission_on_create: d(10, 18),
                     commission_numerator: 1,
                     commission_denominator: 10000, // 0.01%
                     collected_commission: 0,
@@ -174,8 +173,8 @@ impl Env {
             .function_call(
                 self.contract.contract.dao_update_token(Token {
                     account_id: tokens.ndai.account_id(),
-                    is_listed: false,                                // unused
-                    commission_on_create: 1_000_000_000_000_000_000, // 1 token
+                    is_listed: false, // unused
+                    commission_on_create: d(1, 18),
                     commission_numerator: 1,
                     commission_denominator: 1000, // 0.1%
                     collected_commission: 0,
@@ -192,8 +191,8 @@ impl Env {
             .function_call(
                 self.contract.contract.dao_update_token(Token {
                     account_id: tokens.nusdt.account_id(),
-                    is_listed: false,                // unused
-                    commission_on_create: 1_000_000, // 1 token
+                    is_listed: false, // unused
+                    commission_on_create: d(1, 6),
                     commission_numerator: 1,
                     commission_denominator: 1000, // 0.1%
                     collected_commission: 0,
@@ -210,8 +209,8 @@ impl Env {
             .function_call(
                 self.contract.contract.dao_update_token(Token {
                     account_id: tokens.wnear.account_id(),
-                    is_listed: false,                              // unused
-                    commission_on_create: 100_000_000_000_000_000, // 0.1 token
+                    is_listed: false,               // unused
+                    commission_on_create: d(1, 23), // 0.1 token
                     commission_numerator: 1,
                     commission_denominator: 250, // 0.4%
                     collected_commission: 0,
@@ -228,8 +227,8 @@ impl Env {
             .function_call(
                 self.contract.contract.dao_update_token(Token {
                     account_id: tokens.aurora.account_id(),
-                    is_listed: false,                            // unused
-                    commission_on_create: 1_000_000_000_000_000, // 0.001 token
+                    is_listed: false,               // unused
+                    commission_on_create: d(1, 15), // 0.001 token
                     commission_numerator: 1,
                     commission_denominator: 250, // 0.4%
                     collected_commission: 0,
@@ -339,6 +338,73 @@ impl Env {
             .unwrap_json()
     }
 
+    pub fn get_account(&self, user: &UserAccount) -> AccountView {
+        let account: Result<AccountView, ContractError> = self
+            .near
+            .view_method_call(self.contract.contract.get_account(user.account_id()))
+            .unwrap_json();
+        account.unwrap()
+    }
+
+    pub fn get_stream(&self, stream_id: &Base58CryptoHash) -> Stream {
+        let stream: Result<Stream, ContractError> = self
+            .near
+            .view_method_call(self.contract.contract.get_stream(*stream_id))
+            .unwrap_json();
+        stream.unwrap()
+    }
+
+    pub fn create_stream(
+        &self,
+        owner: &UserAccount,
+        receiver: &UserAccount,
+        token: &UserAccount,
+        amount: Balance,
+        period_sec: u64,
+    ) {
+        self.contract_ft_transfer_call(
+            &token,
+            &owner,
+            amount,
+            &serde_json::to_string(&TransferCallRequest::Create {
+                request: CreateRequest {
+                    receiver_id: receiver.account_id(),
+                    tokens_per_sec: amount / period_sec as u128,
+                    description: None,
+                    is_auto_start_enabled: None,
+                    is_expirable: None,
+                },
+            })
+            .unwrap(),
+        )
+        .assert_success();
+    }
+
+    pub fn stop_stream(
+        &self,
+        user: &UserAccount,
+        stream_id: &Base58CryptoHash,
+    ) -> Result<(), ContractError> {
+        let res = user.function_call(
+            self.contract.contract.stop_stream(*stream_id),
+            MAX_GAS,
+            ONE_YOCTO,
+        );
+        res.assert_success();
+        //println!("### {:?}", res);
+        let res = match &(res.outcome()).status {
+            near_sdk_sim::transaction::ExecutionStatus::SuccessValue(s) => {
+                near_sdk::serde_json::from_slice(&s)
+            }
+            _ => unreachable!(),
+        };
+        //println!("### {:?}", res);
+        if res.is_err() {
+            return Ok(());
+        }
+        near_sdk::serde_json::from_value(res.unwrap()).unwrap()
+    }
+
     /*pub fn get_asset(&self, token: &UserAccount) -> AssetDetailedView {
         let asset: Option<AssetDetailedView> = self
             .near
@@ -440,7 +506,7 @@ impl Env {
         )
     }*/
 
-    pub fn skip_time(&self, seconds: u32) {
+    pub fn skip_time(&self, seconds: u64) {
         self.near.borrow_runtime_mut().cur_block.block_timestamp += to_nano(seconds);
     }
 
@@ -453,6 +519,7 @@ impl Env {
             &users.eve,
             &self.near,
             &self.dao,
+            &self.contract.user_account,
         ] {
             for token in [
                 &tokens.wnear,

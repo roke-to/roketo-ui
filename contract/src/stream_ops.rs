@@ -96,9 +96,7 @@ impl Contract {
         let stream_id = stream_id.into();
         let mut stream = self.extract_stream(&stream_id)?;
         if stream.status.is_terminated() {
-            return Err(ContractError::StreamTerminated {
-                stream_id: stream_id.into(),
-            });
+            return Err(ContractError::StreamTerminated { stream_id });
         }
 
         if stream.available_to_withdraw() == stream.balance
@@ -113,9 +111,7 @@ impl Contract {
             )?;
             debug_assert!(action.is_empty());
             self.save_stream(&stream_id, stream)?;
-            return Err(ContractError::StreamExpired {
-                stream_id: stream_id.into(),
-            });
+            return Err(ContractError::StreamExpired { stream_id });
         }
 
         if stream.token_account_id != token.account_id {
