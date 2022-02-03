@@ -11,6 +11,7 @@ mod stats;
 mod stream;
 mod stream_ops;
 mod token;
+mod unit_tests;
 mod web4;
 
 pub use crate::account::*;
@@ -23,6 +24,7 @@ pub use crate::stats::*;
 pub use crate::stream::*;
 pub use crate::stream_ops::*;
 pub use crate::token::*;
+pub use crate::unit_tests::*;
 pub use crate::web4::*;
 
 use near_contract_standards::fungible_token::core_impl::ext_fungible_token;
