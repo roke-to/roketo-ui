@@ -64,7 +64,7 @@ impl Contract {
         token: &Token,
         recipient: &AccountId,
         amount: Balance,
-        is_storage_deposit_needed: Option<bool>,
+        is_storage_deposit_needed: bool,
     ) -> Result<Promise, ContractError> {
         if amount == 0 {
             // NEP-141 forbids zero token transfers
@@ -77,7 +77,6 @@ impl Contract {
         }
 
         if Contract::is_aurora_address(recipient) {
-            debug_assert!(is_storage_deposit_needed.is_none());
             if env::prepaid_gas() - env::used_gas() < MIN_GAS_FOR_AURORA_TRANFSER {
                 return Err(ContractError::InsufficientGas {
                     expected: MIN_GAS_FOR_AURORA_TRANFSER,
@@ -86,17 +85,17 @@ impl Contract {
             }
             if token.account_id == Contract::aurora_account_id() {
                 return Ok(ext_fungible_token::ft_transfer_call(
-                    recipient.clone(),
+                    Contract::aurora_account_id(),
                     U128(amount),
                     None,
                     Contract::aurora_transfer_call_msg(recipient),
-                    token.account_id.clone(),
+                    Contract::aurora_account_id(),
                     ONE_YOCTO,
                     token.gas_for_ft_transfer,
                 ));
             } else {
                 return Ok(ext_fungible_token::ft_transfer_call(
-                    recipient.clone(),
+                    Contract::aurora_account_id(),
                     U128(amount),
                     None,
                     recipient.to_string(),
@@ -107,11 +106,6 @@ impl Contract {
             }
         }
 
-        let is_storage_deposit_needed = match is_storage_deposit_needed {
-            Some(value) => value,
-            None => true,
-        };
-
         if is_storage_deposit_needed {
             if env::prepaid_gas() - env::used_gas()
                 < token.gas_for_ft_transfer + token.gas_for_storage_deposit
@@ -121,15 +115,6 @@ impl Contract {
                     left: env::prepaid_gas() - env::used_gas(),
                 });
             }
-            // We agreed to compensate storage_deposit for all created streams.
-            //
-            // TODO: needs 2 * storage_balance + 2 in case of stop stream
-            /* if env::attached_deposit() < token.storage_balance_needed {
-                return Err(ContractError::InsufficientDeposit {
-                    expected: token.storage_balance_needed,
-                    received: env::attached_deposit(),
-                });
-            } */
             Ok(fungible_token_contract::storage_deposit(
                 Some(recipient.clone()),
                 Some(true),

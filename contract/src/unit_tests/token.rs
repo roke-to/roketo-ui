@@ -47,7 +47,7 @@ mod tests {
                 &Token::new_unlisted(&"token.near".parse().unwrap()),
                 &aurora_address,
                 123456,
-                None
+                false
             )
             .is_ok());
         assert!(contract
@@ -55,7 +55,7 @@ mod tests {
                 &Token::new_unlisted(&Contract::aurora_account_id()),
                 &aurora_address,
                 123456,
-                None
+                false
             )
             .is_ok());
     }

@@ -1,7 +1,8 @@
 mod setup;
 
 use crate::setup::*;
-use contract::{StreamFinishReason, StreamStatus};
+use contract::{StreamFinishReason, StreamId, StreamStatus, DEFAULT_STORAGE_BALANCE};
+use near_sdk::env;
 
 fn basic_setup() -> (Env, Tokens, Users) {
     let e = Env::init();
@@ -54,12 +55,84 @@ fn test_dev_setup() {
 }
 
 #[test]
+fn test_saved_storage_deposit() {
+    let (mut e, tokens, users) = basic_setup();
+    let period_sec = 100;
+    let stream_id: StreamId = e
+        .create_stream(
+            &users.alice,
+            &users.charlie,
+            &tokens.wnear,
+            d(1, 23) + 1,
+            period_sec,
+        )
+        .into();
+    assert_eq!(
+        *e.streams.get(&stream_id).unwrap(),
+        125 * env::STORAGE_PRICE_PER_BYTE
+    );
+
+    let stream_id: StreamId = e
+        .create_stream(
+            &users.alice,
+            &users.charlie,
+            &tokens.ndai,
+            d(1, 18) + 1,
+            period_sec,
+        )
+        .into();
+    assert_eq!(
+        *e.streams.get(&stream_id).unwrap(),
+        125 * env::STORAGE_PRICE_PER_BYTE
+    );
+
+    let stream_id: StreamId = e
+        .create_stream(
+            &users.alice,
+            &users.charlie,
+            &tokens.nusdt,
+            d(1, 6) + 1,
+            period_sec,
+        )
+        .into();
+    assert_eq!(
+        *e.streams.get(&stream_id).unwrap(),
+        125 * env::STORAGE_PRICE_PER_BYTE
+    );
+
+    let stream_id: StreamId = e
+        .create_stream(
+            &users.alice,
+            &users.charlie,
+            &tokens.aurora,
+            d(1, 15) + 1,
+            period_sec,
+        )
+        .into();
+    assert_eq!(*e.streams.get(&stream_id).unwrap(), 0);
+
+    e.account_deposit_near(&users.alice, d(1, 23));
+    let stream_id: StreamId = e
+        .create_stream(
+            &users.alice,
+            &users.charlie,
+            &tokens.dacha,
+            d(1, 10),
+            period_sec,
+        )
+        .into();
+    assert_eq!(*e.streams.get(&stream_id).unwrap(), DEFAULT_STORAGE_BALANCE);
+}
+
+// Actual tests start here
+
+#[test]
 fn test_stream_sanity() {
-    let (e, tokens, users) = basic_setup();
+    let (mut e, tokens, users) = basic_setup();
 
     let amount = d(100, 24);
     let period_sec = 100;
-    e.create_stream(
+    let stream_id = e.create_stream(
         &users.alice,
         &users.charlie,
         &tokens.wnear,
@@ -72,7 +145,6 @@ fn test_stream_sanity() {
     let dao = e.get_dao();
     let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
     let amount_after_create = amount - dao_token.commission_on_create;
-    let stream_id = e.get_account(&users.alice).last_created_stream.unwrap();
     let stream = e.get_stream(&stream_id);
 
     assert_eq!(stream.balance, amount_after_create);

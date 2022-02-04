@@ -20,10 +20,19 @@ pub struct CreateRequest {
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(crate = "near_sdk::serde")]
 pub enum AuroraOperationalRequest {
-    StartStream { stream_id: Base58CryptoHash },
-    PauseStream { stream_id: Base58CryptoHash },
-    StopStream { stream_id: Base58CryptoHash },
-    Withdraw { stream_id: Base58CryptoHash },
+    StartStream {
+        stream_id: Base58CryptoHash,
+    },
+    PauseStream {
+        stream_id: Base58CryptoHash,
+    },
+    StopStream {
+        stream_id: Base58CryptoHash,
+    },
+    Withdraw {
+        stream_id: Base58CryptoHash,
+        is_storage_deposit_needed: bool,
+    },
 }
 
 #[near_bindgen]
@@ -39,18 +48,49 @@ impl FungibleTokenReceiver for Contract {
             // Try to parse as an Aurora operational request
             let key: Result<AuroraOperationalRequest, _> = serde_json::from_str(&msg);
             if key.is_ok() {
+                // TODO
+                /*let eth_needed: Balance = DEFAULT_STORAGE_BALANCE
+                * self.dao.storage_deposit_aurora_numerator as u128
+                / self.dao.storage_deposit_aurora_denominator as u128;*/
                 let res = match key.as_ref().unwrap() {
-                    AuroraOperationalRequest::StartStream { stream_id } => {
-                        self.process_start_stream((*stream_id).into())
-                    }
+                    AuroraOperationalRequest::StartStream { stream_id } => self
+                        .process_start_stream((*stream_id).into())
+                        .map(|_| vec![]),
                     AuroraOperationalRequest::PauseStream { stream_id } => {
+                        // TODO
+                        /*if u128::from(amount) < eth_needed {
+                            Err(ContractError::InsufficientDeposit {
+                                expected: eth_needed,
+                                received: amount.into(),
+                            })
+                        } else {
+                            self.process_pause_stream((*stream_id).into())
+                        }*/
                         self.process_pause_stream((*stream_id).into())
                     }
                     AuroraOperationalRequest::StopStream { stream_id } => {
+                        // TODO
+                        /*let stream_view = self.view_stream(&stream_id)?;
+                        let token = self
+                            .dao
+                            .get_token(&stream_view.token_account_id)
+                            .unwrap_or(Token::new_unlisted(&stream_view.token_account_id));
+                        // In case of token.storage_balance_needed == 0, it should be at least 1 yocto
+                        if env::attached_deposit() < 2 * token.storage_balance_needed + 1 {
+                            return Err(ContractError::InsufficientDeposit {
+                                expected: 2 * token.storage_balance_needed + 1,
+                                received: env::attached_deposit(),
+                            });
+                        }*/
                         self.process_stop_stream((*stream_id).into())
                     }
-                    AuroraOperationalRequest::Withdraw { stream_id } => {
-                        self.process_withdraw((*stream_id).into())
+                    AuroraOperationalRequest::Withdraw {
+                        stream_id,
+                        is_storage_deposit_needed,
+                    } => {
+                        // TODO storage_deposit question must be discussed
+                        // with Aurora team
+                        self.process_withdraw((*stream_id).into(), *is_storage_deposit_needed)
                     }
                 };
                 return match res {

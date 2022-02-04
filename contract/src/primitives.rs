@@ -22,7 +22,7 @@ pub const DEFAULT_COMMISSION_UNLISTED: Balance = ONE_NEAR / 10; // 0.1 NEAR
 // happens within transfers.
 // To allow those custom tokens be transferable by the contract,
 // the default limits were increased deliberately.
-pub const DEFAULT_STORAGE_BALANCE: Balance = ONE_NEAR;
+pub const DEFAULT_STORAGE_BALANCE: Balance = ONE_NEAR / 10;
 pub const DEFAULT_GAS_FOR_FT_TRANSFER: Gas = Gas(50 * ONE_TERA);
 pub const DEFAULT_GAS_FOR_STORAGE_DEPOSIT: Gas = Gas(25 * ONE_TERA);
 // In cases to avoid high storage deposit and gas needs,
@@ -69,7 +69,7 @@ pub enum ActionType {
     Init,
     Start,
     Pause,
-    Withdraw,
+    Withdraw { is_storage_deposit_needed: bool },
     Stop { reason: StreamFinishReason },
 }
 

@@ -128,10 +128,7 @@ impl Contract {
         Ok(())
     }
 
-    pub fn process_start_stream(
-        &mut self,
-        stream_id: CryptoHash,
-    ) -> Result<Vec<Promise>, ContractError> {
+    pub fn process_start_stream(&mut self, stream_id: CryptoHash) -> Result<(), ContractError> {
         let mut stream = self.extract_stream(&stream_id)?;
 
         if stream.owner_id != env::predecessor_account_id() {
@@ -156,13 +153,13 @@ impl Contract {
             });
         }
 
-        let promises = self.process_action(&mut stream, ActionType::Start)?;
-        // There must be no promises at the point,
-        // but if they appeared somehow it's better to transmit than to hide.
+        assert!(self
+            .process_action(&mut stream, ActionType::Start)?
+            .is_empty());
 
         self.save_stream(&stream_id, stream)?;
 
-        Ok(promises)
+        Ok(())
     }
 
     pub fn process_pause_stream(
@@ -244,10 +241,11 @@ impl Contract {
     pub fn process_withdraw(
         &mut self,
         stream_id: CryptoHash,
+        is_storage_deposit_needed: bool,
     ) -> Result<Vec<Promise>, ContractError> {
         let mut stream = self.extract_stream(&stream_id)?;
 
-        let receiver_view: Account = self.accounts.get(&stream.receiver_id).unwrap().into();
+        let receiver_view = self.view_account(&stream.receiver_id)?;
 
         if receiver_view.id != env::predecessor_account_id() && !receiver_view.is_cron_allowed {
             return Err(ContractError::CronCallsForbidden);
@@ -266,7 +264,12 @@ impl Contract {
             });
         }
 
-        let promises = self.process_action(&mut stream, ActionType::Withdraw)?;
+        let promises = self.process_action(
+            &mut stream,
+            ActionType::Withdraw {
+                is_storage_deposit_needed,
+            },
+        )?;
 
         self.save_stream(&stream_id, stream)?;
 

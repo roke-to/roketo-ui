@@ -18,6 +18,20 @@ impl Contract {
     }
 
     #[payable]
+    pub fn exchanger_update_storage_deposit_aurora_coefficient(
+        &mut self,
+        storage_deposit_aurora_numerator: u32,
+        storage_deposit_aurora_denominator: u32,
+    ) -> Result<(), ContractError> {
+        self.dao.check_exchanger(&env::predecessor_account_id())?;
+
+        self.dao.storage_deposit_aurora_numerator = storage_deposit_aurora_numerator;
+        self.dao.storage_deposit_aurora_denominator = storage_deposit_aurora_denominator;
+
+        Ok(())
+    }
+
+    #[payable]
     pub fn exchanger_withdraw_ft(
         &mut self,
         token_account_id: AccountId,
@@ -44,7 +58,7 @@ impl Contract {
             &token,
             &env::predecessor_account_id(),
             amount,
-            Some(false),
+            false,
         )?)
     }
 }

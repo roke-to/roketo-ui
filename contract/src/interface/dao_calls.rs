@@ -52,7 +52,7 @@ impl Contract {
             &self.dao.get_token(&token_account_id)?,
             &recipient,
             amount.into(),
-            Some(false),
+            false,
         )?)
     }
 

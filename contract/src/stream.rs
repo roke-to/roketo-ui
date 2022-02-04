@@ -143,7 +143,7 @@ impl Contract {
                 }
                 ActionType::Pause => {
                     debug_assert_eq!(stream.status, StreamStatus::Active);
-                    promises.push(self.process_payment(stream, &mut receiver)?);
+                    promises.push(self.process_payment(stream, &mut receiver, true)?);
                     assert!(owner.active_streams.remove(&stream.id));
                     assert!(receiver.active_streams.remove(&stream.id));
                     assert!(owner.inactive_streams.insert(&stream.id));
@@ -163,7 +163,7 @@ impl Contract {
                 }
                 ActionType::Stop { reason } => {
                     if stream.status == StreamStatus::Active {
-                        promises.push(self.process_payment(stream, &mut receiver)?);
+                        promises.push(self.process_payment(stream, &mut receiver, true)?);
                         assert!(owner.active_streams.remove(&stream.id));
                         assert!(receiver.active_streams.remove(&stream.id));
                         assert!(owner.inactive_streams.insert(&stream.id));
@@ -189,9 +189,15 @@ impl Contract {
                     // Processed separately
                     unreachable!();
                 }
-                ActionType::Withdraw => {
+                ActionType::Withdraw {
+                    is_storage_deposit_needed,
+                } => {
                     debug_assert_eq!(stream.status, StreamStatus::Active);
-                    promises.push(self.process_payment(stream, &mut receiver)?);
+                    promises.push(self.process_payment(
+                        stream,
+                        &mut receiver,
+                        is_storage_deposit_needed,
+                    )?);
                     if stream.status.is_terminated() {
                         debug_assert_eq!(
                             stream.status,
@@ -227,6 +233,7 @@ impl Contract {
         &mut self,
         stream: &mut Stream,
         account: &mut Account,
+        is_storage_deposit_needed: bool,
     ) -> Result<Promise, ContractError> {
         let token = self.dao.get_token(&stream.token_account_id)?;
         let (payment, _commission) = stream.process_withdraw(&token);
@@ -235,7 +242,12 @@ impl Contract {
             .entry(stream.token_account_id.clone())
             .or_insert(0) += payment;
         // TODO update stats
-        self.ft_transfer(&token, &stream.receiver_id, payment, Some(true))
+        self.ft_transfer(
+            &token,
+            &stream.receiver_id,
+            payment,
+            is_storage_deposit_needed,
+        )
     }
 
     pub(crate) fn process_refund(&mut self, stream: &mut Stream) -> Result<Promise, ContractError> {
@@ -243,7 +255,16 @@ impl Contract {
         let payment = stream.balance;
         stream.balance = 0;
         // TODO update stats
-        self.ft_transfer(&token, &stream.owner_id, payment, Some(true))
+        self.ft_transfer(&token, &stream.owner_id, payment, true)
+    }
+
+    pub(crate) fn view_stream(&mut self, stream_id: &StreamId) -> Result<Stream, ContractError> {
+        match self.streams.get(&stream_id) {
+            Some(vstream) => Ok(vstream.into()),
+            None => Err(ContractError::UnreachableStream {
+                stream_id: *stream_id,
+            }),
+        }
     }
 
     pub(crate) fn extract_stream(&mut self, stream_id: &StreamId) -> Result<Stream, ContractError> {
