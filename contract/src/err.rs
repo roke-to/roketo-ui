@@ -54,13 +54,6 @@ pub enum ContractError {
         #[serde(with = "u128_dec_format")]
         received: Balance,
     },
-    InsufficientBalance {
-        token_account_id: AccountId,
-        #[serde(with = "u128_dec_format")]
-        requested: Balance,
-        #[serde(with = "u128_dec_format")]
-        left: Balance,
-    },
     InsufficientNearBalance {
         #[serde(with = "u128_dec_format")]
         requested: Balance,

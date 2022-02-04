@@ -7,14 +7,14 @@ impl Contract {
         &mut self,
         token_account_id: AccountId,
         commission_on_create: U128,
-    ) -> Result<(), ContractError> {
-        self.dao.check_exchanger(&env::predecessor_account_id())?;
+    ) {
+        self.dao
+            .check_exchanger(&env::predecessor_account_id())
+            .unwrap();
 
-        let mut token = self.dao.get_token(&token_account_id)?;
+        let mut token = self.dao.get_token(&token_account_id).unwrap();
         token.commission_on_create = commission_on_create.into();
         self.dao.tokens.insert(token_account_id, token);
-
-        Ok(())
     }
 
     #[payable]
@@ -22,43 +22,29 @@ impl Contract {
         &mut self,
         storage_deposit_aurora_numerator: u32,
         storage_deposit_aurora_denominator: u32,
-    ) -> Result<(), ContractError> {
-        self.dao.check_exchanger(&env::predecessor_account_id())?;
+    ) {
+        self.dao
+            .check_exchanger(&env::predecessor_account_id())
+            .unwrap();
 
         self.dao.storage_deposit_aurora_numerator = storage_deposit_aurora_numerator;
         self.dao.storage_deposit_aurora_denominator = storage_deposit_aurora_denominator;
-
-        Ok(())
     }
 
     #[payable]
-    pub fn exchanger_withdraw_ft(
-        &mut self,
-        token_account_id: AccountId,
-        amount: U128,
-    ) -> Result<Promise, ContractError> {
-        self.dao.check_exchanger(&env::predecessor_account_id())?;
+    pub fn exchanger_withdraw_ft(&mut self, token_account_id: AccountId, amount: U128) -> Promise {
+        self.dao
+            .check_exchanger(&env::predecessor_account_id())
+            .unwrap();
 
         let amount = amount.into();
-        let mut token = self.dao.get_token(&token_account_id)?;
-        if amount > token.collected_commission {
-            return Err(ContractError::InsufficientBalance {
-                token_account_id,
-                requested: amount,
-                left: token.collected_commission,
-            });
-        }
+        let mut token = self.dao.get_token(&token_account_id).unwrap();
+        assert!(amount <= token.collected_commission);
         token.collected_commission -= amount;
         self.dao.tokens.insert(token_account_id, token.clone());
 
         // In case of gas failure ask DAO to refund
         // and be smarter next time, dickhead
-        Ok(Contract::ft_transfer(
-            self,
-            &token,
-            &env::predecessor_account_id(),
-            amount,
-            false,
-        )?)
+        Contract::ft_transfer(self, &token, &env::predecessor_account_id(), amount, false).unwrap()
     }
 }

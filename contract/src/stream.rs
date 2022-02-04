@@ -235,12 +235,16 @@ impl Contract {
         account: &mut Account,
         is_storage_deposit_needed: bool,
     ) -> Result<Promise, ContractError> {
-        let token = self.dao.get_token(&stream.token_account_id)?;
-        let (payment, _commission) = stream.process_withdraw(&token);
+        let mut token = self.dao.get_token(&stream.token_account_id)?;
+        let (payment, commission) = stream.process_withdraw(&token);
         *account
             .total_received
             .entry(stream.token_account_id.clone())
             .or_insert(0) += payment;
+        token.collected_commission += commission;
+        self.dao
+            .tokens
+            .insert(stream.token_account_id.clone(), token.clone());
         // TODO update stats
         self.ft_transfer(
             &token,

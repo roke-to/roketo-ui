@@ -3,18 +3,16 @@ use crate::*;
 #[near_bindgen]
 impl Contract {
     #[payable]
-    pub fn dao_change_owner(&mut self, new_dao_id: AccountId) -> Result<(), ContractError> {
-        self.dao.check_owner()?;
+    pub fn dao_change_owner(&mut self, new_dao_id: AccountId) {
+        self.dao.check_owner().unwrap();
 
         self.dao.dao_id = new_dao_id.into();
-
-        Ok(())
     }
 
     #[allow(unused_mut)]
     #[payable]
-    pub fn dao_update_token(&mut self, mut token: Token) -> Result<(), ContractError> {
-        self.dao.check_owner()?;
+    pub fn dao_update_token(&mut self, mut token: Token) {
+        self.dao.check_owner().unwrap();
 
         if self.dao.tokens.remove(&token.account_id).is_none() {
             self.stats_add_token(token.account_id.clone());
@@ -22,20 +20,13 @@ impl Contract {
         // `is_listed` is skipped by serde
         token.is_listed = true;
         self.dao.tokens.insert(token.account_id.clone(), token);
-
-        Ok(())
     }
 
     #[payable]
-    pub fn dao_update_commission_unlisted(
-        &mut self,
-        commission_unlisted: U128,
-    ) -> Result<(), ContractError> {
-        self.dao.check_owner()?;
+    pub fn dao_update_commission_unlisted(&mut self, commission_unlisted: U128) {
+        self.dao.check_owner().unwrap();
 
         self.dao.commission_unlisted = commission_unlisted.into();
-
-        Ok(())
     }
 
     #[payable]
@@ -44,44 +35,37 @@ impl Contract {
         token_account_id: AccountId,
         recipient: AccountId,
         amount: U128,
-    ) -> Result<Promise, ContractError> {
-        self.dao.check_owner()?;
+    ) -> Promise {
+        self.dao.check_owner().unwrap();
 
-        Ok(Contract::ft_transfer(
+        Contract::ft_transfer(
             self,
-            &self.dao.get_token(&token_account_id)?,
+            &self.dao.get_token(&token_account_id).unwrap(),
             &recipient,
             amount.into(),
             false,
-        )?)
+        )
+        .unwrap()
     }
 
     #[payable]
-    pub fn dao_withdraw_near(
-        &mut self,
-        recipient: AccountId,
-        amount: U128,
-    ) -> Result<Promise, ContractError> {
-        self.dao.check_owner()?;
+    pub fn dao_withdraw_near(&mut self, recipient: AccountId, amount: U128) -> Promise {
+        self.dao.check_owner().unwrap();
 
-        Ok(Promise::new(recipient.clone()).transfer(amount.into()))
+        Promise::new(recipient.clone()).transfer(amount.into())
     }
 
     #[payable]
-    pub fn dao_add_exchanger(&mut self, new_exchanger_id: AccountId) -> Result<(), ContractError> {
-        self.dao.check_owner()?;
+    pub fn dao_add_exchanger(&mut self, new_exchanger_id: AccountId) {
+        self.dao.check_owner().unwrap();
 
         self.dao.exchangers.insert(new_exchanger_id);
-
-        Ok(())
     }
 
     #[payable]
-    pub fn dao_remove_exchanger(&mut self, exchanger_id: AccountId) -> Result<(), ContractError> {
-        self.dao.check_owner()?;
+    pub fn dao_remove_exchanger(&mut self, exchanger_id: AccountId) {
+        self.dao.check_owner().unwrap();
 
         self.dao.exchangers.remove(&exchanger_id);
-
-        Ok(())
     }
 }

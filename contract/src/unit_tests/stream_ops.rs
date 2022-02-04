@@ -67,7 +67,7 @@ mod tests {
             .predecessor_account_id(carol())
             .attached_deposit(DEFAULT_COMMISSION_UNLISTED)
             .build());
-        contract.account_deposit_near().unwrap();
+        contract.account_deposit_near();
         let stream = new_stream();
         testing_env!(VMContextBuilder::new().signer_account_id(carol()).build());
         assert!(contract
@@ -91,7 +91,7 @@ mod tests {
             .predecessor_account_id(carol())
             .attached_deposit(DEFAULT_COMMISSION_UNLISTED)
             .build());
-        contract.account_deposit_near().unwrap();
+        contract.account_deposit_near();
         let mut stream = new_stream();
         stream.receiver_id =
             AccountId::new_unchecked("f5cfbc74057c610c8ef151a439252680ac68c6dc".to_string());

@@ -103,9 +103,7 @@ impl FungibleTokenReceiver for Contract {
                         PromiseOrValue::Value(U128::from(0))
                     }
                     Err(err) => {
-                        log!("Error {:?} on {:?}", err, key);
-                        // return everything back
-                        return PromiseOrValue::Value(amount);
+                        panic!("Error {:?} on {:?}", err, key);
                     }
                 };
             } else {
@@ -113,10 +111,10 @@ impl FungibleTokenReceiver for Contract {
             }
         }
 
-        let token = match self.dao.get_token(&env::predecessor_account_id()) {
-            Ok(token) => token,
-            Err(_) => Token::new_unlisted(&sender_id),
-        };
+        let token = self
+            .dao
+            .get_token(&env::predecessor_account_id())
+            .unwrap_or(Token::new_unlisted(&sender_id));
         let key: Result<TransferCallRequest, _> = serde_json::from_str(&msg);
         if key.is_err() {
             log!("cannot parse message {:?}, error {:?}", msg, key);
@@ -136,21 +134,14 @@ impl FungibleTokenReceiver for Contract {
                     request.is_expirable,
                 ) {
                     Ok(()) => PromiseOrValue::Value(U128::from(0)),
-                    Err(err) => {
-                        log!("error on stream creation, {:?}", err);
-                        // return everything back
-                        PromiseOrValue::Value(amount)
-                    }
+                    Err(err) => panic!("error on stream creation, {:?}", err),
+                    // TODO test panic doens't apply state and returns value back
                 }
             }
             TransferCallRequest::Deposit { stream_id } => {
                 match self.process_deposit(token, stream_id.into(), amount.into()) {
                     Ok(()) => PromiseOrValue::Value(U128::from(0)),
-                    Err(err) => {
-                        log!("error on stream depositing, {:?}", err);
-                        // return everything back
-                        PromiseOrValue::Value(amount)
-                    }
+                    Err(err) => panic!("error on stream depositing, {:?}", err),
                 }
             }
         }

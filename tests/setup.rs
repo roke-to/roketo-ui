@@ -11,7 +11,7 @@ use near_sdk_sim::{
 
 use contract::ContractContract as RoketoContract;
 use contract::{
-    AccountView, ContractError, CreateRequest, Dao, Stats, Stream, StreamId, Token, TokenStats,
+    AccountView, ContractError, CreateRequest, Dao, Stats, Stream, Token, TokenStats,
     TransferCallRequest, DEFAULT_GAS_FOR_FT_TRANSFER, DEFAULT_GAS_FOR_STORAGE_DEPOSIT,
     DEFAULT_STORAGE_BALANCE,
 };
@@ -44,7 +44,7 @@ pub struct Env {
     pub contract: ContractAccount<RoketoContract>,
     pub roketo_token: UserAccount,
 
-    pub streams: HashMap<StreamId, Balance>,
+    pub streams: HashMap<String, Balance>,
 }
 
 pub struct Tokens {
@@ -306,18 +306,20 @@ impl Env {
         self.mint_ft(&self.roketo_token, user, d(amount, 18));
     }
 
-    pub fn get_balance(&self, token: &UserAccount, user: &UserAccount) -> U128 {
-        self.near
-            .view(
-                token.account_id(),
-                "ft_balance_of",
-                &json!({
-                    "account_id": user.account_id(),
-                })
-                .to_string()
-                .into_bytes(),
-            )
-            .unwrap_json()
+    pub fn get_balance(&self, token: &UserAccount, user: &UserAccount) -> u128 {
+        u128::from(
+            self.near
+                .view(
+                    token.account_id(),
+                    "ft_balance_of",
+                    &json!({
+                        "account_id": user.account_id(),
+                    })
+                    .to_string()
+                    .into_bytes(),
+                )
+                .unwrap_json::<U128>(),
+        )
     }
 
     pub fn get_stats(&self) -> Stats {
@@ -368,7 +370,7 @@ impl Env {
         receiver: &UserAccount,
         token: &UserAccount,
         amount: Balance,
-        period_sec: u64,
+        tokens_per_sec: Balance,
     ) -> Base58CryptoHash {
         let res = self.contract_ft_transfer_call(
             &token,
@@ -377,7 +379,7 @@ impl Env {
             &serde_json::to_string(&TransferCallRequest::Create {
                 request: CreateRequest {
                     receiver_id: receiver.account_id(),
-                    tokens_per_sec: amount / period_sec as u128,
+                    tokens_per_sec,
                     description: None,
                     is_auto_start_enabled: None,
                     is_expirable: None,
@@ -388,7 +390,7 @@ impl Env {
         res.assert_success();
         let amount_accepted: U128 = res.unwrap_json();
         assert_ne!(amount_accepted, U128(0));
-        let stream_id = self.get_account(&owner).last_created_stream.unwrap();
+        let stream_id = &self.get_account(&owner).last_created_stream.unwrap();
         let dao = self.get_dao();
         let token = dao.tokens.get(&token.account_id());
         let storage_balance_needed = match token {
@@ -397,7 +399,7 @@ impl Env {
         };
         self.streams
             .insert(stream_id.into(), storage_balance_needed);
-        stream_id
+        *stream_id
     }
 
     fn parse_call(res: ExecutionResult) -> Result<(), ContractError> {
@@ -414,16 +416,51 @@ impl Env {
         near_sdk::serde_json::from_value(res.unwrap()).unwrap()
     }
 
+    pub fn start_stream(
+        &self,
+        user: &UserAccount,
+        stream_id: &Base58CryptoHash,
+    ) -> Result<(), ContractError> {
+        Env::parse_call(user.function_call(
+            self.contract.contract.start_stream(*stream_id),
+            MAX_GAS,
+            ONE_YOCTO,
+        ))
+    }
+
+    pub fn pause_stream(
+        &self,
+        user: &UserAccount,
+        stream_id: &Base58CryptoHash,
+    ) -> Result<(), ContractError> {
+        Env::parse_call(user.function_call(
+            self.contract.contract.pause_stream(*stream_id),
+            MAX_GAS,
+            ONE_YOCTO + self.streams.get(&String::from(stream_id)).unwrap(),
+        ))
+    }
+
     pub fn stop_stream(
         &self,
         user: &UserAccount,
         stream_id: &Base58CryptoHash,
     ) -> Result<(), ContractError> {
-        let stream_hash: StreamId = (*stream_id).into();
         Env::parse_call(user.function_call(
             self.contract.contract.stop_stream(*stream_id),
             MAX_GAS,
-            ONE_YOCTO + 2 * self.streams.get(&stream_hash).unwrap(),
+            ONE_YOCTO + 2 * self.streams.get(&String::from(stream_id)).unwrap(),
+        ))
+    }
+
+    pub fn withdraw(
+        &self,
+        user: &UserAccount,
+        stream_id: &Base58CryptoHash,
+    ) -> Result<(), ContractError> {
+        Env::parse_call(user.function_call(
+            self.contract.contract.withdraw(*stream_id, Some(true)),
+            MAX_GAS,
+            ONE_YOCTO + self.streams.get(&String::from(stream_id)).unwrap(),
         ))
     }
 

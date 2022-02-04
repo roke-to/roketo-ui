@@ -43,8 +43,9 @@ impl Token {
     }
 
     pub(crate) fn apply_commission(&self, amount: Balance) -> (Balance, Balance) {
-        let commission =
-            amount / self.commission_denominator as Balance * self.commission_numerator as Balance;
+        let commission = (amount + self.commission_denominator as Balance - 1)
+            / self.commission_denominator as Balance
+            * self.commission_numerator as Balance;
         (amount - commission, commission)
     }
 }
@@ -69,11 +70,8 @@ impl Contract {
         if amount == 0 {
             // NEP-141 forbids zero token transfers
             //
-            // It's safe to return Err here because
-            // transfers are allowed only for active streams,
-            // and active streams guaranteed to have
-            // non-zero balance.
-            return Err(ContractError::ZeroTokenTransfer);
+            // Return empty promise
+            return Ok(Promise::new(recipient.clone()));
         }
 
         if Contract::is_aurora_address(recipient) {

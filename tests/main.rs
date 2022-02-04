@@ -1,7 +1,7 @@
 mod setup;
 
 use crate::setup::*;
-use contract::{StreamFinishReason, StreamId, StreamStatus, DEFAULT_STORAGE_BALANCE};
+use contract::{StreamFinishReason, StreamStatus, DEFAULT_STORAGE_BALANCE};
 use near_sdk::env;
 
 fn basic_setup() -> (Env, Tokens, Users) {
@@ -57,71 +57,39 @@ fn test_dev_setup() {
 #[test]
 fn test_saved_storage_deposit() {
     let (mut e, tokens, users) = basic_setup();
-    let period_sec = 100;
-    let stream_id: StreamId = e
-        .create_stream(
-            &users.alice,
-            &users.charlie,
-            &tokens.wnear,
-            d(1, 23) + 1,
-            period_sec,
-        )
-        .into();
+    let stream_id = e.create_stream(&users.alice, &users.charlie, &tokens.wnear, d(1, 23) + 1, 1);
     assert_eq!(
-        *e.streams.get(&stream_id).unwrap(),
+        *e.streams.get(&String::from(&stream_id)).unwrap(),
         125 * env::STORAGE_PRICE_PER_BYTE
     );
 
-    let stream_id: StreamId = e
-        .create_stream(
-            &users.alice,
-            &users.charlie,
-            &tokens.ndai,
-            d(1, 18) + 1,
-            period_sec,
-        )
-        .into();
+    let stream_id = e.create_stream(&users.alice, &users.charlie, &tokens.ndai, d(1, 18) + 1, 1);
     assert_eq!(
-        *e.streams.get(&stream_id).unwrap(),
+        *e.streams.get(&String::from(&stream_id)).unwrap(),
         125 * env::STORAGE_PRICE_PER_BYTE
     );
 
-    let stream_id: StreamId = e
-        .create_stream(
-            &users.alice,
-            &users.charlie,
-            &tokens.nusdt,
-            d(1, 6) + 1,
-            period_sec,
-        )
-        .into();
+    let stream_id = e.create_stream(&users.alice, &users.charlie, &tokens.nusdt, d(1, 6) + 1, 1);
     assert_eq!(
-        *e.streams.get(&stream_id).unwrap(),
+        *e.streams.get(&String::from(&stream_id)).unwrap(),
         125 * env::STORAGE_PRICE_PER_BYTE
     );
 
-    let stream_id: StreamId = e
-        .create_stream(
-            &users.alice,
-            &users.charlie,
-            &tokens.aurora,
-            d(1, 15) + 1,
-            period_sec,
-        )
-        .into();
-    assert_eq!(*e.streams.get(&stream_id).unwrap(), 0);
+    let stream_id = e.create_stream(
+        &users.alice,
+        &users.charlie,
+        &tokens.aurora,
+        d(1, 15) + 1,
+        1,
+    );
+    assert_eq!(*e.streams.get(&String::from(&stream_id)).unwrap(), 0);
 
     e.account_deposit_near(&users.alice, d(1, 23));
-    let stream_id: StreamId = e
-        .create_stream(
-            &users.alice,
-            &users.charlie,
-            &tokens.dacha,
-            d(1, 10),
-            period_sec,
-        )
-        .into();
-    assert_eq!(*e.streams.get(&stream_id).unwrap(), DEFAULT_STORAGE_BALANCE);
+    let stream_id = e.create_stream(&users.alice, &users.charlie, &tokens.dacha, d(1, 10), 1);
+    assert_eq!(
+        *e.streams.get(&String::from(&stream_id)).unwrap(),
+        DEFAULT_STORAGE_BALANCE
+    );
 }
 
 // Actual tests start here
@@ -130,17 +98,16 @@ fn test_saved_storage_deposit() {
 fn test_stream_sanity() {
     let (mut e, tokens, users) = basic_setup();
 
-    let amount = d(100, 24);
-    let period_sec = 100;
+    let amount = d(101, 23);
     let stream_id = e.create_stream(
         &users.alice,
         &users.charlie,
         &tokens.wnear,
         amount,
-        period_sec,
+        d(1, 23),
     );
 
-    e.skip_time(period_sec);
+    e.skip_time(100);
 
     let dao = e.get_dao();
     let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
@@ -150,7 +117,6 @@ fn test_stream_sanity() {
     assert_eq!(stream.balance, amount_after_create);
     assert_eq!(stream.owner_id, users.alice.account_id());
     assert_eq!(stream.receiver_id, users.charlie.account_id());
-    assert_eq!(stream.tokens_per_sec * period_sec as u128, amount);
     assert_eq!(stream.tokens_total_withdrawn, 0);
     assert_eq!(stream.status, StreamStatus::Active);
 
@@ -163,7 +129,6 @@ fn test_stream_sanity() {
     assert_eq!(stream.balance, 0);
     assert_eq!(stream.owner_id, users.alice.account_id());
     assert_eq!(stream.receiver_id, users.charlie.account_id());
-    assert_eq!(stream.tokens_per_sec * period_sec as u128, amount);
     assert_eq!(stream.tokens_total_withdrawn, amount_after_create);
     assert_eq!(
         stream.status,
@@ -173,9 +138,70 @@ fn test_stream_sanity() {
     );
 
     assert_eq!(
-        u128::from(e.get_balance(&tokens.wnear, &users.charlie)),
+        e.get_balance(&tokens.wnear, &users.charlie),
         amount_after_stop
     );
+}
+
+#[test]
+fn test_stream_min_value() {
+    let (mut e, tokens, users) = basic_setup();
+
+    let amount = d(1, 23) + 700;
+    let stream_id = e.create_stream(&users.alice, &users.charlie, &tokens.wnear, amount, 1);
+
+    // Zero token transfer
+    assert!(e.withdraw(&users.charlie, &stream_id).is_ok());
+    let stream = e.get_stream(&stream_id);
+
+    assert_eq!(stream.balance, 700);
+    assert_eq!(stream.tokens_total_withdrawn, 0);
+    assert_eq!(stream.status, StreamStatus::Active);
+    assert_eq!(e.get_balance(&tokens.wnear, &users.charlie), 0);
+    let dao = e.get_dao();
+    let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
+    assert_eq!(dao_token.collected_commission, 0);
+
+    e.skip_time(1);
+    assert!(e.withdraw(&users.charlie, &stream_id).is_ok());
+    let stream = e.get_stream(&stream_id);
+
+    assert_eq!(stream.balance, 700 - 1);
+    assert_eq!(stream.tokens_total_withdrawn, 1);
+    assert_eq!(stream.status, StreamStatus::Active);
+    assert_eq!(e.get_balance(&tokens.wnear, &users.charlie), 0);
+    let dao = e.get_dao();
+    let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
+    assert_eq!(dao_token.collected_commission, 1);
+
+    e.skip_time(150);
+    assert!(e.withdraw(&users.charlie, &stream_id).is_ok());
+    let stream = e.get_stream(&stream_id);
+
+    assert_eq!(stream.balance, 700 - 1 - 150);
+    assert_eq!(stream.tokens_total_withdrawn, 1 + 150);
+    assert_eq!(stream.status, StreamStatus::Active);
+    assert_eq!(e.get_balance(&tokens.wnear, &users.charlie), 149);
+    let dao = e.get_dao();
+    let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
+    assert_eq!(dao_token.collected_commission, 2);
+
+    e.skip_time(10000);
+    assert!(e.withdraw(&users.charlie, &stream_id).is_ok());
+    let stream = e.get_stream(&stream_id);
+
+    assert_eq!(stream.balance, 0);
+    assert_eq!(stream.tokens_total_withdrawn, 700);
+    assert_eq!(
+        stream.status,
+        StreamStatus::Finished {
+            reason: StreamFinishReason::FinishedNatually
+        }
+    );
+    assert_eq!(e.get_balance(&tokens.wnear, &users.charlie), 695);
+    let dao = e.get_dao();
+    let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
+    assert_eq!(dao_token.collected_commission, 5);
 }
 
 /*use std::collections::HashMap;
