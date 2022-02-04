@@ -4,6 +4,7 @@ use crate::*;
 impl Contract {
     #[payable]
     pub fn dao_change_owner(&mut self, new_dao_id: AccountId) {
+        assert_one_yocto();
         self.dao.check_owner().unwrap();
 
         self.dao.dao_id = new_dao_id.into();
@@ -12,6 +13,7 @@ impl Contract {
     #[allow(unused_mut)]
     #[payable]
     pub fn dao_update_token(&mut self, mut token: Token) {
+        assert_one_yocto();
         self.dao.check_owner().unwrap();
 
         if self.dao.tokens.remove(&token.account_id).is_none() {
@@ -24,6 +26,7 @@ impl Contract {
 
     #[payable]
     pub fn dao_update_commission_unlisted(&mut self, commission_unlisted: U128) {
+        assert_one_yocto();
         self.dao.check_owner().unwrap();
 
         self.dao.commission_unlisted = commission_unlisted.into();
@@ -36,6 +39,7 @@ impl Contract {
         recipient: AccountId,
         amount: U128,
     ) -> Promise {
+        assert_one_yocto();
         self.dao.check_owner().unwrap();
 
         Contract::ft_transfer(
@@ -50,6 +54,7 @@ impl Contract {
 
     #[payable]
     pub fn dao_withdraw_near(&mut self, recipient: AccountId, amount: U128) -> Promise {
+        assert_one_yocto();
         self.dao.check_owner().unwrap();
 
         Promise::new(recipient.clone()).transfer(amount.into())
@@ -57,6 +62,7 @@ impl Contract {
 
     #[payable]
     pub fn dao_add_exchanger(&mut self, new_exchanger_id: AccountId) {
+        assert_one_yocto();
         self.dao.check_owner().unwrap();
 
         self.dao.exchangers.insert(new_exchanger_id);
@@ -64,6 +70,7 @@ impl Contract {
 
     #[payable]
     pub fn dao_remove_exchanger(&mut self, exchanger_id: AccountId) {
+        assert_one_yocto();
         self.dao.check_owner().unwrap();
 
         self.dao.exchangers.remove(&exchanger_id);

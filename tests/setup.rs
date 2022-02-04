@@ -416,7 +416,7 @@ impl Env {
         near_sdk::serde_json::from_value(res.unwrap()).unwrap()
     }
 
-    pub fn start_stream(
+    pub fn start_stream_err(
         &self,
         user: &UserAccount,
         stream_id: &Base58CryptoHash,
@@ -428,7 +428,7 @@ impl Env {
         ))
     }
 
-    pub fn pause_stream(
+    pub fn pause_stream_err(
         &self,
         user: &UserAccount,
         stream_id: &Base58CryptoHash,
@@ -440,7 +440,7 @@ impl Env {
         ))
     }
 
-    pub fn stop_stream(
+    pub fn stop_stream_err(
         &self,
         user: &UserAccount,
         stream_id: &Base58CryptoHash,
@@ -452,7 +452,7 @@ impl Env {
         ))
     }
 
-    pub fn withdraw(
+    pub fn withdraw_err(
         &self,
         user: &UserAccount,
         stream_id: &Base58CryptoHash,
@@ -464,6 +464,22 @@ impl Env {
         ))
     }
 
+    pub fn start_stream(&self, user: &UserAccount, stream_id: &Base58CryptoHash) {
+        assert!(self.start_stream_err(user, stream_id).is_ok());
+    }
+
+    pub fn pause_stream(&self, user: &UserAccount, stream_id: &Base58CryptoHash) {
+        assert!(self.pause_stream_err(user, stream_id).is_ok());
+    }
+
+    pub fn stop_stream(&self, user: &UserAccount, stream_id: &Base58CryptoHash) {
+        assert!(self.stop_stream_err(user, stream_id).is_ok());
+    }
+
+    pub fn withdraw(&self, user: &UserAccount, stream_id: &Base58CryptoHash) {
+        assert!(self.withdraw_err(user, stream_id).is_ok());
+    }
+
     pub fn account_deposit_near(&self, user: &UserAccount, amount: Balance) {
         user.function_call(
             self.contract.contract.account_deposit_near(),
@@ -471,6 +487,16 @@ impl Env {
             amount,
         )
         .assert_success();
+    }
+
+    pub fn dao_update_token(&self, token: Token) {
+        self.dao
+            .function_call(
+                self.contract.contract.dao_update_token(token),
+                MAX_GAS,
+                ONE_YOCTO,
+            )
+            .assert_success();
     }
 
     /*pub fn get_asset(&self, token: &UserAccount) -> AssetDetailedView {

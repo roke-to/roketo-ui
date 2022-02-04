@@ -87,5 +87,9 @@ pub enum ContractError {
         #[serde(with = "u128_dec_format")]
         received: u128,
     },
+    ExceededMaxBalance {
+        #[serde(with = "u128_dec_format")]
+        max_amount: u128,
+    },
     DataCorruption,
 }

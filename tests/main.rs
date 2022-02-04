@@ -1,7 +1,10 @@
 mod setup;
 
 use crate::setup::*;
-use contract::{StreamFinishReason, StreamStatus, DEFAULT_STORAGE_BALANCE};
+use contract::{
+    StreamFinishReason, StreamStatus, DEFAULT_STORAGE_BALANCE, MAX_AMOUNT, MAX_STREAMING_SPEED,
+    MIN_STREAMING_SPEED,
+};
 use near_sdk::env;
 
 fn basic_setup() -> (Env, Tokens, Users) {
@@ -120,7 +123,7 @@ fn test_stream_sanity() {
     assert_eq!(stream.tokens_total_withdrawn, 0);
     assert_eq!(stream.status, StreamStatus::Active);
 
-    assert!(e.stop_stream(&users.alice, &stream_id).is_ok());
+    e.stop_stream(&users.alice, &stream_id);
 
     let amount_after_stop = amount_after_create
         - amount_after_create * dao_token.commission_numerator as u128
@@ -147,61 +150,156 @@ fn test_stream_sanity() {
 fn test_stream_min_value() {
     let (mut e, tokens, users) = basic_setup();
 
-    let amount = d(1, 23) + 700;
-    let stream_id = e.create_stream(&users.alice, &users.charlie, &tokens.wnear, amount, 1);
+    let amount = d(1, 6) + 3700;
+    let stream_id = e.create_stream(
+        &users.alice,
+        &users.charlie,
+        &tokens.nusdt,
+        amount,
+        MIN_STREAMING_SPEED,
+    );
 
     // Zero token transfer
-    assert!(e.withdraw(&users.charlie, &stream_id).is_ok());
+    e.withdraw(&users.charlie, &stream_id);
     let stream = e.get_stream(&stream_id);
 
-    assert_eq!(stream.balance, 700);
+    assert_eq!(stream.balance, 3700);
     assert_eq!(stream.tokens_total_withdrawn, 0);
     assert_eq!(stream.status, StreamStatus::Active);
-    assert_eq!(e.get_balance(&tokens.wnear, &users.charlie), 0);
+    assert_eq!(e.get_balance(&tokens.nusdt, &users.charlie), 0);
     let dao = e.get_dao();
-    let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
+    let dao_token = dao.tokens.get(&tokens.nusdt.account_id()).unwrap();
     assert_eq!(dao_token.collected_commission, 0);
 
     e.skip_time(1);
-    assert!(e.withdraw(&users.charlie, &stream_id).is_ok());
+    e.withdraw(&users.charlie, &stream_id);
     let stream = e.get_stream(&stream_id);
 
-    assert_eq!(stream.balance, 700 - 1);
+    assert_eq!(stream.balance, 3700 - 1);
     assert_eq!(stream.tokens_total_withdrawn, 1);
     assert_eq!(stream.status, StreamStatus::Active);
-    assert_eq!(e.get_balance(&tokens.wnear, &users.charlie), 0);
+    assert_eq!(e.get_balance(&tokens.nusdt, &users.charlie), 0);
     let dao = e.get_dao();
-    let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
+    let dao_token = dao.tokens.get(&tokens.nusdt.account_id()).unwrap();
     assert_eq!(dao_token.collected_commission, 1);
 
     e.skip_time(150);
-    assert!(e.withdraw(&users.charlie, &stream_id).is_ok());
+    e.withdraw(&users.charlie, &stream_id);
     let stream = e.get_stream(&stream_id);
 
-    assert_eq!(stream.balance, 700 - 1 - 150);
+    assert_eq!(stream.balance, 3700 - 1 - 150);
     assert_eq!(stream.tokens_total_withdrawn, 1 + 150);
     assert_eq!(stream.status, StreamStatus::Active);
-    assert_eq!(e.get_balance(&tokens.wnear, &users.charlie), 149);
+    assert_eq!(e.get_balance(&tokens.nusdt, &users.charlie), 149);
     let dao = e.get_dao();
-    let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
+    let dao_token = dao.tokens.get(&tokens.nusdt.account_id()).unwrap();
     assert_eq!(dao_token.collected_commission, 2);
 
     e.skip_time(10000);
-    assert!(e.withdraw(&users.charlie, &stream_id).is_ok());
+    e.withdraw(&users.charlie, &stream_id);
     let stream = e.get_stream(&stream_id);
 
     assert_eq!(stream.balance, 0);
-    assert_eq!(stream.tokens_total_withdrawn, 700);
+    assert_eq!(stream.tokens_total_withdrawn, 3700);
     assert_eq!(
         stream.status,
         StreamStatus::Finished {
             reason: StreamFinishReason::FinishedNatually
         }
     );
-    assert_eq!(e.get_balance(&tokens.wnear, &users.charlie), 695);
+    assert_eq!(e.get_balance(&tokens.nusdt, &users.charlie), 3700 - 6);
+    let dao = e.get_dao();
+    let dao_token = dao.tokens.get(&tokens.nusdt.account_id()).unwrap();
+    assert_eq!(dao_token.collected_commission, 6);
+}
+
+#[test]
+fn test_stream_max_value() {
+    let (mut e, tokens, users) = basic_setup();
+
+    let dao = e.get_dao();
+    let mut dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap().clone();
+    dao_token.commission_numerator = u32::max_value() - 1;
+    dao_token.commission_denominator = u32::max_value();
+    dao_token.commission_on_create = 0;
+    e.dao_update_token(dao_token);
+
+    let amount = MAX_AMOUNT;
+    let stream_id = e.create_stream(
+        &users.alice,
+        &users.charlie,
+        &tokens.wnear,
+        amount,
+        MAX_STREAMING_SPEED,
+    );
+
+    e.skip_time(60 * 60 * 24 * 365 * 100); // 100 years
+
+    e.withdraw(&users.charlie, &stream_id);
+
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(stream.tokens_total_withdrawn, MAX_AMOUNT);
+    assert_eq!(
+        stream.status,
+        StreamStatus::Finished {
+            reason: StreamFinishReason::FinishedNatually
+        }
+    );
+
     let dao = e.get_dao();
     let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
-    assert_eq!(dao_token.collected_commission, 5);
+    assert_eq!(
+        dao_token.collected_commission,
+        (MAX_AMOUNT + u32::max_value() as u128 - 1) / u32::max_value() as u128
+            * (u32::max_value() as u128 - 1)
+    );
+
+    assert_eq!(
+        e.get_balance(&tokens.wnear, &users.charlie),
+        MAX_AMOUNT - dao_token.collected_commission
+    );
+}
+
+#[test]
+fn test_stream_max_value_min_speed() {
+    let (mut e, tokens, users) = basic_setup();
+
+    let dao = e.get_dao();
+    let mut dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap().clone();
+    dao_token.commission_numerator = 1;
+    dao_token.commission_denominator = u32::max_value();
+    dao_token.commission_on_create = 0;
+    e.dao_update_token(dao_token);
+
+    let amount = MAX_AMOUNT;
+    let stream_id = e.create_stream(
+        &users.alice,
+        &users.charlie,
+        &tokens.wnear,
+        amount,
+        MIN_STREAMING_SPEED,
+    );
+
+    let hund_years = 60 * 60 * 24 * 365 * 100; // 100 years
+    e.skip_time(hund_years as u64);
+
+    e.withdraw(&users.charlie, &stream_id);
+
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(stream.tokens_total_withdrawn, hund_years);
+    assert_eq!(stream.status, StreamStatus::Active);
+
+    let dao = e.get_dao();
+    let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
+    assert_eq!(
+        dao_token.collected_commission,
+        (hund_years + u32::max_value() as u128 - 1) / u32::max_value() as u128
+    );
+
+    assert_eq!(
+        e.get_balance(&tokens.wnear, &users.charlie),
+        hund_years - dao_token.collected_commission
+    );
 }
 
 /*use std::collections::HashMap;

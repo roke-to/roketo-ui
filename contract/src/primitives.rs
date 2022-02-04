@@ -5,7 +5,9 @@ pub const NO_DEPOSIT: Balance = 0;
 pub const MAX_DESCRIPTION_LEN: usize = 255;
 
 pub const MIN_STREAMING_SPEED: u128 = 1;
-pub const MAX_STREAMING_SPEED: u128 = 1_000_000_000_000_000_000_000_000_000; // 1e27, TODO check limits
+pub const MAX_STREAMING_SPEED: u128 = 1_000_000_000_000_000_000_000_000_000; // 1e27
+
+pub const MAX_AMOUNT: u128 = 1_000_000_000_000_000_000_000_000_000_000; // 1e30
 
 pub const TICKS_PER_SECOND: u128 = 1_000_000_000;
 pub const ONE_TERA: u64 = Gas::ONE_TERA.0; // TODO near-sdk version is useless now

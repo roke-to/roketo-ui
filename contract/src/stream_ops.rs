@@ -61,6 +61,12 @@ impl Contract {
             self.save_account(&env::signer_account_id(), signer)?;
         }
 
+        if initial_balance > MAX_AMOUNT {
+            return Err(ContractError::ExceededMaxBalance {
+                max_amount: MAX_AMOUNT,
+            });
+        }
+
         let mut stream = Stream::new(
             description,
             sender_id.clone(),
@@ -118,6 +124,12 @@ impl Contract {
             return Err(ContractError::InvalidToken {
                 expected: stream.token_account_id,
                 received: token.account_id,
+            });
+        }
+
+        if amount > MAX_AMOUNT || stream.balance + amount > MAX_AMOUNT {
+            return Err(ContractError::ExceededMaxBalance {
+                max_amount: MAX_AMOUNT,
             });
         }
 
