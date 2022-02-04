@@ -1,11 +1,6 @@
 mod setup;
 
 use crate::setup::*;
-use contract::{
-    StreamFinishReason, StreamStatus, DEFAULT_STORAGE_BALANCE, MAX_AMOUNT, MAX_STREAMING_SPEED,
-    MIN_STREAMING_SPEED,
-};
-use near_sdk::env;
 
 fn basic_setup() -> (Env, Tokens, Users) {
     let e = Env::init();
@@ -299,6 +294,114 @@ fn test_stream_max_value_min_speed() {
     assert_eq!(
         e.get_balance(&tokens.wnear, &users.charlie),
         hund_years - dao_token.collected_commission
+    );
+}
+
+#[test]
+fn test_stream_start_pause_stop() {
+    let (mut e, tokens, users) = basic_setup();
+
+    let amount = d(1, 24);
+
+    let stream_id = e.create_stream_ext(
+        &users.alice,
+        &users.charlie,
+        &tokens.wnear,
+        amount,
+        d(1, 20),
+        None,
+        Some(false),
+        None,
+    );
+
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(stream.status, StreamStatus::Initialized);
+
+    e.skip_time(10);
+    assert!(!e.withdraw_err(&users.charlie, &stream_id).is_ok());
+
+    e.skip_time(10);
+    assert!(!e.start_stream_err(&users.bob, &stream_id).is_ok());
+    assert!(!e.start_stream_err(&users.charlie, &stream_id).is_ok());
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(stream.status, StreamStatus::Initialized);
+
+    e.skip_time(10);
+    e.start_stream(&users.alice, &stream_id);
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(stream.status, StreamStatus::Active);
+
+    e.skip_time(10);
+    assert!(!e.pause_stream_err(&users.bob, &stream_id).is_ok());
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(stream.status, StreamStatus::Active);
+
+    e.skip_time(10);
+    assert_eq!(e.get_balance(&tokens.wnear, &users.charlie), 0);
+    e.pause_stream(&users.charlie, &stream_id);
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(stream.status, StreamStatus::Paused);
+    assert_eq!(
+        e.get_balance(&tokens.wnear, &users.charlie),
+        d(20, 20) / 250 * 249
+    );
+    assert_eq!(stream.balance, amount - d(1, 23) - d(20, 20));
+
+    e.skip_time(10);
+    assert!(!e.pause_stream_err(&users.alice, &stream_id).is_ok());
+    assert!(!e.pause_stream_err(&users.bob, &stream_id).is_ok());
+    assert!(!e.pause_stream_err(&users.charlie, &stream_id).is_ok());
+    assert!(!e.start_stream_err(&users.bob, &stream_id).is_ok());
+    assert!(!e.start_stream_err(&users.charlie, &stream_id).is_ok());
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(stream.status, StreamStatus::Paused);
+
+    e.skip_time(10);
+    let last_alice_balance = e.get_balance(&tokens.wnear, &users.alice);
+    assert!(!e.stop_stream_err(&users.bob, &stream_id).is_ok());
+    e.stop_stream(&users.charlie, &stream_id);
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(
+        stream.status,
+        StreamStatus::Finished {
+            reason: StreamFinishReason::StoppedByReceiver
+        }
+    );
+    assert_eq!(
+        e.get_balance(&tokens.wnear, &users.charlie),
+        d(20, 20) / 250 * 249
+    );
+    assert_eq!(stream.balance, 0);
+    assert_eq!(
+        e.get_balance(&tokens.wnear, &users.alice),
+        last_alice_balance + (amount - d(1, 23) - d(20, 20))
+    );
+
+    e.skip_time(10);
+    assert!(!e.pause_stream_err(&users.alice, &stream_id).is_ok());
+    assert!(!e.pause_stream_err(&users.bob, &stream_id).is_ok());
+    assert!(!e.pause_stream_err(&users.charlie, &stream_id).is_ok());
+    assert!(!e.start_stream_err(&users.alice, &stream_id).is_ok());
+    assert!(!e.start_stream_err(&users.bob, &stream_id).is_ok());
+    assert!(!e.start_stream_err(&users.charlie, &stream_id).is_ok());
+    assert!(!e.stop_stream_err(&users.alice, &stream_id).is_ok());
+    assert!(!e.stop_stream_err(&users.bob, &stream_id).is_ok());
+    assert!(!e.stop_stream_err(&users.charlie, &stream_id).is_ok());
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(
+        stream.status,
+        StreamStatus::Finished {
+            reason: StreamFinishReason::StoppedByReceiver
+        }
+    );
+    assert_eq!(
+        e.get_balance(&tokens.wnear, &users.charlie),
+        d(20, 20) / 250 * 249
+    );
+    assert_eq!(stream.balance, 0);
+    assert_eq!(
+        e.get_balance(&tokens.wnear, &users.alice),
+        last_alice_balance + (amount - d(1, 23) - d(20, 20))
     );
 }
 
