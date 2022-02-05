@@ -124,39 +124,41 @@ impl Contract {
             assert!(receiver.inactive_streams.insert(&stream.id));
             owner.last_created_stream = Some(stream.id);
         } else {
-            debug_assert!(!stream.status.is_terminated());
+            assert!(!stream.status.is_terminated());
             match action_type {
                 ActionType::Start => {
                     assert!(owner.inactive_streams.remove(&stream.id));
                     assert!(receiver.inactive_streams.remove(&stream.id));
                     assert!(owner.active_streams.insert(&stream.id));
                     assert!(receiver.active_streams.insert(&stream.id));
-                    *owner
+                    owner
                         .total_outgoing
                         .entry(stream.token_account_id.clone())
-                        .or_insert(0) += stream.tokens_per_sec;
-                    *receiver
+                        .and_modify(|e| *e += stream.tokens_per_sec)
+                        .or_insert(stream.tokens_per_sec);
+                    receiver
                         .total_incoming
                         .entry(stream.token_account_id.clone())
-                        .or_insert(0) += stream.tokens_per_sec;
+                        .and_modify(|e| *e += stream.tokens_per_sec)
+                        .or_insert(stream.tokens_per_sec);
                     stream.status = StreamStatus::Active;
                     self.stats_inc_active_streams(&stream.token_account_id);
                 }
                 ActionType::Pause => {
-                    debug_assert_eq!(stream.status, StreamStatus::Active);
+                    assert_eq!(stream.status, StreamStatus::Active);
                     promises.push(self.process_payment(stream, &mut receiver, true)?);
                     assert!(owner.active_streams.remove(&stream.id));
                     assert!(receiver.active_streams.remove(&stream.id));
                     assert!(owner.inactive_streams.insert(&stream.id));
                     assert!(receiver.inactive_streams.insert(&stream.id));
-                    *owner
+                    owner
                         .total_outgoing
-                        .get_mut(&stream.token_account_id)
-                        .unwrap() -= stream.tokens_per_sec;
-                    *receiver
+                        .entry(stream.token_account_id.clone())
+                        .and_modify(|e| *e -= stream.tokens_per_sec);
+                    receiver
                         .total_incoming
-                        .get_mut(&stream.token_account_id)
-                        .unwrap() -= stream.tokens_per_sec;
+                        .entry(stream.token_account_id.clone())
+                        .and_modify(|e| *e -= stream.tokens_per_sec);
                     if stream.status == StreamStatus::Active {
                         // The stream may be stopped while payment processing
                         stream.status = StreamStatus::Paused;
@@ -170,14 +172,14 @@ impl Contract {
                         assert!(receiver.active_streams.remove(&stream.id));
                         assert!(owner.inactive_streams.insert(&stream.id));
                         assert!(receiver.inactive_streams.insert(&stream.id));
-                        *owner
+                        owner
                             .total_outgoing
-                            .get_mut(&stream.token_account_id)
-                            .unwrap() -= stream.tokens_per_sec;
-                        *receiver
+                            .entry(stream.token_account_id.clone())
+                            .and_modify(|e| *e -= stream.tokens_per_sec);
+                        receiver
                             .total_incoming
-                            .get_mut(&stream.token_account_id)
-                            .unwrap() -= stream.tokens_per_sec;
+                            .entry(stream.token_account_id.clone())
+                            .and_modify(|e| *e -= stream.tokens_per_sec);
                         self.stats_dec_active_streams(&stream.token_account_id);
                     } else {
                         // Can be initialized or paused - nothing to do in this case
@@ -195,14 +197,14 @@ impl Contract {
                 ActionType::Withdraw {
                     is_storage_deposit_needed,
                 } => {
-                    debug_assert_eq!(stream.status, StreamStatus::Active);
+                    assert_eq!(stream.status, StreamStatus::Active);
                     promises.push(self.process_payment(
                         stream,
                         &mut receiver,
                         is_storage_deposit_needed,
                     )?);
                     if stream.status.is_terminated() {
-                        debug_assert_eq!(
+                        assert_eq!(
                             stream.status,
                             StreamStatus::Finished {
                                 reason: StreamFinishReason::FinishedNatually
@@ -212,14 +214,14 @@ impl Contract {
                         assert!(receiver.active_streams.remove(&stream.id));
                         assert!(owner.inactive_streams.insert(&stream.id));
                         assert!(receiver.inactive_streams.insert(&stream.id));
-                        *owner
+                        owner
                             .total_outgoing
-                            .get_mut(&stream.token_account_id)
-                            .unwrap() -= stream.tokens_per_sec;
-                        *receiver
+                            .entry(stream.token_account_id.clone())
+                            .and_modify(|e| *e -= stream.tokens_per_sec);
+                        receiver
                             .total_incoming
-                            .get_mut(&stream.token_account_id)
-                            .unwrap() -= stream.tokens_per_sec;
+                            .entry(stream.token_account_id.clone())
+                            .and_modify(|e| *e -= stream.tokens_per_sec);
                         self.stats_dec_active_streams(&stream.token_account_id);
                     }
                 }
@@ -239,16 +241,17 @@ impl Contract {
         account: &mut Account,
         is_storage_deposit_needed: bool,
     ) -> Result<Promise, ContractError> {
-        let mut token = self.dao.get_token(&stream.token_account_id)?;
+        let token = self.dao.get_token_or_unlisted(&stream.token_account_id);
         let (payment, commission) = stream.process_withdraw(&token);
-        *account
+        account
             .total_received
             .entry(stream.token_account_id.clone())
-            .or_insert(0) += payment;
-        token.collected_commission += commission;
+            .and_modify(|e| *e += payment)
+            .or_insert(payment);
         self.dao
             .tokens
-            .insert(stream.token_account_id.clone(), token.clone());
+            .entry(stream.token_account_id.clone())
+            .and_modify(|e| e.collected_commission += commission);
         // TODO update stats
         self.ft_transfer(
             &token,
@@ -259,7 +262,7 @@ impl Contract {
     }
 
     pub(crate) fn process_refund(&mut self, stream: &mut Stream) -> Result<Promise, ContractError> {
-        let token = self.dao.get_token(&stream.token_account_id)?;
+        let token = self.dao.get_token_or_unlisted(&stream.token_account_id);
         let payment = stream.balance;
         stream.balance = 0;
         // TODO update stats

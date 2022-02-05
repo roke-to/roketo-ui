@@ -14,8 +14,7 @@ impl Contract {
         let stream_view = self.view_stream(&stream_id).unwrap();
         let token = self
             .dao
-            .get_token(&stream_view.token_account_id)
-            .unwrap_or(Token::new_unlisted(&stream_view.token_account_id));
+            .get_token_or_unlisted(&stream_view.token_account_id);
         let storage_balance_needed = if Contract::is_aurora_address(&stream_view.receiver_id) {
             // Receiver is at aurora, need to storage deposit
             1
@@ -34,8 +33,7 @@ impl Contract {
         let stream_view = self.view_stream(&stream_id).unwrap();
         let token = self
             .dao
-            .get_token(&stream_view.token_account_id)
-            .unwrap_or(Token::new_unlisted(&stream_view.token_account_id));
+            .get_token_or_unlisted(&stream_view.token_account_id);
         let storage_balance_needed = if Contract::is_aurora_address(&stream_view.receiver_id) {
             // Receiver is at aurora, need to storage deposit
             1
@@ -66,8 +64,7 @@ impl Contract {
             let stream_view = self.view_stream(&stream_id).unwrap();
             let token = self
                 .dao
-                .get_token(&stream_view.token_account_id)
-                .unwrap_or(Token::new_unlisted(&stream_view.token_account_id));
+                .get_token_or_unlisted(&stream_view.token_account_id);
             let storage_balance_needed = if Contract::is_aurora_address(&stream_view.receiver_id) {
                 // Receiver is at aurora, need to storage deposit
                 1

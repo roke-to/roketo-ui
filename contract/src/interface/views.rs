@@ -11,7 +11,8 @@ pub struct AccountView {
     pub total_outgoing: HashMap<AccountId, U128>,
     pub total_received: HashMap<AccountId, U128>,
 
-    pub deposit: U128,
+    #[serde(with = "u128_dec_format")]
+    pub deposit: Balance,
 
     pub last_created_stream: Option<Base58CryptoHash>,
     pub is_cron_allowed: bool,
@@ -31,9 +32,7 @@ impl Contract {
 
     pub fn get_token(self, token_account_id: AccountId) -> (Token, Option<TokenStats>) {
         (
-            self.dao
-                .get_token(&token_account_id)
-                .unwrap_or(Token::new_unlisted(&token_account_id)),
+            self.dao.get_token_or_unlisted(&token_account_id),
             (Stats::from(self.stats.get().unwrap()))
                 .listed_tokens
                 .remove(&token_account_id),
@@ -76,7 +75,7 @@ impl Contract {
                         .map(|(k, _)| (k.clone(), U128(*v.total_received.get(k).unwrap_or(&0))))
                         .collect(),
 
-                    deposit: v.deposit.into(),
+                    deposit: v.deposit,
                     last_created_stream: v.last_created_stream.map(|w| w.into()),
                     is_cron_allowed: v.is_cron_allowed,
                 })

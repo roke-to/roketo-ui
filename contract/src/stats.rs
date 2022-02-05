@@ -87,17 +87,23 @@ impl Contract {
     ) {
         let mut stats: Stats = self.stats.take().unwrap().into();
         stats.total_streams += 1;
-        let entry = stats
-            .listed_tokens
-            .entry(token_account_id.clone())
-            .or_insert(TokenStats::default());
-        (*entry).streams += 1;
         if is_active {
             stats.total_active_streams += 1;
-            (*entry).active_streams += 1;
         }
         if is_aurora {
             stats.total_aurora_streams += 1;
+        }
+
+        if self.dao.is_token_listed(token_account_id) {
+            stats
+                .listed_tokens
+                .entry(token_account_id.clone())
+                .and_modify(|e| {
+                    e.streams += 1;
+                    if is_active {
+                        e.active_streams += 1;
+                    }
+                });
         }
         self.stats.set(&stats.into());
     }
@@ -108,7 +114,7 @@ impl Contract {
         (*stats
             .listed_tokens
             .entry(token_account_id.clone())
-            .or_insert(TokenStats::default()))
+            .or_default())
         .active_streams += 1;
         self.stats.set(&stats.into());
     }
@@ -119,7 +125,7 @@ impl Contract {
         (*stats
             .listed_tokens
             .entry(token_account_id.clone())
-            .or_insert(TokenStats::default()))
+            .or_default())
         .active_streams -= 1;
         self.stats.set(&stats.into());
     }
@@ -133,7 +139,7 @@ impl Contract {
         let entry = stats
             .listed_tokens
             .entry(token_account_id.clone())
-            .or_insert(TokenStats::default());
+            .or_default();
         (*entry).total_deposit += deposit;
         (*entry).tvl += deposit;
         self.stats.set(&stats.into());

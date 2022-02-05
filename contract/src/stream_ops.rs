@@ -116,7 +116,7 @@ impl Contract {
                     reason: StreamFinishReason::FinishedBecauseCannotBeExtended,
                 },
             )?;
-            debug_assert!(action.is_empty());
+            assert!(action.is_empty());
             self.save_stream(&stream_id, stream)?;
             return Err(ContractError::StreamExpired { stream_id });
         }
@@ -253,6 +253,7 @@ impl Contract {
         Ok(promises)
     }
 
+    // TODO multiple
     pub fn process_withdraw(
         &mut self,
         stream_id: CryptoHash,

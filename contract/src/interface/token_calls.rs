@@ -54,6 +54,10 @@ impl FungibleTokenReceiver for Contract {
                         let value = self.dao.eth_near_ratio.mult(amount.into());
                         self.account_deposit(env::signer_account_id(), value)
                             .unwrap();
+                        self.dao
+                            .tokens
+                            .entry(Contract::aurora_account_id())
+                            .and_modify(|e| e.collected_commission += value);
                         self.stats_inc_account_deposit(&value, true);
                         return PromiseOrValue::Value(U128::from(0));
                     }
@@ -99,8 +103,7 @@ impl FungibleTokenReceiver for Contract {
 
         let token = self
             .dao
-            .get_token(&env::predecessor_account_id())
-            .unwrap_or(Token::new_unlisted(&sender_id));
+            .get_token_or_unlisted(&env::predecessor_account_id());
         let key: Result<TransferCallRequest, _> = serde_json::from_str(&msg);
         if key.is_err() {
             log!("cannot parse message {:?}, error {:?}", msg, key);

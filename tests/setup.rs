@@ -374,6 +374,35 @@ impl Env {
         stream.unwrap()
     }
 
+    pub fn create_stream_ext_err(
+        &mut self,
+        owner: &UserAccount,
+        receiver: &UserAccount,
+        token: &UserAccount,
+        amount: Balance,
+        tokens_per_sec: Balance,
+        description: Option<String>,
+        is_auto_start_enabled: Option<bool>,
+        is_expirable: Option<bool>,
+    ) -> U128 {
+        self.contract_ft_transfer_call(
+            &token,
+            &owner,
+            amount,
+            &serde_json::to_string(&TransferCallRequest::Create {
+                request: CreateRequest {
+                    receiver_id: receiver.account_id(),
+                    tokens_per_sec,
+                    description,
+                    is_auto_start_enabled,
+                    is_expirable,
+                },
+            })
+            .unwrap(),
+        )
+        .unwrap_json()
+    }
+
     pub fn create_stream_ext(
         &mut self,
         owner: &UserAccount,
