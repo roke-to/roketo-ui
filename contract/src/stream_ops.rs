@@ -37,7 +37,7 @@ impl Contract {
         if token.is_listed {
             // Take commission as DAO proposed
             if initial_balance < token.commission_on_create {
-                return Err(ContractError::InsufficientDeposit {
+                return Err(ContractError::InsufficientNearDeposit {
                     expected: token.commission_on_create,
                     received: initial_balance,
                 });
@@ -84,11 +84,12 @@ impl Contract {
 
         self.save_stream(&stream.id.clone(), stream)?;
 
-        self.stats_inc_deposit(token.account_id.clone(), initial_balance);
-        if is_auto_start_enabled {
-            self.stats_inc_active_streams(token.account_id.clone());
-        }
-        self.stats_inc_streams(token.account_id);
+        self.stats_inc_stream_deposit(&token.account_id, &initial_balance);
+        self.stats_inc_streams(
+            &token.account_id,
+            is_auto_start_enabled,
+            Contract::is_aurora_address(&sender_id) | Contract::is_aurora_address(&receiver_id),
+        );
 
         Ok(())
     }
@@ -136,6 +137,8 @@ impl Contract {
         stream.balance += amount;
 
         self.save_stream(&stream_id, stream)?;
+
+        self.stats_inc_stream_deposit(&token.account_id, &amount);
 
         Ok(())
     }

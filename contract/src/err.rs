@@ -48,7 +48,7 @@ pub enum ContractError {
         expected: Gas,
         left: Gas,
     },
-    InsufficientDeposit {
+    InsufficientNearDeposit {
         #[serde(with = "u128_dec_format")]
         expected: Balance,
         #[serde(with = "u128_dec_format")]

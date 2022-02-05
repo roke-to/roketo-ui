@@ -140,6 +140,7 @@ impl Contract {
                         .entry(stream.token_account_id.clone())
                         .or_insert(0) += stream.tokens_per_sec;
                     stream.status = StreamStatus::Active;
+                    self.stats_inc_active_streams(&stream.token_account_id);
                 }
                 ActionType::Pause => {
                     debug_assert_eq!(stream.status, StreamStatus::Active);
@@ -160,6 +161,7 @@ impl Contract {
                         // The stream may be stopped while payment processing
                         stream.status = StreamStatus::Paused;
                     }
+                    self.stats_dec_active_streams(&stream.token_account_id);
                 }
                 ActionType::Stop { reason } => {
                     if stream.status == StreamStatus::Active {
@@ -176,6 +178,7 @@ impl Contract {
                             .total_incoming
                             .get_mut(&stream.token_account_id)
                             .unwrap() -= stream.tokens_per_sec;
+                        self.stats_dec_active_streams(&stream.token_account_id);
                     } else {
                         // Can be initialized or paused - nothing to do in this case
                     }
@@ -217,6 +220,7 @@ impl Contract {
                             .total_incoming
                             .get_mut(&stream.token_account_id)
                             .unwrap() -= stream.tokens_per_sec;
+                        self.stats_dec_active_streams(&stream.token_account_id);
                     }
                 }
             }

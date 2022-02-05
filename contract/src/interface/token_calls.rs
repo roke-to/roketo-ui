@@ -51,10 +51,10 @@ impl FungibleTokenReceiver for Contract {
             if key.is_ok() {
                 let res = match key.as_ref().unwrap() {
                     AuroraOperationalRequest::AccountDeposit => {
-                        self.account_deposit(
-                            env::signer_account_id(),
-                            self.dao.eth_near_ratio.mult(amount.into()),
-                        );
+                        let value = self.dao.eth_near_ratio.mult(amount.into());
+                        self.account_deposit(env::signer_account_id(), value)
+                            .unwrap();
+                        self.stats_inc_account_deposit(&value, true);
                         return PromiseOrValue::Value(U128::from(0));
                     }
                     AuroraOperationalRequest::StartStream { stream_id } => self

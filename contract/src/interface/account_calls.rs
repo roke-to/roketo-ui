@@ -15,14 +15,25 @@ impl Contract {
     #[payable]
     pub fn account_deposit_near(&mut self) {
         self.account_deposit(env::predecessor_account_id(), env::attached_deposit())
+            .unwrap();
+        self.stats_inc_account_deposit(&env::attached_deposit(), false);
     }
 }
 
 impl Contract {
-    pub fn account_deposit(&mut self, account_id: AccountId, deposit: Balance) {
+    pub fn account_deposit(
+        &mut self,
+        account_id: AccountId,
+        deposit: Balance,
+    ) -> Result<(), ContractError> {
         let mut account = self.extract_account_or_create(&account_id);
-        assert!(account.deposit + deposit >= self.dao.commission_unlisted);
+        if account.deposit + deposit < self.dao.commission_unlisted {
+            return Err(ContractError::InsufficientNearDeposit {
+                expected: self.dao.commission_unlisted - account.deposit,
+                received: deposit,
+            });
+        }
         account.deposit += deposit;
-        self.save_account(&account_id, account).unwrap()
+        self.save_account(&account_id, account)
     }
 }

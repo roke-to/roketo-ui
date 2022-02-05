@@ -17,7 +17,7 @@ impl Contract {
         self.dao.check_owner().unwrap();
 
         if self.dao.tokens.remove(&token.account_id).is_none() {
-            self.stats_add_token(token.account_id.clone());
+            self.stats_add_token(&token.account_id);
         }
         // `is_listed` is skipped by serde
         token.is_listed = true;

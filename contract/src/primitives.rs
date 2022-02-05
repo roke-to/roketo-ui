@@ -10,7 +10,7 @@ pub const MAX_STREAMING_SPEED: u128 = 1_000_000_000_000_000_000_000_000_000; // 
 pub const MAX_AMOUNT: u128 = 1_000_000_000_000_000_000_000_000_000_000; // 1e30
 
 pub const TICKS_PER_SECOND: u128 = 1_000_000_000;
-pub const ONE_TERA: u64 = Gas::ONE_TERA.0; // TODO near-sdk version is useless now
+pub const ONE_TERA: u64 = Gas::ONE_TERA.0; // near-sdk Gas is totally useless
 
 pub const DEFAULT_COMMISSION_UNLISTED: Balance = ONE_NEAR / 10; // 0.1 NEAR
 
@@ -157,7 +157,7 @@ pub mod b58_dec_format {
     where
         S: Serializer,
     {
-        // TODO please do it with no intermediate serialization if possible
+        // impossible to do without intermediate serialization
         serializer.serialize_str(&String::from(&Base58CryptoHash::from(*val)))
     }
 
@@ -165,7 +165,7 @@ pub mod b58_dec_format {
     where
         D: Deserializer<'de>,
     {
-        // TODO same as above
+        // same as above
         Ok(Base58CryptoHash::deserialize(deserializer)?.into())
     }
 }

@@ -63,7 +63,7 @@ impl Contract {
 
     pub(crate) fn extract_account_or_create(&mut self, account_id: &AccountId) -> Account {
         self.extract_account(&account_id).unwrap_or({
-            self.stats_inc_accounts();
+            self.stats_inc_accounts(Contract::is_aurora_address(account_id));
             Account {
                 id: account_id.clone(),
                 active_streams: UnorderedSet::new(StorageKey::ActiveStreams {
