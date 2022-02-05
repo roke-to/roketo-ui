@@ -10,7 +10,7 @@ pub use contract::{
 use near_contract_standards::fungible_token::metadata::{FungibleTokenMetadata, FT_METADATA_SPEC};
 pub use near_sdk::json_types::{Base58CryptoHash, U128};
 pub use near_sdk::serde_json::json;
-pub use near_sdk::{env, serde_json, AccountId, Balance, Timestamp, ONE_YOCTO};
+pub use near_sdk::{env, serde_json, AccountId, Balance, Timestamp, ONE_NEAR, ONE_YOCTO};
 use near_sdk_sim::runtime::GenesisConfig;
 use near_sdk_sim::{
     deploy, init_simulator, to_yocto, ContractAccount, ExecutionResult, UserAccount,
@@ -498,6 +498,22 @@ impl Env {
                 .withdraw(vec![*stream_id], Some(true)),
             MAX_GAS,
             ONE_YOCTO + self.streams.get(&String::from(stream_id)).unwrap(),
+        )
+    }
+
+    pub fn withdraw_ext_err(
+        &self,
+        user: &UserAccount,
+        stream_ids: &[&Base58CryptoHash],
+    ) -> ExecutionResult {
+        // vec![*stream_id]
+        user.function_call(
+            self.contract.contract.withdraw(
+                stream_ids.iter().map(|&x| (*x).into()).collect(),
+                Some(true),
+            ),
+            MAX_GAS,
+            ONE_YOCTO + stream_ids.len() as u128 * ONE_NEAR,
         )
     }
 

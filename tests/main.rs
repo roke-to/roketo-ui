@@ -612,3 +612,103 @@ fn test_stream_unlisted_start_pause_stop() {
         last_alice_balance + (amount - d(20, 16))
     );
 }
+
+#[test]
+fn test_withdraw_invalid() {
+    let (mut e, tokens, users) = basic_setup();
+    let token = tokens.wnear;
+    let amount = d(1, 26);
+
+    let stream_id_1 = e.create_stream(&users.alice, &users.charlie, &token, amount, d(1, 20));
+
+    let stream_id_2 = e.create_stream(&users.bob, &users.dude, &token, amount, d(1, 20));
+
+    e.skip_time(100);
+
+    assert_eq!(e.get_balance(&token, &users.charlie), 0);
+    assert_eq!(e.get_balance(&token, &users.dude), 0);
+
+    // wrong actor
+    assert!(!e
+        .withdraw_ext_err(&users.charlie, &[&stream_id_1, &stream_id_2])
+        .is_ok());
+    assert!(!e
+        .withdraw_ext_err(&users.charlie, &[&stream_id_2, &stream_id_1])
+        .is_ok());
+
+    assert_eq!(e.get_balance(&token, &users.charlie), 0);
+    assert_eq!(e.get_balance(&token, &users.dude), 0);
+
+    let stream_1 = e.get_stream(&stream_id_1);
+    assert_eq!(stream_1.balance, d(1, 26) - d(1, 23));
+    assert_eq!(stream_1.tokens_total_withdrawn, 0);
+    assert_eq!(stream_1.status, StreamStatus::Active);
+
+    let stream_2 = e.get_stream(&stream_id_2);
+    assert_eq!(stream_2.balance, d(1, 26) - d(1, 23));
+    assert_eq!(stream_2.tokens_total_withdrawn, 0);
+    assert_eq!(stream_2.status, StreamStatus::Active);
+
+    // should work
+    assert!(e
+        .withdraw_ext_err(&users.charlie, &[&stream_id_1, &stream_id_1])
+        .is_ok());
+
+    assert_eq!(
+        e.get_balance(&token, &users.charlie),
+        d(100, 20) / 250 * 249
+    );
+    assert_eq!(e.get_balance(&token, &users.dude), 0);
+
+    let stream_1 = e.get_stream(&stream_id_1);
+    assert_eq!(stream_1.balance, d(1, 26) - d(1, 23) - d(100, 20));
+    assert_eq!(stream_1.tokens_total_withdrawn, d(100, 20));
+    assert_eq!(stream_1.status, StreamStatus::Active);
+
+    let stream_2 = e.get_stream(&stream_id_2);
+    assert_eq!(stream_2.balance, d(1, 26) - d(1, 23));
+    assert_eq!(stream_2.tokens_total_withdrawn, 0);
+    assert_eq!(stream_2.status, StreamStatus::Active);
+
+    // not enough gas
+    assert!(!e
+        .withdraw_ext_err(&users.dude, &vec![&stream_id_2; 100])
+        .is_ok());
+
+    assert_eq!(
+        e.get_balance(&token, &users.charlie),
+        d(100, 20) / 250 * 249
+    );
+    assert_eq!(e.get_balance(&token, &users.dude), 0);
+
+    let stream_1 = e.get_stream(&stream_id_1);
+    assert_eq!(stream_1.balance, d(1, 26) - d(1, 23) - d(100, 20));
+    assert_eq!(stream_1.tokens_total_withdrawn, d(100, 20));
+    assert_eq!(stream_1.status, StreamStatus::Active);
+
+    let stream_2 = e.get_stream(&stream_id_2);
+    assert_eq!(stream_2.balance, d(1, 26) - d(1, 23));
+    assert_eq!(stream_2.tokens_total_withdrawn, 0);
+    assert_eq!(stream_2.status, StreamStatus::Active);
+
+    // ok
+    assert!(e
+        .withdraw_ext_err(&users.dude, &vec![&stream_id_2; 10])
+        .is_ok());
+
+    assert_eq!(
+        e.get_balance(&token, &users.charlie),
+        d(100, 20) / 250 * 249
+    );
+    assert_eq!(e.get_balance(&token, &users.dude), d(100, 20) / 250 * 249);
+
+    let stream_1 = e.get_stream(&stream_id_1);
+    assert_eq!(stream_1.balance, d(1, 26) - d(1, 23) - d(100, 20));
+    assert_eq!(stream_1.tokens_total_withdrawn, d(100, 20));
+    assert_eq!(stream_1.status, StreamStatus::Active);
+
+    let stream_2 = e.get_stream(&stream_id_2);
+    assert_eq!(stream_2.balance, d(1, 26) - d(1, 23) - d(100, 20));
+    assert_eq!(stream_2.tokens_total_withdrawn, d(100, 20));
+    assert_eq!(stream_2.status, StreamStatus::Active);
+}
