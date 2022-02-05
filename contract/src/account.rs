@@ -4,14 +4,19 @@ use crate::*;
 pub struct Account {
     pub id: AccountId,
 
-    pub active_streams: UnorderedSet<StreamId>,
-    pub inactive_streams: UnorderedSet<StreamId>,
+    pub active_incoming_streams: UnorderedSet<StreamId>,
+    pub active_outgoing_streams: UnorderedSet<StreamId>,
+
+    pub inactive_incoming_streams: UnorderedSet<StreamId>,
+    pub inactive_outgoing_streams: UnorderedSet<StreamId>,
 
     pub total_incoming: HashMap<AccountId, Balance>,
     pub total_outgoing: HashMap<AccountId, Balance>,
     pub total_received: HashMap<AccountId, Balance>,
 
     pub deposit: Balance,
+
+    pub stake: Balance,
 
     pub last_created_stream: Option<StreamId>,
     pub is_cron_allowed: bool,
@@ -66,31 +71,31 @@ impl Contract {
             self.stats_inc_accounts(Contract::is_aurora_address(account_id));
             Account {
                 id: account_id.clone(),
-                active_streams: UnorderedSet::new(StorageKey::ActiveStreams {
+                active_incoming_streams: UnorderedSet::new(StorageKey::ActiveIncomingStreams {
                     account_id: account_id.clone(),
                 }),
-                inactive_streams: UnorderedSet::new(StorageKey::InactiveStreams {
+                active_outgoing_streams: UnorderedSet::new(StorageKey::ActiveOutgoingStreams {
+                    account_id: account_id.clone(),
+                }),
+                inactive_incoming_streams: UnorderedSet::new(StorageKey::InactiveIncomingStreams {
+                    account_id: account_id.clone(),
+                }),
+                inactive_outgoing_streams: UnorderedSet::new(StorageKey::InactiveOutgoingStreams {
                     account_id: account_id.clone(),
                 }),
                 total_incoming: HashMap::new(),
                 total_outgoing: HashMap::new(),
                 total_received: HashMap::new(),
                 deposit: 0,
+                stake: 0,
                 last_created_stream: None,
                 is_cron_allowed: false,
             }
         })
     }
 
-    pub(crate) fn save_account(
-        &mut self,
-        account_id: &AccountId,
-        account: Account,
-    ) -> Result<(), ContractError> {
-        if *account_id != account.id {
-            return Err(ContractError::DataCorruption);
-        }
-        match self.accounts.insert(account_id, &account.into()) {
+    pub(crate) fn save_account(&mut self, account: Account) -> Result<(), ContractError> {
+        match self.accounts.insert(&account.id.clone(), &account.into()) {
             None => Ok(()),
             Some(_) => Err(ContractError::DataCorruption),
         }

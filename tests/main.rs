@@ -2,12 +2,14 @@
 //
 // multiple streams same token
 // multiple streams multiple token
+// stake/unstake
 // stop reasons
 // instant deposit
 // dao calls
 // exchanger calls
 // test withdraw no storage deposit
 // test stats
+// streams are properly deleted from accounts
 // dao token updated while streaming
 // dao new token
 // dao new token while streaming (unlisted -> listed)

@@ -23,28 +23,22 @@ mod tests {
 
     #[test]
     fn test_save_extract_stream() {
-        let mut contract = Contract::new("dao.near".parse().unwrap());
+        let dao_id = "dao.near".parse().unwrap();
+        let utility_token_id = "utilitytoken.near".parse().unwrap();
+        let mut contract = Contract::new(dao_id, utility_token_id, 18);
         let stream_id = new_stream().id;
         assert!(contract.extract_stream(&stream_id).is_err());
-        assert!(contract
-            .save_stream(
-                &env::sha256(&[44, 55]).as_slice().try_into().unwrap(),
-                new_stream()
-            )
-            .is_err());
-        assert!(contract
-            .save_stream(&stream_id.clone(), new_stream())
-            .is_ok());
-        assert!(contract
-            .save_stream(&stream_id.clone(), new_stream())
-            .is_err());
+        assert!(contract.save_stream(new_stream()).is_ok());
+        assert!(contract.save_stream(new_stream()).is_err());
         assert!(contract.extract_stream(&stream_id).is_ok());
         assert!(contract.extract_stream(&stream_id).is_err());
     }
 
     #[test]
     fn test_create_stream() {
-        let mut contract = Contract::new("dao.near".parse().unwrap());
+        let dao_id = "dao.near".parse().unwrap();
+        let utility_token_id = "utilitytoken.near".parse().unwrap();
+        let mut contract = Contract::new(dao_id, utility_token_id, 18);
         testing_env!(VMContextBuilder::new().signer_account_id(carol()).build());
         let stream = new_stream();
         assert_eq!(
@@ -86,7 +80,9 @@ mod tests {
 
     #[test]
     fn test_create_stream_to_aurora() {
-        let mut contract = Contract::new("dao.near".parse().unwrap());
+        let dao_id = "dao.near".parse().unwrap();
+        let utility_token_id = "utilitytoken.near".parse().unwrap();
+        let mut contract = Contract::new(dao_id, utility_token_id, 18);
         testing_env!(VMContextBuilder::new()
             .predecessor_account_id(carol())
             .attached_deposit(DEFAULT_COMMISSION_UNLISTED)

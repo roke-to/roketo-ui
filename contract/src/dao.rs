@@ -10,6 +10,9 @@ pub struct Dao {
     #[serde(with = "u128_dec_format")]
     pub commission_unlisted: Balance,
 
+    pub utility_token_id: AccountId,
+    pub utility_token_decimals: u8,
+
     // Related to charges in Aurora
     pub eth_near_ratio: LimitedFloat,
 
@@ -17,11 +20,17 @@ pub struct Dao {
 }
 
 impl Dao {
-    pub(crate) fn new(dao_id: AccountId) -> Self {
+    pub(crate) fn new(
+        dao_id: AccountId,
+        utility_token_id: AccountId,
+        utility_token_decimals: u8,
+    ) -> Self {
         Self {
             dao_id,
             tokens: HashMap::new(),
             commission_unlisted: DEFAULT_COMMISSION_UNLISTED,
+            utility_token_id,
+            utility_token_decimals,
             eth_near_ratio: LimitedFloat::ZERO,
             exchangers: HashSet::new(),
         }

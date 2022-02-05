@@ -6,6 +6,7 @@ impl Contract {
     }
 
     pub(crate) fn is_aurora_address(account_id: &AccountId) -> bool {
+        // TODO check if aurora allows mixing uppercase and lowercase
         account_id.to_string().len() == 40
             && account_id
                 .to_string()

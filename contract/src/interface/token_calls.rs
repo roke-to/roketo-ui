@@ -3,6 +3,7 @@ use crate::*;
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(crate = "near_sdk::serde")]
 pub enum TransferCallRequest {
+    Stake,
     Create { request: CreateRequest },
     Deposit { stream_id: Base58CryptoHash },
 }
@@ -111,6 +112,13 @@ impl FungibleTokenReceiver for Contract {
             return PromiseOrValue::Value(amount);
         }
         match key.unwrap() {
+            TransferCallRequest::Stake => {
+                assert_eq!(token.account_id, self.dao.utility_token_id);
+                let mut account = self.extract_account(&env::signer_account_id()).unwrap();
+                account.stake += u128::from(amount);
+                self.save_account(account).unwrap();
+                PromiseOrValue::Value(U128::from(0))
+            }
             TransferCallRequest::Create { request } => {
                 match self.process_create_stream(
                     sender_id,

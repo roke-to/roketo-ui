@@ -58,7 +58,7 @@ impl Contract {
                 });
             }
             signer.deposit -= self.dao.commission_unlisted;
-            self.save_account(&env::signer_account_id(), signer)?;
+            self.save_account(signer)?;
         }
 
         if initial_balance > MAX_AMOUNT {
@@ -82,7 +82,7 @@ impl Contract {
             self.process_action(&mut stream, ActionType::Start)?;
         }
 
-        self.save_stream(&stream.id.clone(), stream)?;
+        self.save_stream(stream)?;
 
         self.stats_inc_stream_deposit(&token.account_id, &initial_balance);
         self.stats_inc_streams(
@@ -117,7 +117,7 @@ impl Contract {
                 },
             )?;
             assert!(action.is_empty());
-            self.save_stream(&stream_id, stream)?;
+            self.save_stream(stream)?;
             return Err(ContractError::StreamExpired { stream_id });
         }
 
@@ -136,7 +136,7 @@ impl Contract {
 
         stream.balance += amount;
 
-        self.save_stream(&stream_id, stream)?;
+        self.save_stream(stream)?;
 
         self.stats_inc_stream_deposit(&token.account_id, &amount);
 
@@ -172,7 +172,7 @@ impl Contract {
             .process_action(&mut stream, ActionType::Start)?
             .is_empty());
 
-        self.save_stream(&stream_id, stream)?;
+        self.save_stream(stream)?;
 
         Ok(())
     }
@@ -207,7 +207,7 @@ impl Contract {
 
         let promises = self.process_action(&mut stream, ActionType::Pause)?;
 
-        self.save_stream(&stream_id, stream)?;
+        self.save_stream(stream)?;
 
         Ok(promises)
     }
@@ -248,7 +248,7 @@ impl Contract {
 
         let promises = self.process_action(&mut stream, ActionType::Stop { reason })?;
 
-        self.save_stream(&stream_id, stream)?;
+        self.save_stream(stream)?;
 
         Ok(promises)
     }
@@ -287,7 +287,7 @@ impl Contract {
             },
         )?;
 
-        self.save_stream(&stream_id, stream)?;
+        self.save_stream(stream)?;
 
         Ok(promises)
     }

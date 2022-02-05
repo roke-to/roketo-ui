@@ -4,12 +4,11 @@ use crate::*;
 impl Contract {
     #[payable]
     pub fn account_update_cron_flag(&mut self, is_cron_allowed: bool) {
-        let mut owner = self
+        let mut account = self
             .extract_account(&env::predecessor_account_id())
             .unwrap();
-        owner.is_cron_allowed = is_cron_allowed;
-        self.save_account(&env::predecessor_account_id(), owner)
-            .unwrap()
+        account.is_cron_allowed = is_cron_allowed;
+        self.save_account(account).unwrap()
     }
 
     #[payable]
@@ -18,10 +17,31 @@ impl Contract {
             .unwrap();
         self.stats_inc_account_deposit(&env::attached_deposit(), false);
     }
+
+    #[payable]
+    pub fn account_unstake(&mut self, amount: Balance) -> Promise {
+        let mut account = self
+            .extract_account(&env::predecessor_account_id())
+            .unwrap();
+        assert!(amount > 0);
+        assert!(account.stake >= amount);
+        account.stake -= amount;
+        self.save_account(account).unwrap();
+
+        assert!(env::prepaid_gas() - env::used_gas() >= MIN_GAS_FOR_PROCESS_ACTION);
+
+        self.ft_transfer(
+            &self.dao.get_token_or_unlisted(&self.dao.utility_token_id),
+            &env::predecessor_account_id(),
+            amount,
+            false,
+        )
+        .unwrap()
+    }
 }
 
 impl Contract {
-    pub fn account_deposit(
+    pub(crate) fn account_deposit(
         &mut self,
         account_id: AccountId,
         deposit: Balance,
@@ -34,6 +54,6 @@ impl Contract {
             });
         }
         account.deposit += deposit;
-        self.save_account(&account_id, account)
+        self.save_account(account)
     }
 }

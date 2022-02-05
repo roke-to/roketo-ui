@@ -42,8 +42,10 @@ enum StorageKey {
     Accounts,
     Stats,
     Streams,
-    ActiveStreams { account_id: AccountId },
-    InactiveStreams { account_id: AccountId },
+    ActiveIncomingStreams { account_id: AccountId },
+    ActiveOutgoingStreams { account_id: AccountId },
+    InactiveIncomingStreams { account_id: AccountId },
+    InactiveOutgoingStreams { account_id: AccountId },
 }
 
 #[near_bindgen]
@@ -58,9 +60,9 @@ pub struct Contract {
 #[near_bindgen]
 impl Contract {
     #[init]
-    pub fn new(dao_id: AccountId) -> Self {
+    pub fn new(dao_id: AccountId, utility_token_id: AccountId, utility_token_decimals: u8) -> Self {
         Self {
-            dao: Dao::new(dao_id),
+            dao: Dao::new(dao_id, utility_token_id, utility_token_decimals),
             accounts: UnorderedMap::new(StorageKey::Accounts),
             streams: UnorderedMap::new(StorageKey::Streams),
             stats: LazyOption::new(StorageKey::Stats, Some(&Stats::default().into())),

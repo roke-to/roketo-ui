@@ -44,8 +44,7 @@ impl Contract {
         assert_one_yocto();
         self.dao.check_owner().unwrap();
 
-        Contract::ft_transfer(
-            self,
+        self.ft_transfer(
             &self.dao.get_token(&token_account_id).unwrap(),
             &recipient,
             amount.into(),

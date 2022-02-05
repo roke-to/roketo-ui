@@ -120,17 +120,17 @@ impl Contract {
         let mut promises = vec![];
 
         if action_type == ActionType::Init {
-            assert!(owner.inactive_streams.insert(&stream.id));
-            assert!(receiver.inactive_streams.insert(&stream.id));
+            assert!(owner.inactive_outgoing_streams.insert(&stream.id));
+            assert!(receiver.inactive_incoming_streams.insert(&stream.id));
             owner.last_created_stream = Some(stream.id);
         } else {
             assert!(!stream.status.is_terminated());
             match action_type {
                 ActionType::Start => {
-                    assert!(owner.inactive_streams.remove(&stream.id));
-                    assert!(receiver.inactive_streams.remove(&stream.id));
-                    assert!(owner.active_streams.insert(&stream.id));
-                    assert!(receiver.active_streams.insert(&stream.id));
+                    assert!(owner.inactive_outgoing_streams.remove(&stream.id));
+                    assert!(receiver.inactive_incoming_streams.remove(&stream.id));
+                    assert!(owner.active_outgoing_streams.insert(&stream.id));
+                    assert!(receiver.active_incoming_streams.insert(&stream.id));
                     owner
                         .total_outgoing
                         .entry(stream.token_account_id.clone())
@@ -147,10 +147,10 @@ impl Contract {
                 ActionType::Pause => {
                     assert_eq!(stream.status, StreamStatus::Active);
                     promises.push(self.process_payment(stream, &mut receiver, true)?);
-                    assert!(owner.active_streams.remove(&stream.id));
-                    assert!(receiver.active_streams.remove(&stream.id));
-                    assert!(owner.inactive_streams.insert(&stream.id));
-                    assert!(receiver.inactive_streams.insert(&stream.id));
+                    assert!(owner.active_outgoing_streams.remove(&stream.id));
+                    assert!(receiver.active_incoming_streams.remove(&stream.id));
+                    assert!(owner.inactive_outgoing_streams.insert(&stream.id));
+                    assert!(receiver.inactive_incoming_streams.insert(&stream.id));
                     owner
                         .total_outgoing
                         .entry(stream.token_account_id.clone())
@@ -168,10 +168,8 @@ impl Contract {
                 ActionType::Stop { reason } => {
                     if stream.status == StreamStatus::Active {
                         promises.push(self.process_payment(stream, &mut receiver, true)?);
-                        assert!(owner.active_streams.remove(&stream.id));
-                        assert!(receiver.active_streams.remove(&stream.id));
-                        assert!(owner.inactive_streams.insert(&stream.id));
-                        assert!(receiver.inactive_streams.insert(&stream.id));
+                        assert!(owner.active_outgoing_streams.remove(&stream.id));
+                        assert!(receiver.active_incoming_streams.remove(&stream.id));
                         owner
                             .total_outgoing
                             .entry(stream.token_account_id.clone())
@@ -182,7 +180,8 @@ impl Contract {
                             .and_modify(|e| *e -= stream.tokens_per_sec);
                         self.stats_dec_active_streams(&stream.token_account_id);
                     } else {
-                        // Can be initialized or paused - nothing to do in this case
+                        assert!(owner.inactive_outgoing_streams.remove(&stream.id));
+                        assert!(receiver.inactive_incoming_streams.remove(&stream.id));
                     }
                     if !stream.status.is_terminated() {
                         // Refund can be requested only if stream is not terminated naturally yet
@@ -210,10 +209,8 @@ impl Contract {
                                 reason: StreamFinishReason::FinishedNatually
                             }
                         );
-                        assert!(owner.active_streams.remove(&stream.id));
-                        assert!(receiver.active_streams.remove(&stream.id));
-                        assert!(owner.inactive_streams.insert(&stream.id));
-                        assert!(receiver.inactive_streams.insert(&stream.id));
+                        assert!(owner.active_outgoing_streams.remove(&stream.id));
+                        assert!(receiver.active_incoming_streams.remove(&stream.id));
                         owner
                             .total_outgoing
                             .entry(stream.token_account_id.clone())
@@ -229,13 +226,13 @@ impl Contract {
         }
 
         stream.last_action = env::block_timestamp();
-        self.save_account(&stream.owner_id, owner)?;
-        self.save_account(&stream.receiver_id, receiver)?;
+        self.save_account(owner)?;
+        self.save_account(receiver)?;
 
         Ok(promises)
     }
 
-    pub(crate) fn process_payment(
+    fn process_payment(
         &mut self,
         stream: &mut Stream,
         account: &mut Account,
@@ -261,7 +258,7 @@ impl Contract {
         )
     }
 
-    pub(crate) fn process_refund(&mut self, stream: &mut Stream) -> Result<Promise, ContractError> {
+    fn process_refund(&mut self, stream: &mut Stream) -> Result<Promise, ContractError> {
         let token = self.dao.get_token_or_unlisted(&stream.token_account_id);
         let payment = stream.balance;
         stream.balance = 0;
@@ -287,15 +284,8 @@ impl Contract {
         }
     }
 
-    pub(crate) fn save_stream(
-        &mut self,
-        stream_id: &StreamId,
-        stream: Stream,
-    ) -> Result<(), ContractError> {
-        if *stream_id != stream.id {
-            return Err(ContractError::DataCorruption);
-        }
-        match self.streams.insert(stream_id, &stream.into()) {
+    pub(crate) fn save_stream(&mut self, stream: Stream) -> Result<(), ContractError> {
+        match self.streams.insert(&stream.id.clone(), &stream.into()) {
             None => Ok(()),
             Some(_) => Err(ContractError::DataCorruption),
         }

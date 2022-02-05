@@ -4,8 +4,10 @@ use crate::*;
 #[cfg_attr(not(target_arch = "wasm32"), derive(Debug))]
 #[serde(crate = "near_sdk::serde")]
 pub struct AccountView {
-    pub active_streams: u32,
-    pub inactive_streams: u32,
+    pub active_incoming_streams: u32,
+    pub active_outgoing_streams: u32,
+    pub inactive_incoming_streams: u32,
+    pub inactive_outgoing_streams: u32,
 
     pub total_incoming: HashMap<AccountId, U128>,
     pub total_outgoing: HashMap<AccountId, U128>,
@@ -13,6 +15,9 @@ pub struct AccountView {
 
     #[serde(with = "u128_dec_format")]
     pub deposit: Balance,
+
+    #[serde(with = "u128_dec_format")]
+    pub stake: Balance,
 
     pub last_created_stream: Option<Base58CryptoHash>,
     pub is_cron_allowed: bool,
@@ -53,8 +58,10 @@ impl Contract {
             .map(|v| v.into())
             .map(|v: Account| {
                 Ok(AccountView {
-                    active_streams: v.active_streams.len() as u32,
-                    inactive_streams: v.inactive_streams.len() as u32,
+                    active_incoming_streams: v.active_incoming_streams.len() as _,
+                    active_outgoing_streams: v.active_outgoing_streams.len() as _,
+                    inactive_incoming_streams: v.inactive_incoming_streams.len() as _,
+                    inactive_outgoing_streams: v.inactive_outgoing_streams.len() as _,
 
                     total_incoming: self
                         .dao
@@ -76,6 +83,7 @@ impl Contract {
                         .collect(),
 
                     deposit: v.deposit,
+                    stake: v.stake,
                     last_created_stream: v.last_created_stream.map(|w| w.into()),
                     is_cron_allowed: v.is_cron_allowed,
                 })
@@ -83,7 +91,7 @@ impl Contract {
             .unwrap_or(Err(ContractError::UnreachableAccount { account_id }))
     }
 
-    pub fn get_account_active_streams(
+    pub fn get_account_incoming_streams(
         &self,
         account_id: AccountId,
         from: u32,
@@ -93,21 +101,17 @@ impl Contract {
             .get(&account_id)
             .map(|v| v.into())
             .map(|v: Account| {
-                Ok(
-                    (from..std::cmp::min(v.active_streams.len() as u32, from + limit))
-                        .map(|i| {
-                            self.streams
-                                .get(&v.active_streams.as_vector().get(i.into()).unwrap())
-                                .unwrap()
-                                .into()
-                        })
-                        .collect(),
-                )
+                Ok(self.collect_account_data(
+                    &v.active_incoming_streams,
+                    &v.inactive_incoming_streams,
+                    from,
+                    limit,
+                ))
             })
             .unwrap_or(Err(ContractError::UnreachableAccount { account_id }))
     }
 
-    pub fn get_account_inactive_streams(
+    pub fn get_account_outgoing_streams(
         &self,
         account_id: AccountId,
         from: u32,
@@ -117,16 +121,12 @@ impl Contract {
             .get(&account_id)
             .map(|v| v.into())
             .map(|v: Account| {
-                Ok(
-                    (from..std::cmp::min(v.inactive_streams.len() as u32, from + limit))
-                        .map(|i| {
-                            self.streams
-                                .get(&v.inactive_streams.as_vector().get(i.into()).unwrap())
-                                .unwrap()
-                                .into()
-                        })
-                        .collect(),
-                )
+                Ok(self.collect_account_data(
+                    &v.active_outgoing_streams,
+                    &v.inactive_outgoing_streams,
+                    from,
+                    limit,
+                ))
             })
             .unwrap_or(Err(ContractError::UnreachableAccount { account_id }))
     }
@@ -147,5 +147,32 @@ impl Contract {
                 ))
             })
             .unwrap_or(Err(ContractError::UnreachableAccount { account_id }))
+    }
+}
+
+impl Contract {
+    fn collect_account_data(
+        &self,
+        active_streams: &UnorderedSet<StreamId>,
+        inactive_streams: &UnorderedSet<StreamId>,
+        from: u32,
+        limit: u32,
+    ) -> Vec<Stream> {
+        (from..std::cmp::min(active_streams.len() as _, from + limit))
+            .map(|i| {
+                self.streams
+                    .get(&active_streams.as_vector().get(i as _).unwrap())
+                    .unwrap()
+                    .into()
+            })
+            .chain(
+                (from..std::cmp::min(inactive_streams.len() as _, from + limit)).map(|i| {
+                    self.streams
+                        .get(&inactive_streams.as_vector().get(i as _).unwrap())
+                        .unwrap()
+                        .into()
+                }),
+            )
+            .collect()
     }
 }

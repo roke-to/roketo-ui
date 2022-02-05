@@ -41,6 +41,7 @@ impl Contract {
 
         // In case of gas failure ask DAO to refund
         // and be smarter next time, dickhead
-        Contract::ft_transfer(self, &token, &env::predecessor_account_id(), amount, false).unwrap()
+        self.ft_transfer(&token, &env::predecessor_account_id(), amount, false)
+            .unwrap()
     }
 }

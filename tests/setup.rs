@@ -107,6 +107,8 @@ impl Env {
         );
         let dao = near.create_user(DAO_ID.parse().unwrap(), to_yocto("10000"));
         let dao_id = dao.account_id();
+        let utility_token_id = ROKETO_TOKEN_ID.parse().unwrap();
+        let utility_token_decimals = 18;
 
         let contract = deploy!(
             contract: RoketoContract,
@@ -116,9 +118,9 @@ impl Env {
             deposit: to_yocto("20"),
             gas: DEFAULT_GAS,
             init_method: new(
-                dao_id
-                // roketo_token_ud: ROKETO_TOKEN_ID.to_string(),
-                // roketo_token_decimals: ROKETO_TOKEN_DECIMALS,
+                dao_id,
+                utility_token_id,
+                utility_token_decimals
             )
         );
 
