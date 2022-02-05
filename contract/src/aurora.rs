@@ -6,14 +6,14 @@ impl Contract {
     }
 
     pub(crate) fn is_aurora_address(account_id: &AccountId) -> bool {
-        // TODO check hex
         account_id.to_string().len() == 40
+            && account_id
+                .to_string()
+                .chars()
+                .all(|x| x.is_ascii_hexdigit())
     }
 
     pub(crate) fn aurora_transfer_call_msg(account_id: &AccountId) -> String {
-        // TODO replace to actual contract name
-        "roketodapp.near:0000000000000000000000000000000000000000000000000000000000000000"
-            .to_owned()
-            + &account_id.to_string()
+        env::current_account_id().to_string() + ":" + &"0".repeat(64) + &account_id.to_string()
     }
 }

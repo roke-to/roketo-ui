@@ -21,6 +21,8 @@ impl Contract {
         }
         // `is_listed` is skipped by serde
         token.is_listed = true;
+        token.commission_coef.assert_valid();
+        token.commission_coef.assert_less_than_one();
         self.dao.tokens.insert(token.account_id.clone(), token);
     }
 

@@ -34,6 +34,37 @@ pub const DEFAULT_GAS_FOR_STORAGE_DEPOSIT: Gas = Gas(25 * ONE_TERA);
 pub const MIN_GAS_FOR_PROCESS_ACTION: Gas = Gas(100 * ONE_TERA);
 pub const MIN_GAS_FOR_AURORA_TRANFSER: Gas = Gas(70 * ONE_TERA);
 
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[serde(crate = "near_sdk::serde")]
+pub struct LimitedFloat {
+    pub value: u32,
+    pub decimals: i8,
+}
+
+impl LimitedFloat {
+    pub const ZERO: LimitedFloat = LimitedFloat {
+        value: 0,
+        decimals: 0,
+    };
+
+    pub fn assert_valid(&self) {
+        assert!(self.decimals <= 8);
+        assert!(self.decimals >= -32);
+    }
+
+    pub fn assert_less_than_one(&self) {
+        assert_eq!(self.mult(1), 0);
+    }
+
+    pub fn mult(&self, x: u128) -> u128 {
+        if self.decimals < 0 {
+            x * self.value as u128 / 10u128.pow(-self.decimals as _)
+        } else {
+            x * self.value as u128 * 10u128.pow(self.decimals as _)
+        }
+    }
+}
+
 pub type StreamId = CryptoHash;
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, PartialEq, Debug)]

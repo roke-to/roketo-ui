@@ -20,6 +20,7 @@ pub struct CreateRequest {
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(crate = "near_sdk::serde")]
 pub enum AuroraOperationalRequest {
+    AccountDeposit,
     StartStream {
         stream_id: Base58CryptoHash,
     },
@@ -48,48 +49,33 @@ impl FungibleTokenReceiver for Contract {
             // Try to parse as an Aurora operational request
             let key: Result<AuroraOperationalRequest, _> = serde_json::from_str(&msg);
             if key.is_ok() {
-                // TODO
-                /*let eth_needed: Balance = DEFAULT_STORAGE_BALANCE
-                * self.dao.storage_deposit_aurora_numerator as u128
-                / self.dao.storage_deposit_aurora_denominator as u128;*/
                 let res = match key.as_ref().unwrap() {
+                    AuroraOperationalRequest::AccountDeposit => {
+                        self.account_deposit(
+                            env::signer_account_id(),
+                            self.dao.eth_near_ratio.mult(amount.into()),
+                        );
+                        return PromiseOrValue::Value(U128::from(0));
+                    }
                     AuroraOperationalRequest::StartStream { stream_id } => self
                         .process_start_stream((*stream_id).into())
                         .map(|_| vec![]),
                     AuroraOperationalRequest::PauseStream { stream_id } => {
-                        // TODO
-                        /*if u128::from(amount) < eth_needed {
-                            Err(ContractError::InsufficientDeposit {
-                                expected: eth_needed,
-                                received: amount.into(),
-                            })
-                        } else {
-                            self.process_pause_stream((*stream_id).into())
-                        }*/
+                        // TODO cover storage deposit
+                        // in Aurora->NEAR calls with attached eth
                         self.process_pause_stream((*stream_id).into())
                     }
                     AuroraOperationalRequest::StopStream { stream_id } => {
-                        // TODO
-                        /*let stream_view = self.view_stream(&stream_id)?;
-                        let token = self
-                            .dao
-                            .get_token(&stream_view.token_account_id)
-                            .unwrap_or(Token::new_unlisted(&stream_view.token_account_id));
-                        // In case of token.storage_balance_needed == 0, it should be at least 1 yocto
-                        if env::attached_deposit() < 2 * token.storage_balance_needed + 1 {
-                            return Err(ContractError::InsufficientDeposit {
-                                expected: 2 * token.storage_balance_needed + 1,
-                                received: env::attached_deposit(),
-                            });
-                        }*/
+                        // TODO cover storage deposit
+                        // in Aurora->NEAR calls with attached eth
                         self.process_stop_stream((*stream_id).into())
                     }
                     AuroraOperationalRequest::Withdraw {
                         stream_id,
                         is_storage_deposit_needed,
                     } => {
-                        // TODO storage_deposit question must be discussed
-                        // with Aurora team
+                        // TODO cover storage deposit
+                        // in Aurora->NEAR calls with attached eth
                         self.process_withdraw((*stream_id).into(), *is_storage_deposit_needed)
                     }
                 };
@@ -135,7 +121,6 @@ impl FungibleTokenReceiver for Contract {
                 ) {
                     Ok(()) => PromiseOrValue::Value(U128::from(0)),
                     Err(err) => panic!("error on stream creation, {:?}", err),
-                    // TODO test panic doens't apply state and returns value back
                 }
             }
             TransferCallRequest::Deposit { stream_id } => {

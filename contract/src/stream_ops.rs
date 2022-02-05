@@ -50,7 +50,6 @@ impl Contract {
 
             token.collected_commission += token.commission_on_create;
         } else {
-            // TODO adopt for aurora
             let mut signer = self.extract_account(&env::signer_account_id())?;
             if signer.deposit < self.dao.commission_unlisted {
                 return Err(ContractError::InsufficientNearBalance {

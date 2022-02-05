@@ -2,10 +2,10 @@ use std::collections::HashMap;
 
 use contract::ContractContract as RoketoContract;
 pub use contract::{
-    AccountView, ContractError, CreateRequest, Dao, Stats, Stream, StreamFinishReason,
-    StreamStatus, Token, TokenStats, TransferCallRequest, DEFAULT_GAS_FOR_FT_TRANSFER,
-    DEFAULT_GAS_FOR_STORAGE_DEPOSIT, DEFAULT_STORAGE_BALANCE, MAX_AMOUNT, MAX_STREAMING_SPEED,
-    MIN_STREAMING_SPEED,
+    AccountView, ContractError, CreateRequest, Dao, LimitedFloat, Stats, Stream,
+    StreamFinishReason, StreamStatus, Token, TokenStats, TransferCallRequest,
+    DEFAULT_GAS_FOR_FT_TRANSFER, DEFAULT_GAS_FOR_STORAGE_DEPOSIT, DEFAULT_STORAGE_BALANCE,
+    MAX_AMOUNT, MAX_STREAMING_SPEED, MIN_STREAMING_SPEED,
 };
 use near_contract_standards::fungible_token::metadata::{FungibleTokenMetadata, FT_METADATA_SPEC};
 pub use near_sdk::json_types::{Base58CryptoHash, U128};
@@ -165,8 +165,10 @@ impl Env {
                     account_id: self.roketo_token.account_id(),
                     is_listed: false, // unused
                     commission_on_create: d(10, 18),
-                    commission_numerator: 1,
-                    commission_denominator: 10000, // 0.01%
+                    commission_coef: LimitedFloat {
+                        value: 1,
+                        decimals: -4,
+                    }, // 0.01%
                     collected_commission: 0,
                     storage_balance_needed: 125 * env::STORAGE_PRICE_PER_BYTE,
                     gas_for_ft_transfer: DEFAULT_GAS_FOR_FT_TRANSFER,
@@ -183,8 +185,10 @@ impl Env {
                     account_id: tokens.ndai.account_id(),
                     is_listed: false, // unused
                     commission_on_create: d(1, 18),
-                    commission_numerator: 1,
-                    commission_denominator: 1000, // 0.1%
+                    commission_coef: LimitedFloat {
+                        value: 1,
+                        decimals: -3,
+                    }, // 0.1%
                     collected_commission: 0,
                     storage_balance_needed: 125 * env::STORAGE_PRICE_PER_BYTE,
                     gas_for_ft_transfer: DEFAULT_GAS_FOR_FT_TRANSFER,
@@ -201,8 +205,10 @@ impl Env {
                     account_id: tokens.nusdt.account_id(),
                     is_listed: false, // unused
                     commission_on_create: d(1, 6),
-                    commission_numerator: 1,
-                    commission_denominator: 1000, // 0.1%
+                    commission_coef: LimitedFloat {
+                        value: 1,
+                        decimals: -3,
+                    }, // 0.1%
                     collected_commission: 0,
                     storage_balance_needed: 125 * env::STORAGE_PRICE_PER_BYTE,
                     gas_for_ft_transfer: DEFAULT_GAS_FOR_FT_TRANSFER,
@@ -219,8 +225,10 @@ impl Env {
                     account_id: tokens.wnear.account_id(),
                     is_listed: false,               // unused
                     commission_on_create: d(1, 23), // 0.1 token
-                    commission_numerator: 1,
-                    commission_denominator: 250, // 0.4%
+                    commission_coef: LimitedFloat {
+                        value: 4,
+                        decimals: -3,
+                    }, // 0.4%
                     collected_commission: 0,
                     storage_balance_needed: 125 * env::STORAGE_PRICE_PER_BYTE,
                     gas_for_ft_transfer: DEFAULT_GAS_FOR_FT_TRANSFER,
@@ -237,8 +245,10 @@ impl Env {
                     account_id: tokens.aurora.account_id(),
                     is_listed: false,               // unused
                     commission_on_create: d(1, 15), // 0.001 token
-                    commission_numerator: 1,
-                    commission_denominator: 250, // 0.4%
+                    commission_coef: LimitedFloat {
+                        value: 4,
+                        decimals: -3,
+                    }, // 0.4%
                     collected_commission: 0,
                     storage_balance_needed: 0, // aurora doesn't need storage deposit
                     gas_for_ft_transfer: DEFAULT_GAS_FOR_FT_TRANSFER,

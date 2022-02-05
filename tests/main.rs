@@ -151,9 +151,8 @@ fn test_stream_sanity() {
 
     e.stop_stream(&users.alice, &stream_id);
 
-    let amount_after_stop = amount_after_create
-        - amount_after_create * dao_token.commission_numerator as u128
-            / dao_token.commission_denominator as u128;
+    let amount_after_stop =
+        amount_after_create - dao_token.commission_coef.mult(amount_after_create);
     let stream = e.get_stream(&stream_id);
     assert_eq!(stream.balance, 0);
     assert_eq!(stream.owner_id, users.alice.account_id());
@@ -245,8 +244,10 @@ fn test_stream_max_value() {
 
     let dao = e.get_dao();
     let mut dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap().clone();
-    dao_token.commission_numerator = u32::max_value() - 1;
-    dao_token.commission_denominator = u32::max_value();
+    dao_token.commission_coef = LimitedFloat {
+        value: 99999999,
+        decimals: -8,
+    };
     dao_token.commission_on_create = 0;
     e.dao_update_token(dao_token);
 
@@ -276,8 +277,7 @@ fn test_stream_max_value() {
     let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
     assert_eq!(
         dao_token.collected_commission,
-        (MAX_AMOUNT + u32::max_value() as u128 - 1) / u32::max_value() as u128
-            * (u32::max_value() as u128 - 1)
+        dao_token.commission_coef.mult(MAX_AMOUNT)
     );
 
     assert_eq!(
@@ -292,8 +292,10 @@ fn test_stream_max_value_min_speed() {
 
     let dao = e.get_dao();
     let mut dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap().clone();
-    dao_token.commission_numerator = 1;
-    dao_token.commission_denominator = u32::max_value();
+    dao_token.commission_coef = LimitedFloat {
+        value: 99999999,
+        decimals: -8,
+    };
     dao_token.commission_on_create = 0;
     e.dao_update_token(dao_token);
 
@@ -319,7 +321,7 @@ fn test_stream_max_value_min_speed() {
     let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
     assert_eq!(
         dao_token.collected_commission,
-        (hund_years + u32::max_value() as u128 - 1) / u32::max_value() as u128
+        dao_token.commission_coef.mult(hund_years)
     );
 
     assert_eq!(

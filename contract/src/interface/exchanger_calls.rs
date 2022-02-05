@@ -18,17 +18,13 @@ impl Contract {
     }
 
     #[payable]
-    pub fn exchanger_update_storage_deposit_aurora_coefficient(
-        &mut self,
-        storage_deposit_aurora_numerator: u32,
-        storage_deposit_aurora_denominator: u32,
-    ) {
+    pub fn exchanger_update_eth_near_ratio(&mut self, ratio: LimitedFloat) {
         self.dao
             .check_exchanger(&env::predecessor_account_id())
             .unwrap();
 
-        self.dao.storage_deposit_aurora_numerator = storage_deposit_aurora_numerator;
-        self.dao.storage_deposit_aurora_denominator = storage_deposit_aurora_denominator;
+        ratio.assert_valid();
+        self.dao.eth_near_ratio = ratio;
     }
 
     #[payable]

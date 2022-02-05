@@ -14,10 +14,15 @@ impl Contract {
 
     #[payable]
     pub fn account_deposit_near(&mut self) {
-        let mut owner = self.extract_account_or_create(&env::predecessor_account_id());
-        assert!(owner.deposit + env::attached_deposit() >= self.dao.commission_unlisted);
-        owner.deposit += env::attached_deposit();
-        self.save_account(&env::predecessor_account_id(), owner)
-            .unwrap()
+        self.account_deposit(env::predecessor_account_id(), env::attached_deposit())
+    }
+}
+
+impl Contract {
+    pub fn account_deposit(&mut self, account_id: AccountId, deposit: Balance) {
+        let mut account = self.extract_account_or_create(&account_id);
+        assert!(account.deposit + deposit >= self.dao.commission_unlisted);
+        account.deposit += deposit;
+        self.save_account(&account_id, account).unwrap()
     }
 }

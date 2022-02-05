@@ -10,8 +10,8 @@ pub struct Dao {
     #[serde(with = "u128_dec_format")]
     pub commission_unlisted: Balance,
 
-    pub storage_deposit_aurora_numerator: u32,
-    pub storage_deposit_aurora_denominator: u32,
+    // Related to charges in Aurora
+    pub eth_near_ratio: LimitedFloat,
 
     pub exchangers: HashSet<AccountId>,
 }
@@ -22,8 +22,7 @@ impl Dao {
             dao_id,
             tokens: HashMap::new(),
             commission_unlisted: DEFAULT_COMMISSION_UNLISTED,
-            storage_deposit_aurora_numerator: 1,
-            storage_deposit_aurora_denominator: 247,
+            eth_near_ratio: LimitedFloat::ZERO,
             exchangers: HashSet::new(),
         }
     }
