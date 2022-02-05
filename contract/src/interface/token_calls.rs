@@ -52,9 +52,8 @@ impl FungibleTokenReceiver for Contract {
             if key.is_ok() {
                 let res = match key.as_ref().unwrap() {
                     AuroraOperationalRequest::AccountDeposit => {
-                        let value = self.dao.eth_near_ratio.mult(amount.into());
-                        self.account_deposit(env::signer_account_id(), value)
-                            .unwrap();
+                        let value = self.dao.eth_near_ratio.mult_safe(amount.into());
+                        self.account_deposit(sender_id, value).unwrap();
                         self.dao
                             .tokens
                             .entry(Contract::aurora_account_id())
@@ -62,18 +61,22 @@ impl FungibleTokenReceiver for Contract {
                         self.stats_inc_account_deposit(&value, true);
                         return PromiseOrValue::Value(U128::from(0));
                     }
-                    AuroraOperationalRequest::StartStream { stream_id } => self
-                        .process_start_stream((*stream_id).into())
-                        .map(|_| vec![]),
+                    AuroraOperationalRequest::StartStream { stream_id } => {
+                        // TODO check owner
+                        self.process_start_stream(&sender_id, (*stream_id).into())
+                            .map(|_| vec![])
+                    }
                     AuroraOperationalRequest::PauseStream { stream_id } => {
+                        // TODO check owner
                         // TODO cover storage deposit
                         // in Aurora->NEAR calls with attached eth
-                        self.process_pause_stream((*stream_id).into())
+                        self.process_pause_stream(&sender_id, (*stream_id).into())
                     }
                     AuroraOperationalRequest::StopStream { stream_id } => {
+                        // TODO check owner
                         // TODO cover storage deposit
                         // in Aurora->NEAR calls with attached eth
-                        self.process_stop_stream((*stream_id).into())
+                        self.process_stop_stream(&sender_id, (*stream_id).into())
                     }
                     AuroraOperationalRequest::Withdraw {
                         stream_id,
@@ -81,7 +84,11 @@ impl FungibleTokenReceiver for Contract {
                     } => {
                         // TODO cover storage deposit
                         // in Aurora->NEAR calls with attached eth
-                        self.process_withdraw((*stream_id).into(), *is_storage_deposit_needed)
+                        self.process_withdraw(
+                            &sender_id,
+                            (*stream_id).into(),
+                            *is_storage_deposit_needed,
+                        )
                     }
                 };
                 return match res {
@@ -121,6 +128,7 @@ impl FungibleTokenReceiver for Contract {
             }
             TransferCallRequest::Create { request } => {
                 match self.process_create_stream(
+                    &sender_id.clone(),
                     sender_id,
                     request.description,
                     request.receiver_id,

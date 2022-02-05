@@ -36,31 +36,45 @@ pub const MIN_GAS_FOR_AURORA_TRANFSER: Gas = Gas(70 * ONE_TERA);
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[serde(crate = "near_sdk::serde")]
-pub struct LimitedFloat {
-    pub value: u32,
-    pub decimals: i8,
+pub struct SafeFloat {
+    pub val: u32,
+    pub pow: i8,
 }
 
-impl LimitedFloat {
-    pub const ZERO: LimitedFloat = LimitedFloat {
-        value: 0,
-        decimals: 0,
-    };
+impl SafeFloat {
+    const MAX_SAFE: u128 = 1_000_000_000_000_000_000_000_000_000; // 1e27
 
-    pub fn assert_valid(&self) {
-        assert!(self.decimals <= 8);
-        assert!(self.decimals >= -32);
+    pub const ZERO: SafeFloat = SafeFloat { val: 0, pow: 0 };
+
+    pub fn assert_safe(&self) {
+        self.mult_safe(MAX_AMOUNT);
     }
 
     pub fn assert_less_than_one(&self) {
-        assert_eq!(self.mult(1), 0);
+        assert_eq!(self.mult_safe(1), 0);
     }
 
-    pub fn mult(&self, x: u128) -> u128 {
-        if self.decimals < 0 {
-            x * self.value as u128 / 10u128.pow(-self.decimals as _)
+    pub fn mult_safe(&self, x: u128) -> u128 {
+        if self.pow < 0 {
+            let mut cur = x;
+            let mut p = -self.pow;
+            while cur > SafeFloat::MAX_SAFE {
+                cur /= 10;
+                p -= 1;
+            }
+            // Hold multiplier not higher than 1e27, so max value here may be
+            // 1e27 * 2e32 ==
+            // 4294967296000000000000000000000000000
+            //
+            // while limit of u128 is
+            // 2e128 ==
+            // 340282366920938463463374607431768211456
+            //
+            // It keeps final multiplication within boundaries
+            cur * self.val as u128 / 10u128.pow(p as _)
         } else {
-            x * self.value as u128 * 10u128.pow(self.decimals as _)
+            // Not too much we can do here, right?
+            x * self.val as u128 * 10u128.pow(self.pow as _)
         }
     }
 }

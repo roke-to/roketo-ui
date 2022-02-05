@@ -2,11 +2,14 @@
 //
 // multiple streams same token
 // multiple streams multiple token
+// multiple withdraw
+// multiple withdraw one fail revert
 // stake/unstake
 // stop reasons
 // instant deposit
 // dao calls
 // exchanger calls
+// access to stream actions
 // test withdraw no storage deposit
 // test stats
 // streams are properly deleted from accounts
@@ -154,7 +157,7 @@ fn test_stream_sanity() {
     e.stop_stream(&users.alice, &stream_id);
 
     let amount_after_stop =
-        amount_after_create - dao_token.commission_coef.mult(amount_after_create);
+        amount_after_create - dao_token.commission_coef.mult_safe(amount_after_create);
     let stream = e.get_stream(&stream_id);
     assert_eq!(stream.balance, 0);
     assert_eq!(stream.owner_id, users.alice.account_id());
@@ -246,9 +249,9 @@ fn test_stream_max_value() {
 
     let dao = e.get_dao();
     let mut dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap().clone();
-    dao_token.commission_coef = LimitedFloat {
-        value: 99999999,
-        decimals: -8,
+    dao_token.commission_coef = SafeFloat {
+        val: 1_000_000_000 - 1,
+        pow: -9,
     };
     dao_token.commission_on_create = 0;
     e.dao_update_token(dao_token);
@@ -279,7 +282,7 @@ fn test_stream_max_value() {
     let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
     assert_eq!(
         dao_token.collected_commission,
-        dao_token.commission_coef.mult(MAX_AMOUNT)
+        dao_token.commission_coef.mult_safe(MAX_AMOUNT - 1) + 1
     );
 
     assert_eq!(
@@ -294,9 +297,9 @@ fn test_stream_max_value_min_speed() {
 
     let dao = e.get_dao();
     let mut dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap().clone();
-    dao_token.commission_coef = LimitedFloat {
-        value: 99999999,
-        decimals: -8,
+    dao_token.commission_coef = SafeFloat {
+        val: 1_000_000_000 - 1,
+        pow: -9,
     };
     dao_token.commission_on_create = 0;
     e.dao_update_token(dao_token);
@@ -323,7 +326,7 @@ fn test_stream_max_value_min_speed() {
     let dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
     assert_eq!(
         dao_token.collected_commission,
-        dao_token.commission_coef.mult(hund_years)
+        dao_token.commission_coef.mult_safe(hund_years - 1) + 1
     );
 
     assert_eq!(

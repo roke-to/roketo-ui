@@ -15,10 +15,7 @@ mod tests {
     #[test]
     fn test_commission_1_percent() {
         let mut token = Token::new_unlisted(&"token.near".parse().unwrap());
-        token.commission_coef = LimitedFloat {
-            value: 1,
-            decimals: -2,
-        };
+        token.commission_coef = SafeFloat { val: 1, pow: -2 };
         let balance: Balance = 1000000000;
         let (left, commission) = token.apply_commission(balance);
         assert_eq!(left, balance / 100 * 99);
@@ -29,10 +26,7 @@ mod tests {
     #[test]
     fn test_commission_100_percent() {
         let mut token = Token::new_unlisted(&"token.near".parse().unwrap());
-        token.commission_coef = LimitedFloat {
-            value: 1,
-            decimals: 0,
-        };
+        token.commission_coef = SafeFloat { val: 1, pow: 0 };
         let balance: Balance = 123456;
         let (left, commission) = token.apply_commission(balance);
         assert_eq!(left, 0);

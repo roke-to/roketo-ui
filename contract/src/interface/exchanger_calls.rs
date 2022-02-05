@@ -18,12 +18,12 @@ impl Contract {
     }
 
     #[payable]
-    pub fn exchanger_update_eth_near_ratio(&mut self, ratio: LimitedFloat) {
+    pub fn exchanger_update_eth_near_ratio(&mut self, ratio: SafeFloat) {
         self.dao
             .check_exchanger(&env::predecessor_account_id())
             .unwrap();
 
-        ratio.assert_valid();
+        ratio.assert_safe();
         self.dao.eth_near_ratio = ratio;
     }
 

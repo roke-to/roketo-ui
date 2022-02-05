@@ -14,7 +14,7 @@ pub struct Token {
     pub commission_on_create: Balance,
 
     // percentage of tokens taken for commission
-    pub commission_coef: LimitedFloat,
+    pub commission_coef: SafeFloat,
 
     #[serde(with = "u128_dec_format")]
     pub collected_commission: Balance,
@@ -32,7 +32,7 @@ impl Token {
             account_id: token_account_id.clone(),
             is_listed: false,
             commission_on_create: 0, // we don't accept unlisted tokens
-            commission_coef: LimitedFloat::ZERO,
+            commission_coef: SafeFloat::ZERO,
             collected_commission: 0,
             storage_balance_needed: DEFAULT_STORAGE_BALANCE,
             gas_for_ft_transfer: DEFAULT_GAS_FOR_FT_TRANSFER,
@@ -42,10 +42,10 @@ impl Token {
 
     pub(crate) fn apply_commission(&self, amount: Balance) -> (Balance, Balance) {
         // round commission up
-        if self.commission_coef == LimitedFloat::ZERO || amount == 0 {
+        if self.commission_coef == SafeFloat::ZERO || amount == 0 {
             (amount, 0)
         } else {
-            let commission = self.commission_coef.mult(amount - 1) + 1;
+            let commission = self.commission_coef.mult_safe(amount - 1) + 1;
             (amount - commission, commission)
         }
     }

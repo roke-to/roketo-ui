@@ -14,7 +14,7 @@ pub struct Dao {
     pub utility_token_decimals: u8,
 
     // Related to charges in Aurora
-    pub eth_near_ratio: LimitedFloat,
+    pub eth_near_ratio: SafeFloat,
 
     pub exchangers: HashSet<AccountId>,
 }
@@ -31,7 +31,7 @@ impl Dao {
             commission_unlisted: DEFAULT_COMMISSION_UNLISTED,
             utility_token_id,
             utility_token_decimals,
-            eth_near_ratio: LimitedFloat::ZERO,
+            eth_near_ratio: SafeFloat::ZERO,
             exchangers: HashSet::new(),
         }
     }

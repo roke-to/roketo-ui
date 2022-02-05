@@ -3,7 +3,8 @@ use crate::*;
 impl Contract {
     pub(crate) fn process_create_stream(
         &mut self,
-        sender_id: AccountId,
+        sender_id: &AccountId,
+        owner_id: AccountId,
         description: Option<String>,
         receiver_id: AccountId,
         mut token: Token,
@@ -50,15 +51,15 @@ impl Contract {
 
             token.collected_commission += token.commission_on_create;
         } else {
-            let mut signer = self.extract_account(&env::signer_account_id())?;
-            if signer.deposit < self.dao.commission_unlisted {
+            let mut sender = self.extract_account(sender_id)?;
+            if sender.deposit < self.dao.commission_unlisted {
                 return Err(ContractError::InsufficientNearBalance {
                     requested: self.dao.commission_unlisted,
-                    left: signer.deposit,
+                    left: sender.deposit,
                 });
             }
-            signer.deposit -= self.dao.commission_unlisted;
-            self.save_account(signer)?;
+            sender.deposit -= self.dao.commission_unlisted;
+            self.save_account(sender)?;
         }
 
         if initial_balance > MAX_AMOUNT {
@@ -69,7 +70,7 @@ impl Contract {
 
         let mut stream = Stream::new(
             description,
-            sender_id.clone(),
+            owner_id.clone(),
             receiver_id.clone(),
             token.account_id.clone(),
             initial_balance.into(),
@@ -88,7 +89,7 @@ impl Contract {
         self.stats_inc_streams(
             &token.account_id,
             is_auto_start_enabled,
-            Contract::is_aurora_address(&sender_id) | Contract::is_aurora_address(&receiver_id),
+            Contract::is_aurora_address(&owner_id) | Contract::is_aurora_address(&receiver_id),
         );
 
         Ok(())
@@ -143,13 +144,17 @@ impl Contract {
         Ok(())
     }
 
-    pub fn process_start_stream(&mut self, stream_id: CryptoHash) -> Result<(), ContractError> {
+    pub fn process_start_stream(
+        &mut self,
+        sender_id: &AccountId,
+        stream_id: CryptoHash,
+    ) -> Result<(), ContractError> {
         let mut stream = self.extract_stream(&stream_id)?;
 
-        if stream.owner_id != env::predecessor_account_id() {
+        if stream.owner_id != *sender_id {
             return Err(ContractError::CallerIsNotStreamOwner {
                 expected: stream.owner_id,
-                received: env::predecessor_account_id(),
+                received: sender_id.clone(),
             });
         }
         if stream.status != StreamStatus::Paused && stream.status != StreamStatus::Initialized {
@@ -179,17 +184,16 @@ impl Contract {
 
     pub fn process_pause_stream(
         &mut self,
+        sender_id: &AccountId,
         stream_id: CryptoHash,
     ) -> Result<Vec<Promise>, ContractError> {
         let mut stream = self.extract_stream(&stream_id)?;
 
-        if stream.owner_id != env::predecessor_account_id()
-            && stream.receiver_id != env::predecessor_account_id()
-        {
+        if stream.owner_id != *sender_id && stream.receiver_id != *sender_id {
             return Err(ContractError::CallerIsNotStreamActor {
                 owner: stream.owner_id,
                 receiver: stream.receiver_id,
-                caller: env::predecessor_account_id(),
+                caller: sender_id.clone(),
             });
         }
         if stream.status != StreamStatus::Active {
@@ -214,17 +218,16 @@ impl Contract {
 
     pub fn process_stop_stream(
         &mut self,
+        sender_id: &AccountId,
         stream_id: CryptoHash,
     ) -> Result<Vec<Promise>, ContractError> {
         let mut stream = self.extract_stream(&stream_id)?;
 
-        if stream.owner_id != env::predecessor_account_id()
-            && stream.receiver_id != env::predecessor_account_id()
-        {
+        if stream.owner_id != *sender_id && stream.receiver_id != *sender_id {
             return Err(ContractError::CallerIsNotStreamActor {
                 owner: stream.owner_id,
                 receiver: stream.receiver_id,
-                caller: env::predecessor_account_id(),
+                caller: sender_id.clone(),
             });
         }
         if stream.status.is_terminated() {
@@ -233,7 +236,7 @@ impl Contract {
             });
         }
 
-        let reason = if stream.owner_id == env::predecessor_account_id() {
+        let reason = if stream.owner_id == *sender_id {
             StreamFinishReason::StoppedByOwner
         } else {
             StreamFinishReason::StoppedByReceiver
@@ -256,6 +259,7 @@ impl Contract {
     // TODO multiple
     pub fn process_withdraw(
         &mut self,
+        sender_id: &AccountId,
         stream_id: CryptoHash,
         is_storage_deposit_needed: bool,
     ) -> Result<Vec<Promise>, ContractError> {
@@ -263,7 +267,7 @@ impl Contract {
 
         let receiver_view = self.view_account(&stream.receiver_id)?;
 
-        if receiver_view.id != env::predecessor_account_id() && !receiver_view.is_cron_allowed {
+        if receiver_view.id != *sender_id && !receiver_view.is_cron_allowed {
             return Err(ContractError::CronCallsForbidden);
         }
 

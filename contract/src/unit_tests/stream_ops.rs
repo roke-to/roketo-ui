@@ -43,6 +43,7 @@ mod tests {
         let stream = new_stream();
         assert_eq!(
             contract.process_create_stream(
+                &carol(),
                 stream.owner_id,
                 stream.description,
                 stream.receiver_id,
@@ -66,6 +67,7 @@ mod tests {
         testing_env!(VMContextBuilder::new().signer_account_id(carol()).build());
         assert!(contract
             .process_create_stream(
+                &carol(),
                 stream.owner_id,
                 stream.description,
                 stream.receiver_id,
@@ -94,6 +96,7 @@ mod tests {
         testing_env!(VMContextBuilder::new().signer_account_id(carol()).build());
         assert!(contract
             .process_create_stream(
+                &carol(),
                 stream.owner_id,
                 stream.description,
                 stream.receiver_id,
