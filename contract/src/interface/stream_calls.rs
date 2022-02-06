@@ -52,11 +52,10 @@ impl Contract {
             .unwrap()
     }
 
-    #[allow(unused_mut)]
     #[payable]
     pub fn withdraw(
         &mut self,
-        mut stream_ids: Vec<Base58CryptoHash>,
+        stream_ids: Vec<Base58CryptoHash>,
         is_storage_deposit_needed: Option<bool>,
     ) -> Vec<Promise> {
         let is_storage_deposit_needed = match is_storage_deposit_needed {
@@ -67,8 +66,8 @@ impl Contract {
         if is_storage_deposit_needed {
             let storage_balance_needed = stream_ids
                 .iter()
-                .map(|stream_id| {
-                    let stream_view = self.view_stream(&((*stream_id).into())).unwrap();
+                .map(|&stream_id| {
+                    let stream_view = self.view_stream(&stream_id.into()).unwrap();
                     let token = self
                         .dao
                         .get_token_or_unlisted(&stream_view.token_account_id);
@@ -86,8 +85,8 @@ impl Contract {
         }
 
         stream_ids
-            .drain(..)
-            .map(|stream_id| {
+            .iter()
+            .map(|&stream_id| {
                 self.process_withdraw(
                     &env::predecessor_account_id(),
                     stream_id.into(),

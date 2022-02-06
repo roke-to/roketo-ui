@@ -76,7 +76,7 @@ fn test_dev_setup() {
     assert_eq!(dao.tokens.len(), 5);
 
     let stats = e.get_stats();
-    assert_eq!(stats.listed_tokens.len(), 5);
+    assert_eq!(stats.dao_tokens.len(), 5);
 
     let (_, s) = e.get_token(&tokens.aurora);
     assert!(s.is_some());
@@ -246,6 +246,7 @@ fn test_stream_min_value() {
 #[test]
 fn test_stream_max_value() {
     let (mut e, tokens, users) = basic_setup();
+    e.mint_ft(&tokens.wnear, &users.alice, MAX_AMOUNT);
 
     let dao = e.get_dao();
     let mut dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap().clone();
@@ -289,11 +290,19 @@ fn test_stream_max_value() {
         e.get_balance(&tokens.wnear, &users.charlie),
         MAX_AMOUNT - dao_token.collected_commission
     );
+
+    // prove that the test makes any sence
+    assert_eq!(
+        (MAX_AMOUNT / 1_000_000_000 * (1_000_000_000 - 1) - dao_token.collected_commission)
+            / d(1, 18),
+        0
+    );
 }
 
 #[test]
 fn test_stream_max_value_min_speed() {
     let (mut e, tokens, users) = basic_setup();
+    e.mint_ft(&tokens.wnear, &users.alice, MAX_AMOUNT);
 
     let dao = e.get_dao();
     let mut dao_token = dao.tokens.get(&tokens.wnear.account_id()).unwrap().clone();
@@ -869,4 +878,63 @@ fn test_withdraw_multiple_allow_cron() {
     assert_eq!(stream_3.balance, d(1, 26) - d(1, 23) - d(100, 22));
     assert_eq!(stream_3.tokens_total_withdrawn, d(100, 22));
     assert_eq!(stream_3.status, StreamStatus::Active);
+}
+
+#[test]
+fn test_dao_unlist_list() {
+    let (mut e, tokens, users) = basic_setup();
+    let token = tokens.wnear;
+    let amount = d(1, 26);
+
+    let stream_id = e.create_stream(&users.alice, &users.charlie, &token, amount, d(1, 20));
+
+    e.skip_time(100);
+
+    e.withdraw(&users.charlie, &stream_id);
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(stream.balance, amount - d(1, 23) - d(100, 20));
+    assert_eq!(stream.tokens_total_withdrawn, d(100, 20));
+    assert_eq!(stream.status, StreamStatus::Active);
+    assert_eq!(
+        e.get_balance(&token, &users.charlie),
+        d(100, 20) / 250 * 249
+    );
+
+    e.skip_time(100);
+
+    let dao = e.get_dao();
+    let mut dao_token = dao.tokens.get(&token.account_id()).unwrap().clone();
+    dao_token.is_listed = false;
+    e.dao_update_token(dao_token);
+
+    e.skip_time(100);
+
+    e.withdraw(&users.charlie, &stream_id);
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(stream.balance, amount - d(1, 23) - d(300, 20));
+    assert_eq!(stream.tokens_total_withdrawn, d(300, 20));
+    assert_eq!(stream.status, StreamStatus::Active);
+    assert_eq!(
+        e.get_balance(&token, &users.charlie),
+        d(100, 20) / 250 * 249 + d(200, 20)
+    );
+
+    e.skip_time(100);
+
+    let dao = e.get_dao();
+    let mut dao_token = dao.tokens.get(&token.account_id()).unwrap().clone();
+    dao_token.is_listed = true;
+    e.dao_update_token(dao_token);
+
+    e.skip_time(100);
+
+    e.withdraw(&users.charlie, &stream_id);
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(stream.balance, amount - d(1, 23) - d(500, 20));
+    assert_eq!(stream.tokens_total_withdrawn, d(500, 20));
+    assert_eq!(stream.status, StreamStatus::Active);
+    assert_eq!(
+        e.get_balance(&token, &users.charlie),
+        d(300, 20) / 250 * 249 + d(200, 20)
+    );
 }

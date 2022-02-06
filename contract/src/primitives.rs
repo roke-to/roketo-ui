@@ -5,11 +5,12 @@ pub const NO_DEPOSIT: Balance = 0;
 pub const MAX_DESCRIPTION_LEN: usize = 255;
 
 pub const MIN_STREAMING_SPEED: u128 = 1;
-pub const MAX_STREAMING_SPEED: u128 = 1_000_000_000_000_000_000_000_000_000; // 1e27
+pub const MAX_STREAMING_SPEED: u128 = 10u128.pow(27 as _); // 1e27
 
-pub const MAX_AMOUNT: u128 = 1_000_000_000_000_000_000_000_000_000_000; // 1e30
+pub const MAX_AMOUNT: u128 = 10u128.pow(33 as _); // 1e33
 
-pub const TICKS_PER_SECOND: u128 = 1_000_000_000;
+pub const TICKS_PER_SECOND: u128 = 10u128.pow(9 as _); // 1e9
+
 pub const ONE_TERA: u64 = Gas::ONE_TERA.0; // near-sdk Gas is totally useless
 
 pub const DEFAULT_COMMISSION_UNLISTED: Balance = ONE_NEAR / 10; // 0.1 NEAR
@@ -42,7 +43,7 @@ pub struct SafeFloat {
 }
 
 impl SafeFloat {
-    const MAX_SAFE: u128 = 1_000_000_000_000_000_000_000_000_000; // 1e27
+    pub(crate) const MAX_SAFE: u128 = 10u128.pow(27 as _); // 1e27
 
     pub const ZERO: SafeFloat = SafeFloat { val: 0, pow: 0 };
 
@@ -50,7 +51,8 @@ impl SafeFloat {
         self.mult_safe(MAX_AMOUNT);
     }
 
-    pub fn assert_less_than_one(&self) {
+    pub fn assert_safe_commission(&self) {
+        self.assert_safe();
         assert_eq!(self.mult_safe(1), 0);
     }
 
@@ -58,7 +60,7 @@ impl SafeFloat {
         if self.pow < 0 {
             let mut cur = x;
             let mut p = -self.pow;
-            while cur > SafeFloat::MAX_SAFE {
+            while cur > SafeFloat::MAX_SAFE && p > 0 {
                 cur /= 10;
                 p -= 1;
             }

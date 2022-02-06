@@ -47,10 +47,6 @@ impl Dao {
         }
     }
 
-    pub(crate) fn is_token_listed(&self, token_account_id: &AccountId) -> bool {
-        self.tokens.contains_key(token_account_id)
-    }
-
     pub(crate) fn get_token_or_unlisted(&self, token_account_id: &AccountId) -> Token {
         self.get_token(token_account_id)
             .unwrap_or(Token::new_unlisted(token_account_id))

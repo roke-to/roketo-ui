@@ -27,7 +27,7 @@ pub struct AccountView {
 impl Contract {
     pub fn get_stats(self) -> Stats {
         let mut stats: Stats = self.stats.get().unwrap().into();
-        stats.total_listed_tokens = stats.listed_tokens.len() as u32;
+        stats.total_dao_tokens = stats.dao_tokens.len() as u32;
         stats
     }
 
@@ -39,7 +39,7 @@ impl Contract {
         (
             self.dao.get_token_or_unlisted(&token_account_id),
             (Stats::from(self.stats.get().unwrap()))
-                .listed_tokens
+                .dao_tokens
                 .remove(&token_account_id),
         )
     }

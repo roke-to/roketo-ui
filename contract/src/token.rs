@@ -6,7 +6,6 @@ use crate::*;
 pub struct Token {
     pub account_id: AccountId,
 
-    #[serde(skip)]
     pub is_listed: bool,
 
     // taken in current fts in case of listed token

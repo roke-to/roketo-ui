@@ -80,8 +80,11 @@ impl Stream {
     pub(crate) fn process_withdraw(&mut self, token: &Token) -> (Balance, Balance) {
         let gross_payment = self.available_to_withdraw();
         self.tokens_total_withdrawn += gross_payment;
-        let (payment, commission) =
-            token.apply_commission(std::cmp::min(gross_payment, self.balance));
+        let (payment, commission) = if token.is_listed {
+            token.apply_commission(std::cmp::min(gross_payment, self.balance))
+        } else {
+            (gross_payment, 0)
+        };
         if self.balance > gross_payment {
             self.balance -= gross_payment;
         } else {

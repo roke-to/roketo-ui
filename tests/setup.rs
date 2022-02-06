@@ -165,7 +165,7 @@ impl Env {
             .function_call(
                 self.contract.contract.dao_update_token(Token {
                     account_id: self.roketo_token.account_id(),
-                    is_listed: false, // unused
+                    is_listed: true,
                     commission_on_create: d(10, 18),
                     commission_coef: SafeFloat { val: 1, pow: -4 }, // 0.01%
                     collected_commission: 0,
@@ -182,7 +182,7 @@ impl Env {
             .function_call(
                 self.contract.contract.dao_update_token(Token {
                     account_id: tokens.ndai.account_id(),
-                    is_listed: false, // unused
+                    is_listed: true,
                     commission_on_create: d(1, 18),
                     commission_coef: SafeFloat { val: 1, pow: -3 }, // 0.1%
                     collected_commission: 0,
@@ -199,7 +199,7 @@ impl Env {
             .function_call(
                 self.contract.contract.dao_update_token(Token {
                     account_id: tokens.nusdt.account_id(),
-                    is_listed: false, // unused
+                    is_listed: true,
                     commission_on_create: d(1, 6),
                     commission_coef: SafeFloat { val: 1, pow: -3 }, // 0.1%
                     collected_commission: 0,
@@ -216,8 +216,8 @@ impl Env {
             .function_call(
                 self.contract.contract.dao_update_token(Token {
                     account_id: tokens.wnear.account_id(),
-                    is_listed: false,                               // unused
-                    commission_on_create: d(1, 23),                 // 0.1 token
+                    is_listed: true,
+                    commission_on_create: d(1, 23), // 0.1 token
                     commission_coef: SafeFloat { val: 4, pow: -3 }, // 0.4%
                     collected_commission: 0,
                     storage_balance_needed: 125 * env::STORAGE_PRICE_PER_BYTE,
@@ -233,8 +233,8 @@ impl Env {
             .function_call(
                 self.contract.contract.dao_update_token(Token {
                     account_id: tokens.aurora.account_id(),
-                    is_listed: false,                               // unused
-                    commission_on_create: d(1, 15),                 // 0.001 token
+                    is_listed: true,
+                    commission_on_create: d(1, 15), // 0.001 token
                     commission_coef: SafeFloat { val: 4, pow: -3 }, // 0.4%
                     collected_commission: 0,
                     storage_balance_needed: 0, // aurora doesn't need storage deposit
@@ -609,7 +609,7 @@ pub fn init_token(e: &Env, token_account_id: &str, decimals: u8) -> UserAccount 
             "new",
             &json!({
                 "owner_id": e.near.account_id(),
-                "total_supply": U128::from(10u128.pow((9 + decimals) as _)),
+                "total_supply": U128::from(10u128.pow((10 + decimals) as _)),
                 "metadata": FungibleTokenMetadata {
                     spec: FT_METADATA_SPEC.to_string(),
                     name: token_account_id.to_string(),
@@ -638,7 +638,7 @@ pub fn init_token(e: &Env, token_account_id: &str, decimals: u8) -> UserAccount 
             "new",
             &json!({
                 "owner_id": e.near.account_id(),
-                "total_supply": U128::from(10u128.pow((9 + decimals) as _)),
+                "total_supply": U128::from(10u128.pow((10 + decimals) as _)),
                 "metadata": FungibleTokenMetadata {
                     spec: FT_METADATA_SPEC.to_string(),
                     name: token_account_id.to_string(),

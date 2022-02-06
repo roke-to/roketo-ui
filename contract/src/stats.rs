@@ -23,7 +23,7 @@ pub struct TokenStats {
 #[cfg_attr(not(target_arch = "wasm32"), derive(Debug))]
 #[serde(crate = "near_sdk::serde")]
 pub struct Stats {
-    pub listed_tokens: HashMap<AccountId, TokenStats>,
+    pub dao_tokens: HashMap<AccountId, TokenStats>,
 
     pub total_accounts: u32,
     pub total_aurora_accounts: u32,
@@ -33,7 +33,7 @@ pub struct Stats {
     pub total_aurora_streams: u32,
 
     #[borsh_skip]
-    pub total_listed_tokens: u32,
+    pub total_dao_tokens: u32,
 
     #[serde(with = "u128_dec_format")]
     pub total_account_deposit_near: Balance,
@@ -64,7 +64,7 @@ impl Contract {
     pub(crate) fn stats_add_token(&mut self, token_account_id: &AccountId) {
         let mut stats: Stats = self.stats.take().unwrap().into();
         assert!(stats
-            .listed_tokens
+            .dao_tokens
             .insert(token_account_id.clone(), TokenStats::default())
             .is_none());
         self.stats.set(&stats.into());
@@ -94,39 +94,35 @@ impl Contract {
             stats.total_aurora_streams += 1;
         }
 
-        if self.dao.is_token_listed(token_account_id) {
-            stats
-                .listed_tokens
-                .entry(token_account_id.clone())
-                .and_modify(|e| {
-                    e.streams += 1;
-                    if is_active {
-                        e.active_streams += 1;
-                    }
-                });
-        }
+        stats
+            .dao_tokens
+            .entry(token_account_id.clone())
+            .and_modify(|e| {
+                e.streams += 1;
+                if is_active {
+                    e.active_streams += 1;
+                }
+            });
         self.stats.set(&stats.into());
     }
 
     pub(crate) fn stats_inc_active_streams(&mut self, token_account_id: &AccountId) {
         let mut stats: Stats = self.stats.take().unwrap().into();
         stats.total_active_streams += 1;
-        (*stats
-            .listed_tokens
+        stats
+            .dao_tokens
             .entry(token_account_id.clone())
-            .or_default())
-        .active_streams += 1;
+            .and_modify(|e| e.active_streams += 1);
         self.stats.set(&stats.into());
     }
 
     pub(crate) fn stats_dec_active_streams(&mut self, token_account_id: &AccountId) {
         let mut stats: Stats = self.stats.take().unwrap().into();
         stats.total_active_streams -= 1;
-        (*stats
-            .listed_tokens
+        stats
+            .dao_tokens
             .entry(token_account_id.clone())
-            .or_default())
-        .active_streams -= 1;
+            .and_modify(|e| e.active_streams -= 1);
         self.stats.set(&stats.into());
     }
 
@@ -136,12 +132,13 @@ impl Contract {
         deposit: &Balance,
     ) {
         let mut stats: Stats = self.stats.take().unwrap().into();
-        let entry = stats
-            .listed_tokens
+        stats
+            .dao_tokens
             .entry(token_account_id.clone())
-            .or_default();
-        (*entry).total_deposit += deposit;
-        (*entry).tvl += deposit;
+            .and_modify(|e| {
+                e.total_deposit += deposit;
+                e.tvl += deposit;
+            });
         self.stats.set(&stats.into());
     }
 

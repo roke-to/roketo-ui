@@ -10,19 +10,16 @@ impl Contract {
         self.dao.dao_id = new_dao_id.into();
     }
 
-    #[allow(unused_mut)]
     #[payable]
-    pub fn dao_update_token(&mut self, mut token: Token) {
+    pub fn dao_update_token(&mut self, token: Token) {
         assert_one_yocto();
         self.dao.check_owner().unwrap();
 
         if self.dao.tokens.remove(&token.account_id).is_none() {
             self.stats_add_token(&token.account_id);
         }
-        // `is_listed` is skipped by serde
-        token.is_listed = true;
-        token.commission_coef.assert_safe();
-        token.commission_coef.assert_less_than_one();
+
+        token.commission_coef.assert_safe_commission();
         self.dao.tokens.insert(token.account_id.clone(), token);
     }
 

@@ -5,5 +5,7 @@ mod token;
 
 // TODO more tests
 //
+// aurora addresses
+// dao ops
 // stats
 // limited float
