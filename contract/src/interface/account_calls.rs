@@ -4,6 +4,7 @@ use crate::*;
 impl Contract {
     #[payable]
     pub fn account_update_cron_flag(&mut self, is_cron_allowed: bool) {
+        assert_one_yocto();
         let mut account = self
             .extract_account(&env::predecessor_account_id())
             .unwrap();
@@ -20,6 +21,7 @@ impl Contract {
 
     #[payable]
     pub fn account_unstake(&mut self, amount: Balance) -> Promise {
+        assert_one_yocto();
         let mut account = self
             .extract_account(&env::predecessor_account_id())
             .unwrap();

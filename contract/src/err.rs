@@ -30,7 +30,9 @@ pub enum ContractError {
     },
     ZeroTokenTransfer,
     ZeroBalanceStreamStart,
-    CronCallsForbidden,
+    CronCallsForbidden {
+        received: AccountId,
+    },
     CannotStartStream {
         stream_status: StreamStatus,
     },

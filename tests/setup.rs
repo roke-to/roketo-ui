@@ -5,7 +5,7 @@ pub use contract::{
     AccountView, ContractError, CreateRequest, Dao, SafeFloat, Stats, Stream, StreamFinishReason,
     StreamStatus, Token, TokenStats, TransferCallRequest, DEFAULT_GAS_FOR_FT_TRANSFER,
     DEFAULT_GAS_FOR_STORAGE_DEPOSIT, DEFAULT_STORAGE_BALANCE, MAX_AMOUNT, MAX_STREAMING_SPEED,
-    MIN_STREAMING_SPEED,
+    MIN_STREAMING_SPEED, ONE_TERA,
 };
 use near_contract_standards::fungible_token::metadata::{FungibleTokenMetadata, FT_METADATA_SPEC};
 pub use near_sdk::json_types::{Base58CryptoHash, U128};
@@ -170,8 +170,8 @@ impl Env {
                     commission_coef: SafeFloat { val: 1, pow: -4 }, // 0.01%
                     collected_commission: 0,
                     storage_balance_needed: 125 * env::STORAGE_PRICE_PER_BYTE,
-                    gas_for_ft_transfer: DEFAULT_GAS_FOR_FT_TRANSFER,
-                    gas_for_storage_deposit: DEFAULT_GAS_FOR_STORAGE_DEPOSIT,
+                    gas_for_ft_transfer: near_sdk::Gas(10 * ONE_TERA),
+                    gas_for_storage_deposit: near_sdk::Gas(10 * ONE_TERA),
                 }),
                 DEFAULT_GAS,
                 ONE_YOCTO,
@@ -187,8 +187,8 @@ impl Env {
                     commission_coef: SafeFloat { val: 1, pow: -3 }, // 0.1%
                     collected_commission: 0,
                     storage_balance_needed: 125 * env::STORAGE_PRICE_PER_BYTE,
-                    gas_for_ft_transfer: DEFAULT_GAS_FOR_FT_TRANSFER,
-                    gas_for_storage_deposit: DEFAULT_GAS_FOR_STORAGE_DEPOSIT,
+                    gas_for_ft_transfer: near_sdk::Gas(10 * ONE_TERA),
+                    gas_for_storage_deposit: near_sdk::Gas(10 * ONE_TERA),
                 }),
                 DEFAULT_GAS,
                 ONE_YOCTO,
@@ -204,8 +204,8 @@ impl Env {
                     commission_coef: SafeFloat { val: 1, pow: -3 }, // 0.1%
                     collected_commission: 0,
                     storage_balance_needed: 125 * env::STORAGE_PRICE_PER_BYTE,
-                    gas_for_ft_transfer: DEFAULT_GAS_FOR_FT_TRANSFER,
-                    gas_for_storage_deposit: DEFAULT_GAS_FOR_STORAGE_DEPOSIT,
+                    gas_for_ft_transfer: near_sdk::Gas(10 * ONE_TERA),
+                    gas_for_storage_deposit: near_sdk::Gas(10 * ONE_TERA),
                 }),
                 DEFAULT_GAS,
                 ONE_YOCTO,
@@ -221,8 +221,8 @@ impl Env {
                     commission_coef: SafeFloat { val: 4, pow: -3 }, // 0.4%
                     collected_commission: 0,
                     storage_balance_needed: 125 * env::STORAGE_PRICE_PER_BYTE,
-                    gas_for_ft_transfer: DEFAULT_GAS_FOR_FT_TRANSFER,
-                    gas_for_storage_deposit: DEFAULT_GAS_FOR_STORAGE_DEPOSIT,
+                    gas_for_ft_transfer: near_sdk::Gas(10 * ONE_TERA),
+                    gas_for_storage_deposit: near_sdk::Gas(10 * ONE_TERA),
                 }),
                 DEFAULT_GAS,
                 ONE_YOCTO,
@@ -238,8 +238,8 @@ impl Env {
                     commission_coef: SafeFloat { val: 4, pow: -3 }, // 0.4%
                     collected_commission: 0,
                     storage_balance_needed: 0, // aurora doesn't need storage deposit
-                    gas_for_ft_transfer: DEFAULT_GAS_FOR_FT_TRANSFER,
-                    gas_for_storage_deposit: DEFAULT_GAS_FOR_STORAGE_DEPOSIT,
+                    gas_for_ft_transfer: near_sdk::Gas(20 * ONE_TERA),
+                    gas_for_storage_deposit: near_sdk::Gas(20 * ONE_TERA),
                 }),
                 DEFAULT_GAS,
                 ONE_YOCTO,
@@ -513,7 +513,11 @@ impl Env {
                 Some(true),
             ),
             MAX_GAS,
-            ONE_YOCTO + stream_ids.len() as u128 * ONE_NEAR,
+            ONE_YOCTO
+                + stream_ids
+                    .iter()
+                    .map(|&x| self.streams.get(&String::from(x)).unwrap())
+                    .sum::<Balance>(),
         )
     }
 
@@ -538,6 +542,15 @@ impl Env {
             self.contract.contract.account_deposit_near(),
             MAX_GAS,
             amount,
+        )
+        .assert_success();
+    }
+
+    pub fn account_update_cron_flag(&self, user: &UserAccount, flag: bool) {
+        user.function_call(
+            self.contract.contract.account_update_cron_flag(flag),
+            MAX_GAS,
+            ONE_YOCTO,
         )
         .assert_success();
     }

@@ -18,11 +18,12 @@ impl Contract {
             .get_token_or_unlisted(&stream_view.token_account_id);
         let storage_balance_needed = if Contract::is_aurora_address(&stream_view.receiver_id) {
             // Receiver is at aurora, need to storage deposit
-            1
+            0
         } else {
-            // In case of token.storage_balance_needed == 0, it should be at least 1 yocto
-            token.storage_balance_needed + 1
-        };
+            token.storage_balance_needed
+        }
+        // In case of token.storage_balance_needed == 0, it should be at least 1 yocto
+        + ONE_YOCTO;
         assert!(env::attached_deposit() >= storage_balance_needed);
 
         self.process_pause_stream(&env::predecessor_account_id(), stream_id.into())
@@ -38,13 +39,13 @@ impl Contract {
             .get_token_or_unlisted(&stream_view.token_account_id);
         let storage_balance_needed = if Contract::is_aurora_address(&stream_view.receiver_id) {
             // Receiver is at aurora, need to storage deposit
-            1
+            0
         } else {
-            // In case of token.storage_balance_needed == 0, it should be at least 1 yocto
-            //
             // Mult of 2 is needed as stop may cause two transfers with two storage deposits
-            2 * token.storage_balance_needed + 1
-        };
+            2 * token.storage_balance_needed
+        }
+        // In case of token.storage_balance_needed == 0, it should be at least 1 yocto
+        + ONE_YOCTO;
         assert!(env::attached_deposit() >= storage_balance_needed);
 
         self.process_stop_stream(&env::predecessor_account_id(), stream_id)
@@ -73,13 +74,14 @@ impl Contract {
                         .get_token_or_unlisted(&stream_view.token_account_id);
                     if Contract::is_aurora_address(&stream_view.receiver_id) {
                         // Receiver is at aurora, need no storage deposit
-                        1
+                        0
                     } else {
-                        // In case of token.storage_balance_needed == 0, it should be at least 1 yocto
-                        token.storage_balance_needed + 1
+                        token.storage_balance_needed
                     }
                 })
-                .sum();
+                .sum::<Balance>()
+                // In case of token.storage_balance_needed == 0, it should be at least 1 yocto
+                + ONE_YOCTO;
             assert!(env::attached_deposit() >= storage_balance_needed);
         }
 

@@ -268,7 +268,9 @@ impl Contract {
         let receiver_view = self.view_account(&stream.receiver_id)?;
 
         if receiver_view.id != *sender_id && !receiver_view.is_cron_allowed {
-            return Err(ContractError::CronCallsForbidden);
+            return Err(ContractError::CronCallsForbidden {
+                received: receiver_view.id,
+            });
         }
 
         if stream.status != StreamStatus::Active {
