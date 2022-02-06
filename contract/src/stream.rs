@@ -118,8 +118,8 @@ impl Contract {
         stream: &mut Stream,
         action_type: ActionType,
     ) -> Result<Vec<Promise>, ContractError> {
-        let mut owner = self.extract_account_or_create(&stream.owner_id);
-        let mut receiver = self.extract_account_or_create(&stream.receiver_id);
+        let mut owner = self.extract_account(&stream.owner_id)?;
+        let mut receiver = self.extract_account(&stream.receiver_id)?;
         let mut promises = vec![];
 
         if action_type == ActionType::Init {
@@ -252,7 +252,7 @@ impl Contract {
             .tokens
             .entry(stream.token_account_id.clone())
             .and_modify(|e| e.collected_commission += commission);
-        // TODO update stats
+        self.stats_withdraw(&token, payment, commission);
         self.ft_transfer(
             &token,
             &stream.receiver_id,
@@ -263,14 +263,14 @@ impl Contract {
 
     fn process_refund(&mut self, stream: &mut Stream) -> Result<Promise, ContractError> {
         let token = self.dao.get_token_or_unlisted(&stream.token_account_id);
-        let payment = stream.balance;
+        let refund = stream.balance;
         stream.balance = 0;
-        // TODO update stats
-        self.ft_transfer(&token, &stream.owner_id, payment, true)
+        self.stats_refund(&token, refund);
+        self.ft_transfer(&token, &stream.owner_id, refund, true)
     }
 
     pub(crate) fn view_stream(&mut self, stream_id: &StreamId) -> Result<Stream, ContractError> {
-        match self.streams.get(&stream_id) {
+        match self.streams.get(stream_id) {
             Some(vstream) => Ok(vstream.into()),
             None => Err(ContractError::UnreachableStream {
                 stream_id: *stream_id,
@@ -279,7 +279,7 @@ impl Contract {
     }
 
     pub(crate) fn extract_stream(&mut self, stream_id: &StreamId) -> Result<Stream, ContractError> {
-        match self.streams.remove(&stream_id) {
+        match self.streams.remove(stream_id) {
             Some(vstream) => Ok(vstream.into()),
             None => Err(ContractError::UnreachableStream {
                 stream_id: *stream_id,

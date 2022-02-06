@@ -17,6 +17,9 @@ pub struct TokenStats {
 
     pub streams: u32,
     pub active_streams: u32,
+
+    #[serde(with = "u64_dec_format")]
+    pub last_update_time: Timestamp,
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Default)]
@@ -39,6 +42,9 @@ pub struct Stats {
     pub total_account_deposit_near: Balance,
     #[serde(with = "u128_dec_format")]
     pub total_account_deposit_eth: Balance,
+
+    #[serde(with = "u64_dec_format")]
+    pub last_update_time: Timestamp,
 }
 
 #[derive(BorshSerialize, BorshDeserialize)]
@@ -67,6 +73,7 @@ impl Contract {
             .dao_tokens
             .insert(token_account_id.clone(), TokenStats::default())
             .is_none());
+        stats.last_update_time = env::block_timestamp();
         self.stats.set(&stats.into());
     }
 
@@ -76,20 +83,13 @@ impl Contract {
         if is_aurora {
             stats.total_aurora_accounts += 1;
         }
+        stats.last_update_time = env::block_timestamp();
         self.stats.set(&stats.into());
     }
 
-    pub(crate) fn stats_inc_streams(
-        &mut self,
-        token_account_id: &AccountId,
-        is_active: bool,
-        is_aurora: bool,
-    ) {
+    pub(crate) fn stats_inc_streams(&mut self, token_account_id: &AccountId, is_aurora: bool) {
         let mut stats: Stats = self.stats.take().unwrap().into();
         stats.total_streams += 1;
-        if is_active {
-            stats.total_active_streams += 1;
-        }
         if is_aurora {
             stats.total_aurora_streams += 1;
         }
@@ -99,10 +99,9 @@ impl Contract {
             .entry(token_account_id.clone())
             .and_modify(|e| {
                 e.streams += 1;
-                if is_active {
-                    e.active_streams += 1;
-                }
+                e.last_update_time = env::block_timestamp();
             });
+        stats.last_update_time = env::block_timestamp();
         self.stats.set(&stats.into());
     }
 
@@ -112,7 +111,11 @@ impl Contract {
         stats
             .dao_tokens
             .entry(token_account_id.clone())
-            .and_modify(|e| e.active_streams += 1);
+            .and_modify(|e| {
+                e.active_streams += 1;
+                e.last_update_time = env::block_timestamp()
+            });
+        stats.last_update_time = env::block_timestamp();
         self.stats.set(&stats.into());
     }
 
@@ -122,7 +125,11 @@ impl Contract {
         stats
             .dao_tokens
             .entry(token_account_id.clone())
-            .and_modify(|e| e.active_streams -= 1);
+            .and_modify(|e| {
+                e.active_streams -= 1;
+                e.last_update_time = env::block_timestamp()
+            });
+        stats.last_update_time = env::block_timestamp();
         self.stats.set(&stats.into());
     }
 
@@ -130,6 +137,7 @@ impl Contract {
         &mut self,
         token_account_id: &AccountId,
         deposit: &Balance,
+        tvl_inc: &Balance,
     ) {
         let mut stats: Stats = self.stats.take().unwrap().into();
         stats
@@ -137,16 +145,48 @@ impl Contract {
             .entry(token_account_id.clone())
             .and_modify(|e| {
                 e.total_deposit += deposit;
-                e.tvl += deposit;
+                e.tvl += tvl_inc;
+                e.total_commission_collected += deposit - tvl_inc;
+                e.last_update_time = env::block_timestamp();
             });
+        stats.last_update_time = env::block_timestamp();
         self.stats.set(&stats.into());
     }
 
-    // TODO enable other stats methods
-    //
-    // stats_withdraw
-    // stats_refund
-    // stats_inc_commission_collected
+    pub(crate) fn stats_withdraw(&mut self, token: &Token, payment: Balance, commission: Balance) {
+        if !token.is_listed {
+            return;
+        }
+        let mut stats: Stats = self.stats.take().unwrap().into();
+        stats
+            .dao_tokens
+            .entry(token.account_id.clone())
+            .and_modify(|e| {
+                e.tvl -= payment + commission;
+                e.transferred += payment;
+                e.total_commission_collected += commission;
+                e.last_update_time = env::block_timestamp();
+            });
+        stats.last_update_time = env::block_timestamp();
+        self.stats.set(&stats.into());
+    }
+
+    pub(crate) fn stats_refund(&mut self, token: &Token, refund: Balance) {
+        if !token.is_listed {
+            return;
+        }
+        let mut stats: Stats = self.stats.take().unwrap().into();
+        stats
+            .dao_tokens
+            .entry(token.account_id.clone())
+            .and_modify(|e| {
+                e.tvl -= refund;
+                e.refunded += refund;
+                e.last_update_time = env::block_timestamp();
+            });
+        stats.last_update_time = env::block_timestamp();
+        self.stats.set(&stats.into());
+    }
 
     pub(crate) fn stats_inc_account_deposit(&mut self, deposit: &Balance, is_aurora: bool) {
         let mut stats: Stats = self.stats.take().unwrap().into();
@@ -155,6 +195,7 @@ impl Contract {
         } else {
             stats.total_account_deposit_near += deposit;
         }
+        stats.last_update_time = env::block_timestamp();
         self.stats.set(&stats.into());
     }
 }

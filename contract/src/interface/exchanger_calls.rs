@@ -12,9 +12,10 @@ impl Contract {
             .check_exchanger(&env::predecessor_account_id())
             .unwrap();
 
-        let mut token = self.dao.get_token(&token_account_id).unwrap();
-        token.commission_on_create = commission_on_create.into();
-        self.dao.tokens.insert(token_account_id, token);
+        self.dao
+            .tokens
+            .entry(token_account_id)
+            .and_modify(|e| e.commission_on_create = commission_on_create.into());
     }
 
     #[payable]
@@ -34,6 +35,7 @@ impl Contract {
             .unwrap();
 
         let amount = amount.into();
+
         let mut token = self.dao.get_token(&token_account_id).unwrap();
         assert!(amount <= token.collected_commission);
         token.collected_commission -= amount;

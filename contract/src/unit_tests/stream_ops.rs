@@ -47,14 +47,15 @@ mod tests {
                 stream.owner_id,
                 stream.description,
                 stream.receiver_id,
-                Token::new_unlisted(&stream.token_account_id),
+                stream.token_account_id,
                 stream.balance,
                 stream.tokens_per_sec,
                 None,
                 None,
             ),
-            Err(ContractError::UnreachableAccount {
-                account_id: carol()
+            Err(ContractError::InsufficientNearBalance {
+                requested: 100000000000000000000000u128,
+                left: 0,
             })
         );
 
@@ -71,7 +72,7 @@ mod tests {
                 stream.owner_id,
                 stream.description,
                 stream.receiver_id,
-                Token::new_unlisted(&stream.token_account_id),
+                stream.token_account_id,
                 stream.balance,
                 stream.tokens_per_sec,
                 None,
@@ -100,7 +101,7 @@ mod tests {
                 stream.owner_id,
                 stream.description,
                 stream.receiver_id,
-                Token::new_unlisted(&stream.token_account_id),
+                stream.token_account_id,
                 stream.balance,
                 stream.tokens_per_sec,
                 None,

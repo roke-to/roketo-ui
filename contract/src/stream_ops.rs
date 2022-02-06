@@ -7,8 +7,8 @@ impl Contract {
         owner_id: AccountId,
         description: Option<String>,
         receiver_id: AccountId,
-        mut token: Token,
-        mut initial_balance: Balance,
+        token_account_id: AccountId,
+        initial_balance: Balance,
         tokens_per_sec: Balance,
         is_auto_start_enabled: Option<bool>,
         is_expirable: Option<bool>,
@@ -35,23 +35,32 @@ impl Contract {
             None => true,
         };
 
+        self.create_account_if_not_exist(sender_id)?;
+        self.create_account_if_not_exist(&owner_id)?;
+        self.create_account_if_not_exist(&receiver_id)?;
+
+        let mut sender = self.extract_account(sender_id)?;
+        let mut balance = initial_balance;
+
+        let mut token = self.dao.get_token_or_unlisted(&token_account_id);
+
         if token.is_listed {
             // Take commission as DAO proposed
-            if initial_balance < token.commission_on_create {
+            if balance < token.commission_on_create {
                 return Err(ContractError::InsufficientNearDeposit {
                     expected: token.commission_on_create,
-                    received: initial_balance,
+                    received: balance,
                 });
             }
-            initial_balance -= token.commission_on_create;
+            balance -= token.commission_on_create;
 
-            if is_auto_start_enabled && initial_balance == 0 {
+            if is_auto_start_enabled && balance == 0 {
                 return Err(ContractError::ZeroBalanceStreamStart);
             }
 
             token.collected_commission += token.commission_on_create;
+            self.dao.tokens.insert(token_account_id.clone(), token);
         } else {
-            let mut sender = self.extract_account(sender_id)?;
             if sender.deposit < self.dao.commission_unlisted {
                 return Err(ContractError::InsufficientNearBalance {
                     requested: self.dao.commission_unlisted,
@@ -59,10 +68,11 @@ impl Contract {
                 });
             }
             sender.deposit -= self.dao.commission_unlisted;
-            self.save_account(sender)?;
         }
+        sender.total_streams_created += 1;
+        self.save_account(sender)?;
 
-        if initial_balance > MAX_AMOUNT {
+        if balance > MAX_AMOUNT {
             return Err(ContractError::ExceededMaxBalance {
                 max_amount: MAX_AMOUNT,
             });
@@ -72,32 +82,33 @@ impl Contract {
             description,
             owner_id.clone(),
             receiver_id.clone(),
-            token.account_id.clone(),
-            initial_balance.into(),
+            token_account_id,
+            balance.into(),
             tokens_per_sec,
             is_expirable,
         );
 
         self.process_action(&mut stream, ActionType::Init)?;
+
+        self.stats_inc_stream_deposit(&stream.token_account_id, &initial_balance, &balance);
+        self.stats_inc_streams(
+            &stream.token_account_id,
+            Contract::is_aurora_address(&stream.owner_id)
+                | Contract::is_aurora_address(&stream.receiver_id),
+        );
+
         if is_auto_start_enabled {
             self.process_action(&mut stream, ActionType::Start)?;
         }
 
         self.save_stream(stream)?;
 
-        self.stats_inc_stream_deposit(&token.account_id, &initial_balance);
-        self.stats_inc_streams(
-            &token.account_id,
-            is_auto_start_enabled,
-            Contract::is_aurora_address(&owner_id) | Contract::is_aurora_address(&receiver_id),
-        );
-
         Ok(())
     }
 
     pub(crate) fn process_deposit(
         &mut self,
-        token: Token,
+        token_account_id: AccountId,
         stream_id: CryptoHash,
         amount: Balance,
     ) -> Result<(), ContractError> {
@@ -122,10 +133,10 @@ impl Contract {
             return Err(ContractError::StreamExpired { stream_id });
         }
 
-        if stream.token_account_id != token.account_id {
+        if stream.token_account_id != token_account_id {
             return Err(ContractError::InvalidToken {
                 expected: stream.token_account_id,
-                received: token.account_id,
+                received: token_account_id,
             });
         }
 
@@ -139,7 +150,7 @@ impl Contract {
 
         self.save_stream(stream)?;
 
-        self.stats_inc_stream_deposit(&token.account_id, &amount);
+        self.stats_inc_stream_deposit(&token_account_id, &amount, &amount);
 
         Ok(())
     }

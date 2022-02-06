@@ -109,9 +109,7 @@ impl FungibleTokenReceiver for Contract {
             }
         }
 
-        let token = self
-            .dao
-            .get_token_or_unlisted(&env::predecessor_account_id());
+        let token_account_id = env::predecessor_account_id();
         let key: Result<TransferCallRequest, _> = serde_json::from_str(&msg);
         if key.is_err() {
             log!("cannot parse message {:?}, error {:?}", msg, key);
@@ -120,8 +118,8 @@ impl FungibleTokenReceiver for Contract {
         }
         match key.unwrap() {
             TransferCallRequest::Stake => {
-                assert_eq!(token.account_id, self.dao.utility_token_id);
-                let mut account = self.extract_account(&env::signer_account_id()).unwrap();
+                assert_eq!(token_account_id, self.dao.utility_token_id);
+                let mut account = self.extract_account(&sender_id).unwrap();
                 account.stake += u128::from(amount);
                 self.save_account(account).unwrap();
                 PromiseOrValue::Value(U128::from(0))
@@ -132,7 +130,7 @@ impl FungibleTokenReceiver for Contract {
                     sender_id,
                     request.description,
                     request.receiver_id,
-                    token,
+                    token_account_id,
                     amount.into(),
                     request.tokens_per_sec,
                     request.is_auto_start_enabled,
@@ -143,7 +141,7 @@ impl FungibleTokenReceiver for Contract {
                 }
             }
             TransferCallRequest::Deposit { stream_id } => {
-                match self.process_deposit(token, stream_id.into(), amount.into()) {
+                match self.process_deposit(token_account_id, stream_id.into(), amount.into()) {
                     Ok(()) => PromiseOrValue::Value(U128::from(0)),
                     Err(err) => panic!("error on stream depositing, {:?}", err),
                 }

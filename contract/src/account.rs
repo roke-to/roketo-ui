@@ -20,6 +20,8 @@ pub struct Account {
 
     pub last_created_stream: Option<StreamId>,
     pub is_cron_allowed: bool,
+
+    pub total_streams_created: u32,
 }
 
 #[derive(BorshSerialize, BorshDeserialize)]
@@ -46,7 +48,7 @@ impl Contract {
         &mut self,
         account_id: &AccountId,
     ) -> Result<Account, ContractError> {
-        match self.accounts.get(&account_id) {
+        match self.accounts.get(account_id) {
             Some(vaccount) => Ok(vaccount.into()),
             None => Err(ContractError::UnreachableAccount {
                 account_id: (*account_id).clone(),
@@ -58,7 +60,7 @@ impl Contract {
         &mut self,
         account_id: &AccountId,
     ) -> Result<Account, ContractError> {
-        match self.accounts.remove(&account_id) {
+        match self.accounts.remove(account_id) {
             Some(vaccount) => Ok(vaccount.into()),
             None => Err(ContractError::UnreachableAccount {
                 account_id: (*account_id).clone(),
@@ -66,10 +68,13 @@ impl Contract {
         }
     }
 
-    pub(crate) fn extract_account_or_create(&mut self, account_id: &AccountId) -> Account {
-        self.extract_account(&account_id).unwrap_or({
+    pub(crate) fn create_account_if_not_exist(
+        &mut self,
+        account_id: &AccountId,
+    ) -> Result<(), ContractError> {
+        if self.accounts.get(account_id).is_none() {
             self.stats_inc_accounts(Contract::is_aurora_address(account_id));
-            Account {
+            self.save_account(Account {
                 id: account_id.clone(),
                 active_incoming_streams: UnorderedSet::new(StorageKey::ActiveIncomingStreams {
                     account_id: account_id.clone(),
@@ -90,8 +95,11 @@ impl Contract {
                 stake: 0,
                 last_created_stream: None,
                 is_cron_allowed: false,
-            }
-        })
+                total_streams_created: 0,
+            })
+        } else {
+            Ok(())
+        }
     }
 
     pub(crate) fn save_account(&mut self, account: Account) -> Result<(), ContractError> {

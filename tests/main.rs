@@ -199,7 +199,7 @@ fn test_stream_min_value() {
     assert_eq!(e.get_balance(&tokens.nusdt, &users.charlie), 0);
     let dao = e.get_dao();
     let dao_token = dao.tokens.get(&tokens.nusdt.account_id()).unwrap();
-    assert_eq!(dao_token.collected_commission, 0);
+    assert_eq!(dao_token.collected_commission, d(1, 6));
 
     e.skip_time(1);
     e.withdraw(&users.charlie, &stream_id);
@@ -211,7 +211,7 @@ fn test_stream_min_value() {
     assert_eq!(e.get_balance(&tokens.nusdt, &users.charlie), 0);
     let dao = e.get_dao();
     let dao_token = dao.tokens.get(&tokens.nusdt.account_id()).unwrap();
-    assert_eq!(dao_token.collected_commission, 1);
+    assert_eq!(dao_token.collected_commission, d(1, 6) + 1);
 
     e.skip_time(150);
     e.withdraw(&users.charlie, &stream_id);
@@ -223,7 +223,7 @@ fn test_stream_min_value() {
     assert_eq!(e.get_balance(&tokens.nusdt, &users.charlie), 149);
     let dao = e.get_dao();
     let dao_token = dao.tokens.get(&tokens.nusdt.account_id()).unwrap();
-    assert_eq!(dao_token.collected_commission, 2);
+    assert_eq!(dao_token.collected_commission, d(1, 6) + 2);
 
     e.skip_time(10000);
     e.withdraw(&users.charlie, &stream_id);
@@ -240,7 +240,7 @@ fn test_stream_min_value() {
     assert_eq!(e.get_balance(&tokens.nusdt, &users.charlie), 3700 - 6);
     let dao = e.get_dao();
     let dao_token = dao.tokens.get(&tokens.nusdt.account_id()).unwrap();
-    assert_eq!(dao_token.collected_commission, 6);
+    assert_eq!(dao_token.collected_commission, d(1, 6) + 6);
 }
 
 #[test]
@@ -937,4 +937,138 @@ fn test_dao_unlist_list() {
         e.get_balance(&token, &users.charlie),
         d(300, 20) / 250 * 249 + d(200, 20)
     );
+}
+
+#[test]
+fn test_stream_myself() {
+    let (mut e, tokens, users) = basic_setup();
+    let token = tokens.wnear;
+    let amount = d(1, 24);
+
+    let last_alice_balance = e.get_balance(&token, &users.alice);
+
+    assert_eq!(
+        e.create_stream_ext_err(
+            &users.alice,
+            &users.alice,
+            &token,
+            amount,
+            d(1, 16),
+            None,
+            None,
+            None,
+        ),
+        U128(0)
+    );
+    assert_eq!(last_alice_balance, e.get_balance(&token, &users.alice));
+}
+
+#[test]
+fn test_stats_sanity() {
+    let (mut e, tokens, users) = basic_setup();
+
+    let stats = e.get_stats();
+    assert_eq!(stats.total_streams, 0);
+    assert_eq!(stats.total_active_streams, 0);
+    assert_eq!(stats.total_accounts, 0);
+    assert_eq!(stats.dao_tokens.len(), 5);
+    let t = stats.dao_tokens.get(&tokens.wnear.account_id()).unwrap();
+    assert_eq!(t.total_deposit, 0);
+    assert_eq!(t.tvl, 0);
+    assert_eq!(t.transferred, 0);
+    assert_eq!(t.refunded, 0);
+    assert_eq!(t.total_commission_collected, 0);
+    assert_eq!(stats.last_update_time, 0);
+
+    let amount = d(1, 24);
+
+    let stream_id = e.create_stream(
+        &users.alice,
+        &users.charlie,
+        &tokens.wnear,
+        amount,
+        d(1, 20),
+    );
+
+    let stats = e.get_stats();
+    assert_eq!(stats.total_streams, 1);
+    assert_eq!(stats.total_active_streams, 1);
+    assert_eq!(stats.total_accounts, 2);
+    assert_eq!(stats.dao_tokens.len(), 5);
+    let t = stats.dao_tokens.get(&tokens.wnear.account_id()).unwrap();
+    assert_eq!(t.total_deposit, d(1, 24));
+    assert_eq!(t.tvl, d(1, 24) - d(1, 23));
+    assert_eq!(t.transferred, 0);
+    assert_eq!(t.refunded, 0);
+    assert_eq!(t.total_commission_collected, d(1, 23));
+    assert_eq!(stats.last_update_time, 0);
+
+    e.skip_time(100);
+    e.withdraw(&users.charlie, &stream_id);
+
+    let stats = e.get_stats();
+    assert_eq!(stats.total_streams, 1);
+    assert_eq!(stats.total_active_streams, 1);
+    assert_eq!(stats.total_accounts, 2);
+    assert_eq!(stats.dao_tokens.len(), 5);
+    let t = stats.dao_tokens.get(&tokens.wnear.account_id()).unwrap();
+    assert_eq!(t.total_deposit, d(1, 24));
+    assert_eq!(t.tvl, d(1, 24) - d(1, 23) - d(100, 20));
+    assert_eq!(t.transferred, d(100, 20) / 250 * 249);
+    assert_eq!(t.refunded, 0);
+    assert_eq!(t.total_commission_collected, d(1, 23) + d(100, 20) / 250);
+    assert_eq!(stats.last_update_time, d(100, 9) as u64);
+
+    e.skip_time(100);
+    e.stop_stream(&users.alice, &stream_id);
+
+    let stats = e.get_stats();
+    assert_eq!(stats.total_streams, 1);
+    assert_eq!(stats.total_active_streams, 0);
+    assert_eq!(stats.total_accounts, 2);
+    assert_eq!(stats.dao_tokens.len(), 5);
+    let t = stats.dao_tokens.get(&tokens.wnear.account_id()).unwrap();
+    assert_eq!(t.total_deposit, d(1, 24));
+    assert_eq!(t.tvl, 0);
+    assert_eq!(t.transferred, d(200, 20) / 250 * 249);
+    assert_eq!(t.refunded, amount - d(1, 23) - d(200, 20));
+    assert_eq!(t.total_commission_collected, d(1, 23) + d(200, 20) / 250);
+    assert_eq!(stats.last_update_time, d(200, 9) as u64);
+}
+
+#[test]
+fn test_dao_collect_commission_sanity() {
+    let (mut e, tokens, users) = basic_setup();
+
+    let dao = e.get_dao();
+    let t = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
+    assert_eq!(t.collected_commission, 0);
+
+    let amount = d(1, 24);
+
+    let stream_id = e.create_stream(
+        &users.alice,
+        &users.charlie,
+        &tokens.wnear,
+        amount,
+        d(1, 20),
+    );
+
+    let dao = e.get_dao();
+    let t = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
+    assert_eq!(t.collected_commission, d(1, 23));
+
+    e.skip_time(100);
+    e.withdraw(&users.charlie, &stream_id);
+
+    let dao = e.get_dao();
+    let t = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
+    assert_eq!(t.collected_commission, d(1, 23) + d(100, 20) / 250);
+
+    e.skip_time(100);
+    e.stop_stream(&users.alice, &stream_id);
+
+    let dao = e.get_dao();
+    let t = dao.tokens.get(&tokens.wnear.account_id()).unwrap();
+    assert_eq!(t.collected_commission, d(1, 23) + d(200, 20) / 250);
 }

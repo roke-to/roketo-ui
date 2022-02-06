@@ -55,7 +55,7 @@ mod tests {
 
     #[test]
     fn test_constants() {
-        assert_eq!(MAX_AMOUNT, 1_000_000_000_000_000__000_000_000_000_000_000);
+        assert_eq!(MAX_AMOUNT, 1_000_000_000_000_000_000_000_000_000_000_000);
         assert_eq!(MAX_STREAMING_SPEED, 1_000_000_000_000_000_000_000_000_000);
 
         assert_eq!(TICKS_PER_SECOND, 1_000_000_000);

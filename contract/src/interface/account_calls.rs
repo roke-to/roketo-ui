@@ -48,7 +48,8 @@ impl Contract {
         account_id: AccountId,
         deposit: Balance,
     ) -> Result<(), ContractError> {
-        let mut account = self.extract_account_or_create(&account_id);
+        self.create_account_if_not_exist(&account_id)?;
+        let mut account = self.extract_account(&account_id)?;
         if account.deposit + deposit < self.dao.commission_unlisted {
             return Err(ContractError::InsufficientNearDeposit {
                 expected: self.dao.commission_unlisted - account.deposit,
