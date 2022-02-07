@@ -1,6 +1,6 @@
 use crate::*;
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Default)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Default, Clone)]
 #[cfg_attr(not(target_arch = "wasm32"), derive(Debug))]
 #[serde(crate = "near_sdk::serde")]
 pub struct TokenStats {
@@ -22,7 +22,7 @@ pub struct TokenStats {
     pub last_update_time: Timestamp,
 }
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Default)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Default, Clone)]
 #[cfg_attr(not(target_arch = "wasm32"), derive(Debug))]
 #[serde(crate = "near_sdk::serde")]
 pub struct Stats {
@@ -47,7 +47,7 @@ pub struct Stats {
     pub last_update_time: Timestamp,
 }
 
-#[derive(BorshSerialize, BorshDeserialize)]
+#[derive(BorshSerialize, BorshDeserialize, Clone)]
 pub enum VStats {
     Current(Stats),
 }
@@ -74,7 +74,7 @@ impl Contract {
             .insert(token_account_id.clone(), TokenStats::default())
             .is_none());
         stats.last_update_time = env::block_timestamp();
-        self.stats.set(&stats.into());
+        self.stats.set(Some(stats.into()));
     }
 
     pub(crate) fn stats_inc_accounts(&mut self, is_aurora: bool) {
@@ -84,7 +84,7 @@ impl Contract {
             stats.total_aurora_accounts += 1;
         }
         stats.last_update_time = env::block_timestamp();
-        self.stats.set(&stats.into());
+        self.stats.set(Some(stats.into()));
     }
 
     pub(crate) fn stats_inc_streams(&mut self, token_account_id: &AccountId, is_aurora: bool) {
@@ -102,7 +102,7 @@ impl Contract {
                 e.last_update_time = env::block_timestamp();
             });
         stats.last_update_time = env::block_timestamp();
-        self.stats.set(&stats.into());
+        self.stats.set(Some(stats.into()));
     }
 
     pub(crate) fn stats_inc_active_streams(&mut self, token_account_id: &AccountId) {
@@ -116,7 +116,7 @@ impl Contract {
                 e.last_update_time = env::block_timestamp()
             });
         stats.last_update_time = env::block_timestamp();
-        self.stats.set(&stats.into());
+        self.stats.set(Some(stats.into()));
     }
 
     pub(crate) fn stats_dec_active_streams(&mut self, token_account_id: &AccountId) {
@@ -130,7 +130,7 @@ impl Contract {
                 e.last_update_time = env::block_timestamp()
             });
         stats.last_update_time = env::block_timestamp();
-        self.stats.set(&stats.into());
+        self.stats.set(Some(stats.into()));
     }
 
     pub(crate) fn stats_inc_stream_deposit(
@@ -150,7 +150,7 @@ impl Contract {
                 e.last_update_time = env::block_timestamp();
             });
         stats.last_update_time = env::block_timestamp();
-        self.stats.set(&stats.into());
+        self.stats.set(Some(stats.into()));
     }
 
     pub(crate) fn stats_withdraw(&mut self, token: &Token, payment: Balance, commission: Balance) {
@@ -168,7 +168,7 @@ impl Contract {
                 e.last_update_time = env::block_timestamp();
             });
         stats.last_update_time = env::block_timestamp();
-        self.stats.set(&stats.into());
+        self.stats.set(Some(stats.into()));
     }
 
     pub(crate) fn stats_refund(&mut self, token: &Token, refund: Balance) {
@@ -185,7 +185,7 @@ impl Contract {
                 e.last_update_time = env::block_timestamp();
             });
         stats.last_update_time = env::block_timestamp();
-        self.stats.set(&stats.into());
+        self.stats.set(Some(stats.into()));
     }
 
     pub(crate) fn stats_inc_account_deposit(&mut self, deposit: &Balance, is_aurora: bool) {
@@ -196,6 +196,6 @@ impl Contract {
             stats.total_account_deposit_near += deposit;
         }
         stats.last_update_time = env::block_timestamp();
-        self.stats.set(&stats.into());
+        self.stats.set(Some(stats.into()));
     }
 }

@@ -26,8 +26,8 @@ pub struct AccountView {
 #[near_bindgen]
 impl Contract {
     pub fn get_stats(self) -> Stats {
-        let mut stats: Stats = self.stats.get().unwrap().into();
-        stats.total_dao_tokens = stats.dao_tokens.len() as u32;
+        let mut stats: Stats = self.stats.get().clone().unwrap().into();
+        stats.total_dao_tokens = stats.dao_tokens.len() as _;
         stats
     }
 
@@ -38,7 +38,7 @@ impl Contract {
     pub fn get_token(self, token_account_id: AccountId) -> (Token, Option<TokenStats>) {
         (
             self.dao.get_token_or_unlisted(&token_account_id),
-            (Stats::from(self.stats.get().unwrap()))
+            (Stats::from(self.stats.get().clone().unwrap()))
                 .dao_tokens
                 .remove(&token_account_id),
         )

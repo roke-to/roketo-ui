@@ -11,7 +11,6 @@ impl Contract {
         self.dao
             .check_exchanger(&env::predecessor_account_id())
             .unwrap();
-
         self.dao
             .tokens
             .entry(token_account_id)

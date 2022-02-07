@@ -1851,6 +1851,7 @@ dependencies = [
  "near-sdk-macros",
  "near-sys",
  "near-vm-logic 0.10.0",
+ "once_cell",
  "serde",
  "serde_json",
  "wee_alloc",
