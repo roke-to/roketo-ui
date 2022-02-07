@@ -73,7 +73,6 @@ impl Contract {
         account_id: &AccountId,
     ) -> Result<(), ContractError> {
         if self.accounts.get(account_id).is_none() {
-            self.stats_inc_accounts(Contract::is_aurora_address(account_id));
             self.save_account(Account {
                 id: account_id.clone(),
                 active_incoming_streams: UnorderedSet::new(StorageKey::ActiveIncomingStreams {

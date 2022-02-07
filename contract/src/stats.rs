@@ -28,15 +28,16 @@ pub struct TokenStats {
 pub struct Stats {
     pub dao_tokens: HashMap<AccountId, TokenStats>,
 
+    #[borsh_skip]
     pub total_accounts: u32,
-    pub total_aurora_accounts: u32,
-
+    #[borsh_skip]
     pub total_streams: u32,
-    pub total_active_streams: u32,
-    pub total_aurora_streams: u32,
-
     #[borsh_skip]
     pub total_dao_tokens: u32,
+
+    pub total_active_streams: u32,
+    pub total_aurora_streams: u32,
+    pub total_streams_unlisted: u32,
 
     #[serde(with = "u128_dec_format")]
     pub total_account_deposit_near: Balance,
@@ -77,23 +78,19 @@ impl Contract {
         self.stats.set(Some(stats.into()));
     }
 
-    pub(crate) fn stats_inc_accounts(&mut self, is_aurora: bool) {
+    pub(crate) fn stats_inc_streams(
+        &mut self,
+        token_account_id: &AccountId,
+        is_aurora: bool,
+        is_listed: bool,
+    ) {
         let mut stats: Stats = self.stats.take().unwrap().into();
-        stats.total_accounts += 1;
-        if is_aurora {
-            stats.total_aurora_accounts += 1;
-        }
-        stats.last_update_time = env::block_timestamp();
-        self.stats.set(Some(stats.into()));
-    }
-
-    pub(crate) fn stats_inc_streams(&mut self, token_account_id: &AccountId, is_aurora: bool) {
-        let mut stats: Stats = self.stats.take().unwrap().into();
-        stats.total_streams += 1;
         if is_aurora {
             stats.total_aurora_streams += 1;
         }
-
+        if !is_listed {
+            stats.total_streams_unlisted += 1;
+        }
         stats
             .dao_tokens
             .entry(token_account_id.clone())

@@ -43,8 +43,9 @@ impl Contract {
         let mut balance = initial_balance;
 
         let mut token = self.dao.get_token_or_unlisted(&token_account_id);
+        let is_listed = token.is_listed;
 
-        if token.is_listed {
+        if is_listed {
             // Take commission as DAO proposed
             if balance < token.commission_on_create {
                 return Err(ContractError::InsufficientNearDeposit {
@@ -95,6 +96,7 @@ impl Contract {
             &stream.token_account_id,
             Contract::is_aurora_address(&stream.owner_id)
                 | Contract::is_aurora_address(&stream.receiver_id),
+            is_listed,
         );
 
         if is_auto_start_enabled {

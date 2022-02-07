@@ -28,6 +28,8 @@ impl Contract {
     pub fn get_stats(self) -> Stats {
         let mut stats: Stats = self.stats.get().clone().unwrap().into();
         stats.total_dao_tokens = stats.dao_tokens.len() as _;
+        stats.total_accounts = self.accounts.len() as _;
+        stats.total_streams = self.streams.len() as _;
         stats
     }
 
