@@ -369,9 +369,10 @@ impl Env {
         amount: Balance,
         tokens_per_sec: Balance,
         description: Option<String>,
-        locked_period_sec: Option<u32>,
+        cliff_period_sec: Option<u32>,
         is_auto_start_enabled: Option<bool>,
         is_expirable: Option<bool>,
+        is_locked: Option<bool>,
     ) -> U128 {
         self.contract_ft_transfer_call(
             &token,
@@ -382,9 +383,10 @@ impl Env {
                     receiver_id: receiver.account_id(),
                     tokens_per_sec,
                     description,
-                    locked_period_sec,
+                    cliff_period_sec,
                     is_auto_start_enabled,
                     is_expirable,
+                    is_locked,
                 },
             })
             .unwrap(),
@@ -400,9 +402,10 @@ impl Env {
         amount: Balance,
         tokens_per_sec: Balance,
         description: Option<String>,
-        locked_period_sec: Option<u32>,
+        cliff_period_sec: Option<u32>,
         is_auto_start_enabled: Option<bool>,
         is_expirable: Option<bool>,
+        is_locked: Option<bool>,
     ) -> Base58CryptoHash {
         let res = self.contract_ft_transfer_call(
             &token,
@@ -413,9 +416,10 @@ impl Env {
                     receiver_id: receiver.account_id(),
                     tokens_per_sec,
                     description,
-                    locked_period_sec,
+                    cliff_period_sec,
                     is_auto_start_enabled,
                     is_expirable,
+                    is_locked,
                 },
             })
             .unwrap(),
@@ -449,6 +453,7 @@ impl Env {
             token,
             amount,
             tokens_per_sec,
+            None,
             None,
             None,
             None,

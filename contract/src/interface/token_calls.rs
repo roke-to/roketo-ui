@@ -14,9 +14,10 @@ pub struct CreateRequest {
     pub description: Option<String>,
     pub receiver_id: AccountId,
     pub tokens_per_sec: Balance,
-    pub locked_period_sec: Option<u32>,
+    pub cliff_period_sec: Option<u32>,
     pub is_auto_start_enabled: Option<bool>,
     pub is_expirable: Option<bool>,
+    pub is_locked: Option<bool>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -134,9 +135,10 @@ impl FungibleTokenReceiver for Contract {
                     token_account_id,
                     amount.into(),
                     request.tokens_per_sec,
-                    request.locked_period_sec,
+                    request.cliff_period_sec,
                     request.is_auto_start_enabled,
                     request.is_expirable,
+                    request.is_locked,
                 ) {
                     Ok(()) => PromiseOrValue::Value(U128::from(0)),
                     Err(err) => panic!("error on stream creation, {:?}", err),

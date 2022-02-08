@@ -26,6 +26,7 @@ pub struct Stream {
     pub cliff: Option<Timestamp>,
 
     pub is_expirable: bool,
+    pub is_locked: bool,
 }
 
 #[derive(BorshSerialize, BorshDeserialize)]
@@ -57,6 +58,7 @@ impl Stream {
         tokens_per_sec: Balance,
         cliff: Option<Timestamp>,
         is_expirable: bool,
+        is_locked: bool,
     ) -> Stream {
         let id = env::sha256(&env::random_seed())
             .as_slice()
@@ -76,13 +78,14 @@ impl Stream {
             tokens_total_withdrawn: 0,
             cliff,
             is_expirable,
+            is_locked,
         }
     }
 
     pub(crate) fn process_withdraw(&mut self, token: &Token) -> (Balance, Balance) {
         let mut gross_payment = self.available_to_withdraw();
         self.tokens_total_withdrawn += gross_payment;
-        let (mut payment, commission) = if token.is_listed {
+        let (mut payment, mut commission) = if token.is_listed {
             token.apply_commission(std::cmp::min(gross_payment, self.balance))
         } else {
             (gross_payment, 0)
@@ -90,6 +93,10 @@ impl Stream {
         if self.cliff.is_some() {
             payment = 0;
             gross_payment = commission;
+        }
+        if self.is_locked {
+            // We already taken the commission while created
+            commission = 0;
         }
         if self.balance > gross_payment {
             self.balance -= gross_payment;

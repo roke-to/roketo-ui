@@ -10,9 +10,10 @@ impl Contract {
         token_account_id: AccountId,
         initial_balance: Balance,
         tokens_per_sec: Balance,
-        locked_period_sec: Option<u32>,
+        cliff_period_sec: Option<u32>,
         is_auto_start_enabled: Option<bool>,
         is_expirable: Option<bool>,
+        is_locked: Option<bool>,
     ) -> Result<(), ContractError> {
         if description.is_some() && description.clone().unwrap().len() >= MAX_DESCRIPTION_LEN {
             return Err(ContractError::DescriptionTooLong {
@@ -35,6 +36,10 @@ impl Contract {
             Some(value) => value,
             None => true,
         };
+        let is_locked = match is_locked {
+            Some(value) => value,
+            None => false,
+        };
 
         self.create_account_if_not_exist(sender_id)?;
         self.create_account_if_not_exist(&owner_id)?;
@@ -44,8 +49,10 @@ impl Contract {
         let mut balance = initial_balance;
 
         let mut token = self.dao.get_token_or_unlisted(&token_account_id);
+        let is_listed = token.is_listed;
+        let mut commission = 0;
 
-        if token.is_listed {
+        if is_listed {
             // Take commission as DAO proposed
             if balance < token.commission_on_create {
                 return Err(ContractError::InsufficientNearDeposit {
@@ -59,10 +66,17 @@ impl Contract {
                 return Err(ContractError::ZeroBalanceStreamStart);
             }
 
-            token.collected_commission += token.commission_on_create;
-            self.dao
-                .tokens
-                .insert(token_account_id.clone(), token.clone());
+            commission += token.commission_on_create;
+
+            if is_locked {
+                // For locked streams we take all commission at the beginning
+                let (_, calculated_commission) = token.apply_commission(balance);
+                commission += calculated_commission;
+            }
+
+            token.collected_commission += commission;
+
+            self.dao.tokens.insert(token_account_id.clone(), token);
         } else {
             if sender.deposit < self.dao.commission_unlisted {
                 return Err(ContractError::InsufficientNearBalance {
@@ -81,7 +95,7 @@ impl Contract {
             });
         }
 
-        let cliff = if let Some(period) = locked_period_sec {
+        let cliff = if let Some(period) = cliff_period_sec {
             if !is_auto_start_enabled {
                 return Err(ContractError::MustStartImmediately);
             }
@@ -99,20 +113,17 @@ impl Contract {
             tokens_per_sec,
             cliff,
             is_expirable,
+            is_locked,
         );
 
         self.process_action(&mut stream, ActionType::Init)?;
 
-        self.stats_inc_stream_deposit(
-            &stream.token_account_id,
-            &initial_balance,
-            &token.commission_on_create,
-        );
+        self.stats_inc_stream_deposit(&stream.token_account_id, &initial_balance, &commission);
         self.stats_inc_streams(
             &stream.token_account_id,
             Contract::is_aurora_address(&stream.owner_id)
                 | Contract::is_aurora_address(&stream.receiver_id),
-            token.is_listed,
+            is_listed,
         );
 
         if is_auto_start_enabled {
@@ -188,6 +199,12 @@ impl Contract {
     ) -> Result<(), ContractError> {
         let mut stream = self.extract_stream(&stream_id)?;
 
+        if stream.is_locked {
+            return Err(ContractError::StreamLocked {
+                stream_id: stream.id,
+            });
+        }
+
         if stream.owner_id != *sender_id {
             return Err(ContractError::CallerIsNotStreamOwner {
                 expected: stream.owner_id,
@@ -225,6 +242,12 @@ impl Contract {
         stream_id: CryptoHash,
     ) -> Result<Vec<Promise>, ContractError> {
         let mut stream = self.extract_stream(&stream_id)?;
+
+        if stream.is_locked {
+            return Err(ContractError::StreamLocked {
+                stream_id: stream.id,
+            });
+        }
 
         if stream.owner_id != *sender_id && stream.receiver_id != *sender_id {
             return Err(ContractError::CallerIsNotStreamActor {
@@ -268,6 +291,12 @@ impl Contract {
     ) -> Result<Vec<Promise>, ContractError> {
         let mut stream = self.extract_stream(&stream_id)?;
 
+        if stream.is_locked {
+            return Err(ContractError::StreamLocked {
+                stream_id: stream.id,
+            });
+        }
+
         if stream.owner_id != *sender_id && stream.receiver_id != *sender_id {
             return Err(ContractError::CallerIsNotStreamActor {
                 owner: stream.owner_id,
@@ -303,7 +332,6 @@ impl Contract {
         Ok(promises)
     }
 
-    // TODO multiple
     pub fn process_withdraw(
         &mut self,
         sender_id: &AccountId,

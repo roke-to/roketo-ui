@@ -73,6 +73,10 @@ pub enum ContractError {
         #[serde(with = "b58_dec_format")]
         stream_id: CryptoHash,
     },
+    StreamLocked {
+        #[serde(with = "b58_dec_format")]
+        stream_id: CryptoHash,
+    },
     StreamTerminated {
         #[serde(with = "b58_dec_format")]
         stream_id: CryptoHash,

@@ -19,6 +19,7 @@ mod tests {
             tokens_total_withdrawn: 0,
             cliff: None,
             is_expirable: true,
+            is_locked: false,
         }
     }
 

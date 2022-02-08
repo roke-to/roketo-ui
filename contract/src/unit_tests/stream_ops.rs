@@ -19,6 +19,7 @@ mod tests {
             tokens_total_withdrawn: 0,
             cliff: None,
             is_expirable: true,
+            is_locked: false,
         }
     }
 
@@ -54,6 +55,7 @@ mod tests {
                 None,
                 None,
                 None,
+                None,
             ),
             Err(ContractError::InsufficientNearBalance {
                 requested: 100000000000000000000000u128,
@@ -77,6 +79,7 @@ mod tests {
                 stream.token_account_id,
                 stream.balance,
                 stream.tokens_per_sec,
+                None,
                 None,
                 None,
                 None,
@@ -107,6 +110,7 @@ mod tests {
                 stream.token_account_id,
                 stream.balance,
                 stream.tokens_per_sec,
+                None,
                 None,
                 None,
                 None,
