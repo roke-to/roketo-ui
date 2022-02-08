@@ -11,9 +11,7 @@ pub struct Stream {
     pub receiver_id: AccountId,
     pub token_account_id: AccountId,
 
-    #[serde(with = "u64_dec_format")]
     pub timestamp_created: Timestamp,
-    #[serde(with = "u64_dec_format")]
     pub last_action: Timestamp,
 
     #[serde(with = "u128_dec_format")]
@@ -24,6 +22,8 @@ pub struct Stream {
     pub status: StreamStatus,
     #[serde(with = "u128_dec_format")]
     pub tokens_total_withdrawn: Balance,
+
+    pub cliff: Option<Timestamp>,
 
     pub is_expirable: bool,
 }
@@ -55,6 +55,7 @@ impl Stream {
         token_account_id: AccountId,
         initial_balance: Balance,
         tokens_per_sec: Balance,
+        cliff: Option<Timestamp>,
         is_expirable: bool,
     ) -> Stream {
         let id = env::sha256(&env::random_seed())
@@ -73,18 +74,23 @@ impl Stream {
             tokens_per_sec,
             status: StreamStatus::Initialized,
             tokens_total_withdrawn: 0,
+            cliff,
             is_expirable,
         }
     }
 
     pub(crate) fn process_withdraw(&mut self, token: &Token) -> (Balance, Balance) {
-        let gross_payment = self.available_to_withdraw();
+        let mut gross_payment = self.available_to_withdraw();
         self.tokens_total_withdrawn += gross_payment;
-        let (payment, commission) = if token.is_listed {
+        let (mut payment, commission) = if token.is_listed {
             token.apply_commission(std::cmp::min(gross_payment, self.balance))
         } else {
             (gross_payment, 0)
         };
+        if self.cliff.is_some() {
+            payment = 0;
+            gross_payment = commission;
+        }
         if self.balance > gross_payment {
             self.balance -= gross_payment;
         } else {
@@ -96,18 +102,27 @@ impl Stream {
         // This update of last_action is useless here
         // however it helps to keep invariant of stream status.
         self.last_action = env::block_timestamp();
+
         (payment, commission)
     }
 
     pub(crate) fn available_to_withdraw(&self) -> Balance {
         if self.status == StreamStatus::Active {
-            let period = (env::block_timestamp() - self.last_action) as u128;
+            let period = env::block_timestamp() - self.last_action;
             std::cmp::min(
                 self.balance,
-                period / TICKS_PER_SECOND * self.tokens_per_sec,
+                (period / TICKS_PER_SECOND) as u128 * self.tokens_per_sec,
             )
         } else {
             0
+        }
+    }
+
+    pub(crate) fn update_cliff(&mut self) {
+        if let Some(cliff) = self.cliff {
+            if env::block_timestamp() >= cliff {
+                self.cliff = None;
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ impl Contract {
         token_account_id: AccountId,
         initial_balance: Balance,
         tokens_per_sec: Balance,
+        locked_period_sec: Option<u32>,
         is_auto_start_enabled: Option<bool>,
         is_expirable: Option<bool>,
     ) -> Result<(), ContractError> {
@@ -43,9 +44,8 @@ impl Contract {
         let mut balance = initial_balance;
 
         let mut token = self.dao.get_token_or_unlisted(&token_account_id);
-        let is_listed = token.is_listed;
 
-        if is_listed {
+        if token.is_listed {
             // Take commission as DAO proposed
             if balance < token.commission_on_create {
                 return Err(ContractError::InsufficientNearDeposit {
@@ -60,7 +60,9 @@ impl Contract {
             }
 
             token.collected_commission += token.commission_on_create;
-            self.dao.tokens.insert(token_account_id.clone(), token);
+            self.dao
+                .tokens
+                .insert(token_account_id.clone(), token.clone());
         } else {
             if sender.deposit < self.dao.commission_unlisted {
                 return Err(ContractError::InsufficientNearBalance {
@@ -79,6 +81,15 @@ impl Contract {
             });
         }
 
+        let cliff = if let Some(period) = locked_period_sec {
+            if !is_auto_start_enabled {
+                return Err(ContractError::MustStartImmediately);
+            }
+            Some(env::block_timestamp() + TICKS_PER_SECOND * period as u64)
+        } else {
+            None
+        };
+
         let mut stream = Stream::new(
             description,
             owner_id.clone(),
@@ -86,17 +97,22 @@ impl Contract {
             token_account_id,
             balance.into(),
             tokens_per_sec,
+            cliff,
             is_expirable,
         );
 
         self.process_action(&mut stream, ActionType::Init)?;
 
-        self.stats_inc_stream_deposit(&stream.token_account_id, &initial_balance, &balance);
+        self.stats_inc_stream_deposit(
+            &stream.token_account_id,
+            &initial_balance,
+            &token.commission_on_create,
+        );
         self.stats_inc_streams(
             &stream.token_account_id,
             Contract::is_aurora_address(&stream.owner_id)
                 | Contract::is_aurora_address(&stream.receiver_id),
-            is_listed,
+            token.is_listed,
         );
 
         if is_auto_start_enabled {
@@ -148,11 +164,19 @@ impl Contract {
             });
         }
 
+        stream.update_cliff();
+
+        if stream.cliff.is_some() {
+            return Err(ContractError::CliffNotPassed {
+                timestamp: stream.cliff.unwrap(),
+            });
+        }
+
         stream.balance += amount;
 
         self.save_stream(stream)?;
 
-        self.stats_inc_stream_deposit(&token_account_id, &amount, &amount);
+        self.stats_inc_stream_deposit(&token_account_id, &amount, &0);
 
         Ok(())
     }
@@ -215,6 +239,14 @@ impl Contract {
             });
         }
 
+        stream.update_cliff();
+
+        if stream.cliff.is_some() {
+            return Err(ContractError::CliffNotPassed {
+                timestamp: stream.cliff.unwrap(),
+            });
+        }
+
         if env::prepaid_gas() - env::used_gas() < MIN_GAS_FOR_PROCESS_ACTION {
             return Err(ContractError::InsufficientGas {
                 expected: MIN_GAS_FOR_PROCESS_ACTION,
@@ -255,6 +287,8 @@ impl Contract {
             StreamFinishReason::StoppedByReceiver
         };
 
+        stream.update_cliff();
+
         if env::prepaid_gas() - env::used_gas() < MIN_GAS_FOR_PROCESS_ACTION {
             return Err(ContractError::InsufficientGas {
                 expected: MIN_GAS_FOR_PROCESS_ACTION,
@@ -289,6 +323,14 @@ impl Contract {
         if stream.status != StreamStatus::Active {
             return Err(ContractError::CannotWithdraw {
                 stream_status: stream.status,
+            });
+        }
+
+        stream.update_cliff();
+
+        if stream.cliff.is_some() {
+            return Err(ContractError::CliffNotPassed {
+                timestamp: stream.cliff.unwrap(),
             });
         }
 

@@ -18,7 +18,6 @@ pub struct TokenStats {
     pub streams: u32,
     pub active_streams: u32,
 
-    #[serde(with = "u64_dec_format")]
     pub last_update_time: Timestamp,
 }
 
@@ -44,7 +43,6 @@ pub struct Stats {
     #[serde(with = "u128_dec_format")]
     pub total_account_deposit_eth: Balance,
 
-    #[serde(with = "u64_dec_format")]
     pub last_update_time: Timestamp,
 }
 
@@ -134,7 +132,7 @@ impl Contract {
         &mut self,
         token_account_id: &AccountId,
         deposit: &Balance,
-        tvl_inc: &Balance,
+        commission: &Balance,
     ) {
         let mut stats: Stats = self.stats.take().unwrap().into();
         stats
@@ -142,8 +140,8 @@ impl Contract {
             .entry(token_account_id.clone())
             .and_modify(|e| {
                 e.total_deposit += deposit;
-                e.tvl += tvl_inc;
-                e.total_commission_collected += deposit - tvl_inc;
+                e.tvl += deposit - commission;
+                e.total_commission_collected += commission;
                 e.last_update_time = env::block_timestamp();
             });
         stats.last_update_time = env::block_timestamp();

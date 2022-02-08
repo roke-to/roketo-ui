@@ -33,6 +33,7 @@ pub enum ContractError {
     CronCallsForbidden {
         received: AccountId,
     },
+    MustStartImmediately,
     CannotStartStream {
         stream_status: StreamStatus,
     },
@@ -44,6 +45,9 @@ pub enum ContractError {
     },
     CannotWithdraw {
         stream_status: StreamStatus,
+    },
+    CliffNotPassed {
+        timestamp: u64,
     },
     InvalidCommission,
     InsufficientGas {

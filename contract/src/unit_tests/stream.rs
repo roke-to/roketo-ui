@@ -17,6 +17,7 @@ mod tests {
             tokens_per_sec: 1_000_000_000_000_000_000_000_000, // 1e24
             status: StreamStatus::Active,
             tokens_total_withdrawn: 0,
+            cliff: None,
             is_expirable: true,
         }
     }

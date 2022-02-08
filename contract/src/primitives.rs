@@ -9,7 +9,7 @@ pub const MAX_STREAMING_SPEED: u128 = 10u128.pow(27 as _); // 1e27
 
 pub const MAX_AMOUNT: u128 = 10u128.pow(33 as _); // 1e33
 
-pub const TICKS_PER_SECOND: u128 = 10u128.pow(9 as _); // 1e9
+pub const TICKS_PER_SECOND: u64 = 10u64.pow(9 as _); // 1e9
 
 pub const ONE_TERA: u64 = Gas::ONE_TERA.0; // near-sdk Gas is totally useless
 
@@ -134,27 +134,6 @@ pub mod u128_dec_format {
     }
 
     pub fn deserialize<'de, D>(deserializer: D) -> Result<u128, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        String::deserialize(deserializer)?
-            .parse()
-            .map_err(de::Error::custom)
-    }
-}
-
-pub mod u64_dec_format {
-    use near_sdk::serde::de;
-    use near_sdk::serde::{Deserialize, Deserializer, Serializer};
-
-    pub fn serialize<S>(num: &u64, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        serializer.serialize_str(&num.to_string())
-    }
-
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<u64, D::Error>
     where
         D: Deserializer<'de>,
     {

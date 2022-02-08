@@ -369,6 +369,7 @@ impl Env {
         amount: Balance,
         tokens_per_sec: Balance,
         description: Option<String>,
+        locked_period_sec: Option<u32>,
         is_auto_start_enabled: Option<bool>,
         is_expirable: Option<bool>,
     ) -> U128 {
@@ -381,6 +382,7 @@ impl Env {
                     receiver_id: receiver.account_id(),
                     tokens_per_sec,
                     description,
+                    locked_period_sec,
                     is_auto_start_enabled,
                     is_expirable,
                 },
@@ -398,6 +400,7 @@ impl Env {
         amount: Balance,
         tokens_per_sec: Balance,
         description: Option<String>,
+        locked_period_sec: Option<u32>,
         is_auto_start_enabled: Option<bool>,
         is_expirable: Option<bool>,
     ) -> Base58CryptoHash {
@@ -410,6 +413,7 @@ impl Env {
                     receiver_id: receiver.account_id(),
                     tokens_per_sec,
                     description,
+                    locked_period_sec,
                     is_auto_start_enabled,
                     is_expirable,
                 },
@@ -445,6 +449,7 @@ impl Env {
             token,
             amount,
             tokens_per_sec,
+            None,
             None,
             None,
             None,
@@ -506,7 +511,6 @@ impl Env {
         user: &UserAccount,
         stream_ids: &[&Base58CryptoHash],
     ) -> ExecutionResult {
-        // vec![*stream_id]
         user.function_call(
             self.contract.contract.withdraw(
                 stream_ids.iter().map(|&x| (*x).into()).collect(),
@@ -519,6 +523,25 @@ impl Env {
                     .map(|&x| self.streams.get(&String::from(x)).unwrap())
                     .sum::<Balance>(),
         )
+    }
+
+    pub fn deposit_err(
+        &mut self,
+        user: &UserAccount,
+        stream_id: &Base58CryptoHash,
+        token: &UserAccount,
+        amount: Balance,
+    ) -> U128 {
+        self.contract_ft_transfer_call(
+            &token,
+            &user,
+            amount,
+            &serde_json::to_string(&TransferCallRequest::Deposit {
+                stream_id: *stream_id,
+            })
+            .unwrap(),
+        )
+        .unwrap_json()
     }
 
     pub fn start_stream(&self, user: &UserAccount, stream_id: &Base58CryptoHash) {

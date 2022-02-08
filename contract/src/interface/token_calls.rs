@@ -14,6 +14,7 @@ pub struct CreateRequest {
     pub description: Option<String>,
     pub receiver_id: AccountId,
     pub tokens_per_sec: Balance,
+    pub locked_period_sec: Option<u32>,
     pub is_auto_start_enabled: Option<bool>,
     pub is_expirable: Option<bool>,
 }
@@ -133,6 +134,7 @@ impl FungibleTokenReceiver for Contract {
                     token_account_id,
                     amount.into(),
                     request.tokens_per_sec,
+                    request.locked_period_sec,
                     request.is_auto_start_enabled,
                     request.is_expirable,
                 ) {
