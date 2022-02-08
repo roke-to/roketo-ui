@@ -531,7 +531,7 @@ impl Env {
     }
 
     pub fn deposit_err(
-        &mut self,
+        &self,
         user: &UserAccount,
         stream_id: &Base58CryptoHash,
         token: &UserAccount,
@@ -563,6 +563,19 @@ impl Env {
 
     pub fn withdraw(&self, user: &UserAccount, stream_id: &Base58CryptoHash) {
         assert!(self.withdraw_err(user, stream_id).is_ok());
+    }
+
+    pub fn deposit(
+        &self,
+        user: &UserAccount,
+        stream_id: &Base58CryptoHash,
+        token: &UserAccount,
+        amount: Balance,
+    ) {
+        assert_eq!(
+            self.deposit_err(user, stream_id, token, amount),
+            U128(amount)
+        );
     }
 
     pub fn account_deposit_near(&self, user: &UserAccount, amount: Balance) {

@@ -139,8 +139,8 @@ impl Contract {
             .dao_tokens
             .entry(token_account_id.clone())
             .and_modify(|e| {
-                e.total_deposit += deposit;
-                e.tvl += deposit - commission;
+                e.total_deposit += deposit + commission;
+                e.tvl += deposit;
                 e.total_commission_collected += commission;
                 e.last_update_time = env::block_timestamp();
             });

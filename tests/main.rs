@@ -1412,6 +1412,12 @@ fn test_stream_locked_sanity() {
         assert!(!e.pause_stream_err(user, &stream_id).is_ok());
         assert!(!e.stop_stream_err(user, &stream_id).is_ok());
     }
+    for user in [&users.alice, &users.bob] {
+        assert_eq!(
+            e.deposit_err(user, &stream_id, &tokens.wnear, d(1, 20)),
+            U128(0)
+        );
+    }
 
     let stream = e.get_stream(&stream_id);
     assert_eq!(stream.status, StreamStatus::Active);
@@ -1438,6 +1444,12 @@ fn test_stream_locked_sanity() {
         assert!(!e.pause_stream_err(user, &stream_id).is_ok());
         assert!(!e.stop_stream_err(user, &stream_id).is_ok());
     }
+    for user in [&users.alice, &users.bob] {
+        assert_eq!(
+            e.deposit_err(user, &stream_id, &tokens.wnear, d(1, 20)),
+            U128(0)
+        );
+    }
     let stream = e.get_stream(&stream_id);
     assert_eq!(stream.status, StreamStatus::Active);
 
@@ -1456,6 +1468,12 @@ fn test_stream_locked_sanity() {
         assert!(!e.start_stream_err(user, &stream_id).is_ok());
         assert!(!e.pause_stream_err(user, &stream_id).is_ok());
         assert!(!e.stop_stream_err(user, &stream_id).is_ok());
+    }
+    for user in [&users.alice, &users.bob] {
+        assert_eq!(
+            e.deposit_err(user, &stream_id, &tokens.wnear, d(1, 20)),
+            U128(0)
+        );
     }
     let stream = e.get_stream(&stream_id);
     assert_eq!(

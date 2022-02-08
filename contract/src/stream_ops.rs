@@ -104,6 +104,8 @@ impl Contract {
             None
         };
 
+        // Validations passed
+
         let mut stream = Stream::new(
             description,
             owner_id.clone(),
@@ -118,7 +120,7 @@ impl Contract {
 
         self.process_action(&mut stream, ActionType::Init)?;
 
-        self.stats_inc_stream_deposit(&stream.token_account_id, &initial_balance, &commission);
+        self.stats_inc_stream_deposit(&stream.token_account_id, &balance, &commission);
         self.stats_inc_streams(
             &stream.token_account_id,
             Contract::is_aurora_address(&stream.owner_id)
@@ -145,6 +147,20 @@ impl Contract {
         let mut stream = self.extract_stream(&stream_id)?;
         if stream.status.is_terminated() {
             return Err(ContractError::StreamTerminated { stream_id });
+        }
+
+        if stream.is_locked {
+            return Err(ContractError::StreamLocked {
+                stream_id: stream.id,
+            });
+        }
+
+        stream.update_cliff();
+
+        if stream.cliff.is_some() {
+            return Err(ContractError::CliffNotPassed {
+                timestamp: stream.cliff.unwrap(),
+            });
         }
 
         if stream.available_to_withdraw() == stream.balance
@@ -175,13 +191,7 @@ impl Contract {
             });
         }
 
-        stream.update_cliff();
-
-        if stream.cliff.is_some() {
-            return Err(ContractError::CliffNotPassed {
-                timestamp: stream.cliff.unwrap(),
-            });
-        }
+        // Validations passed
 
         stream.balance += amount;
 
@@ -226,6 +236,8 @@ impl Contract {
                 left: env::prepaid_gas() - env::used_gas(),
             });
         }
+
+        // Validations passed
 
         assert!(self
             .process_action(&mut stream, ActionType::Start)?
@@ -277,6 +289,8 @@ impl Contract {
             });
         }
 
+        // Validations passed
+
         let promises = self.process_action(&mut stream, ActionType::Pause)?;
 
         self.save_stream(stream)?;
@@ -325,6 +339,8 @@ impl Contract {
             });
         }
 
+        // Validations passed
+
         let promises = self.process_action(&mut stream, ActionType::Stop { reason })?;
 
         self.save_stream(stream)?;
@@ -368,6 +384,8 @@ impl Contract {
                 left: env::prepaid_gas() - env::used_gas(),
             });
         }
+
+        // Validations passed
 
         let promises = self.process_action(
             &mut stream,
