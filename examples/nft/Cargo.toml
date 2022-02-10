@@ -1,0 +1,12 @@
+[package]
+name = "non-fungible-token-w-roketo"
+version = "1.0.0"
+authors = ["Alex Kouprin <hello@kikimora.tech>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+near-contract-standards = "=4.0.0-pre.6"
+near-sdk = { version = "=4.0.0-pre.6", features = ["unstable"] }

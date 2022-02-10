@@ -183,7 +183,7 @@ impl Contract {
         self.stats.set(Some(stats.into()));
     }
 
-    pub(crate) fn stats_inc_account_deposit(&mut self, deposit: &Balance, is_aurora: bool) {
+    pub(crate) fn stats_inc_account_deposit(&mut self, deposit: Balance, is_aurora: bool) {
         let mut stats: Stats = self.stats.take().unwrap().into();
         if is_aurora {
             stats.total_account_deposit_eth += deposit;

@@ -60,7 +60,7 @@ impl FungibleTokenReceiver for Contract {
                             .tokens
                             .entry(Contract::aurora_account_id())
                             .and_modify(|e| e.collected_commission += value);
-                        self.stats_inc_account_deposit(&value, true);
+                        self.stats_inc_account_deposit(value, true);
                         return PromiseOrValue::Value(U128::from(0));
                     }
                     AuroraOperationalRequest::StartStream { stream_id } => {
@@ -147,6 +147,11 @@ impl FungibleTokenReceiver for Contract {
             TransferCallRequest::Deposit { stream_id } => {
                 match self.process_deposit(token_account_id, stream_id.into(), amount.into()) {
                     Ok(()) => PromiseOrValue::Value(U128::from(0)),
+                    Err(ContractError::StreamExpired { stream_id }) => {
+                        log!("stream expired, {:?}", stream_id);
+                        // return everything back
+                        PromiseOrValue::Value(amount)
+                    }
                     Err(err) => panic!("error on stream depositing, {:?}", err),
                 }
             }

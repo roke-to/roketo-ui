@@ -40,8 +40,8 @@ mod tests {
                 MAX_AMOUNT / 701701,
             ] {
                 let (x, y) = (
-                    std::cmp::max(f.mult_safe(v), res(v, &f)),
-                    std::cmp::min(f.mult_safe(v), res(v, &f)),
+                    max(f.mult_safe(v), res(v, &f)),
+                    min(f.mult_safe(v), res(v, &f)),
                 );
                 // First nine digits are correct.
                 //

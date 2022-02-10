@@ -10,6 +10,7 @@ near-sdk = { version = "=4.0.0-pre.6", features = ["unstable"] }
 near-sdk-sim = "=4.0.0-pre.6"
 
 contract = { path = "./contract" }
+non-fungible-token-w-roketo = { path = "./examples/nft" }
 
 [profile.release]
 codegen-units=1

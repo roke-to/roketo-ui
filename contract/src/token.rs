@@ -63,7 +63,7 @@ impl Contract {
     pub(crate) fn ft_transfer(
         &self,
         token: &Token,
-        recipient: &AccountId,
+        receiver: &AccountId,
         amount: Balance,
         is_storage_deposit_needed: bool,
     ) -> Result<Promise, ContractError> {
@@ -71,10 +71,10 @@ impl Contract {
             // NEP-141 forbids zero token transfers
             //
             // Return empty promise
-            return Ok(Promise::new(recipient.clone()));
+            return Ok(Promise::new(receiver.clone()));
         }
 
-        if Contract::is_aurora_address(recipient) {
+        if Contract::is_aurora_address(receiver) {
             if env::prepaid_gas() - env::used_gas() < MIN_GAS_FOR_AURORA_TRANFSER {
                 return Err(ContractError::InsufficientGas {
                     expected: MIN_GAS_FOR_AURORA_TRANFSER,
@@ -86,7 +86,7 @@ impl Contract {
                     Contract::aurora_account_id(),
                     U128(amount),
                     None,
-                    Contract::aurora_transfer_call_msg(recipient),
+                    Contract::aurora_transfer_call_msg(receiver),
                     Contract::aurora_account_id(),
                     ONE_YOCTO,
                     token.gas_for_ft_transfer,
@@ -96,7 +96,7 @@ impl Contract {
                     Contract::aurora_account_id(),
                     U128(amount),
                     None,
-                    recipient.to_string(),
+                    receiver.to_string(),
                     token.account_id.clone(),
                     ONE_YOCTO,
                     token.gas_for_ft_transfer,
@@ -114,14 +114,14 @@ impl Contract {
                 });
             }
             Ok(fungible_token_contract::storage_deposit(
-                Some(recipient.clone()),
+                Some(receiver.clone()),
                 Some(true),
                 token.account_id.clone(),
                 token.storage_balance_needed,
                 token.gas_for_storage_deposit,
             )
             .then(ext_fungible_token::ft_transfer(
-                recipient.clone(),
+                receiver.clone(),
                 U128(amount),
                 None,
                 token.account_id.clone(),
@@ -136,7 +136,7 @@ impl Contract {
                 });
             }
             Ok(ext_fungible_token::ft_transfer(
-                recipient.clone(),
+                receiver.clone(),
                 U128(amount),
                 None,
                 token.account_id.clone(),

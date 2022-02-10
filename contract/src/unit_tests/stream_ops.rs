@@ -64,7 +64,7 @@ mod tests {
         );
 
         testing_env!(VMContextBuilder::new()
-            .predecessor_account_id(carol())
+            .signer_account_id(carol())
             .attached_deposit(DEFAULT_COMMISSION_UNLISTED)
             .build());
         contract.account_deposit_near();
@@ -93,7 +93,7 @@ mod tests {
         let utility_token_id = "utilitytoken.near".parse().unwrap();
         let mut contract = Contract::new(dao_id, utility_token_id, 18);
         testing_env!(VMContextBuilder::new()
-            .predecessor_account_id(carol())
+            .signer_account_id(carol())
             .attached_deposit(DEFAULT_COMMISSION_UNLISTED)
             .build());
         contract.account_deposit_near();

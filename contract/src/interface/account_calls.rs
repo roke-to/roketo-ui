@@ -5,26 +5,22 @@ impl Contract {
     #[payable]
     pub fn account_update_cron_flag(&mut self, is_cron_allowed: bool) {
         assert_one_yocto();
-        let mut account = self
-            .extract_account(&env::predecessor_account_id())
-            .unwrap();
+        let mut account = self.extract_account(&env::signer_account_id()).unwrap();
         account.is_cron_allowed = is_cron_allowed;
         self.save_account(account).unwrap()
     }
 
     #[payable]
     pub fn account_deposit_near(&mut self) {
-        self.account_deposit(env::predecessor_account_id(), env::attached_deposit())
+        self.account_deposit(env::signer_account_id(), env::attached_deposit())
             .unwrap();
-        self.stats_inc_account_deposit(&env::attached_deposit(), false);
+        self.stats_inc_account_deposit(env::attached_deposit(), false);
     }
 
     #[payable]
     pub fn account_unstake(&mut self, amount: Balance) -> Promise {
         assert_one_yocto();
-        let mut account = self
-            .extract_account(&env::predecessor_account_id())
-            .unwrap();
+        let mut account = self.extract_account(&env::signer_account_id()).unwrap();
         assert!(amount > 0);
         assert!(account.stake >= amount);
         account.stake -= amount;
@@ -34,7 +30,7 @@ impl Contract {
 
         self.ft_transfer(
             &self.dao.get_token_or_unlisted(&self.dao.utility_token_id),
-            &env::predecessor_account_id(),
+            &env::signer_account_id(),
             amount,
             false,
         )

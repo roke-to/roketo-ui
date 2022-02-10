@@ -160,7 +160,7 @@ impl Contract {
         from: u32,
         limit: u32,
     ) -> Vec<Stream> {
-        (from..std::cmp::min(active_streams.len() as _, from + limit))
+        (from..min(active_streams.len() as _, from + limit))
             .map(|i| {
                 self.streams
                     .get(&active_streams.as_vector().get(i as _).unwrap())
@@ -168,7 +168,7 @@ impl Contract {
                     .into()
             })
             .chain(
-                (from..std::cmp::min(inactive_streams.len() as _, from + limit)).map(|i| {
+                (from..min(inactive_streams.len() as _, from + limit)).map(|i| {
                     self.streams
                         .get(&inactive_streams.as_vector().get(i as _).unwrap())
                         .unwrap()

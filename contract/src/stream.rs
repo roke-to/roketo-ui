@@ -86,7 +86,7 @@ impl Stream {
         let mut gross_payment = self.available_to_withdraw();
         self.tokens_total_withdrawn += gross_payment;
         let (mut payment, mut commission) = if token.is_listed {
-            token.apply_commission(std::cmp::min(gross_payment, self.balance))
+            token.apply_commission(min(gross_payment, self.balance))
         } else {
             (gross_payment, 0)
         };
@@ -116,7 +116,7 @@ impl Stream {
     pub(crate) fn available_to_withdraw(&self) -> Balance {
         if self.status == StreamStatus::Active {
             let period = env::block_timestamp() - self.last_action;
-            std::cmp::min(
+            min(
                 self.balance,
                 (period / TICKS_PER_SECOND) as u128 * self.tokens_per_sec,
             )

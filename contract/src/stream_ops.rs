@@ -398,4 +398,75 @@ impl Contract {
 
         Ok(promises)
     }
+
+    pub fn process_change_receiver(
+        &mut self,
+        sender_id: &AccountId,
+        stream_id: CryptoHash,
+        receiver_id: AccountId,
+        storage_balance_needed: Balance,
+    ) -> Result<Vec<Promise>, ContractError> {
+        let promises = self.process_withdraw(sender_id, stream_id, true)?;
+
+        let mut stream = self.extract_stream(&stream_id)?;
+
+        if stream.status != StreamStatus::Active {
+            // Inactive stream won't be transferred
+            self.save_stream(stream)?;
+            return Ok(promises);
+        }
+
+        if stream.is_locked {
+            return Err(ContractError::StreamLocked {
+                stream_id: stream.id,
+            });
+        }
+
+        let mut receiver = if let Ok(account) = self.extract_account(&receiver_id) {
+            account
+        } else {
+            // Charge for account creation
+            let token = self.dao.get_token_or_unlisted(&stream.token_account_id);
+            if token.is_listed {
+                if stream.balance < token.commission_on_create {
+                    let balance = stream.balance;
+                    stream.balance = 0;
+                    let action = self.process_action(
+                        &mut stream,
+                        ActionType::Stop {
+                            reason: StreamFinishReason::FinishedWhileTransferred,
+                        },
+                    )?;
+                    assert!(action.is_empty());
+                    self.save_stream(stream)?;
+
+                    self.stats_withdraw(&token, 0, balance);
+                    return Ok(promises);
+                }
+                stream.balance -= token.commission_on_create;
+                self.stats_withdraw(&token, 0, token.commission_on_create);
+            } else {
+                // Charge in NEAR
+                assert!(
+                    env::attached_deposit()
+                        >= self.dao.commission_unlisted + storage_balance_needed
+                );
+                self.stats_inc_account_deposit(self.dao.commission_unlisted, false);
+            }
+            self.create_account_if_not_exist(&receiver_id)?;
+            self.extract_account(&receiver_id)?
+        };
+
+        let mut sender = self.extract_account(sender_id)?;
+
+        assert!(sender.active_incoming_streams.remove(&stream_id));
+        assert!(receiver.active_incoming_streams.insert(&stream_id));
+
+        self.save_account(sender)?;
+        self.save_account(receiver)?;
+
+        stream.receiver_id = receiver_id;
+        self.save_stream(stream)?;
+        Ok(promises)
+    }
 }

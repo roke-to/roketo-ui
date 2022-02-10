@@ -35,7 +35,7 @@ impl Contract {
     pub fn dao_withdraw_ft(
         &mut self,
         token_account_id: AccountId,
-        recipient: AccountId,
+        receiver_id: AccountId,
         amount: U128,
     ) -> Promise {
         assert_one_yocto();
@@ -43,7 +43,7 @@ impl Contract {
 
         self.ft_transfer(
             &self.dao.get_token(&token_account_id).unwrap(),
-            &recipient,
+            &receiver_id,
             amount.into(),
             false,
         )
@@ -51,11 +51,11 @@ impl Contract {
     }
 
     #[payable]
-    pub fn dao_withdraw_near(&mut self, recipient: AccountId, amount: U128) -> Promise {
+    pub fn dao_withdraw_near(&mut self, receiver_id: AccountId, amount: U128) -> Promise {
         assert_one_yocto();
         self.dao.check_owner().unwrap();
 
-        Promise::new(recipient.clone()).transfer(amount.into())
+        Promise::new(receiver_id).transfer(amount.into())
     }
 
     #[payable]

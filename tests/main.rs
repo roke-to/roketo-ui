@@ -36,23 +36,19 @@
 // locked unlisted
 // locked with cliff
 // locked deposit
+// change receiver tests
+// nft transfer custom tests
+// multiple nfts
+// nft several copies attach
+// multiple nft transfers
+// insufficient storage deposit tests
+// nft stream finished while transfer
+// nft stream finished while transfer unlisted
+// nft stream finished while withdrawed
 
 mod setup;
 
 use crate::setup::*;
-
-fn basic_setup() -> (Env, Tokens, Users) {
-    let e = Env::init();
-    let tokens = Tokens::init(&e);
-    e.setup_assets(&tokens);
-
-    let users = Users::init(&e);
-    e.mint_tokens(&tokens, &users.alice);
-    e.mint_tokens(&tokens, &users.bob);
-
-    // e.show_balances(&users, &tokens);
-    (e, tokens, users)
-}
 
 #[test]
 fn test_init_env() {
@@ -1648,4 +1644,67 @@ fn test_stream_locked_commissions() {
             .total_commission_collected,
         d(1, 23) + (d(1, 24) - d(1, 23)) / 250
     );
+}
+
+#[test]
+fn test_nft_sanity() {
+    let (mut e, tokens, users, nfts) = basic_nft_setup();
+
+    let amount = d(101, 23);
+    let stream_id = e.create_stream(
+        &users.alice,
+        &users.charlie,
+        &tokens.wnear,
+        amount,
+        d(1, 23),
+    );
+
+    let nft_id = "123".to_string();
+
+    e.nft_mint(&nfts.paras, &users.charlie, &nft_id);
+    e.nft_attach_stream(&nfts.paras, &nft_id, &stream_id);
+    assert_eq!(e.get_balance(&tokens.wnear, &users.charlie), 0);
+
+    let nft = e.get_nft_token(&nfts.paras, &nft_id).unwrap();
+    assert_eq!(
+        nft.metadata.unwrap().extra.unwrap(),
+        String::from(&stream_id)
+    );
+
+    e.skip_time(10);
+
+    e.nft_transfer(&users.charlie, &nfts.paras, &users.dude, &nft_id);
+    let nft = e.get_nft_token(&nfts.paras, &nft_id).unwrap();
+    assert_eq!(
+        nft.metadata.unwrap().extra.unwrap(),
+        String::from(&stream_id)
+    );
+
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(
+        e.get_balance(&tokens.wnear, &users.charlie),
+        d(10, 23) / 250 * 249
+    );
+    assert_eq!(e.get_balance(&tokens.wnear, &users.dude), 0);
+    assert_eq!(stream.balance, d(90, 23) - d(1, 23));
+
+    e.skip_time(20);
+
+    assert!(!e.withdraw_err(&users.charlie, &stream_id).is_ok());
+    e.withdraw(&users.dude, &stream_id);
+    let stream = e.get_stream(&stream_id);
+    assert_eq!(
+        e.get_balance(&tokens.wnear, &users.charlie),
+        d(10, 23) / 250 * 249
+    );
+    assert_eq!(
+        e.get_balance(&tokens.wnear, &users.dude),
+        d(20, 23) / 250 * 249
+    );
+    assert_eq!(stream.balance, d(70, 23) - d(1, 23));
+
+    e.nft_detach_stream(&nfts.paras, &nft_id, &stream_id);
+
+    let nft = e.get_nft_token(&nfts.paras, &nft_id).unwrap();
+    assert!(nft.metadata.unwrap().extra.is_none());
 }

@@ -99,6 +99,7 @@ pub enum StreamFinishReason {
     StoppedByReceiver,
     FinishedNatually,
     FinishedBecauseCannotBeExtended,
+    FinishedWhileTransferred,
 }
 
 impl StreamStatus {

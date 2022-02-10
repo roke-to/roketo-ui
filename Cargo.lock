@@ -2027,6 +2027,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "non-fungible-token-w-roketo"
+version = "1.0.0"
+dependencies = [
+ "near-contract-standards",
+ "near-sdk",
+]
+
+[[package]]
 name = "num-bigint"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2607,6 +2615,7 @@ dependencies = [
  "near-contract-standards",
  "near-sdk",
  "near-sdk-sim",
+ "non-fungible-token-w-roketo",
 ]
 
 [[package]]
