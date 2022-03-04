@@ -1,20 +1,23 @@
 import {useState, useEffect, useMemo} from 'react';
 
 export function useFilter({options}) {
-  let keys = Object.keys(options);
+  let keys = useMemo(() => Object.keys(options), [options])
 
   const [option, selectOption] = useState(keys[0]);
-  const currentFilterFunction = options[option];
 
   const filter = useMemo(
-    () => ({
-      option,
-      selectOption,
-      options,
-      optionsArray: keys,
-      currentFilterFunction,
-    }),
-    [options, option, currentFilterFunction, keys],
+    () => {
+      const currentFilterFunction = options[option];
+
+      return {
+        option,
+        selectOption,
+        options,
+        optionsArray: keys,
+        currentFilterFunction,
+      }
+    },
+    [options, option, keys],
   );
 
   return filter;
