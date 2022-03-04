@@ -4,7 +4,7 @@ import App from './App';
 import './styles/index.scss';
 import Modal from 'react-modal';
 
-const rootEl = document.getElementById('root');
+const rootEl = document.getElementById('root')!;
 
 Modal.setAppElement(rootEl);
 ReactDOM.render(<App />, rootEl);

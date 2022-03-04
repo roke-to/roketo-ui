@@ -17,6 +17,17 @@ const PERIODS = {
   day: '/day',
 };
 
+type AccountColumnProps = {
+  account: any,
+  header: string;
+  icon: React.ReactNode,
+  tokensField: string,
+  streamsType?: string,
+  showPeriod?: boolean,
+  className?: string,
+  period?: String
+}
+
 export function AccountColumn({
   account,
   header,
@@ -25,7 +36,8 @@ export function AccountColumn({
   streamsType,
   showPeriod = true,
   className,
-}) {
+  period
+}: AccountColumnProps) {
   const near = useNear();
   const accountSWR = useAccount({near});
   const streamsSWR = useStreams({near, accountSWR});
@@ -39,9 +51,9 @@ export function AccountColumn({
     streams = allStreams ? allStreams.outputs : [];
   }
 
-  let streamGroups = {};
+  let streamGroups = {} as any;
   if (streams !== undefined) {
-    streamGroups = streams.reduce((groups, item) => {
+    streamGroups = streams.reduce((groups: any, item: any) => {
       const group = groups[item.ticker] || [];
       group.push(item);
       groups[item.ticker] = group;
@@ -89,7 +101,7 @@ export function AccountColumn({
         </span>
       </h2>
       <div>
-        {tokensData.map((item) => (
+        {tokensData.map((item: any) => (
           <AccountStreamCard
             token={item[0]}
             balance={item[1]}

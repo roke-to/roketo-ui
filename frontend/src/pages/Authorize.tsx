@@ -6,7 +6,7 @@ export function AuthorizePage() {
     <div className="flex h-screen mx-3">
       <div
         className="lg:m-auto mx-auto my-auto lg:w-2/5 bg-gray-90 rounded-3xl p-5"
-        style={{'background-color': '#0D0B26'}}
+        style={{backgroundColor: '#0D0B26'}}
       >
         <div className="my-24 text-center">
           <h1 className="text-3xl mb-4 font-semibold">

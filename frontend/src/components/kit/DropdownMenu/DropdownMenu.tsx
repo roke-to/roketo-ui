@@ -2,8 +2,16 @@ import React from 'react';
 import classNames from 'classnames';
 import {useOutsideClick} from '../../../lib/useOutsideClick';
 
-export function DropdownMenu({opened, children, className, onClose}) {
-  const ref = React.useRef();
+type DropdownMenuProps = {
+  opened: boolean;
+  children: React.ReactNode;
+  className?: string;
+  onClose: () => void;
+}
+
+export function DropdownMenu({opened, children, className, onClose}: DropdownMenuProps) {
+  const ref = React.useRef<HTMLInputElement | null>(null);
+
   useOutsideClick(ref, () => {
     if (opened) {
       onClose();
@@ -26,7 +34,12 @@ export function DropdownMenu({opened, children, className, onClose}) {
   );
 }
 
-export function DropdownMenuItem({children, className, ...rest}) {
+type DropdownMenuItemProps = {
+  children: React.ReactNode;
+  className?: String;
+}
+
+export function DropdownMenuItem({children, className, ...rest}: DropdownMenuItemProps) {
   return (
     <div
       className={classNames(
