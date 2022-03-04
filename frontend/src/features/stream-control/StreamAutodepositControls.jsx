@@ -2,7 +2,6 @@ import React from 'react';
 import {useStreamControl} from './useStreamControl';
 import {useNear} from '../near-connect/useNear';
 import {
-  Button,
   DropdownMenu,
   DropdownMenuItem,
   DropdownOpener,

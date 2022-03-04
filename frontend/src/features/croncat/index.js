@@ -1,9 +1,6 @@
-import {env} from '../../lib/environment';
 import * as nearApi from 'near-api-js';
-import numbro from 'numbro';
 import BigNumber from 'bignumber.js';
 const GAS_SIZE = '250000000000000';
-const GAS_SIZE_CRON = '300000000000000';
 
 export const LOW_DEPOSIT = new Error('Deposit it too small.');
 
@@ -72,7 +69,7 @@ export class Croncat {
       deposit,
     });
 
-    let res = await this._contract.create_task(
+    await this._contract.create_task(
       {
         contract_id: this._targetContractId,
         function_id: 'update_account',
@@ -91,7 +88,8 @@ export class Croncat {
     if (amount < this._operationalCommission) {
       throw LOW_DEPOSIT;
     }
-    let res = await this._contract.update_task(
+    
+    await this._contract.update_task(
       {
         task_hash: hash,
         contract_id: this._targetContractId,
@@ -107,7 +105,7 @@ export class Croncat {
     );
   }
 
-  async getAllTasks({}) {
+  async getAllTasks() {
     let res1 = await this._contract.get_all_tasks();
     let myTasks = res1.filter((t) => t.owner_id === this._accountId);
 

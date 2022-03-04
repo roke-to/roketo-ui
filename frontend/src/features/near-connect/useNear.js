@@ -93,7 +93,6 @@ export function useCreateNear() {
   useEffect(() => {
     const init = async () => {
       const _near = await createNearInstance();
-      const near = _near.near;
 
       console.debug('Create Near');
       const roketo = new RoketoApi({

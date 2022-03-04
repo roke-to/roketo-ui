@@ -1,7 +1,6 @@
 import React from 'react';
 import {utils} from 'near-api-js';
 import numbro from 'numbro';
-import {TokenIcon} from './icons';
 import classNames from 'classnames';
 import {useNear} from '../features/near-connect/useNear';
 import {TokenImage} from './kit';
@@ -28,6 +27,8 @@ export function AccountStreamCard({
     case 'day':
       multiplier = 60 * 60 * 24;
       break;
+
+    // no default
   }
 
   balance = utils.format.formatNearAmount(balance);

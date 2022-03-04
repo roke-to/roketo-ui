@@ -1,5 +1,4 @@
 import {isFundable} from '.';
-import {STREAM_STATUS} from '../stream-control/lib';
 import {isDead} from './lib';
 
 export function streamViewData(stream, tokenFormatter) {

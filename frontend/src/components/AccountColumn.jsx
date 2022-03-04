@@ -1,21 +1,14 @@
-import React, {useMemo, useState} from 'react';
+import React, {useState} from 'react';
 import {AccountStreamCard} from './AccountStreamCard';
-import useSWR from 'swr';
 import {useNear} from '../features/near-connect';
 import {
   DropdownMenu,
   DropdownMenuItem,
   DropdownOpener,
-  Filter,
-  FilterOptionWithCounter,
   RadioButton,
 } from './kit';
-import classNames from 'classnames';
 import {useFilter} from '../features/filtering/lib';
-import {STREAM_STATUS} from '../features/stream-control/lib';
 import {useAccount, useStreams} from '../features/xyiming-resources';
-
-const _STREAMS = [];
 
 const PERIODS = {
   sec: '/sec',
@@ -30,7 +23,6 @@ export function AccountColumn({
   icon,
   tokensField,
   streamsType,
-  period,
   showPeriod = true,
   className,
 }) {
@@ -57,13 +49,6 @@ export function AccountColumn({
     }, {});
   }
 
-  // console.debug('AccountColumn', {
-  //   streamsType,
-  //   tokensField,
-  //   streams,
-  //   allStreams,
-  //   streamGroups,
-  // });
   const tokensData = account !== undefined ? account[tokensField] : [];
 
   const periodsOptions = useFilter({options: PERIODS});

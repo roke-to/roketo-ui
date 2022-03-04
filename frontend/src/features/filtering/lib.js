@@ -14,7 +14,7 @@ export function useFilter({options}) {
       optionsArray: keys,
       currentFilterFunction,
     }),
-    [options, option],
+    [options, option, currentFilterFunction, keys],
   );
 
   return filter;

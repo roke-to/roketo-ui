@@ -9,8 +9,8 @@ const variants = {
   outlined: 'outlined',
 };
 
-const sizes = ['normal', 'big'];
-const colors = ['dark', 'light'];
+// const sizes = ['normal', 'big'];
+// const colors = ['dark', 'light'];
 
 export function Button({
   icon,

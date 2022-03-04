@@ -64,7 +64,6 @@ export function StreamOverviewCard({
     dateEnd,
     percentages,
     timestampEnd,
-    secondsLeft,
     progress: {full, streamed, left, available},
   } = streamViewData(stream, tf);
 

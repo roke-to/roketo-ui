@@ -6,17 +6,11 @@ import {
   StreamOut,
   StreamWithdraw,
   History,
-  Cron,
 } from '../components/icons';
-import {Button} from '../components/kit';
 import {useAccount} from '../features/xyiming-resources';
 import {formatDistance} from 'date-fns';
 import {PageError} from '../components/PageError';
 import {CroncatButton} from '../features/croncat/CroncatButton';
-import useSWR from 'swr';
-
-const __INPUTS = [];
-const __OUTPUTS = [];
 
 export function AccountPage() {
   const near = useNear();
@@ -37,15 +31,13 @@ export function AccountPage() {
   // );
   // console.debug(balanceSWR.error);
 
-  async function cronSubscribeClick(e) {
-    e.preventDefault();
-    await near.contractApi.startCron();
-  }
+  // async function cronSubscribeClick(e) {
+  //   e.preventDefault();
+  //   await near.contractApi.startCron();
+  // }
 
   const account = accountSWR.data;
   console.debug(account);
-  const inputs = (account && account.inputs) || __INPUTS;
-  const outputs = (account && account.outputs) || __OUTPUTS;
 
   const pageError = accountSWR.error;
 

@@ -1,4 +1,4 @@
-import {TokenFormatter, timestamp} from '../../lib/formatting';
+import {timestamp} from '../../lib/formatting';
 import {format} from 'date-fns';
 import classNames from 'classnames';
 import {STREAM_ACTION_TYPE} from '../stream-control/lib';

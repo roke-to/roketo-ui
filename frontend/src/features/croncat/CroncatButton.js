@@ -1,15 +1,10 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {useNear} from '../near-connect';
 import {useAccount} from '../xyiming-resources';
-import {Button, FormField, Input, RadioButton} from '../../components/kit';
+import {Button} from '../../components/kit';
 import {Cron} from '../../components/icons';
 import {useBool} from '../../lib/useBool';
 import Modal from 'react-modal/lib/components/Modal';
-import {Formik, Field} from 'formik';
-import {TokenFormatter} from '../../lib/formatting';
-import {cadenceString} from '.';
-import * as Yup from 'yup';
-import {useTokenFormatter} from '../../lib/useTokenFormatter';
 
 const CRON_STATUS = {
   RUNNING: 'RUNNING',
@@ -17,16 +12,16 @@ const CRON_STATUS = {
   INITIALIZING: 'INITIALIZING',
 };
 
-const CronTaskCreateScheme = Yup.object().shape({
-  cronDeposit: Yup.string().required('Deposit is a required'),
-  cadence: Yup.string().required('Period is a required'),
-});
+// const CronTaskCreateScheme = Yup.object().shape({
+//   cronDeposit: Yup.string().required('Deposit is a required'),
+//   cadence: Yup.string().required('Period is a required'),
+// });
 
 export function CroncatButton() {
   const near = useNear();
   const modalControl = useBool(false);
   const accountSWR = useAccount({near});
-  const tf = useTokenFormatter('NEAR');
+  // const tf = useTokenFormatter('NEAR');
 
   // useEffect(() => {
   //   async function fetchTasks() {
@@ -40,16 +35,16 @@ export function CroncatButton() {
     modalControl.turnOn();
   }
 
-  async function createTask({cadence, cronDeposit}) {
-    console.debug('Creating task', {
-      cadence,
-      cronDeposit,
-    });
-    await near.croncat.createTask({
-      amount: tf.toInt(cronDeposit),
-      cadence,
-    });
-  }
+  // async function createTask({cadence, cronDeposit}) {
+  //   console.debug('Creating task', {
+  //     cadence,
+  //     cronDeposit,
+  //   });
+  //   await near.croncat.createTask({
+  //     amount: tf.toInt(cronDeposit),
+  //     cadence,
+  //   });
+  // }
 
   const accountData = accountSWR.data;
 
@@ -59,20 +54,20 @@ export function CroncatButton() {
       : CRON_STATUS.NOT_RUNNING
     : CRON_STATUS.INITIALIZING;
 
-  const cadences = [
-    {
-      value: '*/10 * * * * *',
-      label: 'Every 10 minutes',
-    },
-    {
-      value: '0 0-23 * * * *',
-      label: 'Every hour',
-    },
-    {
-      value: '0 0 * * * *',
-      label: 'Every day',
-    },
-  ];
+  // const cadences = [
+  //   {
+  //     value: '*/10 * * * * *',
+  //     label: 'Every 10 minutes',
+  //   },
+  //   {
+  //     value: '0 0-23 * * * *',
+  //     label: 'Every hour',
+  //   },
+  //   {
+  //     value: '0 0 * * * *',
+  //     label: 'Every day',
+  //   },
+  // ];
 
   const modal = (
     <Modal

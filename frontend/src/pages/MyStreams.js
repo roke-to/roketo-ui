@@ -7,7 +7,6 @@ import {routes} from '../lib/routing';
 import {useAccount, useStreams} from '../features/xyiming-resources';
 import {StreamWithdrawButton} from '../features/stream-control/StreamWithdrawButton';
 import {PageError} from '../components/PageError';
-import {STREAM_STATUS} from '../features/stream-control/lib';
 
 const __INPUTS = [];
 const __OUTPUTS = [];

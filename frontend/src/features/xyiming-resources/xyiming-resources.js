@@ -167,7 +167,7 @@ export function useSingleStreamHistory(
   );
 
   // ebanuty hack to prefetch next page
-  const swr2 = useSWR(
+  useSWR(
     () => {
       const key = stream
         ? ['stream_history', stream.id, account.last_action, page + 1]
