@@ -3,7 +3,7 @@ import {utils} from 'near-api-js';
 import numbro from 'numbro';
 import classNames from 'classnames';
 import {useNear} from '../features/near-connect/useNear';
-import {TokenImage} from './kit';
+import {TokenImage} from './kit/TokenImage';
 
 export function AccountStreamCard({
   token,

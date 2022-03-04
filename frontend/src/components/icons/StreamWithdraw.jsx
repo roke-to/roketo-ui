@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const StreamWithdraw = () => (
+export const StreamWithdrawIcon = () => (
   <svg
     width="20"
     height="24"

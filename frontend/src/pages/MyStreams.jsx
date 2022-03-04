@@ -2,7 +2,7 @@ import React, {useMemo, useState} from 'react';
 import {useNear} from '../features/near-connect/useNear';
 import {StreamCard} from '../features/stream-view';
 import {StreamFilters} from '../features/filtering/streams';
-import {Button} from '../components/kit';
+import {Button} from '../components/kit/Button';
 import {routes} from '../lib/routing';
 import {useAccount, useStreams} from '../features/xyiming-resources';
 import {StreamWithdrawButton} from '../features/stream-control/StreamWithdrawButton';

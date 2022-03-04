@@ -1,17 +1,15 @@
 import React, {useState} from 'react';
 import {useStreamControl} from './useStreamControl';
 import {useNear} from '../near-connect/useNear';
-import {
-  DropdownOpener,
-  DropdownMenu,
-  DropdownMenuDivider,
-  DropdownMenuItem,
-  Button,
-} from '../../components/kit';
+import {DropdownOpener} from '../../components/kit/DropdownOpener';
+import {DropdownMenu, DropdownMenuDivider, DropdownMenuItem} from '../../components/kit/DropdownMenu';
+import {Button} from '../../components/kit/Button';
 import {StreamStatus} from './StreamStatus';
 import {STREAM_STATUS} from './lib';
 import {useBool} from '../../lib/useBool';
-import {Stop, Pause, Start} from '../../components/icons';
+import {PauseIcon} from '../../components/icons/Pause';
+import {StartIcon} from '../../components/icons/Start';
+import {StopIcon} from '../../components/icons/Stop';
 import classNames from 'classnames';
 import Modal from 'react-modal';
 
@@ -104,7 +102,7 @@ export function StreamControls({stream, minimal, className}) {
                 className="inline-flex items-center font-semibold"
                 onClick={controls.restart}
               >
-                <Start className="mr-4 flex-shrink-0" />
+                <StartIcon className="mr-4 flex-shrink-0" />
                 <span>Start stream </span>{' '}
               </button>
             </DropdownMenuItem>
@@ -118,7 +116,7 @@ export function StreamControls({stream, minimal, className}) {
                 className="inline-flex items-center font-semibold"
                 onClick={onClickPause}
               >
-                <Pause className="mr-4 flex-shrink-0" />
+                <PauseIcon className="mr-4 flex-shrink-0" />
                 <span>Pause stream</span>
               </button>
             </DropdownMenuItem>
@@ -131,7 +129,7 @@ export function StreamControls({stream, minimal, className}) {
             className="inline-flex items-center font-semibold"
             onClick={controls.stop}
           >
-            <Stop className="mr-4 flex-shrink-0" />
+            <StopIcon className="mr-4 flex-shrink-0" />
             <span> Stop stream </span>
           </button>
         </DropdownMenuItem>

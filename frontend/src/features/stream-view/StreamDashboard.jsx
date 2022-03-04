@@ -1,7 +1,9 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import {TokenImage, ArcProgressBar, Tooltip} from '../../components/kit';
+import {TokenImage} from '../../components/kit/TokenImage';
+import {ArcProgressBar} from '../../components/kit/ProgressBar';
+import {Tooltip} from '../../components/kit/Tooltip';
 import {streamViewData, StreamingSpeed, streamDirection} from '.';
 import {
   StreamControls,

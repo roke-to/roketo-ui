@@ -4,7 +4,9 @@ import copy from 'clipboard-copy';
 import {Link} from 'react-router-dom';
 
 import {StreamingSpeed} from './StreamingSpeed';
-import {ProgressBar, Button, TokenImage} from '../../components/kit';
+import {ProgressBar} from '../../components/kit/ProgressBar';
+import {Button} from '../../components/kit/Button';
+import {TokenImage} from '../../components/kit/TokenImage';
 import {
   StreamControls,
   StreamAutodepositControls,
@@ -13,7 +15,7 @@ import {
 import {DurationTimer} from '../../components/DurationTimer';
 import {routes} from '../../lib/routing';
 import {streamViewData} from './streamViewData';
-import {Link as LinkIcon} from '../../components/icons';
+import {LinkIcon} from '../../components/icons/Link';
 import {StreamProgressPercentage} from './StreamProgressPercentage';
 import {isIdling} from '.';
 import {useTokenFormatter} from '../../lib/useTokenFormatter';

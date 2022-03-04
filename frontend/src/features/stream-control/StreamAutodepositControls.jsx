@@ -1,16 +1,14 @@
 import React from 'react';
 import {useStreamControl} from './useStreamControl';
 import {useNear} from '../near-connect/useNear';
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownOpener,
-} from '../../components/kit';
+import {DropdownOpener} from '../../components/kit/DropdownOpener';
+import {DropdownMenu, DropdownMenuItem} from '../../components/kit/DropdownMenu';
 import {StreamAutodepositStatus} from './StreamAutodepositStatus';
 import {STREAM_STATUS} from './lib';
 import classNames from 'classnames';
 import {useBool} from '../../lib/useBool';
-import {Pause, Start} from '../../components/icons';
+import {PauseIcon} from '../../components/icons/Pause';
+import {StartIcon} from '../../components/icons/Start';
 
 export function StreamAutodepositControls({
   stream,
@@ -66,7 +64,7 @@ export function StreamAutodepositControls({
               className="inline-flex items-center font-semibold w-full"
               onClick={controls.disable}
             >
-              <Pause className="mr-4 flex-shrink-0" />
+              <PauseIcon className="mr-4 flex-shrink-0" />
               <span>Disable</span>
             </button>
           </DropdownMenuItem>
@@ -76,7 +74,7 @@ export function StreamAutodepositControls({
               className="inline-flex items-center font-semibold w-full"
               onClick={controls.enable}
             >
-              <Start className="mr-4 flex-shrink-0" />
+              <StartIcon className="mr-4 flex-shrink-0" />
               <span>Enable</span>
             </button>
           </DropdownMenuItem>

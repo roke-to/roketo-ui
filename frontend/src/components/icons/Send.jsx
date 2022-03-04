@@ -1,5 +1,5 @@
 import React from 'react';
-export const Send = () => (
+export const SendIcon = () => (
   <svg
     width="12"
     height="12"

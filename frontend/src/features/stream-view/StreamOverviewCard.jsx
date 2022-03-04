@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import {format, formatDuration} from 'date-fns';
 import numbro from 'numbro';
 import {streamDirection} from '.';
-import {Copy} from '../../components/icons';
+import {CopyIcon} from '../../components/icons/Copy';
 import copy from 'clipboard-copy';
 import {useNear} from '../near-connect/useNear';
 import {useTokenFormatter} from '../../lib/useTokenFormatter';
@@ -181,7 +181,7 @@ export function StreamOverviewCard({
           {stream.id}
         </div>
         <button onClick={() => copy(stream.id)} className="hover:text-blue">
-          <Copy />
+          <CopyIcon />
         </button>
       </HorizontalData>
     </div>

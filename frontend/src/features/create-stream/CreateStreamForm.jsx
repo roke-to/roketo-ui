@@ -2,15 +2,15 @@ import React, {useState} from 'react';
 import {Formik, Field} from 'formik';
 import * as Yup from 'yup';
 
-import {FormField, Input, Button, TokenImage} from '../../components/kit';
+import {FormField} from '../../components/kit/FormField';
+import {Input} from '../../components/kit/Input';
+import {Button} from '../../components/kit/Button';
+import {TokenImage} from '../../components/kit/TokenImage';
 import {useNear} from '../near-connect/useNear';
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownOpener,
-  RadioButton,
-  Tooltip,
-} from '../../components/kit';
+import {DropdownMenu, DropdownMenuItem} from '../../components/kit/DropdownMenu';
+import {DropdownOpener} from '../../components/kit/DropdownOpener';
+import {RadioButton} from '../../components/kit/RadioButton';
+import {Tooltip} from '../../components/kit/Tooltip';
 import {TokenFormatter} from '../../lib/formatting';
 import {StreamSpeedCalcField} from './StreamSpeedCalcField';
 import {env} from '../../lib/environment';

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const PlusGradient = (props) => (
+export const PlusGradientIcon = (props) => (
   <svg
     width="30"
     height="30"

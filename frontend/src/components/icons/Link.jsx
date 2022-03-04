@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const Link = (props) => (
+export const LinkIcon = (props) => (
   <svg
     width="20"
     height="21"

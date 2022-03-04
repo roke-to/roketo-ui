@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const History = () => (
+export const HistoryIcon = () => (
   <svg
     width="17"
     height="17"

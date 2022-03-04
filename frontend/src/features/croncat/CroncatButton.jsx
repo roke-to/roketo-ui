@@ -1,8 +1,8 @@
 import React from 'react';
 import {useNear} from '../near-connect';
 import {useAccount} from '../xyiming-resources';
-import {Button} from '../../components/kit';
-import {Cron} from '../../components/icons';
+import {Button} from '../../components/kit/Button';
+import {CronIcon} from '../../components/icons/Cron';
 import {useBool} from '../../lib/useBool';
 import Modal from 'react-modal/lib/components/Modal';
 
@@ -186,7 +186,7 @@ export function CroncatButton() {
         onClick={(e) => cronSubscribeClick(e)}
       >
         <span className="mr-2">
-          <Cron />
+          <CronIcon />
         </span>
         {cronStatus === CRON_STATUS.RUNNING
           ? 'Update task'

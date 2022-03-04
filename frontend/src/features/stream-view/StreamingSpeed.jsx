@@ -1,5 +1,6 @@
 import React from 'react';
-import {StreamIn, StreamOut} from '../../components/icons';
+import {StreamOutIcon} from '../../components/icons/StreamOut';
+import {StreamInIcon} from '../../components/icons/StreamIn';
 import classNames from 'classnames';
 import {useTokenFormatter} from '../../lib/useTokenFormatter';
 
@@ -16,9 +17,9 @@ export function StreamingSpeed({stream, direction, className, ...rest}) {
       {...rest}
     >
       {direction === 'out' ? (
-        <StreamOut />
+        <StreamOutIcon />
       ) : direction === 'in' ? (
-        <StreamIn />
+        <StreamInIcon />
       ) : (
         ''
       )}

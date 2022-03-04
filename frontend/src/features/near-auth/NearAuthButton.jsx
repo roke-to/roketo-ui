@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button} from '../../components/kit';
+import {Button} from '../../components/kit/Button';
 import {useNearAuth} from './useNearAuth';
 
 export function NearAuthButton(props) {

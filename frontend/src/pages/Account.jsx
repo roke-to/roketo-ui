@@ -1,12 +1,10 @@
 import React from 'react';
 import {useNear} from '../features/near-connect/useNear';
 import {AccountColumn} from '../components/AccountColumn';
-import {
-  StreamIn,
-  StreamOut,
-  StreamWithdraw,
-  History,
-} from '../components/icons';
+import {HistoryIcon} from '../components/icons/History';
+import {StreamWithdrawIcon} from '../components/icons/StreamWithdraw';
+import {StreamOutIcon} from '../components/icons/StreamOut';
+import {StreamInIcon} from '../components/icons/StreamIn';
 import {useAccount} from '../features/xyiming-resources';
 import {formatDistance} from 'date-fns';
 import {PageError} from '../components/PageError';
@@ -49,7 +47,7 @@ export function AccountPage() {
           {account && account.last_action !== null ? (
             <div className="mr-12 text-gray flex items-center">
               <span className="mr-2">
-                <History />
+                <HistoryIcon />
               </span>
 
               <span>
@@ -80,7 +78,7 @@ export function AccountPage() {
       ) : (
         <div className="grid grid-cols-3 gap-4">
           <AccountColumn
-            icon={<StreamIn />}
+            icon={<StreamInIcon />}
             header="Receiving"
             account={account}
             tokensField="total_incoming"
@@ -89,7 +87,7 @@ export function AccountPage() {
             period="sec"
           />
           <AccountColumn
-            icon={<StreamOut />}
+            icon={<StreamOutIcon />}
             header="Sending"
             account={account}
             tokensField="total_outgoing"
@@ -98,7 +96,7 @@ export function AccountPage() {
             period="sec"
           />
           <AccountColumn
-            icon={<StreamWithdraw />}
+            icon={<StreamWithdrawIcon />}
             header="Withdrawn"
             account={account}
             tokensField="total_received"

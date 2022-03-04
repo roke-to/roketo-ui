@@ -4,9 +4,9 @@ import {useNear} from '../features/near-connect';
 import {
   DropdownMenu,
   DropdownMenuItem,
-  DropdownOpener,
-  RadioButton,
-} from './kit';
+} from './kit/DropdownMenu';
+import {RadioButton} from './kit/RadioButton';
+import {DropdownOpener} from './kit/DropdownOpener';
 import {useFilter} from '../features/filtering/lib';
 import {useAccount, useStreams} from '../features/xyiming-resources';
 

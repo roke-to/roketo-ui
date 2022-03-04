@@ -14,7 +14,8 @@ import {
 } from '../features/xyiming-resources';
 import {StreamDashboard} from '../features/stream-view/StreamDashboard';
 import copy from 'clipboard-copy';
-import {Link as LinkIcon, ArrowLeft} from '../components/icons';
+import {LinkIcon} from '../components/icons/Link';
+import {ArrowLeftIcon} from '../components/icons/ArrowLeft';
 import {routes} from '../lib/routing';
 import classNames from 'classnames';
 import {PageError} from '../components/PageError';
@@ -28,7 +29,7 @@ function BackButton({to, className, ...rest}) {
       {...rest}
     >
       <div className="flex items-center justify-center h-11 w-11 rounded-full border-border border group-hover:bg-border mr-4">
-        <ArrowLeft />
+        <ArrowLeftIcon />
       </div>
       <span className="uppercase text-gray text-xs"> Back </span>
     </Link>

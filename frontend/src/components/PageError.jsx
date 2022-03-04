@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
-import {Button} from './kit';
+import {Button} from './kit/Button';
 import hackImage from '../images/RUSSIANS_HACK.gif';
 import crabImage from '../images/crab.gif';
 

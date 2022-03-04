@@ -1,8 +1,9 @@
 import useSWR, {useSWRConfig} from 'swr';
 import {useNear} from '../near-connect/useNear';
 import {useStreamControl} from './useStreamControl';
-import {Button, TokenImage} from '../../components/kit';
-import {Tooltip} from '../../components/kit';
+import {Button} from '../../components/kit/Button';
+import {TokenImage} from '../../components/kit/TokenImage';
+import {Tooltip} from '../../components/kit/Tooltip';
 import {useAccount, useStreams} from '../xyiming-resources';
 import {useTokenFormatter} from '../../lib/useTokenFormatter';
 import classNames from 'classnames';

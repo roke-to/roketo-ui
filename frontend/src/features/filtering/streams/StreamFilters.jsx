@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import classNames from 'classnames';
 import {useStreamFilters} from './useStreamFilters';
-import {Filter, FilterOptionWithCounter} from '../../../components/kit';
+import {Filter, FilterOptionWithCounter} from '../../../components/kit/Filter';
 import {STREAM_STATUS} from '../../stream-control/lib';
 
 function compareBy(a, b, key) {

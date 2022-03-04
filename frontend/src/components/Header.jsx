@@ -1,6 +1,8 @@
 import React from 'react';
-import * as icons from './icons';
-import {NavLink} from './kit';
+import {AccountIcon} from './icons/Account';
+import {StreamsIcon} from './icons/Streams';
+import {SendIcon} from './icons/Send';
+import {NavLink} from './kit/NavLink';
 import {NearAuthButton} from '../features/near-auth/NearAuthButton';
 import classNames from 'classnames';
 import {routes} from '../lib/routing';
@@ -36,7 +38,7 @@ function FullHeader() {
         <NavLink
           onClick={menuControl.turnOff}
           to={routes.account}
-          icon={<icons.Account />}
+          icon={<AccountIcon />}
         >
           Account
         </NavLink>
@@ -45,7 +47,7 @@ function FullHeader() {
         <NavLink
           onClick={menuControl.turnOff}
           to={routes.myStreams}
-          icon={<icons.Streams />}
+          icon={<StreamsIcon />}
         >
           My Streams
         </NavLink>
@@ -54,7 +56,7 @@ function FullHeader() {
         <NavLink
           onClick={menuControl.turnOff}
           to={routes.send}
-          icon={<icons.Send />}
+          icon={<SendIcon />}
         >
           Send
         </NavLink>

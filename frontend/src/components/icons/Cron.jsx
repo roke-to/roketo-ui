@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const Cron = () => (
+export const CronIcon = () => (
   <svg
     width="19"
     height="20"

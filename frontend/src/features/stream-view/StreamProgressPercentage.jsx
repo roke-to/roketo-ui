@@ -1,4 +1,4 @@
-import {Bullet} from '../../components/kit';
+import {Bullet} from '../../components/kit/Bullet';
 import numbro from 'numbro';
 import classNames from 'classnames';
 

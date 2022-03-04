@@ -1,5 +1,5 @@
 import React from 'react';
-export const Streams = () => (
+export const StreamsIcon = () => (
   <svg
     width="14"
     height="14"

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const Start = (props) => (
+export const StartIcon = (props) => (
   <svg
     width="8"
     height="8"

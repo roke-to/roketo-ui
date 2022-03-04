@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import classNames from 'classnames';
-import {RadioButton, DropdownOpener, DropdownMenu, DropdownMenuItem} from '..';
+import {RadioButton} from '../RadioButton';
+import {DropdownOpener} from '../DropdownOpener';
+import {DropdownMenu, DropdownMenuItem} from '../DropdownMenu';
 
 export function FilterOptionWithCounter({count, option}) {
   return (

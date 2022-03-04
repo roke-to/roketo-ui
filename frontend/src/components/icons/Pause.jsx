@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const Pause = (props) => (
+export const PauseIcon = (props) => (
   <svg
     width="11"
     height="11"

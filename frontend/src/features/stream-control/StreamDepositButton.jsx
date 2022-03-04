@@ -1,9 +1,11 @@
 import React, {useState} from 'react';
-import {Button, Input} from '../../components/kit';
+import {Button} from '../../components/kit/Button';
+import {Input} from '../../components/kit/Input';
 import {useStreamControl} from './useStreamControl';
 import {useBool} from '../../lib/useBool';
 import Modal from 'react-modal';
-import {Plus, PlusGradient} from '../../components/icons';
+import {PlusIcon} from '../../components/icons/Plus';
+import {PlusGradientIcon} from '../../components/icons/PlusGradient';
 import {isFundable} from '../stream-view';
 import {useTokenFormatter} from '../../lib/useTokenFormatter';
 
@@ -66,7 +68,7 @@ export function StreamDepositButton({stream, className}) {
         disabled={depositButton.isDisabled}
         className={className}
       >
-        <Plus className="mr-2" />
+        <PlusIcon className="mr-2" />
         Add funds
       </Button>
 
@@ -87,7 +89,7 @@ export function StreamDepositButtonOutlined({stream, variant = 'filled'}) {
         type="button"
         onClick={depositButton.modalControl.turnOn}
       >
-        <PlusGradient className="mr-2" />
+        <PlusGradientIcon className="mr-2" />
         Add funds
       </Button>
       {depositButton.modal}
