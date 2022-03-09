@@ -17,6 +17,6 @@ jobs:
       working-directory: frontend
       run: yarn
 
-    - name: Run ESLint
+    - name: Run ESLint 🌸
       working-directory: frontend
-      run: eslint . --ext .js,.jsx,.ts,.tsx
+      run: yarn eslint

@@ -54,6 +54,7 @@
     "start": "craco start",
     "build": "CI=false craco build",
     "test": "craco test",
+    "eslint": "eslint -c .eslintrc src --ext .js,.jsx,.ts,.tsx",
     "deploy": "yarn build && gh-pages -d build"
   }
 }
