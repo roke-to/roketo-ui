@@ -1,4 +1,4 @@
-import {env} from '../../lib/environment';
+import { env } from '../../lib/environment';
 
 export const NEAR_CONFIG = {
   accountSuffix: env.NEAR_ACCOUNT_SUFFIX,

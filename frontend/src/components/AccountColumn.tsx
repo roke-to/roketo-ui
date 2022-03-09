@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
-import {AccountStreamCard} from './AccountStreamCard';
-import {useNear} from '../features/near-connect';
+import React, { useState } from 'react';
+import { AccountStreamCard } from './AccountStreamCard';
+import { useNear } from '../features/near-connect';
 import {
   DropdownMenu,
   DropdownMenuItem,
 } from './kit/DropdownMenu';
-import {RadioButton} from './kit/RadioButton';
-import {DropdownOpener} from './kit/DropdownOpener';
-import {useFilter} from '../features/filtering/lib';
-import {useAccount, useStreams} from '../features/xyiming-resources';
+import { RadioButton } from './kit/RadioButton';
+import { DropdownOpener } from './kit/DropdownOpener';
+import { useFilter } from '../features/filtering/lib';
+import { useAccount, useStreams } from '../features/xyiming-resources';
 
 const PERIODS = {
   sec: '/sec',
@@ -18,15 +18,14 @@ const PERIODS = {
 };
 
 type AccountColumnProps = {
-  account: any,
+  account: any;
   header: string;
-  icon: React.ReactNode,
-  tokensField: string,
-  streamsType?: string,
-  showPeriod?: boolean,
-  className?: string,
-  period?: String
-}
+  icon: React.ReactNode;
+  tokensField: string;
+  streamsType?: string;
+  showPeriod?: boolean;
+  className?: string;
+};
 
 export function AccountColumn({
   account,
@@ -36,11 +35,10 @@ export function AccountColumn({
   streamsType,
   showPeriod = true,
   className,
-  period
 }: AccountColumnProps) {
   const near = useNear();
-  const accountSWR = useAccount({near});
-  const streamsSWR = useStreams({near, accountSWR});
+  const accountSWR = useAccount({ near });
+  const streamsSWR = useStreams({ near, accountSWR });
 
   const allStreams = streamsSWR.data;
 
@@ -56,14 +54,14 @@ export function AccountColumn({
     streamGroups = streams.reduce((groups: any, item: any) => {
       const group = groups[item.ticker] || [];
       group.push(item);
-      groups[item.ticker] = group;
+      groups[item.ticker] = group; // eslint-disable-line no-param-reassign
       return groups;
     }, {});
   }
 
   const tokensData = account !== undefined ? account[tokensField] : [];
 
-  const periodsOptions = useFilter({options: PERIODS});
+  const periodsOptions = useFilter({ options: PERIODS });
   const [opened, setOpened] = useState(false);
   const selectedPeriod = periodsOptions.option;
 
@@ -75,7 +73,7 @@ export function AccountColumn({
         <span className="ml-2">
           {showPeriod ? (
             <div className="inline-flex items-center relative">
-              <DropdownOpener minimal={true} rounded onChange={setOpened}>
+              <DropdownOpener minimal rounded onChange={setOpened}>
                 {periodsOptions.options[selectedPeriod]}
               </DropdownOpener>
               <DropdownMenu
@@ -83,8 +81,8 @@ export function AccountColumn({
                 className="right-0"
                 onClose={() => setOpened(false)}
               >
-                {periodsOptions.optionsArray.map((option, i) => (
-                  <DropdownMenuItem key={i}>
+                {periodsOptions.optionsArray.map((option) => (
+                  <DropdownMenuItem key={option}>
                     <RadioButton
                       label={option}
                       active={selectedPeriod === option}

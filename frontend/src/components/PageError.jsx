@@ -1,10 +1,14 @@
 import classNames from 'classnames';
 import React from 'react';
-import {Button} from './kit/Button';
+import { Button } from './kit/Button';
 import hackImage from '../images/RUSSIANS_HACK.gif';
 import crabImage from '../images/crab.gif';
 
-export function PageError({message, onRetry, className, ...rest}) {
+export function PageError({
+  message,
+  onRetry,
+  className,
+}) {
   const rand = React.useRef(Math.random());
 
   return (
@@ -37,6 +41,7 @@ export function PageError({message, onRetry, className, ...rest}) {
         color="dark"
         className="mt-10"
         onClick={onRetry}
+        type="button"
       >
         Try again
       </Button>

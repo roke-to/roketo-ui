@@ -1,6 +1,6 @@
-import {Bullet} from '../../components/kit/Bullet';
 import numbro from 'numbro';
 import classNames from 'classnames';
+import { Bullet } from '../../components/kit/Bullet';
 
 export function StreamProgressPercentage({
   label,
@@ -14,7 +14,12 @@ export function StreamProgressPercentage({
     <div className={className} {...rest}>
       <Bullet className={classNames(colorClass, 'mr-1')} />
       <span>
-        {label}: <span className="font-semibold">{formattedFloatValue} </span>
+        {label}
+        :
+        <span className="font-semibold">
+          {formattedFloatValue}
+          {' '}
+        </span>
         <span className="text-gray">
           {' '}
           (

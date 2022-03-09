@@ -1,10 +1,12 @@
 import React from 'react';
-import {StreamOutIcon} from '../../components/icons/StreamOut';
-import {StreamInIcon} from '../../components/icons/StreamIn';
 import classNames from 'classnames';
-import {useTokenFormatter} from '../../lib/useTokenFormatter';
+import { StreamOutIcon } from '../../components/icons/StreamOut';
+import { StreamInIcon } from '../../components/icons/StreamIn';
+import { useTokenFormatter } from '../../lib/useTokenFormatter';
 
-export function StreamingSpeed({stream, direction, className, ...rest}) {
+export function StreamingSpeed({
+  stream, direction, className, ...rest
+}) {
   const tf = useTokenFormatter(stream.ticker);
   const speedInfo = tf.tokensPerMeaningfulPeriod(stream.tokens_per_tick);
 
@@ -24,10 +26,16 @@ export function StreamingSpeed({stream, direction, className, ...rest}) {
         ''
       )}
       <span className="ml-2">
-        <span>@{speedInfo.formattedValue}</span>
+        <span>
+          @
+          {speedInfo.formattedValue}
+        </span>
         <span>
           {' '}
-          {stream.ticker} / {speedInfo.unit}
+          {stream.ticker}
+          {' '}
+          /
+          {speedInfo.unit}
         </span>
       </span>
     </div>

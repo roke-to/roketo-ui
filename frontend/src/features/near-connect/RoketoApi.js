@@ -1,9 +1,9 @@
 import * as nearAPI from 'near-api-js';
-import {NearContractApi} from './near-contract-api';
-import {NEAR_CONFIG as NearConfig} from './config';
+import { NearContractApi } from './near-contract-api';
+import { NEAR_CONFIG as NearConfig } from './config';
 
 export class RoketoApi {
-  constructor({account, walletConnection}) {
+  constructor({ account, walletConnection }) {
     this.inited = false;
     this._walletConnection = walletConnection;
     this._account = account;
@@ -59,7 +59,7 @@ export class RoketoApi {
     // fetch metadata for tokens & commissions
     this.status = await this._contract.get_status({});
     console.log(this.status);
-    const tokens = this.status.tokens;
+    const { tokens } = this.status;
 
     // create contracts for every token
     this.ft = {};

@@ -1,26 +1,26 @@
 import classNames from 'classnames';
 import React from 'react';
 import copy from 'clipboard-copy';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import {StreamingSpeed} from './StreamingSpeed';
-import {ProgressBar} from '../../components/kit/ProgressBar';
-import {Button} from '../../components/kit/Button';
-import {TokenImage} from '../../components/kit/TokenImage';
+import { formatDuration, intervalToDuration } from 'date-fns';
+import { StreamingSpeed } from './StreamingSpeed';
+import { ProgressBar } from '../../components/kit/ProgressBar';
+import { Button } from '../../components/kit/Button';
+import { TokenImage } from '../../components/kit/TokenImage';
 import {
   StreamControls,
   StreamAutodepositControls,
   StreamDepositButton,
 } from '../stream-control';
-import {DurationTimer} from '../../components/DurationTimer';
-import {routes} from '../../lib/routing';
-import {streamViewData} from './streamViewData';
-import {LinkIcon} from '../../components/icons/Link';
-import {StreamProgressPercentage} from './StreamProgressPercentage';
-import {isIdling} from '.';
-import {useTokenFormatter} from '../../lib/useTokenFormatter';
-import {formatDuration, intervalToDuration} from 'date-fns';
-import {shortEnLocale} from '../../lib/date';
+import { DurationTimer } from '../../components/DurationTimer';
+import { routes } from '../../lib/routing';
+import { streamViewData } from './streamViewData';
+import { LinkIcon } from '../../components/icons/Link';
+import { StreamProgressPercentage } from './StreamProgressPercentage';
+import { isIdling } from './lib';
+import { useTokenFormatter } from '../../lib/useTokenFormatter';
+import { shortEnLocale } from '../../lib/date';
 
 const streamType = {
   id: '51ofCnrPfZ8WA4NWJAnGYvNM1yqDfsVQqpaoxkYz3aZE',
@@ -39,7 +39,7 @@ const streamType = {
   direction: 'out',
 };
 
-export function StreamCard({stream = streamType, direction, className}) {
+export function StreamCard({ stream = streamType, direction, className }) {
   const tf = useTokenFormatter(stream.ticker);
 
   const {
@@ -47,7 +47,7 @@ export function StreamCard({stream = streamType, direction, className}) {
     progresses,
     timestampEnd,
     percentages,
-    progress: {full, withdrawn, streamed},
+    progress: { full, withdrawn, streamed },
     link,
   } = streamViewData(stream, tf);
 
@@ -55,7 +55,7 @@ export function StreamCard({stream = streamType, direction, className}) {
     start: new Date(),
     end: dateEnd,
   });
-  let timeLeft = formatDuration(duration, {
+  const timeLeft = formatDuration(duration, {
     locale: shortEnLocale,
   });
 
@@ -75,7 +75,11 @@ export function StreamCard({stream = streamType, direction, className}) {
           <TokenImage tokenName={stream.ticker} className="mr-4" />
           <div className="w-full gap-4 flex items-end flex-wrap">
             <div className="text-2xl whitespace-nowrap flex-shrink-0">
-              {tf.amount(streamed)} of {tf.amount(full)}{' '}
+              {tf.amount(streamed)}
+              {' '}
+              of
+              {tf.amount(full)}
+              {' '}
               <span className="uppercase">{stream.ticker}</span>
             </div>
 
@@ -99,18 +103,18 @@ export function StreamCard({stream = streamType, direction, className}) {
             className="mr-4"
             label="Withdrawn"
             colorClass="bg-streams-withdrawn"
-            formattedFloatValue={tf.amount(withdrawn) + ' ' + stream.ticker}
+            formattedFloatValue={`${tf.amount(withdrawn)} ${stream.ticker}`}
             percentageValue={percentages.withdrawn}
           />
           <StreamProgressPercentage
             label="Streamed"
             colorClass="bg-streams-streamed"
-            formattedFloatValue={tf.amount(streamed) + ' ' + stream.ticker}
+            formattedFloatValue={`${tf.amount(streamed)} ${stream.ticker}`}
             percentageValue={percentages.streamed}
           />
         </div>
       </Link>
-      <div className="hidden xl:block"></div>
+      <div className="hidden xl:block" />
       <div className="flex gap-5 justify-between xl:justify-end col-span-12 xl:col-span-5 w-full items-center flex-wrap md:flex-nowrap">
         {direction === 'in' ? (
           <div className="w-44">
@@ -138,6 +142,7 @@ export function StreamCard({stream = streamType, direction, className}) {
             <StreamDepositButton className="flex-grow" stream={stream} />
           ) : null}
           <Button
+            type="button"
             className="ml-3"
             variant="filled"
             onClick={() => copy(link)}

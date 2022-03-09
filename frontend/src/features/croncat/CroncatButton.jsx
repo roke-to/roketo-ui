@@ -1,10 +1,10 @@
 import React from 'react';
-import {useNear} from '../near-connect';
-import {useAccount} from '../xyiming-resources';
-import {Button} from '../../components/kit/Button';
-import {CronIcon} from '../../components/icons/Cron';
-import {useBool} from '../../lib/useBool';
 import Modal from 'react-modal/lib/components/Modal';
+import { useNear } from '../near-connect';
+import { useAccount } from '../xyiming-resources';
+import { Button } from '../../components/kit/Button';
+import { CronIcon } from '../../components/icons/Cron';
+import { useBool } from '../../lib/useBool';
 
 const CRON_STATUS = {
   RUNNING: 'RUNNING',
@@ -20,7 +20,7 @@ const CRON_STATUS = {
 export function CroncatButton() {
   const near = useNear();
   const modalControl = useBool(false);
-  const accountSWR = useAccount({near});
+  const accountSWR = useAccount({ near });
   // const tf = useTokenFormatter('NEAR');
 
   // useEffect(() => {
@@ -117,7 +117,7 @@ export function CroncatButton() {
   //             <Field name="cronDeposit">
   //               {({
   //                 field, // { name, value, onChange, onBlur }
-  //                 form: {touched, errors}, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+  //                 form: {touched, errors},
   //                 meta,
   //               }) => (
   //                 <FormField
@@ -134,7 +134,7 @@ export function CroncatButton() {
   //             <Field name="cadence">
   //               {({
   //                 field, // { name, value, onChange, onBlur }
-  //                 form: {touched, errors}, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+  //                 form: {touched, errors},
   //                 meta,
   //               }) => {
   //                 return (
@@ -180,6 +180,7 @@ export function CroncatButton() {
   return (
     <>
       <Button
+        type="button"
         variant="main"
         size="normal"
         className="p-0"
@@ -191,10 +192,10 @@ export function CroncatButton() {
         {cronStatus === CRON_STATUS.RUNNING
           ? 'Update task'
           : cronStatus === CRON_STATUS.NOT_RUNNING
-          ? 'Subscribe to CRON'
-          : cronStatus === CRON_STATUS.INITIALIZING
-          ? 'Initializing CRON'
-          : ''}
+            ? 'Subscribe to CRON'
+            : cronStatus === CRON_STATUS.INITIALIZING
+              ? 'Initializing CRON'
+              : ''}
       </Button>
       {modalControl.on ? modal : null}
     </>

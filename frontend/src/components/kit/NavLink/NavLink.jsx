@@ -1,7 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
-import {Link, useRouteMatch} from 'react-router-dom';
-export function NavLink({icon, children, className, to, ...rest}) {
+import { Link, useRouteMatch } from 'react-router-dom';
+
+export function NavLink({
+  icon, children, className, to, ...rest
+}) {
   const activeClassname = 'bg-hover';
   const match = useRouteMatch(to);
   const isActive = match && match.isExact;

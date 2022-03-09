@@ -1,17 +1,17 @@
-import useSWR, {useSWRConfig} from 'swr';
-import {useNear} from '../near-connect/useNear';
-import {useStreamControl} from './useStreamControl';
-import {Button} from '../../components/kit/Button';
-import {TokenImage} from '../../components/kit/TokenImage';
-import {Tooltip} from '../../components/kit/Tooltip';
-import {useAccount, useStreams} from '../xyiming-resources';
-import {useTokenFormatter} from '../../lib/useTokenFormatter';
+import useSWR, { useSWRConfig } from 'swr';
 import classNames from 'classnames';
 import Modal from 'react-modal/lib/components/Modal';
-import {useBool} from '../../lib/useBool';
-import {useMemo} from 'react';
+import { useMemo } from 'react';
+import { useNear } from '../near-connect/useNear';
+import { useStreamControl } from './useStreamControl';
+import { Button } from '../../components/kit/Button';
+import { TokenImage } from '../../components/kit/TokenImage';
+import { Tooltip } from '../../components/kit/Tooltip';
+import { useAccount, useStreams } from '../xyiming-resources';
+import { useTokenFormatter } from '../../lib/useTokenFormatter';
+import { useBool } from '../../lib/useBool';
 
-function TokenBalance({ticker, balance, className}) {
+function TokenBalance({ ticker, balance, className }) {
   const near = useNear();
   const tf = useTokenFormatter(ticker);
   const token = near.tokens.get(ticker);
@@ -23,10 +23,12 @@ function TokenBalance({ticker, balance, className}) {
         className,
       )}
     >
-      <TokenImage tokenName={ticker} className="mr-2"></TokenImage>{' '}
+      <TokenImage tokenName={ticker} className="mr-2" />
+      {' '}
       <div>
         <div>
-          <span className="font-semibold">{balanceInt}</span>{' '}
+          <span className="font-semibold">{balanceInt}</span>
+          {' '}
           <span className="text-gray">{ticker}</span>
         </div>
         <div>{token.metadata.name}</div>
@@ -37,37 +39,37 @@ function TokenBalance({ticker, balance, className}) {
 
 function useWithdrawReadyBalances() {
   const near = useNear();
-  const accountSWR = useAccount({near});
+  const accountSWR = useAccount({ near });
 
-  const streamsSWR = useStreams({near, accountSWR});
+  const streamsSWR = useStreams({ near, accountSWR });
 
-  let balances = useMemo(() => {
-    let balances = {};
+  const balances = useMemo(() => {
+    const balancesValue = {};
     if (accountSWR.data && streamsSWR.data) {
       accountSWR.data.ready_to_withdraw.forEach(([ticker, balance]) => {
-        balances[ticker] = balances[ticker] || 0;
-        balances[ticker] += Number(balance);
+        balancesValue[ticker] = balancesValue[ticker] || 0;
+        balancesValue[ticker] += Number(balance);
       });
 
       streamsSWR.data.inputs.forEach((stream) => {
-        balances[stream.ticker] = balances[stream.ticker] || 0;
-        balances[stream.ticker] += Number(stream.available_to_withdraw);
+        balancesValue[stream.ticker] = balancesValue[stream.ticker] || 0;
+        balancesValue[stream.ticker] += Number(stream.available_to_withdraw);
       });
     }
 
-    return balances;
+    return balancesValue;
   }, [accountSWR.data, streamsSWR.data]);
 
   const tokensSWR = useSWR(
     () => {
-      let balancesWithoutNear = {...balances};
-      delete balancesWithoutNear['NEAR'];
-      let keys = Object.keys(balancesWithoutNear);
+      const balancesWithoutNear = { ...balances };
+      delete balancesWithoutNear.NEAR;
+      const keys = Object.keys(balancesWithoutNear);
       keys.sort();
       return JSON.stringify(keys);
     },
     (rawKeys) => {
-      let tickers = JSON.parse(rawKeys);
+      const tickers = JSON.parse(rawKeys);
 
       // [ticker, hasStorageBalance]
       return Promise.all(
@@ -82,17 +84,16 @@ function useWithdrawReadyBalances() {
     },
   );
 
-  let loading = !accountSWR.data || !streamsSWR.data || !tokensSWR.data;
+  const loading = !accountSWR.data || !streamsSWR.data || !tokensSWR.data;
   const notRegisteredTokens = (tokensSWR.data || []).filter(
     (t) => t[1] === false,
   );
 
-  const tokensRequireManualDeposit = notRegisteredTokens.filter((token) =>
-    near.roketo.isBridged(token[0]),
+  const tokensRequireManualDeposit = notRegisteredTokens.filter(
+    (token) => near.roketo.isBridged(token[0]),
   );
 
-  const isSafeToWithdraw =
-    tokensRequireManualDeposit.length === 0 && tokensSWR.data;
+  const isSafeToWithdraw = tokensRequireManualDeposit.length === 0 && tokensSWR.data;
 
   return {
     balances: Object.entries(balances),
@@ -106,11 +107,12 @@ function useWithdrawReadyBalances() {
 export function StreamWithdrawButton(props) {
   const near = useNear();
   const streamControl = useStreamControl();
-  const {mutate} = useSWRConfig();
+  const { mutate } = useSWRConfig();
   const modalControl = useBool(false);
 
-  let {balances, loading, isSafeToWithdraw, notRegisteredTokens} =
-    useWithdrawReadyBalances();
+  const {
+    balances, loading, isSafeToWithdraw, notRegisteredTokens,
+  } = useWithdrawReadyBalances();
 
   async function updateAllAndWithdraw() {
     await streamControl.updateAllAndWithdraw({
@@ -133,8 +135,11 @@ export function StreamWithdrawButton(props) {
       <h2 className="text-2xl mb-6">Restricted withdrawal</h2>
       <p>
         Due to NEP-141 issues you are required to do storage deposit before
-        withdrawing. You can do it by buying any amount of{' '}
-        {notRegisteredTokens.map((token) => token[0]).join(', ')} tokens at any
+        withdrawing. You can do it by buying any amount of
+        {' '}
+        {notRegisteredTokens.map((token) => token[0]).join(', ')}
+        {' '}
+        tokens at any
         DEX
       </p>
     </Modal>
@@ -143,29 +148,20 @@ export function StreamWithdrawButton(props) {
   const onClick = loading
     ? () => {}
     : () => {
-        if (isSafeToWithdraw) {
-          updateAllAndWithdraw();
-        } else {
-          showNEP141Popup();
-        }
-      };
-
-  balances = balances.map(([ticker, balance]) => (
-    <TokenBalance
-      ticker={ticker}
-      balance={balance}
-      className={'w-full mb-2'}
-      key={ticker}
-    ></TokenBalance>
-  ));
+      if (isSafeToWithdraw) {
+        updateAllAndWithdraw();
+      } else {
+        showNEP141Popup();
+      }
+    };
 
   return (
     <>
       <Tooltip
         placement="bottom"
-        align={{offset: [0, 20]}}
-        offset={{bottom: 20}}
-        overlay={
+        align={{ offset: [0, 20] }}
+        offset={{ bottom: 20 }}
+        overlay={(
           <div className="text-left">
             <p className="mb-4 text-gray">
               Move all received tokens to your wallet. With Roketo you can only
@@ -177,7 +173,16 @@ export function StreamWithdrawButton(props) {
               ) : balances.length ? (
                 <>
                   <p className="font-semibold mb-2">Available balances:</p>
-                  <div>{balances}</div>
+                  <div>
+                    {balances.map(([ticker, balance]) => (
+                      <TokenBalance
+                        ticker={ticker}
+                        balance={balance}
+                        className="w-full mb-2"
+                        key={ticker}
+                      />
+                    ))}
+                  </div>
                 </>
               ) : (
                 <p className="font-semibold text-center">
@@ -186,14 +191,15 @@ export function StreamWithdrawButton(props) {
               )}
             </div>
           </div>
-        }
+        )}
       >
         <Button
+          type="button"
           loadingText="Updating account..."
           {...props}
           loading={streamControl.loading}
           onClick={onClick}
-        ></Button>
+        />
       </Tooltip>
       {modalControl.on ? modal : null}
     </>

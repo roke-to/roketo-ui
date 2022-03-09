@@ -1,5 +1,5 @@
-import {STREAM_AUTODEPOSIT_STATUS} from './lib';
 import classNames from 'classnames';
+import { STREAM_AUTODEPOSIT_STATUS } from './lib';
 
 export function StreamAutodepositStatus({
   stream,

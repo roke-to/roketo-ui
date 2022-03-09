@@ -1,7 +1,9 @@
 import React from 'react';
 import classNames from 'classnames';
 
-export function RadioButton({active, label, value, onChange}) {
+export function RadioButton({
+  active, label, value, onChange,
+}) {
   return (
     <label className="inline-flex items-center whitespace-nowrap">
       <input
@@ -15,7 +17,7 @@ export function RadioButton({active, label, value, onChange}) {
           active ? 'border-blue border-4' : 'border-border border-2',
           'border-full w-3 h-3 rounded-full',
         )}
-      ></div>
+      />
 
       <div className={classNames(active ? 'font-semibold' : '', 'ml-3 flex')}>
         {label}

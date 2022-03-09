@@ -1,12 +1,12 @@
-import {useEffect} from 'react';
-import {useBool} from './useBool';
+import { useEffect } from 'react';
+import { useBool } from './useBool';
 
 export function useRerenderEveryMs(ms) {
-  const {toggle} = useBool(false);
+  const { toggle } = useBool(false);
 
-  useEffect(() => {
+  return useEffect(() => {
     if (!ms) {
-      return;
+      return undefined;
     }
 
     const id = setInterval(() => {

@@ -1,16 +1,16 @@
 import React from 'react';
-import {isIdling, StreamingSpeed, streamViewData} from '.';
-import {DurationTimer} from '../../components/DurationTimer';
 import classNames from 'classnames';
-import {format, formatDuration} from 'date-fns';
+import { format, formatDuration, intervalToDuration } from 'date-fns';
 import numbro from 'numbro';
-import {streamDirection} from '.';
-import {CopyIcon} from '../../components/icons/Copy';
 import copy from 'clipboard-copy';
-import {useNear} from '../near-connect/useNear';
-import {useTokenFormatter} from '../../lib/useTokenFormatter';
-import {intervalToDuration} from 'date-fns/esm';
-import {shortEnLocale} from '../../lib/date';
+import { isIdling, streamDirection } from './lib';
+import { StreamingSpeed } from './StreamingSpeed';
+import { streamViewData } from './streamViewData';
+import { DurationTimer } from '../../components/DurationTimer';
+import { CopyIcon } from '../../components/icons/Copy';
+import { useNear } from '../near-connect/useNear';
+import { useTokenFormatter } from '../../lib/useTokenFormatter';
+import { shortEnLocale } from '../../lib/date';
 
 const streamType = {
   stream_id: 'FnVkAYZu4XED3o44pZPvrnghVEMxo3GiHszUT4orjYST',
@@ -36,21 +36,27 @@ const streamType = {
   direction: 'in',
 };
 
-const VerticalData = ({label, children, ...rest}) => (
-  <div {...rest}>
-    <div className="text-gray text-sm">{label}</div>
-    <div className="font-semibold text-lg break-words select-all">
-      {children}
+function VerticalData({ label, children, ...rest }) {
+  return (
+    <div {...rest}>
+      <div className="text-gray text-sm">{label}</div>
+      <div className="font-semibold text-lg break-words select-all">
+        {children}
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
-const HorizontalData = ({label, children, className, ...rest}) => (
-  <div className={classNames('flex justify-between my-3', className)} {...rest}>
-    <div className="text-gray text-sm">{label}</div>
-    <div className="text-sm text-right">{children}</div>
-  </div>
-);
+function HorizontalData({
+  label, children, className, ...rest
+}) {
+  return (
+    <div className={classNames('flex justify-between my-3', className)} {...rest}>
+      <div className="text-gray text-sm">{label}</div>
+      <div className="text-sm text-right">{children}</div>
+    </div>
+  );
+}
 
 export function StreamOverviewCard({
   stream = streamType,
@@ -64,17 +70,19 @@ export function StreamOverviewCard({
     dateEnd,
     percentages,
     timestampEnd,
-    progress: {full, streamed, left, available},
+    progress: {
+      full, streamed, left, available,
+    },
   } = streamViewData(stream, tf);
 
   const duration = intervalToDuration({
     start: new Date(),
     end: dateEnd,
   });
-  let timeLeft = formatDuration(duration, {
+  const timeLeft = formatDuration(duration, {
     locale: shortEnLocale,
   });
-  let direction = streamDirection({
+  const direction = streamDirection({
     stream,
     account,
   });
@@ -112,11 +120,16 @@ export function StreamOverviewCard({
       </HorizontalData>
       <HorizontalData label="Token:">{stream.ticker}</HorizontalData>
       <HorizontalData label="Total:">
-        {tf.amount(full)} {stream.ticker}
+        {tf.amount(full)}
+        {' '}
+        {stream.ticker}
       </HorizontalData>
       <HorizontalData label="Tokens Transferred:">
         <span>
-          {tf.amount(streamed)} {stream.ticker}{' '}
+          {tf.amount(streamed)}
+          {' '}
+          {stream.ticker}
+          {' '}
           <span className="text-gray">
             (
             {numbro(percentages.streamed).format({
@@ -129,7 +142,10 @@ export function StreamOverviewCard({
       </HorizontalData>
       <HorizontalData label="Tokens Left:">
         <span>
-          {tf.amount(left)} {stream.ticker}{' '}
+          {tf.amount(left)}
+          {' '}
+          {stream.ticker}
+          {' '}
           <span className="text-gray">
             (
             {numbro(percentages.left).format({
@@ -141,15 +157,19 @@ export function StreamOverviewCard({
         </span>
       </HorizontalData>
       <HorizontalData label="Tokens Available:">
-        {tf.amount(available)} {stream.ticker}
+        {tf.amount(available)}
+        {' '}
+        {stream.ticker}
       </HorizontalData>
       <HorizontalData label="Stream update & withdrawal fee:">
         {tf.amount(
-          (stream.available_to_withdraw *
-            near.roketo.tokenMeta(stream.ticker).commission_percentage) /
-            100,
-        )}{' '}
-        {stream.ticker}{' '}
+          (stream.available_to_withdraw
+            * near.roketo.tokenMeta(stream.ticker).commission_percentage)
+            / 100,
+        )}
+        {' '}
+        {stream.ticker}
+        {' '}
         <span className="text-gray">
           (
           {numbro(
@@ -180,7 +200,11 @@ export function StreamOverviewCard({
         <div className="inline-block w-24 overflow-ellipsis overflow-hidden">
           {stream.id}
         </div>
-        <button onClick={() => copy(stream.id)} className="hover:text-blue">
+        <button
+          type="button"
+          onClick={() => copy(stream.id)}
+          className="hover:text-blue"
+        >
           <CopyIcon />
         </button>
       </HorizontalData>

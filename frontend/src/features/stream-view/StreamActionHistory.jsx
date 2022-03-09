@@ -1,10 +1,10 @@
-import {timestamp} from '../../lib/formatting';
-import {format} from 'date-fns';
+import { format } from 'date-fns';
 import classNames from 'classnames';
-import {STREAM_ACTION_TYPE} from '../stream-control/lib';
-import {useTokenFormatter} from '../../lib/useTokenFormatter';
+import { timestamp } from '../../lib/formatting';
+import { STREAM_ACTION_TYPE } from '../stream-control/lib';
+import { useTokenFormatter } from '../../lib/useTokenFormatter';
 
-function ThCell({children, className, ...rest}) {
+function ThCell({ children, className, ...rest }) {
   return (
     <th
       className={classNames('text-gray font-normal text-left p-4', className)}
@@ -15,7 +15,7 @@ function ThCell({children, className, ...rest}) {
   );
 }
 
-function TdCell({children, className, ...rest}) {
+function TdCell({ children, className, ...rest }) {
   return (
     <td
       className={classNames(
@@ -38,7 +38,7 @@ const ACTION_TYPE_COLOR = {
   [STREAM_ACTION_TYPE.STOP]: 'text-special-inactive',
 };
 
-function ActionType({actionType, className, ...rest}) {
+function ActionType({ actionType, className, ...rest }) {
   return (
     <span
       className={classNames(ACTION_TYPE_COLOR[actionType], className)}
@@ -77,44 +77,42 @@ export function StreamActionHistory({
         <tbody>
           {loading
             ? Array(pageSize)
-                .fill(null)
-                .map((_, i) => {
-                  return (
-                    <tr className="mb-2" key={i}>
-                      <TdCell></TdCell>
-                      <TdCell></TdCell>
-                      <TdCell></TdCell>
-                      <TdCell></TdCell>
-                      <TdCell></TdCell>
-                    </tr>
-                  );
-                })
-            : history.map((entry) => (
-                <tr className="mb-2" key={entry.timestamp + entry.action_type}>
-                  <TdCell className="break-all w-42">{entry.actor}</TdCell>
-                  <TdCell>
-                    <ActionType actionType={entry.action_type} />
-                  </TdCell>
-                  <TdCell>
-                    {entry.amount
-                      ? `${tf.amount(entry.amount)} ${stream.ticker}`
-                      : ''}
-                  </TdCell>
-                  <TdCell>
-                    {entry.commission_on_withdraw
-                      ? `${tf.amount(entry.commission_on_withdraw)} ${
-                          stream.ticker
-                        }`
-                      : ''}
-                  </TdCell>
-                  <TdCell>
-                    {format(
-                      timestamp(entry.timestamp).fromNanosec(),
-                      'yyyy MMM dd HH:mm:ss',
-                    )}
-                  </TdCell>
+              .fill(null)
+              .map((_, i) => ( // eslint-disable-next-line react/no-array-index-key
+                <tr className="mb-2" key={i}>
+                  <TdCell />
+                  <TdCell />
+                  <TdCell />
+                  <TdCell />
+                  <TdCell />
                 </tr>
-              ))}
+              ))
+            : history.map((entry) => (
+              <tr className="mb-2" key={entry.timestamp + entry.action_type}>
+                <TdCell className="break-all w-42">{entry.actor}</TdCell>
+                <TdCell>
+                  <ActionType actionType={entry.action_type} />
+                </TdCell>
+                <TdCell>
+                  {entry.amount
+                    ? `${tf.amount(entry.amount)} ${stream.ticker}`
+                    : ''}
+                </TdCell>
+                <TdCell>
+                  {entry.commission_on_withdraw
+                    ? `${tf.amount(entry.commission_on_withdraw)} ${
+                      stream.ticker
+                    }`
+                    : ''}
+                </TdCell>
+                <TdCell>
+                  {format(
+                    timestamp(entry.timestamp).fromNanosec(),
+                    'yyyy MMM dd HH:mm:ss',
+                  )}
+                </TdCell>
+              </tr>
+            ))}
         </tbody>
       </table>
       <div
@@ -124,6 +122,7 @@ export function StreamActionHistory({
         )}
       >
         <button
+          type="button"
           className={classNames(
             'p-2 hover:bg-hover hover:border-hover border border-border rounded-xl',
             currentPage <= 0 ? 'invisible' : '',
@@ -140,6 +139,7 @@ export function StreamActionHistory({
           {currentPage + 1}
         </div>
         <button
+          type="button"
           className={classNames(
             'p-2 hover:bg-hover hover:border-hover border border-border rounded-xl',
             currentPage >= maxPage ? 'invisible' : '',

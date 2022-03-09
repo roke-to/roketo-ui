@@ -1,6 +1,6 @@
-import {useMemo} from 'react';
-import {useFilter, useFilters} from '../lib';
-import {STREAM_STATUS, STREAM_DIRECTION} from '../../stream-control/lib';
+import { useMemo } from 'react';
+import { useFilter, useFilters } from '../lib';
+import { STREAM_STATUS, STREAM_DIRECTION } from '../../stream-control/lib';
 
 const STREAM_TYPE_FILTER = {
   ALL: 'All',
@@ -21,26 +21,21 @@ export function useStreamFilters(streams) {
   const statusOptions = useMemo(
     () => ({
       [STREAM_STATUS_FILTER.ALL]: () => true,
-      [STREAM_STATUS_FILTER.ACTIVE]: (stream) =>
-        stream.status === STREAM_STATUS.ACTIVE,
-      [STREAM_STATUS_FILTER.PAUSED]: (stream) =>
-        stream.status === STREAM_STATUS.PAUSED,
-      [STREAM_STATUS_FILTER.ARCHIVED]: (stream) =>
-        stream.status === STREAM_STATUS.ARCHIVED,
-      [STREAM_STATUS_FILTER[STREAM_STATUS.INTERRUPTED]]: (stream) =>
-        stream.status === STREAM_STATUS.INTERRUPTED,
-      [STREAM_STATUS_FILTER[STREAM_STATUS.FINISHED]]: (stream) =>
-        stream.status === STREAM_STATUS.FINISHED,
+      [STREAM_STATUS_FILTER.ACTIVE]: (stream) => stream.status === STREAM_STATUS.ACTIVE,
+      [STREAM_STATUS_FILTER.PAUSED]: (stream) => stream.status === STREAM_STATUS.PAUSED,
+      [STREAM_STATUS_FILTER.ARCHIVED]: (stream) => stream.status === STREAM_STATUS.ARCHIVED,
+      [STREAM_STATUS_FILTER[STREAM_STATUS.INTERRUPTED]]:
+        (stream) => stream.status === STREAM_STATUS.INTERRUPTED,
+      [STREAM_STATUS_FILTER[STREAM_STATUS.FINISHED]]:
+        (stream) => stream.status === STREAM_STATUS.FINISHED,
     }),
     [],
   );
   const directionOptions = useMemo(
     () => ({
       [STREAM_TYPE_FILTER.ALL]: () => true,
-      [STREAM_TYPE_FILTER.INCOMING]: (stream) =>
-        STREAM_DIRECTION.IN === stream.direction,
-      [STREAM_TYPE_FILTER.OUTGOING]: (stream) =>
-        STREAM_DIRECTION.OUT === stream.direction,
+      [STREAM_TYPE_FILTER.INCOMING]: (stream) => STREAM_DIRECTION.IN === stream.direction,
+      [STREAM_TYPE_FILTER.OUTGOING]: (stream) => STREAM_DIRECTION.OUT === stream.direction,
     }),
     [],
   );

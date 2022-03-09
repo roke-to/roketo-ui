@@ -1,7 +1,9 @@
 import React from 'react';
-import {useParams} from 'react-router';
-import {Link} from 'react-router-dom';
-import {useNear} from '../features/near-connect/useNear';
+import { useParams } from 'react-router';
+import { Link } from 'react-router-dom';
+import copy from 'clipboard-copy';
+import classNames from 'classnames';
+import { useNear } from '../features/near-connect/useNear';
 import {
   streamViewData,
   StreamOverviewCard,
@@ -12,16 +14,14 @@ import {
   useSingleStream,
   useSingleStreamHistory,
 } from '../features/xyiming-resources';
-import {StreamDashboard} from '../features/stream-view/StreamDashboard';
-import copy from 'clipboard-copy';
-import {LinkIcon} from '../components/icons/Link';
-import {ArrowLeftIcon} from '../components/icons/ArrowLeft';
-import {routes} from '../lib/routing';
-import classNames from 'classnames';
-import {PageError} from '../components/PageError';
-import {useTokenFormatter} from '../lib/useTokenFormatter';
+import { StreamDashboard } from '../features/stream-view/StreamDashboard';
+import { LinkIcon } from '../components/icons/Link';
+import { ArrowLeftIcon } from '../components/icons/ArrowLeft';
+import { routes } from '../lib/routing';
+import { PageError } from '../components/PageError';
+import { useTokenFormatter } from '../lib/useTokenFormatter';
 
-function BackButton({to, className, ...rest}) {
+function BackButton({ to, className, ...rest }) {
   return (
     <Link
       to={to}
@@ -35,7 +35,8 @@ function BackButton({to, className, ...rest}) {
     </Link>
   );
 }
-function StreamCopyUrlBlock({className, link, ...rest}) {
+
+function StreamCopyUrlBlock({ className, link, ...rest }) {
   return (
     <div className={className} {...rest}>
       <div className="mb-4 text-gray text-center">
@@ -43,8 +44,9 @@ function StreamCopyUrlBlock({className, link, ...rest}) {
       </div>
       <div className="border border-border bg-input py-4 px-5 rounded-2xl flex items-center">
         <div className="break-all select-all">{link}</div>
-        <div className="w-px bg-border mx-6 self-stretch flex-shrink-0"></div>
+        <div className="w-px bg-border mx-6 self-stretch flex-shrink-0" />
         <button
+          type="button"
           className="whitespace-nowrap text-blue py-2 px-3 font-semibold text-sm inline-flex bg-transparent hover:bg-hover active:bg-input rounded-lg transition"
           onClick={() => copy(link)}
           variant="filled"
@@ -61,9 +63,9 @@ export function StreamPage() {
   const near = useNear();
   const params = useParams();
 
-  const accountSWR = useAccount({near});
+  const accountSWR = useAccount({ near });
   const streamSWR = useSingleStream(
-    {streamId: params.id},
+    { streamId: params.id },
     {
       near,
       accountSWR,
@@ -79,7 +81,7 @@ export function StreamPage() {
     maxPage,
     currentPage,
   } = useSingleStreamHistory(
-    {pageSize: 10},
+    { pageSize: 10 },
     {
       near,
       accountSWR,
@@ -91,13 +93,13 @@ export function StreamPage() {
   const stream = streamSWR.data;
   const tf = useTokenFormatter(stream ? stream.ticker : '');
 
-  let streamHistory = streamHistorySWR.data || [];
+  const streamHistory = streamHistorySWR.data || [];
 
   const pageError = streamSWR.error || accountSWR.error;
   const pageReady = stream && account;
 
   const renderStreamData = () => {
-    const {link} = streamViewData(stream, tf);
+    const { link } = streamViewData(stream, tf);
     return (
       <>
         <div className="flex flex-col lg:flex-row justify-between">
@@ -144,7 +146,8 @@ export function StreamPage() {
         <div>
           <h1 className="text-center my-32 text-2xl text-semibold">
             {' '}
-            Stream does not exists{' '}
+            Stream does not exists
+            {' '}
           </h1>
         </div>
       ) : !pageReady ? (

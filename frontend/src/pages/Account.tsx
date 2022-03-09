@@ -1,18 +1,18 @@
 import React from 'react';
-import {useNear} from '../features/near-connect/useNear';
-import {AccountColumn} from '../components/AccountColumn';
-import {HistoryIcon} from '../components/icons/History';
-import {StreamWithdrawIcon} from '../components/icons/StreamWithdraw';
-import {StreamOutIcon} from '../components/icons/StreamOut';
-import {StreamInIcon} from '../components/icons/StreamIn';
-import {useAccount} from '../features/xyiming-resources';
-import {formatDistance} from 'date-fns';
-import {PageError} from '../components/PageError';
-import {CroncatButton} from '../features/croncat/CroncatButton';
+import { formatDistance } from 'date-fns';
+import { useNear } from '../features/near-connect/useNear';
+import { AccountColumn } from '../components/AccountColumn';
+import { HistoryIcon } from '../components/icons/History';
+import { StreamWithdrawIcon } from '../components/icons/StreamWithdraw';
+import { StreamOutIcon } from '../components/icons/StreamOut';
+import { StreamInIcon } from '../components/icons/StreamIn';
+import { useAccount } from '../features/xyiming-resources';
+import { PageError } from '../components/PageError';
+import { CroncatButton } from '../features/croncat/CroncatButton';
 
 export function AccountPage() {
   const near = useNear();
-  const accountSWR = useAccount({near});
+  const accountSWR = useAccount({ near });
 
   // const balanceSWR = useSWR(
   //   () => {
@@ -84,7 +84,6 @@ export function AccountPage() {
             tokensField="total_incoming"
             streamsType="inputs"
             key="AccountInputs"
-            period="sec"
           />
           <AccountColumn
             icon={<StreamOutIcon />}
@@ -93,7 +92,6 @@ export function AccountPage() {
             tokensField="total_outgoing"
             streamsType="outputs"
             key="AccountOutputs"
-            period="sec"
           />
           <AccountColumn
             icon={<StreamWithdrawIcon />}

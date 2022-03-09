@@ -1,57 +1,54 @@
-import React, {useState} from 'react';
-import {Formik, Field} from 'formik';
+import React, { useState } from 'react';
+import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 
-import {FormField} from '../../components/kit/FormField';
-import {Input} from '../../components/kit/Input';
-import {Button} from '../../components/kit/Button';
-import {TokenImage} from '../../components/kit/TokenImage';
-import {useNear} from '../near-connect/useNear';
-import {DropdownMenu, DropdownMenuItem} from '../../components/kit/DropdownMenu';
-import {DropdownOpener} from '../../components/kit/DropdownOpener';
-import {RadioButton} from '../../components/kit/RadioButton';
-import {Tooltip} from '../../components/kit/Tooltip';
-import {TokenFormatter} from '../../lib/formatting';
-import {StreamSpeedCalcField} from './StreamSpeedCalcField';
-import {env} from '../../lib/environment';
+import { FormField } from '../../components/kit/FormField';
+import { Input } from '../../components/kit/Input';
+import { Button } from '../../components/kit/Button';
+import { TokenImage } from '../../components/kit/TokenImage';
+import { useNear } from '../near-connect/useNear';
+import { DropdownMenu, DropdownMenuItem } from '../../components/kit/DropdownMenu';
+import { DropdownOpener } from '../../components/kit/DropdownOpener';
+import { RadioButton } from '../../components/kit/RadioButton';
+import { Tooltip } from '../../components/kit/Tooltip';
+import { TokenFormatter } from '../../lib/formatting';
+import { StreamSpeedCalcField } from './StreamSpeedCalcField';
+import { env } from '../../lib/environment';
 
-const CreateStreamFormSchema = ({near, accountId}) =>
-  Yup.object().shape({
-    receiver: Yup.string()
-      .required('Receiver is a required')
-      .test(
-        'receiver-not-equal-owner',
-        'Receiver can not be the same as owner',
-        (value) => {
-          return value !== accountId;
-        },
-      )
-      .test(
-        'receiver-is-valida-address',
-        'Address does not exists',
-        async (value) => {
-          try {
-            await near.near.near.connection.provider.query({
-              request_type: 'view_account',
-              finality: 'final',
-              account_id: value,
-            });
-            return true;
-          } catch (error) {
-            return false;
-          }
-        },
-      ),
-    token: Yup.string().required(),
-    deposit: Yup.number()
-      .required()
-      .moreThan(0, 'Deposit should be more than 0'),
-    speed: Yup.number().required().moreThan(0, 'Choose stream duration'),
-    autoDeposit: Yup.boolean(),
-    comment: Yup.string().max(255),
-  });
+const CreateStreamFormSchema = ({ near, accountId }) => Yup.object().shape({
+  receiver: Yup.string()
+    .required('Receiver is a required')
+    .test(
+      'receiver-not-equal-owner',
+      'Receiver can not be the same as owner',
+      (value) => value !== accountId,
+    )
+    .test(
+      'receiver-is-valida-address',
+      'Address does not exists',
+      async (value) => {
+        try {
+          await near.near.near.connection.provider.query({
+            request_type: 'view_account',
+            finality: 'final',
+            account_id: value,
+          });
+          return true;
+        } catch (error) {
+          return false;
+        }
+      },
+    ),
+  token: Yup.string().required(),
+  deposit: Yup.number()
+    .required()
+    .moreThan(0, 'Deposit should be more than 0'),
+  speed: Yup.number().required().moreThan(0, 'Choose stream duration'),
+  autoDeposit: Yup.boolean(),
+  comment: Yup.string().max(255),
+});
 
-export function CreateStreamForm({account, onSubmit}) {
+export function CreateStreamForm({ onSubmit }) {
   const near = useNear();
   const schema = CreateStreamFormSchema({
     accountId: near.near.walletConnection.getAccountId(),
@@ -66,7 +63,7 @@ export function CreateStreamForm({account, onSubmit}) {
   const formikOnSubmit = async (...args) => {
     console.debug('Formik submit', ...args);
     try {
-      let res = await onSubmit(...args);
+      const res = await onSubmit(...args);
       return res;
     } catch (error) {
       setError(error);
@@ -104,8 +101,7 @@ export function CreateStreamForm({account, onSubmit}) {
           <form className="max-w-lg mx-auto w-full" onSubmit={handleSubmit}>
             <Field name="receiver">
               {({
-                field, // { name, value, onChange, onBlur }
-                form: {touched, errors}, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+                field,
                 meta,
               }) => (
                 <FormField
@@ -115,7 +111,7 @@ export function CreateStreamForm({account, onSubmit}) {
                 >
                   <Input>
                     <input
-                      placeholder={'receiver.' + env.ACCOUNT_SUFFIX}
+                      placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
                       id="ownerInput"
                       {...field}
                     />
@@ -127,8 +123,7 @@ export function CreateStreamForm({account, onSubmit}) {
             <div className="flex mb-4">
               <Field name="token">
                 {({
-                  field, // { name, value, onChange, onBlur }
-                  form: {touched, errors}, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+                  field,
                   meta,
                 }) => (
                   <FormField
@@ -142,12 +137,11 @@ export function CreateStreamForm({account, onSubmit}) {
                       onChange={setDropdownOpened}
                     >
                       <div className="inline-flex items-center">
-                        {
-                          <TokenImage
-                            tokenName={field.value}
-                            className="mr-1"
-                          />
-                        }{' '}
+                        <TokenImage
+                          tokenName={field.value}
+                          className="mr-1"
+                        />
+                        {' '}
                         <span>{field.value}</span>
                       </div>
                     </DropdownOpener>
@@ -163,18 +157,17 @@ export function CreateStreamForm({account, onSubmit}) {
                           key={option}
                         >
                           <RadioButton
-                            label={
+                            label={(
                               <div className="inline-flex items-center">
-                                {
-                                  <TokenImage
-                                    size={6}
-                                    tokenName={option}
-                                    className="mr-1"
-                                  />
-                                }{' '}
+                                <TokenImage
+                                  size={6}
+                                  tokenName={option}
+                                  className="mr-1"
+                                />
+                                {' '}
                                 <span>{option}</span>
                               </div>
-                            }
+                            )}
                             active={field.value === option}
                             value={option}
                             onChange={(value) => {
@@ -192,12 +185,11 @@ export function CreateStreamForm({account, onSubmit}) {
 
               <Field name="deposit">
                 {({
-                  field, // { name, value, onChange, onBlur }
-                  form: {touched, errors}, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+                  field,
                   meta,
                 }) => (
                   <FormField
-                    label={
+                    label={(
                       <span>
                         <span>Stream initial deposit:</span>
                         <Tooltip
@@ -205,7 +197,7 @@ export function CreateStreamForm({account, onSubmit}) {
                           overlay="Funds which will be used to create an initial stream for a set period. This deposit can be extended in manual or automatical mode."
                         />
                       </span>
-                    }
+                    )}
                     className="w-2/3"
                     error={meta.error}
                   >
@@ -220,26 +212,31 @@ export function CreateStreamForm({account, onSubmit}) {
             <div className="block mb-4">
               <Field name="speed">
                 {({
-                  field, // { name, value, onChange, onBlur }
-                  form: {touched, errors}, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+                  field,
                   meta,
                 }) => (
                   <FormField
-                    label={
+                    label={(
                       <div className="relative">
                         <div>
-                          Period to unlock the initial deposit:{' '}
+                          Period to unlock the initial deposit:
+                          {' '}
                           <Tooltip
                             className="ml-2"
                             overlay="In case of no extensions for an initial deposit after this period will be reached reciever will be able to withdraw whole initial deposit and close the stream. "
                           />
                         </div>
                         <div className="text-xs text-gray absolute right-0 top-1">
-                          Streaming speed: {formatter.tokensPerS(field.value)}{' '}
-                          {values.token} / sec
+                          Streaming speed:
+                          {' '}
+                          {formatter.tokensPerS(field.value)}
+                          {' '}
+                          {values.token}
+                          {' '}
+                          / sec
                         </div>
                       </div>
-                    }
+                    )}
                     error={meta.error}
                   >
                     {' '}
@@ -258,21 +255,21 @@ export function CreateStreamForm({account, onSubmit}) {
 
             <Field name="comment">
               {({
-                field, // { name, value, onChange, onBlur }
-                form: {touched, errors}, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+                field,
                 meta,
               }) => (
                 <FormField
                   className="mb-6"
                   error={meta.error}
-                  label={
+                  label={(
                     <div className="flex justify-between items-center">
                       <div className="mb-1">Comment:</div>
                       <div className="text-xs text-gray">
-                        {(field.value && field.value.length) || 0}/255
+                        {(field.value && field.value.length) || 0}
+                        /255
                       </div>
                     </div>
-                  }
+                  )}
                 >
                   <label className="h-40 Input font-semibold flex p-4 pt-0 rounded-lg border  bg-input text-white focus-within:border-blue hover:border-blue border-border">
                     <textarea
@@ -289,7 +286,9 @@ export function CreateStreamForm({account, onSubmit}) {
 
             {submitError && (
               <p className="text-special-inactive my-4">
-                Submit error: {submitError.message}
+                Submit error:
+                {' '}
+                {submitError.message}
               </p>
             )}
             <div className="flex relaitive">
@@ -297,7 +296,8 @@ export function CreateStreamForm({account, onSubmit}) {
                 <label className="flex">
                   <Field name="autoDeposit" className="mr-1" type="checkbox" />
                   <span>
-                    Enable auto deposit?{' '}
+                    Enable auto deposit?
+                    {' '}
                     <Tooltip
                       className="ml-2"
                       overlay="Check this if you want make this stream infinite extending getting deposits from income streams with saving initial stream speed."
@@ -307,7 +307,8 @@ export function CreateStreamForm({account, onSubmit}) {
                 <label className="flex">
                   <Field name="autoStart" className="mr-1" type="checkbox" />
                   <span>
-                    Start stream immediately?{' '}
+                    Start stream immediately?
+                    {' '}
                     <Tooltip
                       className="ml-2"
                       overlay="Check this if you want this stream to start transfering funds immediatly."
@@ -316,13 +317,18 @@ export function CreateStreamForm({account, onSubmit}) {
                 </label>
 
                 <p className="text-left text-gray w-2/3 text-sm">
-                  You will be charged{' '}
-                  {formatter.amount(tokenMeta.commission_on_create)}{' '}
-                  {tokenMeta.ticker} fee for that stream
+                  You will be charged
+                  {' '}
+                  {formatter.amount(tokenMeta.commission_on_create)}
+                  {' '}
+                  {tokenMeta.ticker}
+                  {' '}
+                  fee for that stream
                 </p>
               </div>
 
               <Button
+                type="button"
                 disabled={isSubmitting}
                 variant="main"
                 size="big"

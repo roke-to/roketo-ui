@@ -1,4 +1,5 @@
 import numbro from 'numbro';
+
 export const tokens = {
   NEAR: {
     name: 'Near',
@@ -17,8 +18,8 @@ export const tokens = {
 };
 
 export function TokenFormatter(tokenDecimals) {
-  const TICK_TO_MS = Math.pow(10, 6);
-  const TICK_TO_S = Math.pow(10, 9);
+  const TICK_TO_MS = 10 ** 6;
+  const TICK_TO_S = 10 ** 9;
   const TICK_TO_MINUTE = TICK_TO_S * 60;
   const TICK_TO_HOUR = TICK_TO_MINUTE * 60;
   const TICK_TO_DAY = TICK_TO_HOUR * 24;
@@ -26,7 +27,7 @@ export function TokenFormatter(tokenDecimals) {
   const TICK_TO_MONTH = TICK_TO_WEEK * 4;
   const TICK_TO_YEAR = TICK_TO_MONTH * 12;
 
-  const MP = Math.pow(10, tokenDecimals);
+  const MP = 10 ** tokenDecimals;
 
   const bigValueFormatter = Intl.NumberFormat('en-US', {
     minimumIntegerDigits: 1,
@@ -42,24 +43,23 @@ export function TokenFormatter(tokenDecimals) {
   const formatSmartly = (value) => {
     if (value < 1) {
       return smallValueFormatter.format(value);
-    } else if (value < 1000000) {
+    } if (value < 1000000) {
       return bigValueFormatter.format(value);
-    } else {
-      return numbro(value).format({
-        mantissa: 3,
-        trimMantissa: true,
-        optionalMantissa: true,
-        average: true,
-      });
     }
+    return numbro(value).format({
+      mantissa: 3,
+      trimMantissa: true,
+      optionalMantissa: true,
+      average: true,
+    });
   };
 
   return {
-    tokenPerSecondToInt: (tps) =>
-      numbro(tps).multiply(MP).divide(TICK_TO_S).format({mantissa: 0}),
-    toInt: (floatValue) =>
-      numbro(floatValue).multiply(MP).format({mantissa: 0}),
-    amount: (amount, decimals = tokenDecimals) => {
+    tokenPerSecondToInt: (tps) => numbro(tps).multiply(MP).divide(TICK_TO_S).format({
+      mantissa: 0,
+    }),
+    toInt: (floatValue) => numbro(floatValue).multiply(MP).format({ mantissa: 0 }),
+    amount: (amount) => {
       const value = numbro(amount).divide(MP).value();
       const formatted = formatSmartly(value);
       return formatted;
@@ -98,15 +98,14 @@ export function TokenFormatter(tokenDecimals) {
         [TICK_TO_MONTH]: 'month',
         [TICK_TO_YEAR]: 'year',
       };
-      const firstGoodLookingMultiplier =
-        multipliers.find((multiplier) => {
-          const value = numbro(tokensPerTick)
-            .multiply(multiplier)
-            .divide(MP)
-            .value();
-          const isOk = value > 0.01;
-          return isOk;
-        }) || TICK_TO_YEAR;
+      const firstGoodLookingMultiplier = multipliers.find((multiplier) => {
+        const value = numbro(tokensPerTick)
+          .multiply(multiplier)
+          .divide(MP)
+          .value();
+        const isOk = value > 0.01;
+        return isOk;
+      }) || TICK_TO_YEAR;
 
       const value = numbro(tokensPerTick)
         .multiply(firstGoodLookingMultiplier)
@@ -120,8 +119,7 @@ export function TokenFormatter(tokenDecimals) {
     },
     ticksToMs: (ticks) => Math.round(ticks / TICK_TO_MS),
     secondsToTicks: (seconds) => seconds * TICK_TO_S,
-    speedPerSecondToTick: (speedPerSec) =>
-      numbro(speedPerSec).multiply(TICK_TO_S).value(),
+    speedPerSecondToTick: (speedPerSec) => numbro(speedPerSec).multiply(TICK_TO_S).value(),
   };
 }
 

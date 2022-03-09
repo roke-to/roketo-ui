@@ -1,15 +1,15 @@
-import React, {useState} from 'react';
-import {Button} from '../../components/kit/Button';
-import {Input} from '../../components/kit/Input';
-import {useStreamControl} from './useStreamControl';
-import {useBool} from '../../lib/useBool';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
-import {PlusIcon} from '../../components/icons/Plus';
-import {PlusGradientIcon} from '../../components/icons/PlusGradient';
-import {isFundable} from '../stream-view';
-import {useTokenFormatter} from '../../lib/useTokenFormatter';
+import { Button } from '../../components/kit/Button';
+import { Input } from '../../components/kit/Input';
+import { useStreamControl } from './useStreamControl';
+import { useBool } from '../../lib/useBool';
+import { PlusIcon } from '../../components/icons/Plus';
+import { PlusGradientIcon } from '../../components/icons/PlusGradient';
+import { isFundable } from '../stream-view/lib';
+import { useTokenFormatter } from '../../lib/useTokenFormatter';
 
-function useDepositButton({stream}) {
+function useDepositButton({ stream }) {
   const controls = useStreamControl(stream.id);
   const [deposit, setDeposit] = useState('');
   const tf = useTokenFormatter(stream.ticker);
@@ -37,12 +37,10 @@ function useDepositButton({stream}) {
         className="w-full"
         variant="filled"
         type="button"
-        onClick={() =>
-          controls.deposit({
-            token: stream.ticker,
-            deposit: tf.toInt(deposit),
-          })
-        }
+        onClick={() => controls.deposit({
+          token: stream.ticker,
+          deposit: tf.toInt(deposit),
+        })}
       >
         Add funds
       </Button>
@@ -56,8 +54,8 @@ function useDepositButton({stream}) {
   };
 }
 
-export function StreamDepositButton({stream, className}) {
-  const depositButton = useDepositButton({stream});
+export function StreamDepositButton({ stream, className }) {
+  const depositButton = useDepositButton({ stream });
 
   return (
     <>
@@ -77,8 +75,8 @@ export function StreamDepositButton({stream, className}) {
   );
 }
 
-export function StreamDepositButtonOutlined({stream, variant = 'filled'}) {
-  const depositButton = useDepositButton({stream});
+export function StreamDepositButtonOutlined({ stream, variant = 'filled' }) {
+  const depositButton = useDepositButton({ stream });
 
   return (
     <>

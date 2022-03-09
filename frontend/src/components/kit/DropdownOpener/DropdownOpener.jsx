@@ -1,6 +1,6 @@
 import React from 'react';
-import {DropdownArrowDown} from '../../icons/DropdownArrowDown';
 import classNames from 'classnames';
+import { DropdownArrowDown } from '../../icons/DropdownArrowDown';
 
 /**
  * @param {minimal} Boolean remove outline and padding if true
@@ -33,7 +33,7 @@ export function DropdownOpener({
       {...rest}
     >
       {children}
-      <div className="flex-grow"></div>
+      <div className="flex-grow" />
       <DropdownArrowDown
         className={classNames('ml-2', 'transform', opened ? 'rotate-180' : '')}
       />

@@ -1,8 +1,8 @@
-import {useEffect, useState} from 'react';
-import {usePrev} from '../../lib/usePrev';
-import {useTokenFormatter} from '../../lib/useTokenFormatter';
+import { useEffect, useState } from 'react';
+import { usePrev } from '../../lib/usePrev';
+import { useTokenFormatter } from '../../lib/useTokenFormatter';
 
-export function StreamSpeedCalcField({onChange, deposit = 0, token}) {
+export function StreamSpeedCalcField({ onChange, deposit = 0, token }) {
   const formatter = useTokenFormatter(token);
 
   const [days, setDays] = useState(0.0);
@@ -13,16 +13,15 @@ export function StreamSpeedCalcField({onChange, deposit = 0, token}) {
   const SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
   const SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
 
-  const durationInSeconds =
-    days * SECONDS_IN_DAY +
-    minutes * SECONDS_IN_MINUTE +
-    hours * SECONDS_IN_HOUR;
+  const durationInSeconds = days * SECONDS_IN_DAY
+    + minutes * SECONDS_IN_MINUTE
+    + hours * SECONDS_IN_HOUR;
 
   let tokensPerTick = Math.round(
     deposit / formatter.secondsToTicks(durationInSeconds),
   );
 
-  if (isNaN(tokensPerTick)) {
+  if (Number.isNaN(tokensPerTick)) {
     tokensPerTick = 0;
   } else if (tokensPerTick === Infinity) {
     tokensPerTick = 0;

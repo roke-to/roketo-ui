@@ -1,17 +1,16 @@
-import {useState} from 'react';
+import React, { useState } from 'react';
 import useSWR from 'swr';
-import {STREAM_DIRECTION, STREAM_STATUS} from '../stream-control/lib';
-import {identifyStreamsDirection} from './lib';
-import React from 'react';
+import { STREAM_DIRECTION, STREAM_STATUS } from '../stream-control/lib';
+import { identifyStreamsDirection } from './lib';
 
-async function fetchStream({streamId}, {near}) {
-  let stream = await near.contractApi.getStream({streamId});
+async function fetchStream({ streamId }, { near }) {
+  const stream = await near.contractApi.getStream({ streamId });
 
   return stream;
 }
 
-async function fetchStreamHistory({streamId, from, to}, {near}) {
-  let streamHistory = await near.contractApi.getStreamHistory({
+async function fetchStreamHistory({ streamId, from, to }, { near }) {
+  const streamHistory = await near.contractApi.getStreamHistory({
     streamId,
     from,
     to,
@@ -20,9 +19,9 @@ async function fetchStreamHistory({streamId, from, to}, {near}) {
   return streamHistory;
 }
 
-async function fetchStreams(streams, {near}) {
+async function fetchStreams(streams, { near }) {
   const fetchedStreams = await Promise.all(
-    streams.map((streamId) => near.contractApi.getStream({streamId})),
+    streams.map((streamId) => near.contractApi.getStream({ streamId })),
   );
 
   const identified = identifyStreamsDirection(
@@ -36,7 +35,7 @@ async function fetchStreams(streams, {near}) {
   };
 }
 
-export function useAccount({near}) {
+export function useAccount({ near }) {
   const swr = useSWR(
     ['account', near.near.accountId],
     near.contractApi.getCurrentAccount,
@@ -48,7 +47,7 @@ export function useAccount({near}) {
   return swr;
 }
 
-export function useStreams({near, accountSWR}) {
+export function useStreams({ near, accountSWR }) {
   const account = accountSWR.data;
   const swr = useSWR(
     () => {
@@ -58,23 +57,22 @@ export function useStreams({near, accountSWR}) {
 
       return key;
     },
-    () =>
-      fetchStreams(
-        [
-          ...account.dynamic_inputs,
-          ...account.dynamic_outputs,
-          ...account.static_streams,
-        ],
-        {
-          near,
-        },
-      ),
+    () => fetchStreams(
+      [
+        ...account.dynamic_inputs,
+        ...account.dynamic_outputs,
+        ...account.static_streams,
+      ],
+      {
+        near,
+      },
+    ),
   );
 
   return swr;
 }
 
-export function useSingleStream({streamId}, {near, accountSWR}) {
+export function useSingleStream({ streamId }, { near, accountSWR }) {
   const account = accountSWR.data;
   const swr = useSWR(
     () => {
@@ -84,8 +82,8 @@ export function useSingleStream({streamId}, {near, accountSWR}) {
       return key;
     },
     async () => {
-      let stream = await fetchStream(
-        {streamId: streamId},
+      const stream = await fetchStream(
+        { streamId },
         {
           near,
         },
@@ -104,22 +102,22 @@ export function useSingleStream({streamId}, {near, accountSWR}) {
   const isCompleted = stream.balance === stream.available_to_withdraw;
 
   React.useEffect(() => {
-    const startPoller = () => {
-      return setInterval(swr.mutate, 1000);
-    };
+    const startPoller = () => setInterval(swr.mutate, 1000);
 
     if (stream.status === STREAM_STATUS.ACTIVE && !isCompleted) {
-      let id = startPoller();
+      const id = startPoller();
       return () => clearInterval(id);
     }
+
+    return undefined;
   }, [stream.status, isCompleted, swr]);
 
   return swr;
 }
 
 export function useSingleStreamHistory(
-  {pageSize = 3},
-  {near, accountSWR, streamSWR},
+  { pageSize = 3 },
+  { near, accountSWR, streamSWR },
 ) {
   const PAGE_SIZE = pageSize;
   const account = accountSWR.data;
@@ -147,9 +145,9 @@ export function useSingleStreamHistory(
       return key;
     },
     async () => {
-      let streamHistory = await fetchStreamHistory(
+      const streamHistory = await fetchStreamHistory(
         {
-          streamId: streamId,
+          streamId,
           from: page * PAGE_SIZE,
           to: (page + 1) * PAGE_SIZE,
         },
@@ -160,7 +158,7 @@ export function useSingleStreamHistory(
       return streamHistory;
     },
     {
-      onError: (error, key) => {
+      onError: (error) => {
         console.debug('useSingleStreamHistory error', error);
       },
     },
@@ -178,12 +176,12 @@ export function useSingleStreamHistory(
 
     async () => {
       const params = {
-        streamId: streamId,
+        streamId,
         from: (page + 1) * PAGE_SIZE,
         to: (page + 2) * PAGE_SIZE,
       };
 
-      let streamHistory = await fetchStreamHistory(params, {
+      const streamHistory = await fetchStreamHistory(params, {
         near,
       });
 
@@ -191,5 +189,7 @@ export function useSingleStreamHistory(
     },
   );
 
-  return {swr, canGoBack, nextPage, prevPage, maxPage, currentPage: page};
+  return {
+    swr, canGoBack, nextPage, prevPage, maxPage, currentPage: page,
+  };
 }

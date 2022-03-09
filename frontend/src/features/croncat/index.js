@@ -1,10 +1,13 @@
 import * as nearApi from 'near-api-js';
 import BigNumber from 'bignumber.js';
+
 const GAS_SIZE = '250000000000000';
 
 export const LOW_DEPOSIT = new Error('Deposit it too small.');
 
-export function cadenceString({minute, hour, monthDay, month, weekDay}) {
+export function cadenceString({
+  minute, hour, monthDay, month, weekDay,
+}) {
   const part = (value) => value || '*';
   return `${part(minute)} ${part(hour)} ${part(monthDay)} ${part(
     monthDay,
@@ -12,7 +15,9 @@ export function cadenceString({minute, hour, monthDay, month, weekDay}) {
 }
 
 export class Croncat {
-  constructor({near, wallet, operationalCommission, contractId}) {
+  constructor({
+    near, wallet, operationalCommission, contractId,
+  }) {
     if (!wallet || !operationalCommission || !contractId) return;
 
     this._accountId = wallet.getAccountId();
@@ -31,28 +36,25 @@ export class Croncat {
   }
 
   async getTask(hash) {
-    let res = await this._contract.get_task({task_hash: hash});
+    const res = await this._contract.get_task({ task_hash: hash });
 
     return res;
   }
 
   /**
-   * `contract_id` 	AccountId 	Account to direct all execution calls against
-   *
-   * `function_id` 	String 	Contract method this task will be executing
-   *
-   * `cadence` 	String 	Crontab Spec String. Defines the interval spacing of execution
-   *
-   * `recurring` 	Boolean 	Defines if this task can continue until balance runs out
-   *
-   * `deposit` 	u128 	Configuration of NEAR balance to send to each function call. This is the "amount" for a function call.
-   *
-   * `gas` 	u64 	Configuration of NEAR balance to attach to each function call. This is the "gas" for a function call.
-   *
-   * `arguments` 	Vec 	NOTE: Only allow static pre-defined bytes, most useful for cross-contract task creation
+   * `contract_id` AccountId Account to direct all execution calls against
+   * `function_id` String Contract method this task will be executing
+   * `cadence` String Crontab Spec String. Defines the interval spacing of execution
+   * `recurring` Boolean Defines if this task can continue until balance runs out
+   * `deposit` u128 Configuration of NEAR balance to send to each function call.
+   *    This is the "amount" for a function call.
+   * `gas` u64 Configuration of NEAR balance to attach to each function call.
+   *    This is the "gas" for a function call.
+   * `arguments` Vec NOTE: Only allow static pre-defined bytes,
+   *    most useful for cross-contract task creation
    * @param {*} param0
    */
-  async createTask({cadence, amount}) {
+  async createTask({ cadence, amount }) {
     if (amount < this._operationalCommission) {
       throw LOW_DEPOSIT;
     }
@@ -84,11 +86,11 @@ export class Croncat {
     );
   }
 
-  async updateTask({hash, cadence, amount}) {
+  async updateTask({ hash, cadence, amount }) {
     if (amount < this._operationalCommission) {
       throw LOW_DEPOSIT;
     }
-    
+
     await this._contract.update_task(
       {
         task_hash: hash,
@@ -106,8 +108,8 @@ export class Croncat {
   }
 
   async getAllTasks() {
-    let res1 = await this._contract.get_all_tasks();
-    let myTasks = res1.filter((t) => t.owner_id === this._accountId);
+    const res1 = await this._contract.get_all_tasks();
+    const myTasks = res1.filter((t) => t.owner_id === this._accountId);
 
     return myTasks;
   }

@@ -1,5 +1,4 @@
-import {isFundable} from '.';
-import {isDead} from './lib';
+import { isDead, isFundable } from './lib';
 
 export function streamViewData(stream, tokenFormatter) {
   const tf = tokenFormatter;
@@ -20,9 +19,8 @@ export function streamViewData(stream, tokenFormatter) {
   // progress bar calculations
   const full = Number(stream.balance) + Number(stream.tokens_total_withdrawn);
   const withdrawn = Number(stream.tokens_total_withdrawn);
-  const streamed =
-    Number(stream.tokens_total_withdrawn) +
-    Number(stream.available_to_withdraw);
+  const streamed = Number(stream.tokens_total_withdrawn)
+    + Number(stream.available_to_withdraw);
   const available = Number(stream.available_to_withdraw);
 
   const left = full - streamed;

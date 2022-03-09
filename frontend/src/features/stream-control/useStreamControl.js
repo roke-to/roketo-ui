@@ -1,5 +1,5 @@
 import React from 'react';
-import {useNear} from '../near-connect/useNear';
+import { useNear } from '../near-connect/useNear';
 
 const STREAM_CONTROL_ID_NOT_PROVIDED = new Error(
   'Provide stream id to use stream methods',
@@ -12,16 +12,16 @@ export function useStreamControl(streamId) {
   const near = useNear();
   const [loading, setLoading] = React.useState(false);
 
-  async function updateAllAndWithdraw({tokensWithoutStorage = 0}) {
+  async function updateAllAndWithdraw({ tokensWithoutStorage = 0 }) {
     console.debug('updating all account');
-    await near.contractApi.updateAccount({tokensWithoutStorage});
+    await near.contractApi.updateAccount({ tokensWithoutStorage });
     console.debug('update completed');
   }
 
   async function enable() {
     ensureMethodHasStreamId();
     console.debug('enable', streamId);
-    
+
     await near.contractApi.changeAutoDeposit({
       streamId,
       autoDeposit: true,
@@ -31,14 +31,14 @@ export function useStreamControl(streamId) {
   async function disable() {
     ensureMethodHasStreamId();
     console.debug('disabling', streamId);
-    
+
     await near.contractApi.changeAutoDeposit({
       streamId,
       autoDeposit: false,
     });
   }
 
-  async function deposit({token, deposit}) {
+  async function depositFunc({ token, deposit }) {
     ensureMethodHasStreamId();
     console.debug('depositing', token, streamId);
 
@@ -78,7 +78,7 @@ export function useStreamControl(streamId) {
   async function restart() {
     ensureMethodHasStreamId();
     console.debug('restarting', streamId);
-    const res = await near.contractApi.startStream({streamId: streamId});
+    const res = await near.contractApi.startStream({ streamId });
     console.debug('restarting res', res);
 
     return res;
@@ -87,7 +87,7 @@ export function useStreamControl(streamId) {
   async function stop() {
     ensureMethodHasStreamId();
     console.debug('Stop called stopping', streamId);
-    const res = await near.contractApi.stopStream({streamId: streamId});
+    const res = await near.contractApi.stopStream({ streamId });
     console.debug('stopping res', res);
     return res;
   }
@@ -99,7 +99,7 @@ export function useStreamControl(streamId) {
       setLoading(true);
 
       try {
-        return await fn(...args);
+        await fn(...args);
       } finally {
         setLoading(false);
       }
@@ -112,7 +112,7 @@ export function useStreamControl(streamId) {
     pause: wrapped(pause),
     restart: wrapped(restart),
     stop: wrapped(stop),
-    deposit: wrapped(deposit),
+    deposit: wrapped(depositFunc),
     enable: wrapped(enable),
     disable: wrapped(disable),
   };

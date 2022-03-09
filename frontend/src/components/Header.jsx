@@ -1,14 +1,14 @@
 import React from 'react';
-import {AccountIcon} from './icons/Account';
-import {StreamsIcon} from './icons/Streams';
-import {SendIcon} from './icons/Send';
-import {NavLink} from './kit/NavLink';
-import {NearAuthButton} from '../features/near-auth/NearAuthButton';
 import classNames from 'classnames';
-import {routes} from '../lib/routing';
+import { useRouteMatch } from 'react-router-dom';
+import { AccountIcon } from './icons/Account';
+import { StreamsIcon } from './icons/Streams';
+import { SendIcon } from './icons/Send';
+import { NavLink } from './kit/NavLink';
+import { NearAuthButton } from '../features/near-auth/NearAuthButton';
+import { routes } from '../lib/routing';
 import LogoText from '../images/logo_stream_with_text.svg';
-import {useBool} from '../lib/useBool';
-import {useRouteMatch} from 'react-router';
+import { useBool } from '../lib/useBool';
 
 function MinifiedHeader() {
   const logo = (
@@ -71,7 +71,7 @@ function FullHeader() {
   );
 
   return (
-    <div className={'py-4 px-6 w-full pt-8'}>
+    <div className="py-4 px-6 w-full pt-8">
       <div
         className={classNames('hidden lg:grid items-center grid-cols-3 gap-3 ')}
       >

@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Modal from 'react-modal';
 import App from './App';
 import './styles/index.scss';
-import Modal from 'react-modal';
 
 const rootEl = document.getElementById('root')!;
 

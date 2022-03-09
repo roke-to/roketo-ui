@@ -1,14 +1,14 @@
 import React from 'react';
-import {useStreamControl} from './useStreamControl';
-import {useNear} from '../near-connect/useNear';
-import {DropdownOpener} from '../../components/kit/DropdownOpener';
-import {DropdownMenu, DropdownMenuItem} from '../../components/kit/DropdownMenu';
-import {StreamAutodepositStatus} from './StreamAutodepositStatus';
-import {STREAM_STATUS} from './lib';
 import classNames from 'classnames';
-import {useBool} from '../../lib/useBool';
-import {PauseIcon} from '../../components/icons/Pause';
-import {StartIcon} from '../../components/icons/Start';
+import { useStreamControl } from './useStreamControl';
+import { useNear } from '../near-connect/useNear';
+import { DropdownOpener } from '../../components/kit/DropdownOpener';
+import { DropdownMenu, DropdownMenuItem } from '../../components/kit/DropdownMenu';
+import { StreamAutodepositStatus } from './StreamAutodepositStatus';
+import { STREAM_STATUS } from './lib';
+import { useBool } from '../../lib/useBool';
+import { PauseIcon } from '../../components/icons/Pause';
+import { StartIcon } from '../../components/icons/Start';
 
 export function StreamAutodepositControls({
   stream,
@@ -22,9 +22,8 @@ export function StreamAutodepositControls({
   const isIncoming = near.near.accountId === stream.receiver_id;
   const isExternalStream = !isOutgoing && !isIncoming;
 
-  const isDead =
-    stream.status === STREAM_STATUS.INTERRUPTED ||
-    stream.status === STREAM_STATUS.FINISHED;
+  const isDead = stream.status === STREAM_STATUS.INTERRUPTED
+    || stream.status === STREAM_STATUS.FINISHED;
   const controls = useStreamControl(stream.id);
   const menu = useBool(false);
   const opened = menu.on && !controls.loading;
@@ -61,6 +60,7 @@ export function StreamAutodepositControls({
         {stream.is_auto_deposit_enabled ? (
           <DropdownMenuItem>
             <button
+              type="button"
               className="inline-flex items-center font-semibold w-full"
               onClick={controls.disable}
             >
@@ -71,6 +71,7 @@ export function StreamAutodepositControls({
         ) : (
           <DropdownMenuItem>
             <button
+              type="button"
               className="inline-flex items-center font-semibold w-full"
               onClick={controls.enable}
             >

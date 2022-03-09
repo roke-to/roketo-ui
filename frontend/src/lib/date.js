@@ -8,11 +8,9 @@ export const formatDistanceLocale = {
 };
 
 export const shortEnLocale = {
-  formatDistance: (token, count) => {
-    return formatDistanceLocale[token].replace('{{count}}', count);
-  },
+  formatDistance: (token, count) => formatDistanceLocale[token].replace('{{count}}', count),
 };
 
 export function isValidDate(d) {
-  return d instanceof Date && !isNaN(d);
+  return d instanceof Date && !Number.isNaN(d);
 }

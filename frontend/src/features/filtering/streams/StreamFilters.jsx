@@ -1,17 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
-import {useStreamFilters} from './useStreamFilters';
-import {Filter, FilterOptionWithCounter} from '../../../components/kit/Filter';
-import {STREAM_STATUS} from '../../stream-control/lib';
+import { useStreamFilters } from './useStreamFilters';
+import { Filter, FilterOptionWithCounter } from '../../../components/kit/Filter';
+import { STREAM_STATUS } from '../../stream-control/lib';
 
 function compareBy(a, b, key) {
   if (Number(a[key]) > Number(b[key])) {
     return -1;
-  } else if (Number(a[key]) < Number(b[key])) {
+  } if (Number(a[key]) < Number(b[key])) {
     return 1;
-  } else {
-    return 0;
   }
+  return 0;
 }
 
 const sorts = {
@@ -43,7 +42,7 @@ function defaultStreamSort(a, b) {
   return statusPriority.indexOf(a.status) - statusPriority.indexOf(b.status);
 }
 
-export function StreamFilters({items, onFilterDone, className}) {
+export function StreamFilters({ items, onFilterDone, className }) {
   const filter = useStreamFilters(items);
   const [sorting, setSorting] = useState(sorts.mostRecent);
   const sortOptions = Object.values(sorts);
@@ -89,7 +88,7 @@ export function StreamFilters({items, onFilterDone, className}) {
           );
         }}
       />
-      <div className="flex-grow"></div>
+      <div className="flex-grow" />
       <Filter
         className="mt-3 md:mt-0"
         minimal
@@ -97,12 +96,8 @@ export function StreamFilters({items, onFilterDone, className}) {
         label="Show first:"
         active={sorting}
         onChange={setSorting}
-        renderOption={(option) => {
-          return <span>{option.label}</span>;
-        }}
-        renderActive={(option) => {
-          return <span>{option.label}</span>;
-        }}
+        renderOption={(option) => <span>{option.label}</span>}
+        renderActive={(option) => <span>{option.label}</span>}
       />
     </div>
   );

@@ -1,17 +1,21 @@
-import {useNear} from '../near-connect/useNear';
+import { useNear } from '../near-connect/useNear';
 
 export function useNearAuth() {
   const near = useNear();
 
   async function login(e) {
-    e && e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
+
     await near.login();
     return false;
   }
 
-  async function logout(e) {
+  async function logout() {
     await near.logout();
   }
+
   return {
     accountId: near.auth.signedAccountId,
     signedIn: near.auth.signedIn,

@@ -1,7 +1,10 @@
 import React from 'react';
-import {TokenIcon} from '../../icons/Tokens';
 import classNames from 'classnames';
-export function TokenImage({tokenName, size = 8, className, ...rest}) {
+import { TokenIcon } from '../../icons/Tokens';
+
+export function TokenImage({
+  tokenName, size = 8, className, ...rest
+}) {
   return (
     <div
       className={classNames(

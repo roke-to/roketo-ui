@@ -1,9 +1,9 @@
 import React from 'react';
-import {utils} from 'near-api-js';
+import { utils } from 'near-api-js';
 import numbro from 'numbro';
 import classNames from 'classnames';
-import {useNear} from '../features/near-connect/useNear';
-import {TokenImage} from './kit/TokenImage';
+import { useNear } from '../features/near-connect/useNear';
+import { TokenImage } from './kit/TokenImage';
 
 export function AccountStreamCard({
   token,
@@ -31,9 +31,7 @@ export function AccountStreamCard({
     // no default
   }
 
-  balance = utils.format.formatNearAmount(balance);
-
-  balance = balance * multiplier;
+  const balanceValue = utils.format.formatNearAmount(balance) * multiplier;
 
   return (
     <div
@@ -51,11 +49,17 @@ export function AccountStreamCard({
           </div>
           <div className="">
             <div className="font-bold">
-              {tokenMeta.metadata.name}, {token}
+              {tokenMeta.metadata.name}
+              ,
+              {token}
             </div>
             {streamsLength > 0 ? (
               <div className="text-gray text-sm">
-                from {streamsLength} steams
+                from
+                {' '}
+                {streamsLength}
+                {' '}
+                steams
               </div>
             ) : (
               ''
@@ -65,9 +69,9 @@ export function AccountStreamCard({
 
         <div className="ml-auto lg:mt-0 mt-4">
           <span className=" text-3xl">
-            {balance < 0.001 ? '<0.001' : numbro(balance).format({mantissa: 3})}
+            {balanceValue < 0.001 ? '<0.001' : numbro(balanceValue).format({ mantissa: 3 })}
           </span>
-          {showPeriod ? <span>{period !== '' ? '/' + period : ''}</span> : ''}
+          {showPeriod ? <span>{period !== '' ? `/${period}` : ''}</span> : ''}
         </div>
       </div>
     </div>

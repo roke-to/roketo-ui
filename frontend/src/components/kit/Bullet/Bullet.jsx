@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-export function Bullet({className, ...rest}) {
+export function Bullet({ className, ...rest }) {
   return (
     <div
       className={classNames(
@@ -9,6 +9,6 @@ export function Bullet({className, ...rest}) {
         className,
       )}
       {...rest}
-    ></div>
+    />
   );
 }

@@ -15,8 +15,8 @@ const GRADIENTS = [
   `linear-gradient(270deg, ${GRADIENT_STOP[1][0]} 0%, ${GRADIENT_STOP[1][1]} 100%)`,
 ];
 
-export function ProgressBar({progresses, className, ...rest}) {
-  let p = [...progresses];
+export function ProgressBar({ progresses, className, ...rest }) {
+  const p = [...progresses];
   p.sort((a, b) => b - a);
 
   return (
@@ -29,23 +29,25 @@ export function ProgressBar({progresses, className, ...rest}) {
     >
       {p.map((progress, i) => (
         <div
-          key={i}
+          key={i} // eslint-disable-line react/no-array-index-key
           className="absolute left-0 h-full rounded-lg"
           style={{
-            width: progress * 100 + '%',
+            width: `${progress * 100}%`,
             background: GRADIENTS[i],
           }}
-        ></div>
+        />
       ))}
     </div>
   );
 }
 
-function GradientSVG({endColor, startColor, progressValue, idCSS, rotation}) {
-  let gradientTransform = `rotate(${rotation})`;
+function GradientSVG({
+  endColor, startColor, progressValue, idCSS, rotation,
+}) {
+  const gradientTransform = `rotate(${rotation})`;
 
   return (
-    <svg style={{height: 0}}>
+    <svg style={{ height: 0 }}>
       <defs>
         <linearGradient id={idCSS} gradientTransform={gradientTransform}>
           <stop offset="0%" stopColor={startColor} />
@@ -59,7 +61,7 @@ function GradientSVG({endColor, startColor, progressValue, idCSS, rotation}) {
   );
 }
 
-export function ArcProgressBar({progresses, className, ...rest}) {
+export function ArcProgressBar({ progresses, className, ...rest }) {
   progresses.sort((a, b) => b - a);
   const rotation = 3 / 4;
 

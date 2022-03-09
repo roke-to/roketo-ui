@@ -1,27 +1,12 @@
 import * as nearAPI from 'near-api-js';
 
+import { TokenMeta } from './TokenMeta';
+
 function FTContract(account, address) {
   return new nearAPI.Contract(account, address, {
     viewMethods: ['ft_balance_of', 'ft_metadata', 'storage_balance_of'],
     changeMethods: ['ft_transfer', 'ft_transfer_call'],
   });
-}
-export class TokenMeta {
-  ticker = '';
-  metadata = {
-    spec: 'ft-1.0.0',
-    name: '',
-    symbol: '',
-    icon: '',
-    reference: null,
-    reference_hash: null,
-    decimals: 18,
-  };
-
-  constructor({ticker, metadata}) {
-    this.ticker = ticker;
-    this.metadata = metadata;
-  }
 }
 
 const NEAR_META = new TokenMeta({
@@ -38,7 +23,7 @@ const NEAR_META = new TokenMeta({
 });
 
 export class Tokens {
-  constructor({tokens, account}) {
+  constructor({ tokens, account }) {
     this.__tokens = tokens;
     this.__account = account;
     this.__contracts = {};
@@ -58,11 +43,11 @@ export class Tokens {
   contract(ticker) {
     return this.__contracts[ticker];
   }
+
   get(ticker) {
-    const token =
-      this.tokens[ticker] ||
-      new TokenMeta({
-        ticker: ticker,
+    const token = this.tokens[ticker]
+      || new TokenMeta({
+        ticker,
         metadata: {
           spec: null,
           name: ticker,
@@ -100,7 +85,7 @@ export class Tokens {
           // construct Near FT contract for address
 
           const contract = this.contract(token.ticker);
-          let metadata = await contract.ft_metadata();
+          const metadata = await contract.ft_metadata();
 
           if (metadata.decimals < 8) {
             // we cant support anything with decimals less than 8
@@ -109,7 +94,7 @@ export class Tokens {
 
           meta = new TokenMeta({
             ticker: token.ticker,
-            metadata: metadata,
+            metadata,
           });
         }
 
@@ -120,11 +105,11 @@ export class Tokens {
 
   async balance(ticker) {
     if (ticker === 'NEAR') {
-      let balance = await this.__account.getAccountBalance();
+      const balance = await this.__account.getAccountBalance();
       return balance.total;
     }
     const contract = this.contract(ticker);
-    let res = await contract.ft_balance_of({
+    const res = await contract.ft_balance_of({
       account_id: this.__account.accountId,
     });
 
@@ -135,7 +120,7 @@ export class Tokens {
   // DO NOT PROVIDE NEAR HERE
   async ftStorageBalance(ticker) {
     const contract = this.contract(ticker);
-    let res = await contract.storage_balance_of({
+    const res = await contract.storage_balance_of({
       account_id: this.__account.accountId,
     });
 

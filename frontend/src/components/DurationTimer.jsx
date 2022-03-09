@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import {intervalToDuration, formatDuration} from 'date-fns';
-import {shortEnLocale, isValidDate} from '../lib/date';
+import React, { useEffect, useState } from 'react';
+import { intervalToDuration, formatDuration } from 'date-fns';
+import { shortEnLocale, isValidDate } from '../lib/date';
 
-export function useDurationTimer({untilTimestamp}) {
+export function useDurationTimer({ untilTimestamp }) {
   const untilDate = new Date(untilTimestamp);
   const dateValid = isValidDate(untilDate);
 
@@ -10,16 +10,16 @@ export function useDurationTimer({untilTimestamp}) {
     dateValid ? new Date().getTime() > untilDate.getTime() : true,
   );
   const [duration, setDuration] = useState(
-    expired ? null : intervalToDuration({start: new Date(), end: untilDate}),
+    expired ? null : intervalToDuration({ start: new Date(), end: untilDate }),
   );
 
   useEffect(() => {
-    const untilDate = new Date(untilTimestamp);
+    const untilDateValue = new Date(untilTimestamp);
 
-    if (!isValidDate(untilDate)) return;
+    if (!isValidDate(untilDateValue)) return;
 
-    let id = setInterval(() => {
-      const isExpired = new Date().getTime() > untilDate.getTime();
+    const id = setInterval(() => {
+      const isExpired = new Date().getTime() > untilDateValue.getTime();
       setExpired(isExpired);
       setDuration(null);
 
@@ -27,8 +27,8 @@ export function useDurationTimer({untilTimestamp}) {
         return;
       }
 
-      const duration = intervalToDuration({start: new Date(), end: untilDate});
-      setDuration(duration);
+      const newDurationValue = intervalToDuration({ start: new Date(), end: untilDateValue });
+      setDuration(newDurationValue);
     }, 1000);
 
     return () => clearInterval(id);
@@ -41,8 +41,8 @@ export function useDurationTimer({untilTimestamp}) {
   };
 }
 
-export function DurationTimer({untilTimestamp, suffix, finishedText}) {
-  const {duration, dateValid, expired} = useDurationTimer({
+export function DurationTimer({ untilTimestamp, suffix, finishedText }) {
+  const { duration, dateValid, expired } = useDurationTimer({
     untilTimestamp,
   });
 
@@ -58,10 +58,9 @@ export function DurationTimer({untilTimestamp, suffix, finishedText}) {
     duration.seconds = 0;
   }
 
-  const formatted =
-    formatDuration(duration, {
-      locale: shortEnLocale,
-    }) + (suffix || '');
+  const formatted = formatDuration(duration, {
+    locale: shortEnLocale,
+  }) + (suffix || '');
 
   return <span>{formatted}</span>;
 }

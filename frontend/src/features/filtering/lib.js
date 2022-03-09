@@ -1,7 +1,7 @@
-import {useState, useEffect, useMemo} from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
-export function useFilter({options}) {
-  let keys = useMemo(() => Object.keys(options), [options])
+export function useFilter({ options }) {
+  const keys = useMemo(() => Object.keys(options), [options]);
 
   const [option, selectOption] = useState(keys[0]);
 
@@ -15,7 +15,7 @@ export function useFilter({options}) {
         options,
         optionsArray: keys,
         currentFilterFunction,
-      }
+      };
     },
     [options, option, keys],
   );
@@ -23,19 +23,19 @@ export function useFilter({options}) {
   return filter;
 }
 
-export function useFilters({items, filters}) {
+export function useFilters({ items, filters }) {
   const [filteredItems, setFilteredItems] = useState([]);
   const [filterCounts, setFilterCounts] = useState([]);
 
   useEffect(() => {
-    let filteredItems = items;
-    let filterCounts = [];
+    let filteredItemsValue = items;
+    const filterCountsValue = [];
 
     filters.forEach((filter) => {
       const filterRunResult = {};
       // run filter for every possible function
       Object.keys(filter.options).forEach((option) => {
-        const filtered = filteredItems.filter(filter.options[option]);
+        const filtered = filteredItemsValue.filter(filter.options[option]);
 
         filterRunResult[option] = filtered;
       });
@@ -43,17 +43,16 @@ export function useFilters({items, filters}) {
       // calc counts for every option in filter
       const currentFilterCount = {};
       Object.keys(filterRunResult).forEach(
-        (option) =>
-          (currentFilterCount[option] = filterRunResult[option].length),
+        (option) => { currentFilterCount[option] = filterRunResult[option].length; },
       );
 
-      filterCounts.push(currentFilterCount);
+      filterCountsValue.push(currentFilterCount);
       // set items to selected filter
-      filteredItems = filterRunResult[filter.option];
+      filteredItemsValue = filterRunResult[filter.option];
     });
 
-    setFilterCounts(filterCounts);
-    setFilteredItems(filteredItems);
+    setFilterCounts(filterCountsValue);
+    setFilteredItems(filteredItemsValue);
   }, [items, filters]);
 
   return {

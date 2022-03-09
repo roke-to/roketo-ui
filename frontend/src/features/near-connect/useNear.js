@@ -1,10 +1,10 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import * as nearAPI from 'near-api-js';
-import {NEAR_CONFIG as NearConfig} from './config';
-import {RoketoApi} from './RoketoApi';
-import {NearContractApi} from './near-contract-api';
-import {Croncat} from '../croncat';
-import {Tokens} from '../ft-tokens/TokenMeta';
+import { NEAR_CONFIG as NearConfig } from './config';
+import { RoketoApi } from './RoketoApi';
+import { NearContractApi } from './near-contract-api';
+import { Croncat } from '../croncat';
+import { Tokens } from '../ft-tokens';
 
 const NEAR_OBJECT_TYPE = {
   keyStore: null,
@@ -34,21 +34,21 @@ export const NearContext = React.createContext({
 async function createNearInstance() {
   const keyStore = new nearAPI.keyStores.BrowserLocalStorageKeyStore();
   const near = await nearAPI.connect(
-    Object.assign({deps: {keyStore}}, NearConfig),
+    { deps: { keyStore }, ...NearConfig },
   );
-  const _near = NEAR_OBJECT_TYPE;
+  const Near = NEAR_OBJECT_TYPE;
 
-  _near.keyStore = keyStore;
-  _near.near = near;
+  Near.keyStore = keyStore;
+  Near.near = near;
 
-  _near.walletConnection = new nearAPI.WalletConnection(
+  Near.walletConnection = new nearAPI.WalletConnection(
     near,
     NearConfig.contractName,
   );
-  _near.accountId = _near.walletConnection.getAccountId();
-  _near.account = _near.walletConnection.account();
+  Near.accountId = Near.walletConnection.getAccountId();
+  Near.account = Near.walletConnection.account();
 
-  return _near;
+  return Near;
 }
 
 export function useCreateNear() {
@@ -92,28 +92,28 @@ export function useCreateNear() {
 
   useEffect(() => {
     const init = async () => {
-      const _near = await createNearInstance();
+      const Near = await createNearInstance();
 
       console.debug('Create Near');
       const roketo = new RoketoApi({
-        account: _near.account,
-        walletConnection: _near.walletConnection,
+        account: Near.account,
+        walletConnection: Near.walletConnection,
       });
 
       console.debug('Create Roketo');
       await roketo.init();
 
       const croncat = new Croncat({
-        wallet: _near.walletConnection,
+        wallet: Near.walletConnection,
         operationalCommission: roketo.status.operational_commission,
         contractId: roketo._contract.contractId,
-        near: _near.near,
+        near: Near.near,
       });
       console.debug('Create Croncat');
 
       const tokens = new Tokens({
         tokens: roketo.status.tokens,
-        account: _near.walletConnection.account(),
+        account: Near.walletConnection.account(),
       });
 
       await tokens.init();
@@ -122,7 +122,7 @@ export function useCreateNear() {
       croncatRef.current = croncat;
       tokensRef.current = tokens;
 
-      setNear(_near);
+      setNear(Near);
       setInited(true);
     };
 

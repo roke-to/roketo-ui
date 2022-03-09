@@ -8,22 +8,22 @@ import {
   Redirect,
 } from 'react-router-dom';
 import SendPage from './pages/Send';
-import {Header} from './components/Header';
-import {NearContext, useCreateNear} from './features/near-connect/useNear';
-import {MyStreamsPage} from './pages/MyStreams';
-import {AccountPage} from './pages/Account';
-import {AuthorizePage} from './pages/Authorize';
-import {StreamPage} from './pages/StreamPage';
+import { Header } from './components/Header';
+import { NearContext, useCreateNear } from './features/near-connect/useNear';
+import { MyStreamsPage } from './pages/MyStreams';
+import { AccountPage } from './pages/Account';
+import { AuthorizePage } from './pages/Authorize';
+import { StreamPage } from './pages/StreamPage';
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
-function PrivateRoute({children, allowed, redirect, ...rest}) {
+function PrivateRoute({
+  children, allowed, redirect, ...rest
+}) {
   return (
     <Route
       {...rest}
-      render={({location}) => {
-        return allowed ? children : redirect;
-      }}
+      render={() => (allowed ? children : redirect)}
     />
   );
 }
@@ -31,7 +31,7 @@ function PrivateRoute({children, allowed, redirect, ...rest}) {
 function AppFn() {
   const near = useCreateNear();
 
-  const inited = near.inited;
+  const { inited } = near;
 
   return (
     <NearContext.Provider value={near}>

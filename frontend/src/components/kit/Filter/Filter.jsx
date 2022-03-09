@@ -1,13 +1,15 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
-import {RadioButton} from '../RadioButton';
-import {DropdownOpener} from '../DropdownOpener';
-import {DropdownMenu, DropdownMenuItem} from '../DropdownMenu';
+import { RadioButton } from '../RadioButton';
+import { DropdownOpener } from '../DropdownOpener';
+import { DropdownMenu, DropdownMenuItem } from '../DropdownMenu';
 
-export function FilterOptionWithCounter({count, option}) {
+export function FilterOptionWithCounter({ count, option }) {
   return (
     <span>
-      {option} <span className="text-gray font-normal">{count}</span>
+      {option}
+      {' '}
+      <span className="text-gray font-normal">{count}</span>
     </span>
   );
 }
@@ -38,8 +40,8 @@ export function Filter({
           setOpened(false);
         }}
       >
-        {options.map((option, i) => (
-          <DropdownMenuItem key={i}>
+        {options.map((option) => (
+          <DropdownMenuItem key={option.label || option}>
             <RadioButton
               label={
                 renderOption ? renderOption(option, active === option) : option

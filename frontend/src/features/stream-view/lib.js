@@ -1,28 +1,27 @@
-import {STREAM_STATUS} from '../stream-control/lib';
+import { STREAM_STATUS } from '../stream-control/lib';
 
-export function streamDirection({stream, account}) {
+export function streamDirection({ stream, account }) {
   if (!account) return '';
 
   if (stream.owner_id === account.account_id) {
     return 'out';
-  } else if (stream.receiver_id === account.account_id) {
+  } if (stream.receiver_id === account.account_id) {
     return 'in';
-  } else {
-    return '';
   }
+  return '';
 }
 
 export function isIdling(stream) {
   return (
-    stream.status === STREAM_STATUS.INITIALIZED ||
-    stream.status === STREAM_STATUS.PAUSED
+    stream.status === STREAM_STATUS.INITIALIZED
+    || stream.status === STREAM_STATUS.PAUSED
   );
 }
 
 export function isDead(stream) {
   return (
-    stream.status === STREAM_STATUS.FINISHED ||
-    stream.status === STREAM_STATUS.INTERRUPTED
+    stream.status === STREAM_STATUS.FINISHED
+    || stream.status === STREAM_STATUS.INTERRUPTED
   );
 }
 

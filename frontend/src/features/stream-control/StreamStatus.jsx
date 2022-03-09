@@ -1,7 +1,7 @@
-import {STREAM_STATUS} from './lib';
 import classNames from 'classnames';
+import { STREAM_STATUS } from './lib';
 
-export function StreamStatus({stream, className, ...rest}) {
+export function StreamStatus({ stream, className, ...rest }) {
   const bindings = {
     [STREAM_STATUS.INITIALIZED]: {
       colorClass: 'text-special-active',

@@ -1,19 +1,19 @@
-import React, {useState} from 'react';
-import {useStreamControl} from './useStreamControl';
-import {useNear} from '../near-connect/useNear';
-import {DropdownOpener} from '../../components/kit/DropdownOpener';
-import {DropdownMenu, DropdownMenuDivider, DropdownMenuItem} from '../../components/kit/DropdownMenu';
-import {Button} from '../../components/kit/Button';
-import {StreamStatus} from './StreamStatus';
-import {STREAM_STATUS} from './lib';
-import {useBool} from '../../lib/useBool';
-import {PauseIcon} from '../../components/icons/Pause';
-import {StartIcon} from '../../components/icons/Start';
-import {StopIcon} from '../../components/icons/Stop';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import Modal from 'react-modal';
+import { useStreamControl } from './useStreamControl';
+import { useNear } from '../near-connect/useNear';
+import { DropdownOpener } from '../../components/kit/DropdownOpener';
+import { DropdownMenu, DropdownMenuDivider, DropdownMenuItem } from '../../components/kit/DropdownMenu';
+import { Button } from '../../components/kit/Button';
+import { StreamStatus } from './StreamStatus';
+import { STREAM_STATUS } from './lib';
+import { useBool } from '../../lib/useBool';
+import { PauseIcon } from '../../components/icons/Pause';
+import { StartIcon } from '../../components/icons/Start';
+import { StopIcon } from '../../components/icons/Stop';
 
-function PauseConfirmModal({modalControl, onConfirm}) {
+function PauseConfirmModal({ modalControl, onConfirm }) {
   return (
     <Modal
       isOpen={modalControl.on}
@@ -40,7 +40,7 @@ function PauseConfirmModal({modalControl, onConfirm}) {
     </Modal>
   );
 }
-export function StreamControls({stream, minimal, className}) {
+export function StreamControls({ stream, minimal, className }) {
   const near = useNear();
   const modalControl = useBool(false);
 
@@ -48,9 +48,8 @@ export function StreamControls({stream, minimal, className}) {
   const isIncoming = near.near.accountId === stream.receiver_id;
   const isExternalStream = !isOutgoing && !isIncoming;
 
-  const isDead =
-    stream.status === STREAM_STATUS.INTERRUPTED ||
-    stream.status === STREAM_STATUS.FINISHED;
+  const isDead = stream.status === STREAM_STATUS.INTERRUPTED
+    || stream.status === STREAM_STATUS.FINISHED;
   const [menuOpened, setMenuOpened] = useState(false);
 
   const controls = useStreamControl(stream.id);
@@ -99,11 +98,13 @@ export function StreamControls({stream, minimal, className}) {
           <>
             <DropdownMenuItem>
               <button
+                type="button"
                 className="inline-flex items-center font-semibold"
                 onClick={controls.restart}
               >
                 <StartIcon className="mr-4 flex-shrink-0" />
-                <span>Start stream </span>{' '}
+                <span>Start stream </span>
+                {' '}
               </button>
             </DropdownMenuItem>
             <DropdownMenuDivider />
@@ -113,6 +114,7 @@ export function StreamControls({stream, minimal, className}) {
           <>
             <DropdownMenuItem>
               <button
+                type="button"
                 className="inline-flex items-center font-semibold"
                 onClick={onClickPause}
               >
@@ -126,6 +128,7 @@ export function StreamControls({stream, minimal, className}) {
 
         <DropdownMenuItem>
           <button
+            type="button"
             className="inline-flex items-center font-semibold"
             onClick={controls.stop}
           >
