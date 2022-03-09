@@ -1,9 +1,16 @@
 import React from 'react';
 import classNames from 'classnames';
 
-export function RadioButton({
+type RadioButtonProps<T> = {
+  active: boolean;
+  label: React.ReactNode;
+  value: T;
+  onChange: (value: T) => void;
+};
+
+export function RadioButton<T>({
   active, label, value, onChange,
-}) {
+}: RadioButtonProps<T>) {
   return (
     <label className="inline-flex items-center whitespace-nowrap">
       <input

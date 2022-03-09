@@ -1,7 +1,11 @@
 import React from 'react';
 import classNames from 'classnames';
 
-export function Bullet({ className, ...rest }) {
+type BulletProps = {
+  className: never;
+};
+
+export function Bullet({ className, ...rest }: BulletProps) {
   return (
     <div
       className={classNames(

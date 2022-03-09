@@ -2,9 +2,15 @@ import React from 'react';
 import classNames from 'classnames';
 import { TokenIcon } from '../../icons/Tokens';
 
+type TokenImageProps = {
+  tokenName: never;
+  size?: number;
+  className?: string;
+};
+
 export function TokenImage({
   tokenName, size = 8, className, ...rest
-}) {
+}: TokenImageProps) {
   return (
     <div
       className={classNames(

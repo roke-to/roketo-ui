@@ -2,6 +2,15 @@ import React from 'react';
 import classNames from 'classnames';
 import { DropdownArrowDown } from '../../icons/DropdownArrowDown';
 
+type DropdownOpenerProps = {
+  opened?: never;
+  className?: never;
+  children: React.ReactNode;
+  onChange: (state: boolean) => void;
+  rounded: boolean;
+  minimal: boolean;
+};
+
 /**
  * @param {minimal} Boolean remove outline and padding if true
  * @param {rounded} Boolean set to true to change shape to pill
@@ -15,7 +24,7 @@ export function DropdownOpener({
   rounded,
   minimal,
   ...rest
-}) {
+}: DropdownOpenerProps) {
   const minimalClasses = minimal
     ? ''
     : 'px-4 py-3 border border-border w-36 hover:bg-hover hover:border-hover';

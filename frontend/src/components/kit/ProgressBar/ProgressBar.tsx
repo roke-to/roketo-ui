@@ -15,7 +15,12 @@ const GRADIENTS = [
   `linear-gradient(270deg, ${GRADIENT_STOP[1][0]} 0%, ${GRADIENT_STOP[1][1]} 100%)`,
 ];
 
-export function ProgressBar({ progresses, className, ...rest }) {
+type ProgressBarProps = {
+  progresses: never;
+  className: never;
+};
+
+export function ProgressBar({ progresses, className, ...rest }: ProgressBarProps) {
   const p = [...progresses];
   p.sort((a, b) => b - a);
 
@@ -41,9 +46,17 @@ export function ProgressBar({ progresses, className, ...rest }) {
   );
 }
 
+type GradientSVGProps = {
+  endColor: string;
+  startColor: string;
+  progressValue?: number;
+  idCSS: string;
+  rotation: number;
+};
+
 function GradientSVG({
-  endColor, startColor, progressValue, idCSS, rotation,
-}) {
+  endColor, startColor, progressValue = 0, idCSS, rotation,
+}: GradientSVGProps) {
   const gradientTransform = `rotate(${rotation})`;
 
   return (
@@ -61,7 +74,12 @@ function GradientSVG({
   );
 }
 
-export function ArcProgressBar({ progresses, className, ...rest }) {
+type ArcProgressBarProps = {
+  progresses: never[];
+  className: never;
+};
+
+export function ArcProgressBar({ progresses, className, ...rest }: ArcProgressBarProps) {
   progresses.sort((a, b) => b - a);
   const rotation = 3 / 4;
 

@@ -12,19 +12,42 @@ const variants = {
 // const sizes = ['normal', 'big'];
 // const colors = ['dark', 'light'];
 
+type CommonButtonProps = {
+  icon: never;
+  children: never;
+  className: never;
+  size: never;
+  loading: never;
+  disabled: never;
+  loadingText: never;
+  color?: string;
+  variant?: string;
+  type: 'button';
+};
+
+type SpecificLinkProps = {
+  link: true;
+  to: string;
+};
+
+type SpecificButtonProps = {
+  link?: false;
+};
+
+type ButtonProps = CommonButtonProps & (SpecificLinkProps | SpecificButtonProps);
+
 export function Button({
   icon,
   children,
   className,
-  link,
   size,
   loading,
   disabled,
   loadingText,
   color = 'light',
   variant = 'outlined',
-  ...rest
-}) {
+  ...restProps
+}: ButtonProps) {
   let variantStyles = '';
   let sizeStyles = '';
   let colorStyles = '';
@@ -46,30 +69,32 @@ export function Button({
   } else if (variant === variants.filled) {
     variantStyles = 'bg-dark hover:bg-hover font-semibold rounded-lg active:bg-transparent';
   }
-  const ButtonComponent = link ? Link : 'button';
 
-  return (
-    <ButtonComponent
-      disabled={loading || disabled}
-      className={classNames(
-        'inline-flex items-center justify-center p-3  whitespace-nowrap',
-        variantStyles,
-        sizeStyles,
-        colorStyles,
-        disabled ? 'Button--disabled' : '',
-        'transition-all',
-        className,
-      )}
-      {...rest}
-    >
-      {loading ? (
-        loadingText
-      ) : (
-        <>
-          {icon ? <div className="mr-2">{icon}</div> : null}
-          {children}
-        </>
-      )}
-    </ButtonComponent>
+  const commonProps = {
+    disabled: loading || disabled,
+    className: classNames(
+      'inline-flex items-center justify-center p-3  whitespace-nowrap',
+      variantStyles,
+      sizeStyles,
+      colorStyles,
+      disabled ? 'Button--disabled' : '',
+      'transition-all',
+      className
+    ),
+  };
+
+  const content = loading ? (
+    loadingText
+  ) : (
+    <>
+      {icon ? <div className="mr-2">{icon}</div> : null}
+      {children}
+    </>
+  );
+
+  return restProps.link ? (
+    <Link {...commonProps} {...restProps}>{content}</Link>
+  ) : (
+    <button {...commonProps} {...restProps} type="button">{content}</button>
   );
 }

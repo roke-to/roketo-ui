@@ -1,9 +1,16 @@
 import classNames from 'classnames';
 import React from 'react';
 
+type CategoryTabsProps = {
+  label: never;
+  options: never[];
+  onChange: (index: number) => void;
+  active: never;
+};
+
 export function CategoryTabs({
   label, options, onChange, active,
-}) {
+}: CategoryTabsProps) {
   return (
     <div className="flex text-lg">
       <div className="text-gray">{label}</div>

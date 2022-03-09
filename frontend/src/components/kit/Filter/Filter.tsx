@@ -4,7 +4,12 @@ import { RadioButton } from '../RadioButton';
 import { DropdownOpener } from '../DropdownOpener';
 import { DropdownMenu, DropdownMenuItem } from '../DropdownMenu';
 
-export function FilterOptionWithCounter({ count, option }) {
+type FilterOptionWithCounterProps = {
+  count: never;
+  option: never;
+};
+
+export function FilterOptionWithCounter({ count, option }: FilterOptionWithCounterProps) {
   return (
     <span>
       {option}
@@ -13,6 +18,22 @@ export function FilterOptionWithCounter({ count, option }) {
     </span>
   );
 }
+
+export type FilterOption = {
+  label: string;
+  fn: (a: any, b: any) => number;
+};
+
+type FilterProps = {
+  label: never;
+  options: string[] | FilterOption[];
+  renderOption: (option: string | FilterOption, active: boolean) => React.ReactNode;
+  renderActive: (option: string | FilterOption) => React.ReactNode;
+  active: never;
+  minimal: never;
+  onChange: never;
+  className: never;
+};
 
 export function Filter({
   label,
@@ -23,7 +44,7 @@ export function Filter({
   minimal,
   onChange,
   className,
-}) {
+}: FilterProps) {
   const [opened, setOpened] = useState(false);
 
   return (
@@ -41,7 +62,7 @@ export function Filter({
         }}
       >
         {options.map((option) => (
-          <DropdownMenuItem key={option.label || option}>
+          <DropdownMenuItem key={typeof option === 'string' ? option : option.label}>
             <RadioButton
               label={
                 renderOption ? renderOption(option, active === option) : option

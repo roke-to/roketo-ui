@@ -1,11 +1,22 @@
-import './tooltip.scss';
+import './Tooltip.scss';
 
 import RCTooltip from 'rc-tooltip';
 import React from 'react';
 
+type TooltipProps = {
+  placement?: string;
+  children: never;
+  html: never;
+  overlay: never;
+};
+
 export function Tooltip({
-  placement = 'top', children, html, overlay, ...rest
-}) {
+  placement = 'top',
+  children,
+  html,
+  overlay,
+  ...rest
+}: TooltipProps) {
   return (
     <RCTooltip
       // @ts-ignore
