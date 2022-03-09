@@ -1,6 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router';
-import { Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import copy from 'clipboard-copy';
 import classNames from 'classnames';
 import { useNear } from '../features/near-connect/useNear';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { generatePath } from 'react-router';
+import { generatePath } from 'react-router-dom';
 import { useNear } from '../features/near-connect/useNear';
 import { TokenFormatter } from '../lib/formatting';
 import { CreateStreamForm } from '../features/create-stream/CreateStreamForm';
