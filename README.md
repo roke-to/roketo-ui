@@ -8,11 +8,8 @@ For a freelancer, artist, community member, new project, or any other earner —
 
 Developed by [Kikimora Labs](https://kikimora.ch/).
 
-
 # Links
 
 - [Official Website](https://www.roke.to/)
 - [Roke.to dApp](https://app.roke.to/)
 - [Docs](https://docs.roke.to/)
-- [Cover letter for Jury](https://docs.google.com/document/d/1Ct9lsAe2l7s6GB-eCTNo5woS6xy9iLsd7KagfmgxVgA/edit)
-# roketo

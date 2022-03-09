@@ -3,13 +3,13 @@
 ## Run dev server
 Dev server use .env.development
 ```$
-# npm start
+# yarn start
 ```
 ## Build for production
 
 ```$
 # cp .env.<mainnet/testnet> .env.production.local
-# npm run build
+# yarn run build
 ```
 
 ## .env

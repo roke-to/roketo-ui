@@ -1,0 +1,29 @@
+{
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "extends": [
+    "airbnb",
+    "airbnb/hooks",
+    "airbnb-typescript",
+    "prettier"
+  ],
+  "plugins": [
+    "prettier"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "import/prefer-default-export": "off",
+    "react/prop-types": "warn",
+    "react/jsx-props-no-spreading": "warn",
+    "no-nested-ternary": "warn",
+    "no-underscore-dangle": "warn",
+    "react/require-default-props": "warn",
+    "consistent-return": "warn",
+    "jsx-a11y/label-has-associated-control": "warn"
+  }
+}

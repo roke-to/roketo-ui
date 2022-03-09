@@ -1,0 +1,21 @@
+name: CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Node.js ⚙️
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16.x'
+        cache: 'yarn'
+
+    - name: Install 🔧
+      working-directory: frontend
+      run: yarn
+
+    - name: Run ESLint
+      working-directory: frontend
+      run: eslint . --ext .js,.jsx,.ts,.tsx
