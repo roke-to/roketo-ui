@@ -329,7 +329,7 @@ export function CreateStreamForm({ onSubmit }) {
               </div>
 
               <Button
-                type="button"
+                type="submit"
                 disabled={isSubmitting}
                 variant="main"
                 size="big"
