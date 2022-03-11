@@ -1,6 +1,10 @@
 import React from 'react';
 
-export function StopIcon(props) {
+type StopIconProps = {
+  className?: string;
+};
+
+export function StopIcon(props: StopIconProps) {
   return (
     <svg
       width="11"

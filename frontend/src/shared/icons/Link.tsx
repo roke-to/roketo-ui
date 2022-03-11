@@ -1,6 +1,10 @@
 import React from 'react';
 
-export function LinkIcon(props) {
+type LinkIconProps = {
+  className?: string;
+};
+
+export function LinkIcon(props: LinkIconProps) {
   return (
     <svg
       width="20"

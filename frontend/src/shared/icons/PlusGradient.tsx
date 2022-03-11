@@ -1,6 +1,10 @@
 import React from 'react';
 
-export function PlusGradientIcon(props) {
+type PlusGradientIconProps = {
+  className?: string;
+};
+
+export function PlusGradientIcon(props: PlusGradientIconProps) {
   return (
     <svg
       width="30"

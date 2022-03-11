@@ -1,6 +1,10 @@
 import React from 'react';
 
-export function DropdownArrowDown(props) {
+type DropdownArrowDownProps = {
+  className?: string;
+};
+
+export function DropdownArrowDown(props: DropdownArrowDownProps) {
   return (
     <svg
       width="12"

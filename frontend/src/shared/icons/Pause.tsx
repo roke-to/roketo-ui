@@ -1,6 +1,10 @@
 import React from 'react';
 
-export function PauseIcon(props) {
+type PauseIconProps = {
+  className?: string;
+};
+
+export function PauseIcon(props: PauseIconProps) {
   return (
     <svg
       width="11"

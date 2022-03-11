@@ -1,6 +1,10 @@
 import React from 'react';
 
-export function StartIcon(props) {
+type StartIconProps = {
+  className?: string;
+};
+
+export function StartIcon(props: StartIconProps) {
   return (
     <svg
       width="8"

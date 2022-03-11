@@ -1,6 +1,10 @@
 import React from 'react';
 
-export function PlusIcon(props) {
+type PlusIconProps = {
+  className?: string;
+};
+
+export function PlusIcon(props: PlusIconProps) {
   return (
     <svg
       width="13"
