@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { TokenIcon } from 'shared/icons/Tokens';
 
 type TokenImageProps = {
-  tokenName: never;
+  tokenName: string;
   size?: number;
   className?: string;
 };

@@ -55,11 +55,14 @@ function FallbackTokenImage(props: FallbackTokenImageProps) {
 
 const currentTokens = {
   NEAR: NearTokenImage,
-  fallback: FallbackTokenImage,
 };
 
+function isValidTokenName(tokenName: string): tokenName is keyof typeof currentTokens {
+  return tokenName in currentTokens;
+}
+
 type TokenIconProps = {
-  tokenName: keyof Omit<typeof currentTokens, 'fallback'>;
+  tokenName: string;
   className?: string;
 };
 
@@ -72,6 +75,6 @@ export function TokenIcon({ tokenName, className, ...rest }: TokenIconProps) {
       <img src={image} alt={tokenName} className={className} {...rest} />
     );
   }
-  const Component = currentTokens[tokenName] || currentTokens.fallback;
+  const Component = isValidTokenName(tokenName) ? currentTokens[tokenName] : FallbackTokenImage;
   return <Component className={className} {...rest} />;
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { intervalToDuration, formatDuration } from 'date-fns';
 import { shortEnLocale, isValidDate } from 'shared/helpers/date';
 
-export function useDurationTimer({ untilTimestamp }) {
+function useDurationTimer(untilTimestamp: number) {
   const untilDate = new Date(untilTimestamp);
   const dateValid = isValidDate(untilDate);
 
@@ -41,10 +41,14 @@ export function useDurationTimer({ untilTimestamp }) {
   };
 }
 
-export function DurationTimer({ untilTimestamp, suffix, finishedText }) {
-  const { duration, dateValid, expired } = useDurationTimer({
-    untilTimestamp,
-  });
+type DurationTimerProps = {
+  untilTimestamp: never;
+  suffix: never;
+  finishedText: never;
+};
+
+export function DurationTimer({ untilTimestamp, suffix, finishedText }: DurationTimerProps) {
+  const { duration, dateValid, expired } = useDurationTimer(untilTimestamp);
 
   if (!dateValid) {
     return <span>Invalid Date</span>;

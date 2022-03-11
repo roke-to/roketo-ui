@@ -3,10 +3,11 @@ import classNames from 'classnames';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 type NavLinkProps = {
-  icon: never;
-  children: never;
-  className: never;
-  to: never;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+  className?: never;
+  to: string;
+  onClick: () => void;
 };
 
 export function NavLink({
