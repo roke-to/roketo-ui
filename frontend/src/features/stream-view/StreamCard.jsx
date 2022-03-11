@@ -2,25 +2,27 @@ import classNames from 'classnames';
 import React from 'react';
 import copy from 'clipboard-copy';
 import { Link } from 'react-router-dom';
-
 import { formatDuration, intervalToDuration } from 'date-fns';
-import { StreamingSpeed } from './StreamingSpeed';
-import { ProgressBar } from '../../components/kit/ProgressBar';
-import { Button } from '../../components/kit/Button';
-import { TokenImage } from '../../components/kit/TokenImage';
+
+import { ProgressBar } from 'shared/kit/ProgressBar';
+import { Button } from 'shared/kit/Button';
+import { TokenImage } from 'shared/kit/TokenImage';
+import { routes } from 'shared/helpers/routing';
+import { LinkIcon } from 'shared/icons/Link';
+import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+import { shortEnLocale } from 'shared/helpers/date';
+
+import { DurationTimer } from 'shared/components/DurationTimer';
 import {
   StreamControls,
   StreamAutodepositControls,
   StreamDepositButton,
 } from '../stream-control';
-import { DurationTimer } from '../../components/DurationTimer';
-import { routes } from '../../lib/routing';
+
 import { streamViewData } from './streamViewData';
-import { LinkIcon } from '../../components/icons/Link';
-import { StreamProgressPercentage } from './StreamProgressPercentage';
 import { isIdling } from './lib';
-import { useTokenFormatter } from '../../lib/useTokenFormatter';
-import { shortEnLocale } from '../../lib/date';
+import { StreamingSpeed } from './StreamingSpeed';
+import { StreamProgressPercentage } from './StreamProgressPercentage';
 
 const streamType = {
   id: '51ofCnrPfZ8WA4NWJAnGYvNM1yqDfsVQqpaoxkYz3aZE',

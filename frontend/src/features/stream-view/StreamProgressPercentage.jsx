@@ -1,6 +1,6 @@
 import numbro from 'numbro';
 import classNames from 'classnames';
-import { Bullet } from '../../components/kit/Bullet';
+import { Bullet } from 'shared/kit/Bullet';
 
 export function StreamProgressPercentage({
   label,

@@ -1,10 +1,12 @@
 import React from 'react';
 import Modal from 'react-modal/lib/components/Modal';
-import { useNear } from '../near-connect';
+
+import { Button } from 'shared/kit/Button';
+import { CronIcon } from 'shared/icons/Cron';
+import { useBool } from 'shared/hooks/useBool';
+import { useRoketoContext } from 'app/roketo-context';
+
 import { useAccount } from '../xyiming-resources';
-import { Button } from '../../components/kit/Button';
-import { CronIcon } from '../../components/icons/Cron';
-import { useBool } from '../../lib/useBool';
 
 const CRON_STATUS = {
   RUNNING: 'RUNNING',
@@ -18,9 +20,9 @@ const CRON_STATUS = {
 // });
 
 export function CroncatButton() {
-  const near = useNear();
+  const { auth, roketo } = useRoketoContext();
   const modalControl = useBool(false);
-  const accountSWR = useAccount({ near });
+  const accountSWR = useAccount({ auth, roketo });
   // const tf = useTokenFormatter('NEAR');
 
   // useEffect(() => {

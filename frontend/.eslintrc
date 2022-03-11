@@ -25,5 +25,10 @@
     "react/require-default-props": "warn",
     "consistent-return": "warn",
     "jsx-a11y/label-has-associated-control": "warn"
-  }
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    },
+  },
 }

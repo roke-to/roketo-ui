@@ -2,19 +2,22 @@ import useSWR, { useSWRConfig } from 'swr';
 import classNames from 'classnames';
 import Modal from 'react-modal/lib/components/Modal';
 import { useMemo } from 'react';
-import { useNear } from '../near-connect/useNear';
-import { useStreamControl } from './useStreamControl';
-import { Button } from '../../components/kit/Button';
-import { TokenImage } from '../../components/kit/TokenImage';
-import { Tooltip } from '../../components/kit/Tooltip';
+
+import { Button } from 'shared/kit/Button';
+import { TokenImage } from 'shared/kit/TokenImage';
+import { Tooltip } from 'shared/kit/Tooltip';
+import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+import { useBool } from 'shared/hooks/useBool';
+import { useRoketoContext } from 'app/roketo-context';
+
 import { useAccount, useStreams } from '../xyiming-resources';
-import { useTokenFormatter } from '../../lib/useTokenFormatter';
-import { useBool } from '../../lib/useBool';
+
+import { useStreamControl } from './useStreamControl';
 
 function TokenBalance({ ticker, balance, className }) {
-  const near = useNear();
+  const { tokens } = useRoketoContext();
   const tf = useTokenFormatter(ticker);
-  const token = near.tokens.get(ticker);
+  const token = tokens.get(ticker);
   const balanceInt = tf.amount(balance);
   return (
     <div
@@ -38,10 +41,10 @@ function TokenBalance({ ticker, balance, className }) {
 }
 
 function useWithdrawReadyBalances() {
-  const near = useNear();
-  const accountSWR = useAccount({ near });
+  const { auth, roketo, tokens } = useRoketoContext();
+  const accountSWR = useAccount({ auth, roketo });
 
-  const streamsSWR = useStreams({ near, accountSWR });
+  const streamsSWR = useStreams({ auth, roketo, accountSWR });
 
   const balances = useMemo(() => {
     const balancesValue = {};
@@ -75,7 +78,7 @@ function useWithdrawReadyBalances() {
       return Promise.all(
         tickers.map(async (ticker) => [
           ticker,
-          !!(await near.tokens.ftStorageBalance(ticker)),
+          !!(await tokens.ftStorageBalance(ticker)),
         ]),
       );
     },
@@ -90,7 +93,7 @@ function useWithdrawReadyBalances() {
   );
 
   const tokensRequireManualDeposit = notRegisteredTokens.filter(
-    (token) => near.roketo.isBridged(token[0]),
+    (token) => roketo.isBridged(token[0]),
   );
 
   const isSafeToWithdraw = tokensRequireManualDeposit.length === 0 && tokensSWR.data;
@@ -105,7 +108,7 @@ function useWithdrawReadyBalances() {
 }
 
 export function StreamWithdrawButton(props) {
-  const near = useNear();
+  const { auth } = useRoketoContext();
   const streamControl = useStreamControl();
   const { mutate } = useSWRConfig();
   const modalControl = useBool(false);
@@ -118,7 +121,7 @@ export function StreamWithdrawButton(props) {
     await streamControl.updateAllAndWithdraw({
       tokensWithoutStorage: notRegisteredTokens.length,
     });
-    mutate(['account', near.near.accountId]);
+    mutate(['account', auth.accountId]);
   }
 
   async function showNEP141Popup() {

@@ -3,14 +3,16 @@ import classNames from 'classnames';
 import { format, formatDuration, intervalToDuration } from 'date-fns';
 import numbro from 'numbro';
 import copy from 'clipboard-copy';
+
+import { useRoketoContext } from 'app/roketo-context';
+import { CopyIcon } from 'shared/icons/Copy';
+import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+import { shortEnLocale } from 'shared/helpers/date';
+import { DurationTimer } from 'shared/components/DurationTimer';
+
 import { isIdling, streamDirection } from './lib';
 import { StreamingSpeed } from './StreamingSpeed';
 import { streamViewData } from './streamViewData';
-import { DurationTimer } from '../../components/DurationTimer';
-import { CopyIcon } from '../../components/icons/Copy';
-import { useNear } from '../near-connect/useNear';
-import { useTokenFormatter } from '../../lib/useTokenFormatter';
-import { shortEnLocale } from '../../lib/date';
 
 const streamType = {
   stream_id: 'FnVkAYZu4XED3o44pZPvrnghVEMxo3GiHszUT4orjYST',
@@ -64,7 +66,7 @@ export function StreamOverviewCard({
   className,
   ...rest
 }) {
-  const near = useNear();
+  const { roketo } = useRoketoContext();
   const tf = useTokenFormatter(stream.ticker);
   const {
     dateEnd,
@@ -164,7 +166,7 @@ export function StreamOverviewCard({
       <HorizontalData label="Stream update & withdrawal fee:">
         {tf.amount(
           (stream.available_to_withdraw
-            * near.roketo.tokenMeta(stream.ticker).commission_percentage)
+            * roketo.tokenMeta(stream.ticker).commission_percentage)
             / 100,
         )}
         {' '}
@@ -173,7 +175,7 @@ export function StreamOverviewCard({
         <span className="text-gray">
           (
           {numbro(
-            near.roketo.tokenMeta(stream.ticker).commission_percentage / 100,
+            roketo.tokenMeta(stream.ticker).commission_percentage / 100,
           ).format({
             output: 'percent',
             mantissa: 2,

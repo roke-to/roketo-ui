@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNear } from '../near-connect/useNear';
+import { useRoketoContext } from 'app/roketo-context';
 
 const STREAM_CONTROL_ID_NOT_PROVIDED = new Error(
   'Provide stream id to use stream methods',
@@ -9,12 +9,12 @@ export function useStreamControl(streamId) {
   const ensureMethodHasStreamId = () => {
     if (!streamId) throw STREAM_CONTROL_ID_NOT_PROVIDED;
   };
-  const near = useNear();
+  const { roketo } = useRoketoContext();
   const [loading, setLoading] = React.useState(false);
 
   async function updateAllAndWithdraw({ tokensWithoutStorage = 0 }) {
     console.debug('updating all account');
-    await near.contractApi.updateAccount({ tokensWithoutStorage });
+    await roketo.api.updateAccount({ tokensWithoutStorage });
     console.debug('update completed');
   }
 
@@ -22,7 +22,7 @@ export function useStreamControl(streamId) {
     ensureMethodHasStreamId();
     console.debug('enable', streamId);
 
-    await near.contractApi.changeAutoDeposit({
+    await roketo.api.changeAutoDeposit({
       streamId,
       autoDeposit: true,
     });
@@ -32,7 +32,7 @@ export function useStreamControl(streamId) {
     ensureMethodHasStreamId();
     console.debug('disabling', streamId);
 
-    await near.contractApi.changeAutoDeposit({
+    await roketo.api.changeAutoDeposit({
       streamId,
       autoDeposit: false,
     });
@@ -42,13 +42,13 @@ export function useStreamControl(streamId) {
     ensureMethodHasStreamId();
     console.debug('depositing', token, streamId);
 
-    await near.contractApi.depositStream({
+    await roketo.api.depositStream({
       token,
       deposit,
       streamId,
     });
     // token === 'NEAR'
-    //   ? await near.contractApi.depositStream({
+    //   ? await roketo.api.depositStream({
     //       streamId,
     //       deposit,
     //     })
@@ -67,7 +67,7 @@ export function useStreamControl(streamId) {
   async function pause() {
     ensureMethodHasStreamId();
     console.debug('pausing', streamId);
-    const res = await near.contractApi.pauseStream({
+    const res = await roketo.api.pauseStream({
       streamId,
     });
     console.debug('pausing res', res);
@@ -78,7 +78,7 @@ export function useStreamControl(streamId) {
   async function restart() {
     ensureMethodHasStreamId();
     console.debug('restarting', streamId);
-    const res = await near.contractApi.startStream({ streamId });
+    const res = await roketo.api.startStream({ streamId });
     console.debug('restarting res', res);
 
     return res;
@@ -87,7 +87,7 @@ export function useStreamControl(streamId) {
   async function stop() {
     ensureMethodHasStreamId();
     console.debug('Stop called stopping', streamId);
-    const res = await near.contractApi.stopStream({ streamId });
+    const res = await roketo.api.stopStream({ streamId });
     console.debug('stopping res', res);
     return res;
   }

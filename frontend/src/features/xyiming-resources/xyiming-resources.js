@@ -3,14 +3,14 @@ import useSWR from 'swr';
 import { STREAM_DIRECTION, STREAM_STATUS } from '../stream-control/lib';
 import { identifyStreamsDirection } from './lib';
 
-async function fetchStream({ streamId }, { near }) {
-  const stream = await near.contractApi.getStream({ streamId });
+async function fetchStream({ streamId }, { roketo }) {
+  const stream = await roketo.api.getStream({ streamId });
 
   return stream;
 }
 
-async function fetchStreamHistory({ streamId, from, to }, { near }) {
-  const streamHistory = await near.contractApi.getStreamHistory({
+async function fetchStreamHistory({ streamId, from, to }, { roketo }) {
+  const streamHistory = await roketo.api.getStreamHistory({
     streamId,
     from,
     to,
@@ -19,14 +19,14 @@ async function fetchStreamHistory({ streamId, from, to }, { near }) {
   return streamHistory;
 }
 
-async function fetchStreams(streams, { near }) {
+async function fetchStreams(streams, { auth, roketo }) {
   const fetchedStreams = await Promise.all(
-    streams.map((streamId) => near.contractApi.getStream({ streamId })),
+    streams.map((streamId) => roketo.api.getStream({ streamId })),
   );
 
   const identified = identifyStreamsDirection(
     fetchedStreams,
-    near.near.account.accountId,
+    auth.accountId,
   );
 
   return {
@@ -35,10 +35,10 @@ async function fetchStreams(streams, { near }) {
   };
 }
 
-export function useAccount({ near }) {
+export function useAccount({ auth, roketo }) {
   const swr = useSWR(
-    ['account', near.near.accountId],
-    near.contractApi.getCurrentAccount,
+    ['account', auth.accountId],
+    roketo.api.getCurrentAccount,
     {
       errorRetryInterval: 250,
     },
@@ -47,7 +47,7 @@ export function useAccount({ near }) {
   return swr;
 }
 
-export function useStreams({ near, accountSWR }) {
+export function useStreams({ auth, roketo, accountSWR }) {
   const account = accountSWR.data;
   const swr = useSWR(
     () => {
@@ -64,7 +64,8 @@ export function useStreams({ near, accountSWR }) {
         ...account.static_streams,
       ],
       {
-        near,
+        auth,
+        roketo
       },
     ),
   );
@@ -72,7 +73,7 @@ export function useStreams({ near, accountSWR }) {
   return swr;
 }
 
-export function useSingleStream({ streamId }, { near, accountSWR }) {
+export function useSingleStream({ streamId }, { roketo, accountSWR }) {
   const account = accountSWR.data;
   const swr = useSWR(
     () => {
@@ -85,7 +86,7 @@ export function useSingleStream({ streamId }, { near, accountSWR }) {
       const stream = await fetchStream(
         { streamId },
         {
-          near,
+          roketo,
         },
       );
 
@@ -117,7 +118,7 @@ export function useSingleStream({ streamId }, { near, accountSWR }) {
 
 export function useSingleStreamHistory(
   { pageSize = 3 },
-  { near, accountSWR, streamSWR },
+  { roketo, accountSWR, streamSWR },
 ) {
   const PAGE_SIZE = pageSize;
   const account = accountSWR.data;
@@ -152,7 +153,7 @@ export function useSingleStreamHistory(
           to: (page + 1) * PAGE_SIZE,
         },
         {
-          near,
+          roketo,
         },
       );
       return streamHistory;
@@ -182,7 +183,7 @@ export function useSingleStreamHistory(
       };
 
       const streamHistory = await fetchStreamHistory(params, {
-        near,
+        roketo,
       });
 
       return streamHistory;

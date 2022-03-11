@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 
-import { FormField } from '../../components/kit/FormField';
-import { Input } from '../../components/kit/Input';
-import { Button } from '../../components/kit/Button';
-import { TokenImage } from '../../components/kit/TokenImage';
-import { useNear } from '../near-connect/useNear';
-import { DropdownMenu, DropdownMenuItem } from '../../components/kit/DropdownMenu';
-import { DropdownOpener } from '../../components/kit/DropdownOpener';
-import { RadioButton } from '../../components/kit/RadioButton';
-import { Tooltip } from '../../components/kit/Tooltip';
-import { TokenFormatter } from '../../lib/formatting';
+import { FormField } from 'shared/kit/FormField';
+import { Input } from 'shared/kit/Input';
+import { Button } from 'shared/kit/Button';
+import { TokenImage } from 'shared/kit/TokenImage';
+import { DropdownMenu, DropdownMenuItem } from 'shared/kit/DropdownMenu';
+import { DropdownOpener } from 'shared/kit/DropdownOpener';
+import { RadioButton } from 'shared/kit/RadioButton';
+import { Tooltip } from 'shared/kit/Tooltip';
+import { TokenFormatter } from 'shared/helpers/formatting';
+import { env } from 'shared/config';
+import { useRoketoContext } from 'app/roketo-context';
 import { StreamSpeedCalcField } from './StreamSpeedCalcField';
-import { env } from '../../lib/environment';
 
 const CreateStreamFormSchema = ({ near, accountId }) => Yup.object().shape({
   receiver: Yup.string()
@@ -28,7 +28,7 @@ const CreateStreamFormSchema = ({ near, accountId }) => Yup.object().shape({
       'Address does not exists',
       async (value) => {
         try {
-          await near.near.near.connection.provider.query({
+          await near.connection.provider.query({
             request_type: 'view_account',
             finality: 'final',
             account_id: value,
@@ -49,9 +49,10 @@ const CreateStreamFormSchema = ({ near, accountId }) => Yup.object().shape({
 });
 
 export function CreateStreamForm({ onSubmit }) {
-  const near = useNear();
+  const { near, auth, tokens, roketo } = useRoketoContext();
+
   const schema = CreateStreamFormSchema({
-    accountId: near.near.walletConnection.getAccountId(),
+    accountId: auth.accountId,
     near,
   });
 
@@ -59,7 +60,7 @@ export function CreateStreamForm({ onSubmit }) {
 
   const [submitError, setError] = useState(null);
 
-  const tokensNames = near.tokens.tickers;
+  const tokensNames = tokens.tickers;
   const formikOnSubmit = async (...args) => {
     console.debug('Formik submit', ...args);
     try {
@@ -93,9 +94,9 @@ export function CreateStreamForm({ onSubmit }) {
         handleSubmit,
         isSubmitting,
       }) => {
-        const tokenMeta = near.roketo.tokenMeta(values.token);
+        const tokenMeta = roketo.tokenMeta(values.token);
         const formatter = TokenFormatter(
-          near.tokens.get(values.token).metadata.decimals,
+          tokens.get(values.token).metadata.decimals,
         );
         return (
           <form className="max-w-lg mx-auto w-full" onSubmit={handleSubmit}>

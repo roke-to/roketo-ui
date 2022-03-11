@@ -1,25 +1,24 @@
-import { useNear } from '../near-connect/useNear';
+import { useRoketoContext } from 'app/roketo-context';
 
 export function useNearAuth() {
-  const near = useNear();
+  const { auth } = useRoketoContext();
 
   async function login(e) {
     if (e) {
       e.preventDefault();
     }
 
-    await near.login();
+    await auth.login();
     return false;
   }
 
   async function logout() {
-    await near.logout();
+    await auth.logout();
   }
 
   return {
-    accountId: near.auth.signedAccountId,
-    signedIn: near.auth.signedIn,
-    inited: near.inited,
+    accountId: auth.accountId,
+    signedIn: auth.signedIn,
     login,
     logout,
   };

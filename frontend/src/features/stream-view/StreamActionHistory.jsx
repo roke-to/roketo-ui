@@ -1,8 +1,10 @@
 import { format } from 'date-fns';
 import classNames from 'classnames';
-import { timestamp } from '../../lib/formatting';
+
+import { timestamp } from 'shared/helpers/formatting';
+import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+
 import { STREAM_ACTION_TYPE } from '../stream-control/lib';
-import { useTokenFormatter } from '../../lib/useTokenFormatter';
 
 function ThCell({ children, className, ...rest }) {
   return (

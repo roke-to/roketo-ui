@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-import { Button } from '../../components/kit/Button';
-import { Input } from '../../components/kit/Input';
+
+import { Button } from 'shared/kit/Button';
+import { Input } from 'shared/kit/Input';
+import { useBool } from 'shared/hooks/useBool';
+import { PlusIcon } from 'shared/icons/Plus';
+import { PlusGradientIcon } from 'shared/icons/PlusGradient';
+import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { useStreamControl } from './useStreamControl';
-import { useBool } from '../../lib/useBool';
-import { PlusIcon } from '../../components/icons/Plus';
-import { PlusGradientIcon } from '../../components/icons/PlusGradient';
+
 import { isFundable } from '../stream-view/lib';
-import { useTokenFormatter } from '../../lib/useTokenFormatter';
 
 function useDepositButton({ stream }) {
   const controls = useStreamControl(stream.id);

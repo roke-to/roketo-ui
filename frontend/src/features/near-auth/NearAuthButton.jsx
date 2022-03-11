@@ -1,25 +1,14 @@
 import React from 'react';
-import { Button } from '../../components/kit/Button';
+import { Button } from 'shared/kit/Button';
 import { useNearAuth } from './useNearAuth';
 
 export function NearAuthButton(props) {
   const {
-    inited, logout, login, accountId, signedIn,
+    logout,
+    login,
+    accountId,
+    signedIn
   } = useNearAuth();
-
-  if (!inited) {
-    return (
-      <Button type="button" {...props}>
-        Connecting...
-        {' '}
-        <span
-          className="spinner-grow spinner-grow-sm"
-          role="status"
-          aria-hidden="true"
-        />
-      </Button>
-    );
-  }
 
   return signedIn ? (
     <Button type="button" onClick={logout} {...props}>

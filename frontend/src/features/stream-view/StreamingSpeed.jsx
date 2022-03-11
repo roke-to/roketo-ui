@@ -1,8 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
-import { StreamOutIcon } from '../../components/icons/StreamOut';
-import { StreamInIcon } from '../../components/icons/StreamIn';
-import { useTokenFormatter } from '../../lib/useTokenFormatter';
+import { StreamOutIcon } from 'shared/icons/StreamOut';
+import { StreamInIcon } from 'shared/icons/StreamIn';
+import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 
 export function StreamingSpeed({
   stream, direction, className, ...rest

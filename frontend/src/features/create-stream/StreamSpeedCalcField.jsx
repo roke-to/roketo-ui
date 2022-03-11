@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { usePrev } from '../../lib/usePrev';
-import { useTokenFormatter } from '../../lib/useTokenFormatter';
+
+import { usePrev } from 'shared/hooks/usePrev';
+import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 
 export function StreamSpeedCalcField({ onChange, deposit = 0, token }) {
   const formatter = useTokenFormatter(token);

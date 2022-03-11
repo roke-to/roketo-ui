@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import Modal from 'react-modal';
-import { useStreamControl } from './useStreamControl';
-import { useNear } from '../near-connect/useNear';
-import { DropdownOpener } from '../../components/kit/DropdownOpener';
-import { DropdownMenu, DropdownMenuDivider, DropdownMenuItem } from '../../components/kit/DropdownMenu';
-import { Button } from '../../components/kit/Button';
-import { StreamStatus } from './StreamStatus';
+
+import { DropdownOpener } from 'shared/kit/DropdownOpener';
+import { DropdownMenu, DropdownMenuDivider, DropdownMenuItem } from 'shared/kit/DropdownMenu';
+import { Button } from 'shared/kit/Button';
+import { useBool } from 'shared/hooks/useBool';
+import { PauseIcon } from 'shared/icons/Pause';
+import { StartIcon } from 'shared/icons/Start';
+import { StopIcon } from 'shared/icons/Stop';
+import { useRoketoContext } from 'app/roketo-context';
+
 import { STREAM_STATUS } from './lib';
-import { useBool } from '../../lib/useBool';
-import { PauseIcon } from '../../components/icons/Pause';
-import { StartIcon } from '../../components/icons/Start';
-import { StopIcon } from '../../components/icons/Stop';
+import { StreamStatus } from './StreamStatus';
+import { useStreamControl } from './useStreamControl';
 
 function PauseConfirmModal({ modalControl, onConfirm }) {
   return (
@@ -41,11 +43,11 @@ function PauseConfirmModal({ modalControl, onConfirm }) {
   );
 }
 export function StreamControls({ stream, minimal, className }) {
-  const near = useNear();
+  const { auth } = useRoketoContext();
   const modalControl = useBool(false);
 
-  const isOutgoing = near.near.accountId === stream.owner_id;
-  const isIncoming = near.near.accountId === stream.receiver_id;
+  const isOutgoing = auth.accountId === stream.owner_id;
+  const isIncoming = auth.accountId === stream.receiver_id;
   const isExternalStream = !isOutgoing && !isIncoming;
 
   const isDead = stream.status === STREAM_STATUS.INTERRUPTED

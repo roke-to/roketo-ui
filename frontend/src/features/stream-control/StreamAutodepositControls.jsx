@@ -1,14 +1,16 @@
 import React from 'react';
 import classNames from 'classnames';
+
+import { DropdownOpener } from 'shared/kit/DropdownOpener';
+import { DropdownMenu, DropdownMenuItem } from 'shared/kit/DropdownMenu';
+import { useBool } from 'shared/hooks/useBool';
+import { PauseIcon } from 'shared/icons/Pause';
+import { StartIcon } from 'shared/icons/Start';
+import { useRoketoContext } from 'app/roketo-context';
+
 import { useStreamControl } from './useStreamControl';
-import { useNear } from '../near-connect/useNear';
-import { DropdownOpener } from '../../components/kit/DropdownOpener';
-import { DropdownMenu, DropdownMenuItem } from '../../components/kit/DropdownMenu';
 import { StreamAutodepositStatus } from './StreamAutodepositStatus';
 import { STREAM_STATUS } from './lib';
-import { useBool } from '../../lib/useBool';
-import { PauseIcon } from '../../components/icons/Pause';
-import { StartIcon } from '../../components/icons/Start';
 
 export function StreamAutodepositControls({
   stream,
@@ -17,9 +19,9 @@ export function StreamAutodepositControls({
   disableMsg,
   enableMsg,
 }) {
-  const near = useNear();
-  const isOutgoing = near.near.accountId === stream.owner_id;
-  const isIncoming = near.near.accountId === stream.receiver_id;
+  const { auth } = useRoketoContext();
+  const isOutgoing = auth.accountId === stream.owner_id;
+  const isIncoming = auth.accountId === stream.receiver_id;
   const isExternalStream = !isOutgoing && !isIncoming;
 
   const isDead = stream.status === STREAM_STATUS.INTERRUPTED

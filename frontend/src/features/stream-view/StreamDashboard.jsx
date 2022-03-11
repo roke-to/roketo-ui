@@ -1,20 +1,22 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { TokenImage } from '../../components/kit/TokenImage';
-import { ArcProgressBar } from '../../components/kit/ProgressBar';
-import { Tooltip } from '../../components/kit/Tooltip';
-import { streamDirection } from './lib';
-import { streamViewData } from './streamViewData';
-import { StreamingSpeed } from './StreamingSpeed';
+import { TokenImage } from 'shared/kit/TokenImage';
+import { ArcProgressBar } from 'shared/kit/ProgressBar';
+import { Tooltip } from 'shared/kit/Tooltip';
+import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+
 import {
   StreamControls,
   StreamAutodepositControls,
   StreamDepositButtonOutlined,
 } from '../stream-control';
 import { StreamWithdrawButton } from '../stream-control/StreamWithdrawButton';
+
+import { streamDirection } from './lib';
+import { streamViewData } from './streamViewData';
+import { StreamingSpeed } from './StreamingSpeed';
 import { StreamProgressPercentage } from './StreamProgressPercentage';
-import { useTokenFormatter } from '../../lib/useTokenFormatter';
 
 export function StreamDashboard({ stream, account }) {
   const tf = useTokenFormatter(stream.ticker);
