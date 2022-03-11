@@ -195,7 +195,7 @@ export function CreateStreamForm({ onSubmit }) {
                         <span>Stream initial deposit:</span>
                         <Tooltip
                           className="ml-2"
-                          overlay="Funds which will be used to create an initial stream for a set period. This deposit can be extended in manual or automatical mode."
+                          overlay="Funds which will be used to create an initial stream for a set period. This deposit can be extended in manual or automatic mode."
                         />
                       </span>
                     )}
@@ -224,7 +224,7 @@ export function CreateStreamForm({ onSubmit }) {
                           {' '}
                           <Tooltip
                             className="ml-2"
-                            overlay="In case of no extensions for an initial deposit after this period will be reached reciever will be able to withdraw whole initial deposit and close the stream. "
+                            overlay="In case of no extensions for an initial deposit after this period will be reached receiver will be able to withdraw whole initial deposit and close the stream. "
                           />
                         </div>
                         <div className="text-xs text-gray absolute right-0 top-1">
@@ -312,7 +312,7 @@ export function CreateStreamForm({ onSubmit }) {
                     {' '}
                     <Tooltip
                       className="ml-2"
-                      overlay="Check this if you want this stream to start transfering funds immediatly."
+                      overlay="Check this if you want this stream to start transferring funds immediately."
                     />
                   </span>
                 </label>
