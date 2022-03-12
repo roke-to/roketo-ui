@@ -13,16 +13,15 @@ const variants = {
 // const colors = ['dark', 'light'];
 
 type CommonButtonProps = {
-  icon: never;
+  icon?: never;
   children: React.ReactNode;
-  className: never;
-  size: never;
-  loading: never;
-  disabled: never;
-  loadingText: never;
+  className: string;
+  size?: never;
+  loading?: never;
+  disabled?: never;
+  loadingText?: never;
   color?: string;
   variant?: string;
-  type: 'button';
 };
 
 type SpecificLinkProps = {
@@ -32,6 +31,8 @@ type SpecificLinkProps = {
 
 type SpecificButtonProps = {
   link?: false;
+  type: 'submit' | 'button';
+  onClick: () => void;
 };
 
 type ButtonProps = CommonButtonProps & (SpecificLinkProps | SpecificButtonProps);
@@ -95,6 +96,10 @@ export function Button({
   return restProps.link ? (
     <Link {...commonProps} {...restProps}>{content}</Link>
   ) : (
-    <button {...commonProps} {...restProps} type="button">{content}</button>
+    restProps.type === 'button' ? (
+      <button {...commonProps} {...restProps} type="button">{content}</button>
+    ) : (
+      <button {...commonProps} {...restProps} type="submit">{content}</button>
+    )
   );
 }

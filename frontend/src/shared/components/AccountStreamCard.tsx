@@ -6,6 +6,15 @@ import classNames from 'classnames';
 import { useRoketoContext } from 'app/roketo-context';
 import { TokenImage } from 'shared/kit/TokenImage';
 
+type AccountStreamCardProps = {
+  token: string;
+  balance: string;
+  streamsLength: number;
+  period: string;
+  showPeriod: boolean;
+  className: string;
+};
+
 export function AccountStreamCard({
   token,
   balance,
@@ -13,7 +22,7 @@ export function AccountStreamCard({
   period = '',
   showPeriod = true,
   className,
-}) {
+}: AccountStreamCardProps) {
   const { tokens } = useRoketoContext();
   const tokenMeta = tokens.get(token);
   let multiplier = 1;
@@ -31,7 +40,7 @@ export function AccountStreamCard({
     // no default
   }
 
-  const balanceValue = utils.format.formatNearAmount(balance) * multiplier;
+  const balanceValue = Number(utils.format.formatNearAmount(balance)) * multiplier;
 
   return (
     <div

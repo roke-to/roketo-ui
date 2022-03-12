@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function useBool(initial) {
+export function useBool(initial: boolean) {
   const [on, setOn] = React.useState(initial);
 
   return {

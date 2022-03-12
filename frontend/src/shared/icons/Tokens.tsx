@@ -1,7 +1,11 @@
 import React from 'react';
 import { useRoketoContext } from 'app/roketo-context';
 
-function NearTokenImage(props) {
+type NearTokenImageProps = {
+  className?: string;
+};
+
+function NearTokenImage(props: NearTokenImageProps) {
   return (
     <svg
       version="1.0"
@@ -23,7 +27,11 @@ function NearTokenImage(props) {
   );
 }
 
-function FallbackTokenIamge(props) {
+type FallbackTokenImageProps = {
+  className?: string;
+};
+
+function FallbackTokenImage(props: FallbackTokenImageProps) {
   return (
     <svg
       version="1.0"
@@ -45,20 +53,28 @@ function FallbackTokenIamge(props) {
   );
 }
 
-export function TokenIcon({ tokenName, className, ...rest }) {
+const currentTokens = {
+  NEAR: NearTokenImage,
+};
+
+function isValidTokenName(tokenName: string): tokenName is keyof typeof currentTokens {
+  return tokenName in currentTokens;
+}
+
+type TokenIconProps = {
+  tokenName: string;
+  className?: string;
+};
+
+export function TokenIcon({ tokenName, className, ...rest }: TokenIconProps) {
   const { tokens } = useRoketoContext();
   const image = tokens.get(tokenName).metadata.icon;
-
-  const currentTokens = {
-    NEAR: NearTokenImage,
-    fallback: FallbackTokenIamge,
-  };
 
   if (image) {
     return (
       <img src={image} alt={tokenName} className={className} {...rest} />
     );
   }
-  const Component = currentTokens[tokenName] || currentTokens.fallback;
+  const Component = isValidTokenName(tokenName) ? currentTokens[tokenName] : FallbackTokenImage;
   return <Component className={className} {...rest} />;
 }

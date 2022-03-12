@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useBool } from './useBool';
 
-export function useRerenderEveryMs(ms) {
+export function useRerenderEveryMs(ms: number) {
   const { toggle } = useBool(false);
 
   return useEffect(() => {

@@ -67,7 +67,6 @@ export function StreamsPage() {
             variant="main"
             link
             to={routes.send}
-            type="button"
           >
             Create First Stream
           </Button>

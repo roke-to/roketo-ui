@@ -79,6 +79,7 @@ export function StreamCard({ stream = streamType, direction, className }) {
               {tf.amount(streamed)}
               {' '}
               of
+              {' '}
               {tf.amount(full)}
               {' '}
               <span className="uppercase">{stream.ticker}</span>

@@ -3,9 +3,9 @@ import classNames from 'classnames';
 import { TokenIcon } from 'shared/icons/Tokens';
 
 type TokenImageProps = {
-  tokenName: never;
-  size: number;
-  className: string;
+  tokenName: string;
+  size?: number;
+  className?: string;
 };
 
 export function TokenImage({
