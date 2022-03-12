@@ -17,10 +17,10 @@ const GRADIENTS = [
 
 type ProgressBarProps = {
   progresses: never;
-  className: never;
+  className: string;
 };
 
-export function ProgressBar({ progresses, className, ...rest }: ProgressBarProps) {
+export function ProgressBar({ progresses, className }: ProgressBarProps) {
   const p = [...progresses];
   p.sort((a, b) => b - a);
 
@@ -30,7 +30,6 @@ export function ProgressBar({ progresses, className, ...rest }: ProgressBarProps
         'relative h-3 rounded-r-md rounded-l-lg bg-progressBar',
         className,
       )}
-      {...rest}
     >
       {p.map((progress, i) => (
         <div
@@ -49,13 +48,13 @@ export function ProgressBar({ progresses, className, ...rest }: ProgressBarProps
 type GradientSVGProps = {
   endColor: string;
   startColor: string;
-  progressValue?: number;
+  progressValue: number;
   idCSS: string;
   rotation: number;
 };
 
 function GradientSVG({
-  endColor, startColor, progressValue = 0, idCSS, rotation,
+  endColor, startColor, progressValue, idCSS, rotation,
 }: GradientSVGProps) {
   const gradientTransform = `rotate(${rotation})`;
 
@@ -79,12 +78,12 @@ type ArcProgressBarProps = {
   className: never;
 };
 
-export function ArcProgressBar({ progresses, className, ...rest }: ArcProgressBarProps) {
+export function ArcProgressBar({ progresses, className }: ArcProgressBarProps) {
   progresses.sort((a, b) => b - a);
   const rotation = 3 / 4;
 
   return (
-    <div className={classNames(className)} {...rest}>
+    <div className={classNames(className)}>
       <CircularProgressbarWithChildren
         circleRatio={0.5}
         styles={buildStyles({
@@ -98,6 +97,7 @@ export function ArcProgressBar({ progresses, className, ...rest }: ArcProgressBa
       >
         {GRADIENT_STOP.map((colors, i) => (
           <GradientSVG
+            progressValue={0}
             idCSS={`__arcProgressBar_grad_${i}`}
             rotation={i === 0 ? 90 : 90}
             startColor={colors[0]}

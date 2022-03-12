@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { STREAM_STATUS } from './lib';
+import { STREAM_STATUS } from 'shared/api/roketo/constants';
 
 export function StreamStatus({ stream, className, ...rest }) {
   const bindings = {

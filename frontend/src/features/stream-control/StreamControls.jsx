@@ -11,7 +11,7 @@ import { StartIcon } from 'shared/icons/Start';
 import { StopIcon } from 'shared/icons/Stop';
 import { useRoketoContext } from 'app/roketo-context';
 
-import { STREAM_STATUS } from './lib';
+import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import { StreamStatus } from './StreamStatus';
 import { useStreamControl } from './useStreamControl';
 

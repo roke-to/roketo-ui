@@ -9,38 +9,21 @@ import { CopyIcon } from 'shared/icons/Copy';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { shortEnLocale } from 'shared/helpers/date';
 import { DurationTimer } from 'shared/components/DurationTimer';
+import { isIdling, streamDirection, getEmptyAccount, getEmptyStream } from 'shared/api/roketo/helpers';
+import { RoketoStream, RoketoAccount } from 'shared/api/roketo/interfaces/entities';
 
-import { isIdling, streamDirection } from './lib';
 import { StreamingSpeed } from './StreamingSpeed';
 import { streamViewData } from './streamViewData';
 
-const streamType = {
-  stream_id: 'FnVkAYZu4XED3o44pZPvrnghVEMxo3GiHszUT4orjYST',
-  description: 'test stream',
-  owner_id: 'kpr.testnet',
-  receiver_id: 'pinkinice.testnet',
-  token_name: 'NEAR',
-  timestamp_created: '1630964802206727665',
-  balance: '3472735225910300000000000',
-  tokens_per_tick: '100000000000',
-  auto_deposit_enabled: false,
-  status: 'ACTIVE',
-  tokens_total_withdrawn: '27264774089700000000000',
-  available_to_withdraw: '3472735225910300000000000',
-  history: [
-    {
-      actor: 'dev-1630964633889-96006156236045',
-      action_type: 'Deposit',
-      amount: '3500000000000000000000000',
-      timestamp: '1630964802206727665',
-    },
-  ],
-  direction: 'in',
-};
+type DataWrapperProps = {
+  label: string;
+  children: React.ReactNode;
+  className?: string;
+}
 
-function VerticalData({ label, children, ...rest }) {
+function VerticalData({ label, children, className }: DataWrapperProps) {
   return (
-    <div {...rest}>
+    <div className={className}>
       <div className="text-gray text-sm">{label}</div>
       <div className="font-semibold text-lg break-words select-all">
         {children}
@@ -49,23 +32,27 @@ function VerticalData({ label, children, ...rest }) {
   );
 }
 
-function HorizontalData({
-  label, children, className, ...rest
-}) {
+function HorizontalData({ label, children, className }: DataWrapperProps) {
   return (
-    <div className={classNames('flex justify-between my-3', className)} {...rest}>
+    <div className={classNames('flex justify-between my-3', className)}>
       <div className="text-gray text-sm">{label}</div>
       <div className="text-sm text-right">{children}</div>
     </div>
   );
 }
 
+type StreamOverviewCardProps = {
+  stream?: RoketoStream;
+  account?: RoketoAccount;
+  className: string;
+};
+
 export function StreamOverviewCard({
-  stream = streamType,
-  account,
+  stream = getEmptyStream(),
+  account = getEmptyAccount(),
   className,
   ...rest
-}) {
+}: StreamOverviewCardProps) {
   const { roketo } = useRoketoContext();
   const tf = useTokenFormatter(stream.ticker);
   const {
@@ -118,7 +105,7 @@ export function StreamOverviewCard({
       </div>
       <div className="border-t border-border mt-8 mb-9" />
       <HorizontalData label="Stream Created:">
-        {format(new Date(stream.timestamp_created / 1000000), 'Yo MMM do')}
+        {format(new Date(Number(stream.timestamp_created) / 1000000), 'Yo MMM do')}
       </HorizontalData>
       <HorizontalData label="Token:">{stream.ticker}</HorizontalData>
       <HorizontalData label="Total:">
@@ -165,8 +152,8 @@ export function StreamOverviewCard({
       </HorizontalData>
       <HorizontalData label="Stream update & withdrawal fee:">
         {tf.amount(
-          (stream.available_to_withdraw
-            * roketo.tokenMeta(stream.ticker).commission_percentage)
+          (Number(stream.available_to_withdraw)
+            * (roketo.tokenMeta(stream.ticker)?.commission_percentage || 0))
             / 100,
         )}
         {' '}
@@ -175,7 +162,7 @@ export function StreamOverviewCard({
         <span className="text-gray">
           (
           {numbro(
-            roketo.tokenMeta(stream.ticker).commission_percentage / 100,
+            roketo.tokenMeta(stream.ticker)?.commission_percentage || 0 / 100,
           ).format({
             output: 'percent',
             mantissa: 2,
@@ -184,18 +171,18 @@ export function StreamOverviewCard({
         </span>
       </HorizontalData>
       <HorizontalData label="Speed:">
-        <StreamingSpeed stream={stream} direction={null} />
+        <StreamingSpeed stream={stream} />
       </HorizontalData>
 
       {direction === 'in' ? (
         <HorizontalData label="Latest Withdrawal:">
-          {format(new Date(account.last_action / 1000000), 'MMM dd, Yo  H:m')}
+          {format(new Date(Number(account.last_action) / 1000000), 'MMM dd, Yo  H:m')}
         </HorizontalData>
       ) : (
         ''
       )}
       <HorizontalData label="Auto-deposit:">
-        {stream.is_auto_deposit_enabled ? 'Enabled' : 'Disabled'}
+        {stream.auto_deposit_enabled ? 'Enabled' : 'Disabled'}
       </HorizontalData>
 
       <HorizontalData label="Stream ID:">

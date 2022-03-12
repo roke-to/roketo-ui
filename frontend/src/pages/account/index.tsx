@@ -7,7 +7,7 @@ import { HistoryIcon } from 'shared/icons/History';
 import { StreamWithdrawIcon } from 'shared/icons/StreamWithdraw';
 import { StreamOutIcon } from 'shared/icons/StreamOut';
 import { StreamInIcon } from 'shared/icons/StreamIn';
-import { useAccount } from 'features/xyiming-resources';
+import { useAccount } from 'features/roketo-resource';
 import { PageError } from 'shared/components/PageError';
 import { CroncatButton } from 'features/croncat/CroncatButton';
 
@@ -52,7 +52,7 @@ export function AccountPage() {
               <span>
                 Last updated&nbsp;
                 {formatDistance(
-                  new Date(account.last_action / 1000 / 1000),
+                  new Date(Number(account.last_action) / 1000 / 1000),
                   new Date(),
                   {
                     addSuffix: true,

@@ -4,19 +4,6 @@ export const ROKETO_CONTRACT_NAME = env.CONTRACT_NAME;
 export const GAS_SIZE = "200000000000000";
 export const STORAGE_DEPOSIT = 1e22;
 
-export const getEmptyAccount = (id: string) => ({
-  account_id: id,
-  dynamic_inputs: [],
-  dynamic_outputs: [],
-  static_streams: [],
-  last_action: null,
-  ready_to_withdraw: [],
-  total_incoming: [],
-  total_outgoing: [],
-  total_received: [],
-  is_external_update_enabled: false,
-});
-
 // Multiply your stream speed by one of this constants, to receive amount transferred over period
 export const TICK_TO_MS = 1e6;
 export const TICK_TO_S = 1e9;

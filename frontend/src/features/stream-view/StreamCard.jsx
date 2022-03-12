@@ -11,7 +11,7 @@ import { routes } from 'shared/helpers/routing';
 import { LinkIcon } from 'shared/icons/Link';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { shortEnLocale } from 'shared/helpers/date';
-
+import { isIdling } from 'shared/api/roketo/helpers';
 import { DurationTimer } from 'shared/components/DurationTimer';
 import {
   StreamControls,
@@ -20,7 +20,6 @@ import {
 } from '../stream-control';
 
 import { streamViewData } from './streamViewData';
-import { isIdling } from './lib';
 import { StreamingSpeed } from './StreamingSpeed';
 import { StreamProgressPercentage } from './StreamProgressPercentage';
 
@@ -33,7 +32,7 @@ const streamType = {
   timestamp_created: '1633966709524321545',
   balance: '1990000000000000000000000',
   tokens_per_tick: '33333333333333',
-  is_auto_deposit_enabled: true,
+  auto_deposit_enabled: true,
   status: 'ACTIVE',
   tokens_total_withdrawn: '0',
   available_to_withdraw: '1990000000000000000000000',

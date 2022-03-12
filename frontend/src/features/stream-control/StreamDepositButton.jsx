@@ -7,9 +7,9 @@ import { useBool } from 'shared/hooks/useBool';
 import { PlusIcon } from 'shared/icons/Plus';
 import { PlusGradientIcon } from 'shared/icons/PlusGradient';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
-import { useStreamControl } from './useStreamControl';
+import { isFundable } from 'shared/api/roketo/helpers';
 
-import { isFundable } from '../stream-view/lib';
+import { useStreamControl } from './useStreamControl';
 
 function useDepositButton({ stream }) {
   const controls = useStreamControl(stream.id);

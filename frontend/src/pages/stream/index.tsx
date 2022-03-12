@@ -12,7 +12,7 @@ import {
   useAccount,
   useSingleStream,
   useSingleStreamHistory,
-} from 'features/xyiming-resources';
+} from 'features/roketo-resource';
 import { StreamDashboard } from 'features/stream-view/StreamDashboard';
 import { LinkIcon } from 'shared/icons/Link';
 import { ArrowLeftIcon } from 'shared/icons/ArrowLeft';
@@ -61,9 +61,7 @@ export function StreamPage() {
   const params = useParams() as { id: string };
 
   const accountSWR = useAccount({ auth, roketo });
-  const streamSWR = useSingleStream(
-    { streamId: params.id },
-    {
+  const streamSWR = useSingleStream(params.id, {
       roketo,
       accountSWR,
     },
@@ -88,6 +86,7 @@ export function StreamPage() {
 
   const account = accountSWR.data;
   const stream = streamSWR.data;
+  console.log('stream', stream)
   const tf = useTokenFormatter(stream ? stream.ticker : '');
 
   const streamHistory = streamHistorySWR.data || [];

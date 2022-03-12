@@ -7,10 +7,10 @@ import { useBool } from 'shared/hooks/useBool';
 import { PauseIcon } from 'shared/icons/Pause';
 import { StartIcon } from 'shared/icons/Start';
 import { useRoketoContext } from 'app/roketo-context';
+import { STREAM_STATUS } from 'shared/api/roketo/constants';
 
 import { useStreamControl } from './useStreamControl';
 import { StreamAutodepositStatus } from './StreamAutodepositStatus';
-import { STREAM_STATUS } from './lib';
 
 export function StreamAutodepositControls({
   stream,
@@ -59,7 +59,7 @@ export function StreamAutodepositControls({
         className="top-full w-44"
         onClose={menu.turnOff}
       >
-        {stream.is_auto_deposit_enabled ? (
+        {stream.auto_deposit_enabled ? (
           <DropdownMenuItem>
             <button
               type="button"

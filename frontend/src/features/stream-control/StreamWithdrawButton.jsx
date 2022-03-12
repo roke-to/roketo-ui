@@ -9,8 +9,7 @@ import { Tooltip } from 'shared/kit/Tooltip';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { useBool } from 'shared/hooks/useBool';
 import { useRoketoContext } from 'app/roketo-context';
-
-import { useAccount, useStreams } from '../xyiming-resources';
+import { useAccount, useStreams } from 'features/roketo-resource';
 
 import { useStreamControl } from './useStreamControl';
 
@@ -163,7 +162,6 @@ export function StreamWithdrawButton(props) {
       <Tooltip
         placement="bottom"
         align={{ offset: [0, 20] }}
-        offset={{ bottom: 20 }}
         overlay={(
           <div className="text-left">
             <p className="mb-4 text-gray">

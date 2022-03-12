@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
+import { STREAM_STATUS, STREAM_DIRECTION } from 'shared/api/roketo/constants';
+
 import { useFilter, useFilters } from '../lib';
-import { STREAM_STATUS, STREAM_DIRECTION } from '../../stream-control/lib';
 
 const STREAM_TYPE_FILTER = {
   ALL: 'All',

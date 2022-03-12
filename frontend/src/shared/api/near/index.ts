@@ -1,4 +1,4 @@
-import { connect, keyStores, WalletConnection } from 'near-api-js';
+import { connect, keyStores, WalletConnection, ConnectedWalletAccount } from 'near-api-js';
 
 import { NEAR_CONFIG } from './config';
 
@@ -14,7 +14,15 @@ export async function createNearInstance() {
   return near;
 }
 
-export function getNearAuth(walletConnection: WalletConnection) {
+export type NearAuth = {
+  account: ConnectedWalletAccount;
+  signedIn: boolean;
+  accountId: string;
+  login: () => void,
+  logout: () => void,
+}
+
+export function getNearAuth(walletConnection: WalletConnection): NearAuth {
   const accountId = walletConnection.getAccountId();
   const account = walletConnection.account();
 

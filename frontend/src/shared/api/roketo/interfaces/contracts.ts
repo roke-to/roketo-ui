@@ -36,7 +36,7 @@ export type RoketoContract = Contract & {
     token_name: string;
     tokens_per_tick: string;
     description: string;
-    is_auto_deposit_enabled: boolean;
+    auto_deposit_enabled: boolean;
     is_auto_start_enabled: boolean;
   }>;
 

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { Filter, FilterOptionWithCounter } from 'shared/kit/Filter';
+import { STREAM_STATUS } from 'shared/api/roketo/constants';
+
 import { useStreamFilters } from './useStreamFilters';
-import { STREAM_STATUS } from '../../stream-control/lib';
 
 function compareBy(a, b, key) {
   if (Number(a[key]) > Number(b[key])) {

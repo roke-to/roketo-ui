@@ -2,13 +2,13 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Near, WalletConnection } from 'near-api-js';
 
 import { NEAR_CONFIG } from 'shared/api/near/config';
-import { createNearInstance, getNearAuth } from 'shared/api/near';
+import { createNearInstance, getNearAuth, NearAuth } from 'shared/api/near';
 import { initRoketo, Roketo } from 'shared/api/roketo';
 import { Tokens } from 'features/ft-tokens';
 
 type AppServices = {
-  auth: any;
-  tokens: any;
+  auth: NearAuth;
+  tokens: Tokens;
   roketo: Roketo;
   near: Near;
   walletConnection: WalletConnection;

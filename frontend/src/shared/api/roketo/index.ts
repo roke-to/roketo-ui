@@ -4,14 +4,14 @@ import { Contract, WalletConnection } from "near-api-js";
 import { ROKETO_CONTRACT_NAME } from "./config";
 import { RoketoContract } from './interfaces/contracts';
 import { RoketoApi } from './interfaces/roketo-api';
-import { RoketoTokenStatus } from './interfaces/entities';
+import { RoketoTokenStatus, RoketoStatus } from './interfaces/entities';
 import { RoketoContractApi } from "./contract-api";
 
 export interface Roketo {
   api: RoketoApi;
+  status: RoketoStatus;
   tokenMeta: (ticker: string) => RoketoTokenStatus | undefined;
   isBridged: (ticker: string) => boolean;
-  status: any;
 }
 
 const tokensToMap = (tokens: RoketoTokenStatus[]) => {
@@ -95,8 +95,8 @@ export async function initRoketo({
 
   return {
     api,
+    status,
     tokenMeta,
     isBridged,
-    status,
   };
 }

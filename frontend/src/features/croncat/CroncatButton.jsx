@@ -6,7 +6,7 @@ import { CronIcon } from 'shared/icons/Cron';
 import { useBool } from 'shared/hooks/useBool';
 import { useRoketoContext } from 'app/roketo-context';
 
-import { useAccount } from '../xyiming-resources';
+import { useAccount } from 'features/roketo-resource';
 
 const CRON_STATUS = {
   RUNNING: 'RUNNING',

@@ -4,12 +4,14 @@ import { TokenIcon } from 'shared/icons/Tokens';
 
 type TokenImageProps = {
   tokenName: never;
-  size?: number;
-  className?: string;
+  size: number;
+  className: string;
 };
 
 export function TokenImage({
-  tokenName, size = 8, className, ...rest
+  tokenName,
+  size = 8,
+  className,
 }: TokenImageProps) {
   return (
     <div
@@ -18,7 +20,6 @@ export function TokenImage({
         `w-${size} h-${size}`,
         className,
       )}
-      {...rest}
     >
       <TokenIcon className="w-full h-full rounded-full" tokenName={tokenName} />
     </div>

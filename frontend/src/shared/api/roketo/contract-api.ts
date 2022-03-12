@@ -1,10 +1,11 @@
 import BigNumber from 'bignumber.js';
 import { Account, Contract, WalletConnection } from 'near-api-js';
 
-import { getEmptyAccount, GAS_SIZE, STORAGE_DEPOSIT } from './config';
+import { GAS_SIZE, STORAGE_DEPOSIT } from './config';
 import { RoketoContract } from './interfaces/contracts';
 import { RoketoApi } from './interfaces/roketo-api';
 import { RoketoTokenStatus, RoketoAccount } from './interfaces/entities';
+import { getEmptyAccount } from './helpers';
 
 export function RoketoContractApi({
   contract,
@@ -84,7 +85,7 @@ export function RoketoContractApi({
               token_name: token,
               tokens_per_tick: speed,
               description,
-              is_auto_deposit_enabled: autoDepositEnabled,
+              auto_deposit_enabled: autoDepositEnabled,
               is_auto_start_enabled: isAutoStartEnabled,
             },
             gas: GAS_SIZE,
@@ -107,7 +108,7 @@ export function RoketoContractApi({
                   token_name: token,
                   tokens_per_tick: speed,
                   balance: deposit,
-                  is_auto_deposit_enabled: autoDepositEnabled,
+                  auto_deposit_enabled: autoDepositEnabled,
                   is_auto_start_enabled: isAutoStartEnabled,
                 },
               }),

@@ -3,8 +3,7 @@ import classNames from 'classnames';
 
 import { timestamp } from 'shared/helpers/formatting';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
-
-import { STREAM_ACTION_TYPE } from '../stream-control/lib';
+import { STREAM_ACTION_TYPE } from 'shared/api/roketo/constants';
 
 function ThCell({ children, className, ...rest }) {
   return (

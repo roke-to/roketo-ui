@@ -5,6 +5,7 @@ import { TokenImage } from 'shared/kit/TokenImage';
 import { ArcProgressBar } from 'shared/kit/ProgressBar';
 import { Tooltip } from 'shared/kit/Tooltip';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+import { streamDirection } from 'shared/api/roketo/helpers';
 
 import {
   StreamControls,
@@ -13,7 +14,6 @@ import {
 } from '../stream-control';
 import { StreamWithdrawButton } from '../stream-control/StreamWithdrawButton';
 
-import { streamDirection } from './lib';
 import { streamViewData } from './streamViewData';
 import { StreamingSpeed } from './StreamingSpeed';
 import { StreamProgressPercentage } from './StreamProgressPercentage';
@@ -34,7 +34,6 @@ export function StreamDashboard({ stream, account }) {
       <div className="-mb-32">
         <Tooltip
           align={{ offset: [0, -20] }}
-          offset={{ top: 20 }}
           overlay={(
             <div className="text-left">
               <StreamProgressPercentage

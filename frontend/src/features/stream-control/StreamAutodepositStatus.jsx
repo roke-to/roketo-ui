@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { STREAM_AUTODEPOSIT_STATUS } from './lib';
+import { STREAM_AUTODEPOSIT_STATUS } from 'shared/api/roketo/constants';
 
 export function StreamAutodepositStatus({
   stream,
@@ -19,7 +19,7 @@ export function StreamAutodepositStatus({
     },
   };
 
-  const status = stream.is_auto_deposit_enabled ? 'enabled' : 'disabled';
+  const status = stream.auto_deposit_enabled ? 'enabled' : 'disabled';
   const binding = bindings[status] || {};
 
   return (

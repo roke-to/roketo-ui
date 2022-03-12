@@ -8,7 +8,9 @@ import {
 import { RadioButton } from 'shared/kit/RadioButton';
 import { DropdownOpener } from 'shared/kit/DropdownOpener';
 import { useFilter } from 'features/filtering/lib';
-import { useAccount, useStreams } from 'features/xyiming-resources';
+import { useAccount, useStreams } from 'features/roketo-resource';
+import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+
 import { AccountStreamCard } from './AccountStreamCard';
 
 const PERIODS = {
@@ -43,7 +45,7 @@ export function AccountColumn({
 
   const allStreams = streamsSWR.data;
 
-  let streams = [];
+  let streams: RoketoStream[] = [];
   if (streamsType === 'inputs') {
     streams = allStreams ? allStreams.inputs : [];
   } else if (streamsType === 'outputs') {

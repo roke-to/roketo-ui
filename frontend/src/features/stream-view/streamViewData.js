@@ -1,4 +1,4 @@
-import { isDead, isFundable } from './lib';
+import { isDead, isFundable } from 'shared/api/roketo/helpers';
 
 export function streamViewData(stream, tokenFormatter) {
   const tf = tokenFormatter;

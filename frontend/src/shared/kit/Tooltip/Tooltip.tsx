@@ -1,13 +1,16 @@
-import './Tooltip.scss';
-
-import RCTooltip from 'rc-tooltip';
 import React from 'react';
 
+import RCTooltip from 'rc-tooltip';
+import type { AlignType } from 'rc-trigger/lib/interface';
+
+import './Tooltip.scss';
+
 type TooltipProps = {
-  placement?: string;
+  placement: string;
   children: never;
   html: never;
   overlay: never;
+  align: AlignType;
 };
 
 export function Tooltip({
@@ -15,16 +18,15 @@ export function Tooltip({
   children,
   html,
   overlay,
-  ...rest
+  align,
 }: TooltipProps) {
   return (
     <RCTooltip
-      // @ts-ignore
+      align={align}
       placement={placement}
       overlay={
         html ? <div dangerouslySetInnerHTML={{ __html: html }} /> : overlay
       }
-      {...rest}
     >
       {children || <span className="Tooltip__defaultIcon">?</span>}
     </RCTooltip>

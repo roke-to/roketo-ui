@@ -3,8 +3,8 @@ import classNames from 'classnames';
 import { DropdownArrowDown } from 'shared/icons/DropdownArrowDown';
 
 type DropdownOpenerProps = {
-  opened?: never;
-  className?: never;
+  opened?: boolean;
+  className?: string;
   children: React.ReactNode;
   onChange: (state: boolean) => void;
   rounded: boolean;

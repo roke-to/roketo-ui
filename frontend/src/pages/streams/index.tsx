@@ -5,7 +5,7 @@ import { StreamCard } from 'features/stream-view';
 import { StreamFilters } from 'features/filtering/streams';
 import { Button } from 'shared/kit/Button';
 import { routes } from 'shared/helpers/routing';
-import { useAccount, useStreams } from 'features/xyiming-resources';
+import { useAccount, useStreams } from 'features/roketo-resource';
 import { StreamWithdrawButton } from 'features/stream-control/StreamWithdrawButton';
 import { PageError } from 'shared/components/PageError';
 
