@@ -11,7 +11,7 @@ type NavLinkProps = {
 };
 
 export function NavLink({
-  icon, children, className, to
+  icon, children, className, to, onClick
 }: NavLinkProps) {
   const activeClassname = 'bg-hover';
   const match = useRouteMatch(to);
@@ -29,6 +29,7 @@ export function NavLink({
         'transition-all',
         'hover:bg-hover',
       )}
+      onClick={onClick}
     >
       <div
         className={classNames(
