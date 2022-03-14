@@ -23,9 +23,13 @@ export function StreamsPage() {
   };
 
   const streams = streamsSWR.data;
-  const { inputs = [], outputs = [] } = streams || {}
+  const { inputs, outputs } = streams || {};
 
   const allStreams = useMemo(() => {
+    if (!inputs || !outputs) {
+      return [];
+    }
+
     const concatted = inputs.concat(outputs);
     return concatted;
   }, [inputs, outputs]);
