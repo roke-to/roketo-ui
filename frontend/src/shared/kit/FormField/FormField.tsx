@@ -2,10 +2,10 @@ import React from 'react';
 import classNames from 'classnames';
 
 type FormFieldProps = {
-  children: never;
-  label: never;
-  error: never;
-  className: never;
+  children: React.ReactNode;
+  label: React.ReactNode;
+  error?: string;
+  className?: string;
 };
 
 export function FormField({

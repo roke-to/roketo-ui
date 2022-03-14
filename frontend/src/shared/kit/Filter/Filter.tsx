@@ -5,8 +5,8 @@ import { DropdownOpener } from '../DropdownOpener';
 import { DropdownMenu, DropdownMenuItem } from '../DropdownMenu';
 
 type FilterOptionWithCounterProps = {
-  count: never;
-  option: never;
+  count: React.ReactNode;
+  option: React.ReactNode;
 };
 
 export function FilterOptionWithCounter({ count, option }: FilterOptionWithCounterProps) {
@@ -19,23 +19,23 @@ export function FilterOptionWithCounter({ count, option }: FilterOptionWithCount
   );
 }
 
-export type FilterOption = {
+type FilterOption = {
   label: string;
   fn: (a: any, b: any) => number;
 };
 
-type FilterProps = {
-  label: never;
-  options: string[] | FilterOption[];
-  renderOption: (option: string | FilterOption, active: boolean) => React.ReactNode;
-  renderActive: (option: string | FilterOption) => React.ReactNode;
-  active: never;
-  minimal: never;
-  onChange: never;
-  className: never;
+type FilterProps<T> = {
+  label: string;
+  options: T[];
+  renderOption: (option: T, active: boolean) => React.ReactNode;
+  renderActive?: (option: T) => React.ReactNode;
+  active: T;
+  minimal?: boolean;
+  onChange: (option: T) => void;
+  className: string;
 };
 
-export function Filter({
+export function Filter<T extends string | FilterOption>({
   label,
   options,
   renderOption,
@@ -44,7 +44,7 @@ export function Filter({
   minimal,
   onChange,
   className,
-}: FilterProps) {
+}: FilterProps<T>) {
   const [opened, setOpened] = useState(false);
 
   return (

@@ -1,7 +1,7 @@
+import React, { useMemo } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import classNames from 'classnames';
-import Modal from 'react-modal/lib/components/Modal';
-import { useMemo } from 'react';
+import Modal from 'react-modal';
 
 import { Button } from 'shared/kit/Button';
 import { TokenImage } from 'shared/kit/TokenImage';
@@ -13,7 +13,13 @@ import { useAccount, useStreams } from 'features/roketo-resource';
 
 import { useStreamControl } from './useStreamControl';
 
-function TokenBalance({ ticker, balance, className }) {
+type TokenBalanceProps = {
+  ticker: string;
+  balance: number;
+  className: string;
+};
+
+function TokenBalance({ ticker, balance, className }: TokenBalanceProps) {
   const { tokens } = useRoketoContext();
   const tf = useTokenFormatter(ticker);
   const token = tokens.get(ticker);
@@ -46,7 +52,7 @@ function useWithdrawReadyBalances() {
   const streamsSWR = useStreams({ auth, roketo, accountSWR });
 
   const balances = useMemo(() => {
-    const balancesValue = {};
+    const balancesValue: Record<string, number> = {};
     if (accountSWR.data && streamsSWR.data) {
       accountSWR.data.ready_to_withdraw.forEach(([ticker, balance]) => {
         balancesValue[ticker] = balancesValue[ticker] || 0;
@@ -64,21 +70,19 @@ function useWithdrawReadyBalances() {
 
   const tokensSWR = useSWR(
     () => {
-      const balancesWithoutNear = { ...balances };
-      delete balancesWithoutNear.NEAR;
+      const { NEAR, ...balancesWithoutNear } = balances;
       const keys = Object.keys(balancesWithoutNear);
       keys.sort();
       return JSON.stringify(keys);
     },
     (rawKeys) => {
-      const tickers = JSON.parse(rawKeys);
+      const tickers: string[] = JSON.parse(rawKeys);
 
-      // [ticker, hasStorageBalance]
       return Promise.all(
-        tickers.map(async (ticker) => [
+        tickers.map(async (ticker) => ({
           ticker,
-          !!(await tokens.ftStorageBalance(ticker)),
-        ]),
+          hasStorageBalance: Boolean(await tokens.ftStorageBalance(ticker)),
+        })),
       );
     },
     {
@@ -88,11 +92,11 @@ function useWithdrawReadyBalances() {
 
   const loading = !accountSWR.data || !streamsSWR.data || !tokensSWR.data;
   const notRegisteredTokens = (tokensSWR.data || []).filter(
-    (t) => t[1] === false,
+    ({ hasStorageBalance }) => !hasStorageBalance,
   );
 
   const tokensRequireManualDeposit = notRegisteredTokens.filter(
-    (token) => roketo.isBridged(token[0]),
+    ({ ticker }) => roketo.isBridged(ticker),
   );
 
   const isSafeToWithdraw = tokensRequireManualDeposit.length === 0 && tokensSWR.data;
@@ -106,7 +110,15 @@ function useWithdrawReadyBalances() {
   };
 }
 
-export function StreamWithdrawButton(props) {
+type StreamWithdrawButtonProps = {
+  loadingText?: string;
+  variant: string;
+  color?: string;
+  children?: React.ReactNode;
+  size?: 'normal' | 'big';
+};
+
+export function StreamWithdrawButton(props: StreamWithdrawButtonProps) {
   const { auth } = useRoketoContext();
   const streamControl = useStreamControl();
   const { mutate } = useSWRConfig();
@@ -139,7 +151,7 @@ export function StreamWithdrawButton(props) {
         Due to NEP-141 issues you are required to do storage deposit before
         withdrawing. You can do it by buying any amount of
         {' '}
-        {notRegisteredTokens.map((token) => token[0]).join(', ')}
+        {notRegisteredTokens.map(({ ticker }) => ticker).join(', ')}
         {' '}
         tokens at any
         DEX

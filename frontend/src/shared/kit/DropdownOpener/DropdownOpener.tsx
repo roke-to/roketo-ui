@@ -7,8 +7,8 @@ type DropdownOpenerProps = {
   className?: string;
   children: React.ReactNode;
   onChange: (state: boolean) => void;
-  rounded: boolean;
-  minimal: boolean;
+  rounded?: boolean;
+  minimal?: boolean;
 };
 
 /**
@@ -22,7 +22,7 @@ export function DropdownOpener({
   children,
   onChange,
   rounded,
-  minimal,
+  minimal = false,
   ...rest
 }: DropdownOpenerProps) {
   const minimalClasses = minimal

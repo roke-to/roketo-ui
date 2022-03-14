@@ -16,7 +16,7 @@ const GRADIENTS = [
 ];
 
 type ProgressBarProps = {
-  progresses: never;
+  progresses: number[];
   className: string;
 };
 
@@ -74,8 +74,8 @@ function GradientSVG({
 }
 
 type ArcProgressBarProps = {
-  progresses: never[];
-  className: never;
+  progresses: number[];
+  className: string;
 };
 
 export function ArcProgressBar({ progresses, className }: ArcProgressBarProps) {

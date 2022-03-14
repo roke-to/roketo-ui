@@ -1,14 +1,22 @@
 import React from 'react';
-import { Button } from 'shared/kit/Button';
-import { useNearAuth } from './useNearAuth';
 
-export function NearAuthButton(props) {
+import { useRoketoContext } from 'app/roketo-context';
+import { Button } from 'shared/kit/Button';
+
+type NearAuthButtonProps = {
+  variant?: string;
+  className?: string;
+};
+
+export function NearAuthButton(props: NearAuthButtonProps) {
   const {
-    logout,
-    login,
-    accountId,
-    signedIn
-  } = useNearAuth();
+    auth: {
+      logout,
+      login,
+      accountId,
+      signedIn,
+    }
+  } = useRoketoContext();
 
   return signedIn ? (
     <Button type="button" onClick={logout} {...props}>

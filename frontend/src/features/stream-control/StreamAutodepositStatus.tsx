@@ -1,5 +1,14 @@
 import classNames from 'classnames';
+
 import { STREAM_AUTODEPOSIT_STATUS } from 'shared/api/roketo/constants';
+import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+
+type StreamAutodepositStatusProps = {
+  stream: RoketoStream;
+  className?: string;
+  disableMsg?: string;
+  enableMsg?: string;
+};
 
 export function StreamAutodepositStatus({
   stream,
@@ -7,7 +16,7 @@ export function StreamAutodepositStatus({
   disableMsg,
   enableMsg,
   ...rest
-}) {
+}: StreamAutodepositStatusProps) {
   const bindings = {
     [STREAM_AUTODEPOSIT_STATUS.ENABLED]: {
       colorClass: 'text-special-hold',

@@ -2,6 +2,14 @@ import numbro from 'numbro';
 import classNames from 'classnames';
 import { Bullet } from 'shared/kit/Bullet';
 
+type StreamProgressPercentageProps = {
+  label: string;
+  formattedFloatValue: string;
+  percentageValue: number;
+  colorClass: string;
+  className?: string;
+};
+
 export function StreamProgressPercentage({
   label,
   formattedFloatValue,
@@ -9,7 +17,7 @@ export function StreamProgressPercentage({
   colorClass,
   className,
   ...rest
-}) {
+}: StreamProgressPercentageProps) {
   return (
     <div className={className} {...rest}>
       <Bullet className={classNames(colorClass, 'mr-1')} />

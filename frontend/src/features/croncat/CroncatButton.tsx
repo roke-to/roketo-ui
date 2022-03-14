@@ -1,5 +1,5 @@
 import React from 'react';
-import Modal from 'react-modal/lib/components/Modal';
+import Modal from 'react-modal';
 
 import { Button } from 'shared/kit/Button';
 import { CronIcon } from 'shared/icons/Cron';
@@ -49,6 +49,8 @@ export function CroncatButton() {
   // }
 
   const accountData = accountSWR.data;
+
+  console.log('accountData', accountData);
 
   const cronStatus = accountData
     ? accountData.cron_task
@@ -186,7 +188,7 @@ export function CroncatButton() {
         variant="main"
         size="normal"
         className="p-0"
-        onClick={(e) => cronSubscribeClick(e)}
+        onClick={() => cronSubscribeClick()}
       >
         <span className="mr-2">
           <CronIcon />

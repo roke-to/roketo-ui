@@ -1,6 +1,8 @@
 import { isDead, isFundable } from 'shared/api/roketo/helpers';
+import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import type { TokenFormatter } from 'shared/helpers/formatting';
 
-export function streamViewData(stream, tokenFormatter) {
+export function streamViewData(stream: RoketoStream, tokenFormatter: ReturnType<typeof TokenFormatter>) {
   const tf = tokenFormatter;
 
   // public link
@@ -9,7 +11,7 @@ export function streamViewData(stream, tokenFormatter) {
   // time left calculations
   const secondsLeft = tf.ticksToMs(
     Math.round(
-      (stream.balance - stream.available_to_withdraw) / stream.tokens_per_tick,
+      (Number(stream.balance) - Number(stream.available_to_withdraw)) / Number(stream.tokens_per_tick),
     ),
   );
 

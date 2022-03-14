@@ -19,6 +19,7 @@ import { ArrowLeftIcon } from 'shared/icons/ArrowLeft';
 import { routes } from 'shared/helpers/routing';
 import { PageError } from 'shared/components/PageError';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+import type { RoketoAccount, RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 function BackButton({ to }: { to: string }) {
   return (
@@ -84,17 +85,16 @@ export function StreamPage() {
     },
   );
 
-  const account = accountSWR.data;
-  const stream = streamSWR.data;
-  console.log('stream', stream)
-  const tf = useTokenFormatter(stream ? stream.ticker : '');
+  const maybeAccount = accountSWR.data;
+  const maybeStream = streamSWR.data;
+  console.log('stream', maybeStream)
+  const tf = useTokenFormatter(maybeStream ? maybeStream.ticker : '');
 
   const streamHistory = streamHistorySWR.data || [];
 
   const pageError = streamSWR.error || accountSWR.error;
-  const pageReady = stream && account;
 
-  const renderStreamData = () => {
+  const renderStreamData = (stream: RoketoStream, account: RoketoAccount) => {
     const { link } = streamViewData(stream, tf);
     return (
       <>
@@ -138,7 +138,7 @@ export function StreamPage() {
             streamSWR.mutate();
           }}
         />
-      ) : stream === null ? (
+      ) : !maybeStream ? (
         <div>
           <h1 className="text-center my-32 text-2xl text-semibold">
             {' '}
@@ -146,10 +146,10 @@ export function StreamPage() {
             {' '}
           </h1>
         </div>
-      ) : !pageReady ? (
+      ) : !maybeAccount ? (
         <div className="py-32 text-center text-gray text-2xl">Loading...</div>
       ) : (
-        renderStreamData()
+        renderStreamData(maybeStream, maybeAccount)
       )}
     </div>
   );

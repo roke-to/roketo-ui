@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 
 type BulletProps = {
-  className: never;
+  className: string;
 };
 
 export function Bullet({ className, ...rest }: BulletProps) {

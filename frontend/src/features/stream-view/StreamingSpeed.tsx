@@ -7,7 +7,7 @@ import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 type StreamingSpeedProps = {
   stream: RoketoStream;
-  direction?: string;
+  direction?: RoketoStream["direction"];
   className?: string;
 }
 

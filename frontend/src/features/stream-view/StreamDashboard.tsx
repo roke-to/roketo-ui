@@ -6,6 +6,7 @@ import { ArcProgressBar } from 'shared/kit/ProgressBar';
 import { Tooltip } from 'shared/kit/Tooltip';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { streamDirection } from 'shared/api/roketo/helpers';
+import type { RoketoAccount, RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 import {
   StreamControls,
@@ -18,7 +19,12 @@ import { streamViewData } from './streamViewData';
 import { StreamingSpeed } from './StreamingSpeed';
 import { StreamProgressPercentage } from './StreamProgressPercentage';
 
-export function StreamDashboard({ stream, account }) {
+type StreamDashboardProps = {
+  stream: RoketoStream;
+  account: RoketoAccount;
+};
+
+export function StreamDashboard({ stream, account }: StreamDashboardProps) {
   const tf = useTokenFormatter(stream.ticker);
 
   const {

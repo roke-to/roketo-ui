@@ -3,14 +3,14 @@ import { generatePath } from 'react-router-dom';
 
 import { TokenFormatter } from 'shared/helpers/formatting';
 import { useRoketoContext } from 'app/roketo-context';
-import { CreateStreamForm } from 'features/create-stream/CreateStreamForm';
+import { CreateStreamForm, CreateStreamFormValues } from 'features/create-stream/CreateStreamForm';
 
 const redirectUrl = generatePath('streams');
 const returnPath = `${window.location.origin}/#/${redirectUrl}`;
 
 export function SendPage() {
   const { roketo, tokens } = useRoketoContext();
-  const createStreamClick = async (values: any) => {
+  const createStreamClick = async (values: CreateStreamFormValues) => {
     const {
       receiver,
       autoDeposit,

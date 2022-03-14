@@ -1,14 +1,11 @@
 import React from 'react';
 import { useRoketoContext } from 'app/roketo-context';
 
-const STREAM_CONTROL_ID_NOT_PROVIDED = new Error(
-  'Provide stream id to use stream methods',
-);
+function assertMethodHasStreamId(streamId?: string): asserts streamId {
+  console.assert(streamId, 'Provide stream id to use stream methods');
+};
 
-export function useStreamControl(streamId) {
-  const ensureMethodHasStreamId = () => {
-    if (!streamId) throw STREAM_CONTROL_ID_NOT_PROVIDED;
-  };
+export function useStreamControl(streamId?: string) {
   const { roketo } = useRoketoContext();
   const [loading, setLoading] = React.useState(false);
 
@@ -19,7 +16,7 @@ export function useStreamControl(streamId) {
   }
 
   async function enable() {
-    ensureMethodHasStreamId();
+    assertMethodHasStreamId(streamId);
     console.debug('enable', streamId);
 
     await roketo.api.changeAutoDeposit({
@@ -29,7 +26,7 @@ export function useStreamControl(streamId) {
   }
 
   async function disable() {
-    ensureMethodHasStreamId();
+    assertMethodHasStreamId(streamId);
     console.debug('disabling', streamId);
 
     await roketo.api.changeAutoDeposit({
@@ -38,8 +35,8 @@ export function useStreamControl(streamId) {
     });
   }
 
-  async function depositFunc({ token, deposit }) {
-    ensureMethodHasStreamId();
+  async function depositFunc({ token, deposit }: { token: string, deposit: string }) {
+    assertMethodHasStreamId(streamId);
     console.debug('depositing', token, streamId);
 
     await roketo.api.depositStream({
@@ -65,35 +62,30 @@ export function useStreamControl(streamId) {
   }
 
   async function pause() {
-    ensureMethodHasStreamId();
+    assertMethodHasStreamId(streamId);
     console.debug('pausing', streamId);
     const res = await roketo.api.pauseStream({
       streamId,
     });
     console.debug('pausing res', res);
-
-    return res;
   }
 
   async function restart() {
-    ensureMethodHasStreamId();
+    assertMethodHasStreamId(streamId);
     console.debug('restarting', streamId);
     const res = await roketo.api.startStream({ streamId });
     console.debug('restarting res', res);
-
-    return res;
   }
 
   async function stop() {
-    ensureMethodHasStreamId();
+    assertMethodHasStreamId(streamId);
     console.debug('Stop called stopping', streamId);
     const res = await roketo.api.stopStream({ streamId });
     console.debug('stopping res', res);
-    return res;
   }
 
-  function wrapped(fn) {
-    return async (...args) => {
+  function wrapped<T extends any[]>(fn: (...args: T) => Promise<void>) {
+    return async (...args: T) => {
       if (loading) return;
 
       setLoading(true);

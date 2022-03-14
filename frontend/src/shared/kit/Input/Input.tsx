@@ -3,9 +3,9 @@ import './Input.scss';
 import classNames from 'classnames';
 
 type InputProps = {
-  children: never;
-  className: never;
-  error: never;
+  children: React.ReactNode;
+  className?: string;
+  error?: never;
 };
 
 export function Input({

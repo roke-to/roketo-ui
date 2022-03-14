@@ -2,34 +2,30 @@ import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { Filter, FilterOptionWithCounter } from 'shared/kit/Filter';
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
+import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 import { useStreamFilters } from './useStreamFilters';
 
-function compareBy(a, b, key) {
-  if (Number(a[key]) > Number(b[key])) {
-    return -1;
-  } if (Number(a[key]) < Number(b[key])) {
-    return 1;
-  }
-  return 0;
+function compareBy(a: RoketoStream, b: RoketoStream, key: keyof RoketoStream) {
+  return Number(b[key]) - Number(a[key]);
 }
 
 const sorts = {
   bigBalanceFirst: {
     label: 'With big balances',
-    fn: (a, b) => compareBy(a, b, 'balance'),
+    fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'balance'),
   },
   highSpeedFirst: {
     label: 'With high speed',
-    fn: (a, b) => compareBy(a, b, 'tokens_per_tick'),
+    fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'tokens_per_tick'),
   },
   highSpeedLast: {
     label: 'With low speed',
-    fn: (a, b) => compareBy(a, b, 'tokens_per_tick') * -1,
+    fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'tokens_per_tick') * -1,
   },
   mostRecent: {
     label: 'Most recent',
-    fn: (a, b) => compareBy(a, b, 'timestamp_created'),
+    fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'timestamp_created'),
   },
 };
 const statusPriority = [
@@ -38,12 +34,19 @@ const statusPriority = [
   STREAM_STATUS.PAUSED,
   STREAM_STATUS.INTERRUPTED,
   STREAM_STATUS.FINISHED,
+  STREAM_STATUS.ARCHIVED,
 ];
-function defaultStreamSort(a, b) {
+function defaultStreamSort(a: RoketoStream, b: RoketoStream) {
   return statusPriority.indexOf(a.status) - statusPriority.indexOf(b.status);
 }
 
-export function StreamFilters({ items, onFilterDone, className }) {
+type StreamFiltersProps = {
+  items: RoketoStream[];
+  onFilterDone: (result: RoketoStream[]) => void;
+  className: string;
+};
+
+export function StreamFilters({ items, onFilterDone, className }: StreamFiltersProps) {
   const filter = useStreamFilters(items);
   const [sorting, setSorting] = useState(sorts.mostRecent);
   const sortOptions = Object.values(sorts);

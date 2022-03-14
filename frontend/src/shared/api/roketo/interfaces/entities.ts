@@ -23,6 +23,7 @@ export type StreamStatus =
   | "INITIALIZED"
   | "ACTIVE"
   | "PAUSED"
+  | "ARCHIVED"
   | "FINISHED"
   | "INTERRUPTED";
 
@@ -38,7 +39,7 @@ export type StreamStatus =
  * `auto_deposit_enabled` - If stream should be auto-deposited using your existing incoming streams
  * `status` - Stream status
  * `available_to_withdraw` - amount which will be transferred to user account after withdraw
- *
+ * `direction` - Stream direction
  */
 export type RoketoStream = {
   id: string;
@@ -49,11 +50,12 @@ export type RoketoStream = {
   timestamp_created: NanosecondsTimestamp;
   balance: StringInt;
   tokens_per_tick: StringInt;
-  auto_deposit_enabled: false;
+  auto_deposit_enabled: boolean;
   status: StreamStatus;
   tokens_total_withdrawn: StringInt;
   available_to_withdraw: StringInt;
-  history_len: 8;
+  history_len: number;
+  direction: 'in' | 'out' | null;
 };
 
 /**
@@ -66,6 +68,7 @@ export type RoketoStream = {
  * `total_incoming` - All OUTGOING tokens listed there with their speed-per-tick
  * `total_received` - Total amounts that has been streamed to an account
  * `is_external_update_enabled` - True if "update_account" method allowed to be called not by account owner
+ * `cron_task` - TODO
  */
 export type RoketoAccount = {
   account_id: string;
@@ -78,6 +81,7 @@ export type RoketoAccount = {
   total_outgoing: TokenAmount[];
   total_received: TokenAmount[];
   is_external_update_enabled: boolean;
+  cron_task: null;
 };
 
 /**

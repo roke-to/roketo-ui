@@ -1,6 +1,20 @@
 import { useState, useEffect, useMemo } from 'react';
 
-export function useFilter({ options }) {
+import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+
+type FilterFn = (stream: RoketoStream) => boolean;
+
+type Option = string | FilterFn;
+
+type Filter<T> = {
+  option: string;
+  selectOption: (option: string) => void;
+  options: Record<string, T>;
+  optionsArray: string[];
+  currentFilterFunction: T;
+};
+
+export function useFilter<T extends Option>({ options }: { options: Record<string, T>}): Filter<T> {
   const keys = useMemo(() => Object.keys(options), [options]);
 
   const [option, selectOption] = useState(keys[0]);
@@ -23,25 +37,26 @@ export function useFilter({ options }) {
   return filter;
 }
 
-export function useFilters({ items, filters }) {
-  const [filteredItems, setFilteredItems] = useState([]);
-  const [filterCounts, setFilterCounts] = useState([]);
+export function useFilters({ items, filters }: { items: RoketoStream[], filters: Filter<FilterFn>[] }) {
+  const [filteredItems, setFilteredItems] = useState<RoketoStream[]>([]);
+  const [filterCounts, setFilterCounts] = useState<Record<string, number>[]>([]);
 
   useEffect(() => {
     let filteredItemsValue = items;
-    const filterCountsValue = [];
+    const filterCountsValue: Record<string, number>[] = [];
 
     filters.forEach((filter) => {
-      const filterRunResult = {};
+      const filterRunResult: Record<string, RoketoStream[]> = {};
+
       // run filter for every possible function
       Object.keys(filter.options).forEach((option) => {
-        const filtered = filteredItemsValue.filter(filter.options[option]);
+        console.assert(option in filter.options, 'Never happens'); // Type guard
 
-        filterRunResult[option] = filtered;
+        filterRunResult[option] = filteredItemsValue.filter(filter.options[option]);
       });
 
       // calc counts for every option in filter
-      const currentFilterCount = {};
+      const currentFilterCount: Record<string, number> = {};
       Object.keys(filterRunResult).forEach(
         (option) => { currentFilterCount[option] = filterRunResult[option].length; },
       );

@@ -8,17 +8,26 @@ import { PauseIcon } from 'shared/icons/Pause';
 import { StartIcon } from 'shared/icons/Start';
 import { useRoketoContext } from 'app/roketo-context';
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
+import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 import { useStreamControl } from './useStreamControl';
 import { StreamAutodepositStatus } from './StreamAutodepositStatus';
 
+type StreamAutodepositControlsProps = {
+  stream: RoketoStream;
+  minimal?: boolean;
+  className?: string;
+  disableMsg?: string;
+  enableMsg?: string;
+};
+
 export function StreamAutodepositControls({
   stream,
-  minimal,
+  minimal = false,
   className,
   disableMsg,
   enableMsg,
-}) {
+}: StreamAutodepositControlsProps) {
   const { auth } = useRoketoContext();
   const isOutgoing = auth.accountId === stream.owner_id;
   const isIncoming = auth.accountId === stream.receiver_id;

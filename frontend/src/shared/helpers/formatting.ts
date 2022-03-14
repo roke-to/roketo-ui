@@ -61,8 +61,8 @@ export function TokenFormatter(tokenDecimals: number) {
     tokenPerSecondToInt: (tps: number) => numbro(tps).multiply(MP).divide(TICK_TO_S).format({
       mantissa: 0,
     }),
-    toInt: (floatValue: number) => numbro(floatValue).multiply(MP).format({ mantissa: 0 }),
-    amount: (amount: number) => {
+    toInt: (floatValue: number | string) => numbro(floatValue).multiply(MP).format({ mantissa: 0 }),
+    amount: (amount: number | string) => {
       const value = numbro(amount).divide(MP).value();
       const formatted = formatSmartly(value);
       return formatted;

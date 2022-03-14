@@ -14,12 +14,12 @@ const variants = {
 
 type CommonButtonProps = {
   icon?: never;
-  children: React.ReactNode;
-  className: string;
-  size?: never;
-  loading?: never;
-  disabled?: never;
-  loadingText?: never;
+  children?: React.ReactNode;
+  className?: string;
+  size?: 'normal' | 'big';
+  loading?: boolean;
+  disabled?: boolean;
+  loadingText?: string;
   color?: string;
   variant?: string;
 };
@@ -32,7 +32,7 @@ type SpecificLinkProps = {
 type SpecificButtonProps = {
   link?: false;
   type: 'submit' | 'button';
-  onClick: () => void;
+  onClick?: () => void;
 };
 
 type ButtonProps = CommonButtonProps & (SpecificLinkProps | SpecificButtonProps);

@@ -3,7 +3,13 @@ import { useEffect, useState } from 'react';
 import { usePrev } from 'shared/hooks/usePrev';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 
-export function StreamSpeedCalcField({ onChange, deposit = 0, token }) {
+type StreamSpeedCalcFieldProps = {
+  onChange: (speed: number) => void;
+  deposit: number;
+  token: string;
+};
+
+export function StreamSpeedCalcField({ onChange, deposit = 0, token }: StreamSpeedCalcFieldProps) {
   const formatter = useTokenFormatter(token);
 
   const [days, setDays] = useState(0.0);
@@ -37,14 +43,14 @@ export function StreamSpeedCalcField({ onChange, deposit = 0, token }) {
   }, [tokensPerTick, onChange, prevSpeed]);
 
   return (
-    <div className="flex" label="Stream duration">
+    <div className="flex">
       <label className="w-1/3 input font-semibold flex p-4 rounded-l-lg border-border border bg-input text-white focus-within:border-blue hover:border-blue">
         <input
           className="focus:outline-none input bg-input w-1/3"
           placeholder="0"
           value={days}
           onChange={(e) => {
-            setDays(e.target.value);
+            setDays(Number(e.target.value));
           }}
         />
         <div className="right-2 opacity-100 w-1/3">days</div>
@@ -54,7 +60,7 @@ export function StreamSpeedCalcField({ onChange, deposit = 0, token }) {
           className="focus:outline-none input bg-input w-1/3"
           placeholder="0"
           value={hours}
-          onChange={(e) => setHours(e.target.value)}
+          onChange={(e) => setHours(Number(e.target.value))}
         />
         <div className="right-2 opacity-100 w-1/3">hours</div>
       </label>
@@ -63,7 +69,7 @@ export function StreamSpeedCalcField({ onChange, deposit = 0, token }) {
           className="focus:outline-none input bg-input w-1/3"
           placeholder="0"
           value={minutes}
-          onChange={(e) => setMinutes(e.target.value)}
+          onChange={(e) => setMinutes(Number(e.target.value))}
         />
         <div className="right-2 opacity-100 w-1/3">mins</div>
       </label>

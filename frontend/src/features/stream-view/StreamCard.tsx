@@ -13,6 +13,7 @@ import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { shortEnLocale } from 'shared/helpers/date';
 import { isIdling } from 'shared/api/roketo/helpers';
 import { DurationTimer } from 'shared/components/DurationTimer';
+import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import {
   StreamControls,
   StreamAutodepositControls,
@@ -23,7 +24,7 @@ import { streamViewData } from './streamViewData';
 import { StreamingSpeed } from './StreamingSpeed';
 import { StreamProgressPercentage } from './StreamProgressPercentage';
 
-const streamType = {
+const streamType: RoketoStream = {
   id: '51ofCnrPfZ8WA4NWJAnGYvNM1yqDfsVQqpaoxkYz3aZE',
   description: 'qweqweqwe',
   owner_id: 'ggoshanov.testnet',
@@ -40,7 +41,13 @@ const streamType = {
   direction: 'out',
 };
 
-export function StreamCard({ stream = streamType, direction, className }) {
+type StreamCardProps = {
+  stream: RoketoStream;
+  direction: RoketoStream["direction"];
+  className: string;
+};
+
+export function StreamCard({ stream = streamType, direction, className }: StreamCardProps) {
   const tf = useTokenFormatter(stream.ticker);
 
   const {

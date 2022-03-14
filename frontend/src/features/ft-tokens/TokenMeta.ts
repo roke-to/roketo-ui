@@ -1,17 +1,21 @@
+export type TokenTicker = string;
+
+export type TokenMetadata = {
+  spec: null,
+  name: string,
+  symbol: string,
+  icon: '',
+  reference: null,
+  reference_hash: null,
+  decimals: number,
+};
+
 export class TokenMeta {
-  ticker = '';
+  ticker: TokenTicker;
 
-  metadata = {
-    spec: 'ft-1.0.0',
-    name: '',
-    symbol: '',
-    icon: '',
-    reference: null,
-    reference_hash: null,
-    decimals: 18,
-  };
+  metadata: TokenMetadata;
 
-  constructor({ ticker, metadata }: { ticker: any, metadata: any }) {
+  constructor({ ticker, metadata }: { ticker: TokenTicker, metadata: TokenMetadata }) {
     this.ticker = ticker;
     this.metadata = metadata;
   }

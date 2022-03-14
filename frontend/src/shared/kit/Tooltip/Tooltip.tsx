@@ -6,11 +6,12 @@ import type { AlignType } from 'rc-trigger/lib/interface';
 import './Tooltip.scss';
 
 type TooltipProps = {
-  placement: string;
-  children: never;
-  html: never;
-  overlay: never;
-  align: AlignType;
+  placement?: string;
+  children?: React.ReactElement;
+  html?: never;
+  overlay: React.ReactNode;
+  className?: string;
+  align?: AlignType;
 };
 
 export function Tooltip({
@@ -19,6 +20,7 @@ export function Tooltip({
   html,
   overlay,
   align,
+  ...rest
 }: TooltipProps) {
   return (
     <RCTooltip
@@ -27,6 +29,7 @@ export function Tooltip({
       overlay={
         html ? <div dangerouslySetInnerHTML={{ __html: html }} /> : overlay
       }
+      {...rest}
     >
       {children || <span className="Tooltip__defaultIcon">?</span>}
     </RCTooltip>

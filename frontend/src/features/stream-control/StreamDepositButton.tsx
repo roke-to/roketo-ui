@@ -8,10 +8,11 @@ import { PlusIcon } from 'shared/icons/Plus';
 import { PlusGradientIcon } from 'shared/icons/PlusGradient';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { isFundable } from 'shared/api/roketo/helpers';
+import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 import { useStreamControl } from './useStreamControl';
 
-function useDepositButton({ stream }) {
+function useDepositButton({ stream }: { stream: RoketoStream }) {
   const controls = useStreamControl(stream.id);
   const [deposit, setDeposit] = useState('');
   const tf = useTokenFormatter(stream.ticker);
@@ -56,7 +57,12 @@ function useDepositButton({ stream }) {
   };
 }
 
-export function StreamDepositButton({ stream, className }) {
+type StreamDepositButtonProps = {
+  stream: RoketoStream;
+  className: string;
+};
+
+export function StreamDepositButton({ stream, className }: StreamDepositButtonProps) {
   const depositButton = useDepositButton({ stream });
 
   return (
@@ -77,7 +83,12 @@ export function StreamDepositButton({ stream, className }) {
   );
 }
 
-export function StreamDepositButtonOutlined({ stream, variant = 'filled' }) {
+type StreamDepositButtonOutlinedProps = {
+  stream: RoketoStream;
+  variant: string;
+};
+
+export function StreamDepositButtonOutlined({ stream, variant = 'filled' }: StreamDepositButtonOutlinedProps) {
   const depositButton = useDepositButton({ stream });
 
   return (

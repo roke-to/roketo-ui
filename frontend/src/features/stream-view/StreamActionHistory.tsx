@@ -1,11 +1,18 @@
+import React from 'react';
 import { format } from 'date-fns';
 import classNames from 'classnames';
 
 import { timestamp } from 'shared/helpers/formatting';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { STREAM_ACTION_TYPE } from 'shared/api/roketo/constants';
+import type { RoketoStream, StreamAction } from 'shared/api/roketo/interfaces/entities';
 
-function ThCell({ children, className, ...rest }) {
+type ThCellProps = {
+  children: React.ReactNode;
+  className?: never;
+};
+
+function ThCell({ children, className, ...rest }: ThCellProps) {
   return (
     <th
       className={classNames('text-gray font-normal text-left p-4', className)}
@@ -16,7 +23,12 @@ function ThCell({ children, className, ...rest }) {
   );
 }
 
-function TdCell({ children, className, ...rest }) {
+type TdCellProps = {
+  children?: React.ReactNode;
+  className?: string;
+};
+
+function TdCell({ children, className, ...rest }: TdCellProps) {
   return (
     <td
       className={classNames(
@@ -37,9 +49,14 @@ const ACTION_TYPE_COLOR = {
   [STREAM_ACTION_TYPE.WITHDRAW]: 'text-special-hold',
   [STREAM_ACTION_TYPE.PAUSE]: 'text-special-inactive',
   [STREAM_ACTION_TYPE.STOP]: 'text-special-inactive',
+} as const;
+
+type ActionTypeProps = {
+  actionType: keyof typeof ACTION_TYPE_COLOR;
+  className?: never;
 };
 
-function ActionType({ actionType, className, ...rest }) {
+function ActionType({ actionType, className, ...rest }: ActionTypeProps) {
   return (
     <span
       className={classNames(ACTION_TYPE_COLOR[actionType], className)}
@@ -49,6 +66,19 @@ function ActionType({ actionType, className, ...rest }) {
     </span>
   );
 }
+
+type StreamActionHistoryProps = {
+  stream: RoketoStream;
+  history: StreamAction[];
+  currentPage: number;
+  onNextPageClick: () => void;
+  onPrevPageClick: () => void;
+  maxPage: number;
+  pageSize: number;
+  loading: boolean;
+  className: string;
+};
+
 export function StreamActionHistory({
   stream,
   history,
@@ -60,7 +90,7 @@ export function StreamActionHistory({
   loading,
   className,
   ...rest
-}) {
+}: StreamActionHistoryProps) {
   const tf = useTokenFormatter(stream.ticker);
 
   return (
@@ -108,7 +138,7 @@ export function StreamActionHistory({
                 </TdCell>
                 <TdCell>
                   {format(
-                    timestamp(entry.timestamp).fromNanosec(),
+                    timestamp(Number(entry.timestamp)).fromNanosec(),
                     'yyyy MMM dd HH:mm:ss',
                   )}
                 </TdCell>

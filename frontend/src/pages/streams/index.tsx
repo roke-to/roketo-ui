@@ -8,24 +8,20 @@ import { routes } from 'shared/helpers/routing';
 import { useAccount, useStreams } from 'features/roketo-resource';
 import { StreamWithdrawButton } from 'features/stream-control/StreamWithdrawButton';
 import { PageError } from 'shared/components/PageError';
+import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 export function StreamsPage() {
   const { auth, roketo } = useRoketoContext();
-  const [filteredItems, setFiltered] = useState([]);
+  const [filteredItems, setFiltered] = useState<RoketoStream[]>([]);
   const accountSWR = useAccount({ auth, roketo });
   const streamsSWR = useStreams({ auth, roketo, accountSWR });
 
-  const isIncomingStream = (stream: any) => {
-    if (stream.owner_id === auth.accountId) {
-      return false;
-    }
-    return true;
-  };
+  const isIncomingStream = (stream: RoketoStream) => stream.owner_id !== auth.accountId;
 
   const streams = streamsSWR.data;
   const { inputs, outputs } = streams || {};
 
-  const allStreams = useMemo(() => {
+  const allStreams = useMemo<RoketoStream[]>(() => {
     if (!inputs || !outputs) {
       return [];
     }
@@ -66,7 +62,6 @@ export function StreamsPage() {
           <h3 className="text-3xl text-center my-12 ">
             You dont have any streams yet.
           </h3>
-          {/* @ts-ignore */}
           <Button
             variant="main"
             link
