@@ -1,7 +1,29 @@
 import { useEffect, useState } from 'react';
+import classNames from 'classnames';
 
 import { usePrev } from 'shared/hooks/usePrev';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+
+type SpeedInputProps = {
+  className?: string;
+  value: number;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  label: string;
+};
+
+function SpeedInput({ className, value, onChange, label }: SpeedInputProps) {
+  return (
+    <label className={classNames('w-1/3 input font-semibold flex p-4 border-border border bg-input text-white focus-within:border-blue hover:border-blue', className)}>
+      <input
+        className="focus:outline-none input bg-input w-1/3"
+        placeholder="0"
+        value={value}
+        onChange={onChange}
+      />
+      <div className="right-2 opacity-100 w-1/3">{label}</div>
+    </label>
+  );
+}
 
 type StreamSpeedCalcFieldProps = {
   onChange: (speed: number) => void;
@@ -24,15 +46,13 @@ export function StreamSpeedCalcField({ onChange, deposit = 0, token }: StreamSpe
     + minutes * SECONDS_IN_MINUTE
     + hours * SECONDS_IN_HOUR;
 
-  let tokensPerTick = Math.round(
-    deposit / formatter.secondsToTicks(durationInSeconds),
-  );
+  const tokensPerTick = (() => {
+    const value = Math.round(
+      deposit / formatter.secondsToTicks(durationInSeconds),
+    );
 
-  if (Number.isNaN(tokensPerTick)) {
-    tokensPerTick = 0;
-  } else if (tokensPerTick === Infinity) {
-    tokensPerTick = 0;
-  }
+    return !Number.isNaN(value) && value !== Infinity ? value : 0;
+  })();
 
   const prevSpeed = usePrev(tokensPerTick);
 
@@ -44,35 +64,29 @@ export function StreamSpeedCalcField({ onChange, deposit = 0, token }: StreamSpe
 
   return (
     <div className="flex">
-      <label className="w-1/3 input font-semibold flex p-4 rounded-l-lg border-border border bg-input text-white focus-within:border-blue hover:border-blue">
-        <input
-          className="focus:outline-none input bg-input w-1/3"
-          placeholder="0"
-          value={days}
-          onChange={(e) => {
-            setDays(Number(e.target.value));
-          }}
-        />
-        <div className="right-2 opacity-100 w-1/3">days</div>
-      </label>
-      <label className="w-1/3 input font-semibold flex p-4 border-border border bg-input text-white focus-within:border-blue hover:border-blue">
-        <input
-          className="focus:outline-none input bg-input w-1/3"
-          placeholder="0"
-          value={hours}
-          onChange={(e) => setHours(Number(e.target.value))}
-        />
-        <div className="right-2 opacity-100 w-1/3">hours</div>
-      </label>
-      <label className="w-1/3 input font-semibold flex p-4 rounded-r-lg border-border border bg-input text-white focus-within:border-blue hover:border-blue">
-        <input
-          className="focus:outline-none input bg-input w-1/3"
-          placeholder="0"
-          value={minutes}
-          onChange={(e) => setMinutes(Number(e.target.value))}
-        />
-        <div className="right-2 opacity-100 w-1/3">mins</div>
-      </label>
+      <SpeedInput
+        value={days}
+        onChange={(e) => {
+          setDays(Number(e.target.value));
+        }}
+        label="days"
+        className="rounded-l-lg"
+      />
+      <SpeedInput
+        value={days}
+        onChange={(e) => {
+          setHours(Number(e.target.value));
+        }}
+        label="hours"
+      />
+      <SpeedInput
+        value={days}
+        onChange={(e) => {
+          setMinutes(Number(e.target.value));
+        }}
+        label="mins"
+        className="rounded-r-lg"
+      />
     </div>
   );
 }
