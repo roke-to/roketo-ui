@@ -73,14 +73,14 @@ export function StreamSpeedCalcField({ onChange, deposit = 0, token }: StreamSpe
         className="rounded-l-lg"
       />
       <SpeedInput
-        value={days}
+        value={hours}
         onChange={(e) => {
           setHours(Number(e.target.value));
         }}
         label="hours"
       />
       <SpeedInput
-        value={days}
+        value={minutes}
         onChange={(e) => {
           setMinutes(Number(e.target.value));
         }}
