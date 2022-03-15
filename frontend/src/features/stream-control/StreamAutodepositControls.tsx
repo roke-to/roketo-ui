@@ -68,7 +68,7 @@ export function StreamAutodepositControls({
         className="top-full w-44"
         onClose={menu.turnOff}
       >
-        {stream.auto_deposit_enabled ? (
+        {stream.is_auto_deposit_enabled ? (
           <DropdownMenuItem>
             <button
               type="button"

@@ -28,7 +28,7 @@ export function StreamAutodepositStatus({
     },
   };
 
-  const status = stream.auto_deposit_enabled ? 'enabled' : 'disabled';
+  const status = stream.is_auto_deposit_enabled ? 'enabled' : 'disabled';
   const binding = bindings[status] || {};
 
   return (

@@ -59,7 +59,7 @@ export const getEmptyStream = (id: string = 'any'): RoketoStream => ({
   timestamp_created: '1630964802206727665',
   balance: '3472735225910300000000000',
   tokens_per_tick: '100000000000',
-  auto_deposit_enabled: false,
+  is_auto_deposit_enabled: false,
   status: 'ACTIVE',
   tokens_total_withdrawn: '27264774089700000000000',
   available_to_withdraw: '3472735225910300000000000',

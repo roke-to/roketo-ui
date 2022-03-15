@@ -182,7 +182,7 @@ export function StreamOverviewCard({
         ''
       )}
       <HorizontalData label="Auto-deposit:">
-        {stream.auto_deposit_enabled ? 'Enabled' : 'Disabled'}
+        {stream.is_auto_deposit_enabled ? 'Enabled' : 'Disabled'}
       </HorizontalData>
 
       <HorizontalData label="Stream ID:">

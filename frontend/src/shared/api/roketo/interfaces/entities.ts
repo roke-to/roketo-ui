@@ -36,7 +36,7 @@ export type StreamStatus =
  * `ticker` - Token ticker, NEAR or one of whitelisted tokens
  * `balance` - Tokens that are not withdrawn, tho they can be already streamed
  * `tokens_per_tick` - Streaming speed, refer to helpers.ts to learn how to convert it
- * `auto_deposit_enabled` - If stream should be auto-deposited using your existing incoming streams
+ * `is_auto_deposit_enabled` - If stream should be auto-deposited using your existing incoming streams
  * `status` - Stream status
  * `available_to_withdraw` - amount which will be transferred to user account after withdraw
  * `direction` - Stream direction
@@ -50,7 +50,7 @@ export type RoketoStream = {
   timestamp_created: NanosecondsTimestamp;
   balance: StringInt;
   tokens_per_tick: StringInt;
-  auto_deposit_enabled: boolean;
+  is_auto_deposit_enabled: boolean;
   status: StreamStatus;
   tokens_total_withdrawn: StringInt;
   available_to_withdraw: StringInt;

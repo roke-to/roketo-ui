@@ -33,7 +33,7 @@ const streamType: RoketoStream = {
   timestamp_created: '1633966709524321545',
   balance: '1990000000000000000000000',
   tokens_per_tick: '33333333333333',
-  auto_deposit_enabled: true,
+  is_auto_deposit_enabled: true,
   status: 'ACTIVE',
   tokens_total_withdrawn: '0',
   available_to_withdraw: '1990000000000000000000000',
