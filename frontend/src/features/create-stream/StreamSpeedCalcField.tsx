@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import classNames from 'classnames';
+import { differenceInDays, addMonths } from 'date-fns';
 
 import { usePrev } from 'shared/hooks/usePrev';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
@@ -13,14 +14,14 @@ type SpeedInputProps = {
 
 function SpeedInput({ className, value, onChange, label }: SpeedInputProps) {
   return (
-    <label className={classNames('w-1/3 input font-semibold flex p-4 border-border border bg-input text-white focus-within:border-blue hover:border-blue', className)}>
+    <label className={classNames('w-1/4 input font-semibold flex p-4 border-border border bg-input text-white focus-within:border-blue hover:border-blue', className)}>
       <input
         className="focus:outline-none input bg-input w-1/3"
         placeholder="0"
         value={value}
         onChange={onChange}
       />
-      <div className="right-2 opacity-100 w-1/3">{label}</div>
+      <div className="right-2 opacity-100 w-1/4">{label}</div>
     </label>
   );
 }
@@ -34,7 +35,8 @@ type StreamSpeedCalcFieldProps = {
 export function StreamSpeedCalcField({ onChange, deposit = 0, token }: StreamSpeedCalcFieldProps) {
   const formatter = useTokenFormatter(token);
 
-  const [days, setDays] = useState(0.0);
+  const [months, setMonths] = useState(0);
+  const [days, setDays] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [hours, setHours] = useState(0);
 
@@ -42,7 +44,9 @@ export function StreamSpeedCalcField({ onChange, deposit = 0, token }: StreamSpe
   const SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
   const SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
 
-  const durationInSeconds = days * SECONDS_IN_DAY
+  const daysInMonths = differenceInDays(addMonths(new Date(), months), new Date());
+
+  const durationInSeconds = (daysInMonths + days) * SECONDS_IN_DAY
     + minutes * SECONDS_IN_MINUTE
     + hours * SECONDS_IN_HOUR;
 
@@ -65,12 +69,19 @@ export function StreamSpeedCalcField({ onChange, deposit = 0, token }: StreamSpe
   return (
     <div className="flex">
       <SpeedInput
+        value={months}
+        onChange={(e) => {
+          setMonths(Number(e.target.value));
+        }}
+        label="months"
+        className="rounded-l-lg"
+      />
+      <SpeedInput
         value={days}
         onChange={(e) => {
           setDays(Number(e.target.value));
         }}
         label="days"
-        className="rounded-l-lg"
       />
       <SpeedInput
         value={hours}
