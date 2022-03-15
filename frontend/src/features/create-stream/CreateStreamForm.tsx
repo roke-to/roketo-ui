@@ -252,11 +252,15 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                         <div className="text-xs text-gray absolute right-0 top-1">
                           Streaming speed:
                           {' '}
-                          {formatter.tokensPerS(field.value)}
-                          {' '}
-                          {values.token}
-                          {' '}
-                          / sec
+                          {(() => {
+                            if (field.value === 0) {
+                              return 'none';
+                            }
+
+                            const { formattedValue, unit } = formatter.tokensPerMeaningfulPeriod(field.value);
+
+                            return `${formattedValue} ${values.token} / ${unit}`;
+                          })()}
                         </div>
                       </div>
                     )}
