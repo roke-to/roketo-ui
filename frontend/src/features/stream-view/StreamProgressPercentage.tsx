@@ -22,20 +22,17 @@ export function StreamProgressPercentage({
     <div className={className} {...rest}>
       <Bullet className={classNames(colorClass, 'mr-1')} />
       <span>
-        {label}
-        :
+        {label}:{' '}
         <span className="font-semibold">
           {formattedFloatValue}
           {' '}
         </span>
         <span className="text-gray">
           {' '}
-          (
           {numbro(percentageValue).format({
             output: 'percent',
             mantissa: 1,
           })}
-          )
         </span>
       </span>
     </div>
