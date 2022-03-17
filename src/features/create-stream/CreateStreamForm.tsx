@@ -211,10 +211,10 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                   <FormField
                     label={(
                       <span>
-                        <span>Stream initial deposit:</span>
+                        <span>Stream deposit:</span>
                         <Tooltip
                           className="ml-2"
-                          overlay="Funds which will be used to create an initial stream for a set period. This deposit can be extended in manual or automatic mode."
+                          overlay="Funds which will be used to create a stream for a set period."
                         />
                       </span>
                     )}
