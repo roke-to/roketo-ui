@@ -97,6 +97,8 @@ export function ArcProgressBar({ progresses, className }: ArcProgressBarProps) {
       >
         {GRADIENT_STOP.map((colors, i) => (
           <GradientSVG
+            // eslint-disable-next-line react/no-array-index-key
+            key={i}
             progressValue={0}
             idCSS={`__arcProgressBar_grad_${i}`}
             rotation={i === 0 ? 90 : 90}
@@ -106,6 +108,8 @@ export function ArcProgressBar({ progresses, className }: ArcProgressBarProps) {
         ))}
         {progresses.map((progress, i) => (
           <CircularProgressbar
+            // eslint-disable-next-line react/no-array-index-key
+            key={i}
             circleRatio={0.5}
             className="absolute inset-0"
             value={progress}
