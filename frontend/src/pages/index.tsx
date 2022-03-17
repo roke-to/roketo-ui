@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import {
   HashRouter as Router,
   Route,
@@ -18,6 +19,17 @@ import { AuthorizePage } from './authorize';
 import { StreamPage } from './stream';
 
 export function Routing() {
+  useEffect(() => {
+    // Remove unused search params
+    const url = new URL(window.location.href);
+    const TRANSACTION_HASHES = 'transactionHashes';
+
+    if (url.searchParams.has(TRANSACTION_HASHES)) {
+      url.searchParams.delete(TRANSACTION_HASHES);
+      window.history.replaceState(null, '', url);
+    }
+  });
+
   const { auth } = useRoketoContext();
 
   return (
