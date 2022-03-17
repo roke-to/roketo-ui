@@ -250,7 +250,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                           Streaming speed:
                           {' '}
                           {(() => {
-                            if (field.value === 0) {
+                            if (field.value <= 0) {
                               return 'none';
                             }
 
