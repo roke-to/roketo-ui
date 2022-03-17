@@ -11,7 +11,6 @@ import type { RoketoAccount, RoketoStream } from 'shared/api/roketo/interfaces/e
 import {
   StreamControls,
   StreamAutodepositControls,
-  StreamDepositButtonOutlined,
 } from '../stream-control';
 import { StreamWithdrawButton } from '../stream-control/StreamWithdrawButton';
 
@@ -85,32 +84,28 @@ export function StreamDashboard({ stream, account }: StreamDashboardProps) {
       {isDead ? (
         ''
       ) : (
-        <>
-          <div className="flex relative z-10">
-            <StreamControls stream={stream} className="mr-2" />
+        <div className="flex relative z-10">
+          <StreamControls stream={stream} className="mr-2" />
 
-            {/* render withdraw of add funds button */}
-            {direction === 'out' ? (
-              <StreamDepositButtonOutlined variant="outlined" stream={stream} />
-            ) : direction === 'in' ? (
-              <StreamWithdrawButton
-                loadingText="Withdrawing..."
-                variant="outlined"
-                color="dark"
-              >
-                Withdraw from all streams
-              </StreamWithdrawButton>
-            ) : null}
-          </div>
+          {/* render withdraw funds button */}
+          {direction === 'in' ? (
+            <StreamWithdrawButton
+              loadingText="Withdrawing..."
+              variant="outlined"
+              color="dark"
+            >
+              Withdraw from all streams
+            </StreamWithdrawButton>
+          ) : null}
           {direction === 'out' ? (
             <StreamAutodepositControls
               stream={stream}
               enableMsg="Enable auto-deposit"
               disableMsg="Disable auto-deposit"
-              className="mt-4 w-72"
+              className="w-72"
             />
           ) : null}
-        </>
+        </div>
       )}
     </div>
   );

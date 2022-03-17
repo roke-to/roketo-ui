@@ -17,7 +17,6 @@ import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import {
   StreamControls,
   StreamAutodepositControls,
-  StreamDepositButton,
 } from '../stream-control';
 
 import { streamViewData } from './streamViewData';
@@ -147,9 +146,6 @@ export function StreamCard({ stream = streamType, direction, className }: Stream
           </div>
         ) : null}
         <div className="flex items-start justify-end w-52">
-          {direction === 'out' ? (
-            <StreamDepositButton className="flex-grow" stream={stream} />
-          ) : null}
           <Button
             type="button"
             className="ml-3"
