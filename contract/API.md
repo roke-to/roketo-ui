@@ -24,21 +24,13 @@ Some useful scripts are located in `init` directory. They mostly related to auto
 The contract supports the following calls:
 
 - `create_stream` updates the accounts connected to the stream and creates a new stream.
-The stream will be started automatically if deposit is non-zero. Returns new `stream_id`.
-Can be called by anyone except the situation when `owner != predecessor` and auto-deposit is set to enabled.
-This case is not allowed due to possibility of leaking funds from `owner`.
+The stream will be started automatically if deposit is non-zero. Returns new `stream_id`. Can be called by anyone.
 - `deposit` adds the amount of tokens to the stream.
 - `update_account` push the time forward for the account. Returns vector of promises, one per token obtaining in streams.
 Each promise transfers a specific kind of token to the account of the receiver directly.
-Overall, execution of the method releases the tokens from being locked and sends them to the following streams
-(for auto-deposit enabled streams) or/and to the account of the receiver.
-In case of having not enough funds for covering auto-deposit payments, it will disable as many auto-deposit flags as needed
-to process the payment. Technically, `update_account` can be used for withdrawing purposes.
+Overall, execution of the method releases the tokens from being locked and sends them to the account of the receiver.
 - `start_stream` updates the accounts connected to the stream and starts or restarts initialized or paused stream.
 Can be executed only by the owner or the receiver of the stream.
-- `change_auto_deposit` updates the accounts connected to the stream and then updates the auto-deposit flag of the stream.
-Be aware that lack of balance may cause disabling some auto-deposits while the accounts are updated.
-Can be executed only by the owner of the stream.
 - `pause_stream` updates the accounts connected to the stream and pauses the stream. Stream can be paused only if it was in the active state.
 Can be executed only by the owner or the receiver of the stream.
 - `stop_stream` updates the accounts connected to the stream and finished the stream. Finished streams cannot be restarted.
@@ -76,7 +68,6 @@ pub fn create_stream(
     receiver_id: ValidAccountId,
     token_name: String,
     tokens_per_tick: WrappedBalance,
-    auto_deposit_enabled: bool,
 ) -> Base58CryptoHash;
 ```
 - `description` is an optional text description of the stream, max 255 symbols.
@@ -84,7 +75,6 @@ pub fn create_stream(
 - `receiver_id` is a receiver of the stream. Must not be the same as the owner.
 - `token_name` must be a valid and whitelisted token name.
 - `tokens_per_tick` is a speed of the stream in ticks.
-- `auto_deposit_enabled` flag enables auto-deposit, if true.
 
 ### Deposit
 
@@ -106,14 +96,6 @@ pub fn update_account(&mut self, account_id: ValidAccountId) -> Vec<Promise>;
 pub fn start_stream(&mut self, stream_id: Base58CryptoHash);
 ```
 - `stream_id` is a valid stream id.
-
-### Change the auto-deposit flag of a stream
-
-```rust
-pub fn change_auto_deposit(&mut self, stream_id: Base58CryptoHash, auto_deposit: bool);
-```
-- `stream_id` is a valid stream id.
-- `auto_deposit` is a new value for the flag.
 
 ### Pause a stream
 
@@ -200,7 +182,6 @@ pub struct StreamView {
     pub timestamp_created: WrappedTimestamp,
     pub balance: WrappedBalance,
     pub tokens_per_tick: WrappedBalance,
-    pub auto_deposit_enabled: bool,
     pub status: String,
     pub tokens_total_withdrawn: WrappedBalance,
     pub available_to_withdraw: WrappedBalance,
@@ -213,7 +194,6 @@ pub struct StreamView {
 - `receiver_id`.
 - `token_name` is a valid and whitelisted token name.
 - `timestamp_created` is a timestamp when the stream has been created.
-- `auto_deposit_enabled` flag for auto-deposit bool value.
 - `status` is the status of the stream, see below.
 - `tokens_total_withdrawn` is the amount of how many tokens has been withdrawn from the stream for all the period of its activity.
 - `available_to_withdraw` is the amount of how many tokens can be withdrawn by receiver if `update_account` is called.
@@ -257,7 +237,5 @@ Getting stream history is possible with view method `get_stream_history`, see ab
 - `Start`. Start the stream.
 - `Pause`. Pause the stream.
 - `Stop`. Stop the stream.
-- `EnableAutoDeposit`. Enable auto-deposit.
-- `DisableAutoDeposit`. Disable auto-deposit.
 
 Several actions may be applied in one transaction due to following the invariant of keeping the valid state of the accounts.
