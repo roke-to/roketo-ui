@@ -3,7 +3,7 @@ import { useRoketoContext } from 'app/roketo-context';
 
 function assertMethodHasStreamId(streamId?: string): asserts streamId {
   console.assert(streamId, 'Provide stream id to use stream methods');
-};
+}
 
 export function useStreamControl(streamId?: string) {
   const { roketo } = useRoketoContext();
@@ -13,26 +13,6 @@ export function useStreamControl(streamId?: string) {
     console.debug('updating all account');
     await roketo.api.updateAccount({ tokensWithoutStorage });
     console.debug('update completed');
-  }
-
-  async function enable() {
-    assertMethodHasStreamId(streamId);
-    console.debug('enable', streamId);
-
-    await roketo.api.changeAutoDeposit({
-      streamId,
-      autoDeposit: true,
-    });
-  }
-
-  async function disable() {
-    assertMethodHasStreamId(streamId);
-    console.debug('disabling', streamId);
-
-    await roketo.api.changeAutoDeposit({
-      streamId,
-      autoDeposit: false,
-    });
   }
 
   async function depositFunc({ token, deposit }: { token: string, deposit: string }) {
@@ -105,7 +85,5 @@ export function useStreamControl(streamId?: string) {
     restart: wrapped(restart),
     stop: wrapped(stop),
     deposit: wrapped(depositFunc),
-    enable: wrapped(enable),
-    disable: wrapped(disable),
   };
 }

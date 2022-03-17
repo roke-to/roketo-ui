@@ -67,7 +67,6 @@ export function RoketoContractApi({
         token,
         speed,
         description,
-        autoDepositEnabled = false,
         isAutoStartEnabled = true,
       },
       { callbackUrl } = {}
@@ -85,7 +84,7 @@ export function RoketoContractApi({
               token_name: token,
               tokens_per_tick: speed,
               description,
-              is_auto_deposit_enabled: autoDepositEnabled,
+              is_auto_deposit_enabled: false, // TODO: Remove after switching to contract v2
               is_auto_start_enabled: isAutoStartEnabled,
             },
             gas: GAS_SIZE,
@@ -108,7 +107,7 @@ export function RoketoContractApi({
                   token_name: token,
                   tokens_per_tick: speed,
                   balance: deposit,
-                  is_auto_deposit_enabled: autoDepositEnabled,
+                  is_auto_deposit_enabled: false, // TODO: Remove after switching to contract v2
                   is_auto_start_enabled: isAutoStartEnabled,
                 },
               }),
@@ -168,18 +167,6 @@ export function RoketoContractApi({
         GAS_SIZE,
         operationalCommission
       );
-      return res;
-    },
-    changeAutoDeposit: async function changeAutoDeposit({
-      streamId,
-      autoDeposit,
-    }) {
-      const res = await contract.change_auto_deposit(
-        { stream_id: streamId, auto_deposit: autoDeposit },
-        GAS_SIZE,
-        operationalCommission
-      );
-
       return res;
     },
     // View methods

@@ -12,11 +12,6 @@ export const STREAM_DIRECTION = {
   OUT: 'out',
 } as const;
 
-export const STREAM_AUTODEPOSIT_STATUS = {
-  ENABLED: 'enabled',
-  DISABLED: 'disabled',
-} as const;
-
 export const STREAM_ACTION_TYPE = {
   INIT: 'Init',
   DEPOSIT: 'Deposit',

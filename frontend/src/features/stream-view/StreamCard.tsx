@@ -14,10 +14,7 @@ import { shortEnLocale } from 'shared/helpers/date';
 import { isIdling } from 'shared/api/roketo/helpers';
 import { DurationTimer } from 'shared/components/DurationTimer';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
-import {
-  StreamControls,
-  StreamAutodepositControls,
-} from '../stream-control';
+import { StreamControls } from '../stream-control';
 
 import { streamViewData } from './streamViewData';
 import { StreamingSpeed } from './StreamingSpeed';
@@ -32,7 +29,6 @@ const streamType: RoketoStream = {
   timestamp_created: '1633966709524321545',
   balance: '1990000000000000000000000',
   tokens_per_tick: '33333333333333',
-  is_auto_deposit_enabled: true,
   status: 'ACTIVE',
   tokens_total_withdrawn: '0',
   available_to_withdraw: '1990000000000000000000000',
@@ -139,12 +135,6 @@ export function StreamCard({ stream = streamType, direction, className }: Stream
           <div className="text-gray">Status:</div>
           <StreamControls className="w-full" minimal stream={stream} />
         </div>
-        {direction === 'out' ? (
-          <div className="col-span-1 mr-4">
-            <div className="text-gray">Auto&#8209;dep:</div>
-            <StreamAutodepositControls minimal stream={stream} />
-          </div>
-        ) : null}
         <div className="flex items-start justify-end w-52">
           <Button
             type="button"

@@ -49,14 +49,12 @@ const CreateStreamFormSchema = ({ near, accountId }: StreamFormSchemaParams) => 
     .required()
     .moreThan(0, 'Deposit should be more than 0'),
   speed: Yup.number().required().moreThan(0, 'Choose stream duration'),
-  autoDeposit: Yup.boolean(),
   autoStart: Yup.boolean(),
   comment: Yup.string().max(255),
 });
 
 export type CreateStreamFormValues = {
   receiver: string;
-  autoDeposit: boolean;
   autoStart: boolean;
   comment: string;
   deposit: number;
@@ -99,7 +97,6 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
         token: 'NEAR',
         speed: 0,
         deposit: 0,
-        autoDeposit: false,
         autoStart: true,
         comment: '',
       }}
@@ -320,17 +317,6 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
             )}
             <div className="flex relaitive">
               <div>
-                <label className="flex">
-                  <Field name="autoDeposit" className="mr-1" type="checkbox" />
-                  <span>
-                    Enable auto deposit?
-                    {' '}
-                    <Tooltip
-                      className="ml-2"
-                      overlay="Check this if you want make this stream infinite extending getting deposits from income streams with saving initial stream speed."
-                    />
-                  </span>
-                </label>
                 <label className="flex">
                   <Field name="autoStart" className="mr-1" type="checkbox" />
                   <span>

@@ -13,7 +13,6 @@ export function SendPage() {
   const createStreamClick = async (values: CreateStreamFormValues) => {
     const {
       receiver,
-      autoDeposit,
       autoStart,
       comment,
       deposit,
@@ -32,7 +31,6 @@ export function SendPage() {
         receiverId: receiver,
         token,
         speed: String(speed),
-        autoDepositEnabled: autoDeposit,
         isAutoStartEnabled: autoStart,
       },
       {

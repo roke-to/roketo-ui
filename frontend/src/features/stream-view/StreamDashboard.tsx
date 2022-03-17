@@ -8,10 +8,7 @@ import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { streamDirection } from 'shared/api/roketo/helpers';
 import type { RoketoAccount, RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
-import {
-  StreamControls,
-  StreamAutodepositControls,
-} from '../stream-control';
+import { StreamControls } from '../stream-control';
 import { StreamWithdrawButton } from '../stream-control/StreamWithdrawButton';
 
 import { streamViewData } from './streamViewData';
@@ -96,14 +93,6 @@ export function StreamDashboard({ stream, account }: StreamDashboardProps) {
             >
               Withdraw from all streams
             </StreamWithdrawButton>
-          ) : null}
-          {direction === 'out' ? (
-            <StreamAutodepositControls
-              stream={stream}
-              enableMsg="Enable auto-deposit"
-              disableMsg="Disable auto-deposit"
-              className="w-72"
-            />
           ) : null}
         </div>
       )}

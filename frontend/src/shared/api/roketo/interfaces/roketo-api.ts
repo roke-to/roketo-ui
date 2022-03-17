@@ -40,7 +40,6 @@ export interface RoketoApi {
       token: string;
       speed: string;
       description: string;
-      autoDepositEnabled: boolean;
       isAutoStartEnabled: boolean;
     },
     opts: {
@@ -54,9 +53,5 @@ export interface RoketoApi {
     streamId: string;
     token: string;
     deposit: string;
-  }): Promise<void>;
-  changeAutoDeposit(params: {
-    streamId: string;
-    autoDeposit: boolean;
   }): Promise<void>;
 }
