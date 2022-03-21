@@ -49,7 +49,7 @@ function useWithdrawReadyBalances() {
   const { auth, roketo, tokens } = useRoketoContext();
   const accountSWR = useAccount({ auth, roketo });
 
-  const streamsSWR = useStreams({ auth, roketo, accountSWR });
+  const streamsSWR = useStreams({ auth, roketo, account: accountSWR.data });
 
   const balances = useMemo(() => {
     const balancesValue: Record<string, number> = {};

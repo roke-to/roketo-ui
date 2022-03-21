@@ -64,7 +64,7 @@ export function StreamPage() {
   const accountSWR = useAccount({ auth, roketo });
   const streamSWR = useSingleStream(params.id, {
       roketo,
-      accountSWR,
+      account: accountSWR.data,
     },
   );
 
@@ -80,8 +80,8 @@ export function StreamPage() {
     { pageSize: 10 },
     {
       roketo,
-      accountSWR,
-      streamSWR,
+      account: accountSWR.data,
+      stream: streamSWR.data,
     },
   );
 
