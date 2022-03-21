@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import copy from 'clipboard-copy';
 import classNames from 'classnames';
-import { useRoketoContext } from 'app/roketo-context';
+
 import {
   streamViewData,
   StreamOverviewCard,
@@ -58,15 +58,10 @@ function StreamCopyUrlBlock({ className, link }: { className: string, link: stri
 }
 
 export function StreamPage() {
-  const { roketo } = useRoketoContext();
   const params = useParams() as { id: string };
 
   const accountSWR = useAccount();
-  const streamSWR = useSingleStream(params.id, {
-      roketo,
-      account: accountSWR.data,
-    },
-  );
+  const streamSWR = useSingleStream(params.id, accountSWR.data);
 
   const PAGE_SIZE = 10;
 
@@ -79,7 +74,6 @@ export function StreamPage() {
   } = useSingleStreamHistory(
     { pageSize: 10 },
     {
-      roketo,
       account: accountSWR.data,
       stream: streamSWR.data,
     },

@@ -4,7 +4,6 @@ import useSWR, { SWRResponse } from 'swr';
 import { useRoketoContext } from 'app/roketo-context';
 import { STREAM_DIRECTION, STREAM_STATUS } from 'shared/api/roketo/constants';
 import { RoketoStream, RoketoAccount } from 'shared/api/roketo/interfaces/entities';
-import { Roketo } from 'shared/api/roketo';
 
 export function identifyStreamsDirection(streams: RoketoStream[], accountId: string) {
   return streams.map((stream) => ({
@@ -73,12 +72,9 @@ export function useStreams({ account }: UseStreamsProps) {
   return swr;
 }
 
-type UseSingleStreamProps = {
-  roketo: Roketo;
-  account?: RoketoAccount;
-}
+export function useSingleStream(streamId: string, account?: RoketoAccount) {
+  const { roketo } = useRoketoContext();
 
-export function useSingleStream(streamId: string, { roketo, account }: UseSingleStreamProps) {
   const swr = useSWR<RoketoStream>(
     () => {
       const key = account
@@ -120,20 +116,20 @@ export function useSingleStream(streamId: string, { roketo, account }: UseSingle
 }
 
 type UseSingleStreamHistoryProps = {
-  roketo: Roketo;
   account?: RoketoAccount;
   stream?: RoketoStream;
 }
 
 export function useSingleStreamHistory(
   { pageSize = 3 },
-  { roketo, account, stream }: UseSingleStreamHistoryProps,
+  { account, stream }: UseSingleStreamHistoryProps,
 ) {
-  const PAGE_SIZE = pageSize;
+  const { roketo } = useRoketoContext();
+
   const streamId = stream ? stream.id : '';
   const [page, setPage] = useState(0);
 
-  const maxPage = stream ? Math.ceil(stream.history_len / PAGE_SIZE) - 1 : 0;
+  const maxPage = stream ? Math.ceil(stream.history_len / pageSize) - 1 : 0;
 
   const nextPage = () => {
     setPage(page + 1);
@@ -154,8 +150,8 @@ export function useSingleStreamHistory(
     async () => {
       const streamHistory = await roketo.api.getStreamHistory({
         streamId,
-        from: page * PAGE_SIZE,
-        to: (page + 1) * PAGE_SIZE,
+        from: page * pageSize,
+        to: (page + 1) * pageSize,
       });
 
       return streamHistory;
@@ -180,8 +176,8 @@ export function useSingleStreamHistory(
     async () => {
       const streamHistory = await roketo.api.getStreamHistory({
         streamId,
-        from: (page + 1) * PAGE_SIZE,
-        to: (page + 2) * PAGE_SIZE,
+        from: (page + 1) * pageSize,
+        to: (page + 2) * pageSize,
       });
 
       return streamHistory;
