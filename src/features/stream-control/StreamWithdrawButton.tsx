@@ -46,10 +46,10 @@ function TokenBalance({ ticker, balance, className }: TokenBalanceProps) {
 }
 
 function useWithdrawReadyBalances() {
-  const { auth, roketo, tokens } = useRoketoContext();
+  const { roketo, tokens } = useRoketoContext();
   const accountSWR = useAccount();
 
-  const streamsSWR = useStreams({ auth, roketo, account: accountSWR.data });
+  const streamsSWR = useStreams({ account: accountSWR.data });
 
   const balances = useMemo(() => {
     const balancesValue: Record<string, number> = {};

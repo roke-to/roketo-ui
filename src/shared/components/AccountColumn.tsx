@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-import { useRoketoContext } from 'app/roketo-context';
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -39,9 +38,8 @@ export function AccountColumn({
   showPeriod = true,
   className,
 }: AccountColumnProps) {
-  const { auth, roketo } = useRoketoContext();
   const accountSWR = useAccount();
-  const streamsSWR = useStreams({ auth, roketo, account: accountSWR.data });
+  const streamsSWR = useStreams({ account: accountSWR.data });
 
   const allStreams = streamsSWR.data;
 
