@@ -11,10 +11,10 @@ import { PageError } from 'shared/components/PageError';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 export function StreamsPage() {
-  const { auth, roketo } = useRoketoContext();
+  const { auth } = useRoketoContext();
   const [filteredItems, setFiltered] = useState<RoketoStream[]>([]);
   const accountSWR = useAccount();
-  const streamsSWR = useStreams({ auth, roketo, account: accountSWR.data });
+  const streamsSWR = useStreams({ account: accountSWR.data });
 
   const isIncomingStream = (stream: RoketoStream) => stream.owner_id !== auth.accountId;
 
