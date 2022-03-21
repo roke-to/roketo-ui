@@ -4,7 +4,6 @@ import Modal from 'react-modal';
 import { Button } from 'shared/kit/Button';
 import { CronIcon } from 'shared/icons/Cron';
 import { useBool } from 'shared/hooks/useBool';
-import { useRoketoContext } from 'app/roketo-context';
 
 import { useAccount } from 'features/roketo-resource';
 
@@ -20,9 +19,8 @@ const CRON_STATUS = {
 // });
 
 export function CroncatButton() {
-  const { auth, roketo } = useRoketoContext();
   const modalControl = useBool(false);
-  const accountSWR = useAccount({ auth, roketo });
+  const accountSWR = useAccount();
   // const tf = useTokenFormatter('NEAR');
 
   // useEffect(() => {

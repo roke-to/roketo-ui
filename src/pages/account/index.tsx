@@ -1,7 +1,6 @@
 import React from 'react';
 import { formatDistance } from 'date-fns';
 
-import { useRoketoContext } from 'app/roketo-context';
 import { AccountColumn } from 'shared/components/AccountColumn';
 import { HistoryIcon } from 'shared/icons/History';
 import { StreamWithdrawIcon } from 'shared/icons/StreamWithdraw';
@@ -12,8 +11,7 @@ import { PageError } from 'shared/components/PageError';
 import { CroncatButton } from 'features/croncat/CroncatButton';
 
 export function AccountPage() {
-  const { auth, roketo } = useRoketoContext();
-  const accountSWR = useAccount({ auth, roketo });
+  const accountSWR = useAccount();
 
   // const balanceSWR = useSWR(
   //   () => {
