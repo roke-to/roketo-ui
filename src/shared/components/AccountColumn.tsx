@@ -40,7 +40,7 @@ export function AccountColumn({
   className,
 }: AccountColumnProps) {
   const { auth, roketo } = useRoketoContext();
-  const accountSWR = useAccount({ auth, roketo });
+  const accountSWR = useAccount();
   const streamsSWR = useStreams({ auth, roketo, account: accountSWR.data });
 
   const allStreams = streamsSWR.data;

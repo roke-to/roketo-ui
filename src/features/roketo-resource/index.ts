@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useSWR, { SWRResponse } from 'swr';
 
+import { useRoketoContext } from 'app/roketo-context';
 import { STREAM_DIRECTION, STREAM_STATUS } from 'shared/api/roketo/constants';
 import { RoketoStream, RoketoAccount } from 'shared/api/roketo/interfaces/entities';
 import { NearAuth } from 'shared/api/near';
@@ -18,12 +19,9 @@ export function identifyStreamsDirection(streams: RoketoStream[], accountId: str
   }));
 }
 
-type UseAccountProps = {
-  auth: NearAuth;
-  roketo: Roketo;
-}
+export function useAccount(): SWRResponse<RoketoAccount> {
+  const { auth, roketo } = useRoketoContext();
 
-export function useAccount({ auth, roketo }: UseAccountProps): SWRResponse<RoketoAccount> {
   const swr = useSWR(
     ['account', auth.accountId],
     roketo.api.getCurrentAccount,

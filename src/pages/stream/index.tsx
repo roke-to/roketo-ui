@@ -58,10 +58,10 @@ function StreamCopyUrlBlock({ className, link }: { className: string, link: stri
 }
 
 export function StreamPage() {
-  const { auth, roketo } = useRoketoContext();
+  const { roketo } = useRoketoContext();
   const params = useParams() as { id: string };
 
-  const accountSWR = useAccount({ auth, roketo });
+  const accountSWR = useAccount();
   const streamSWR = useSingleStream(params.id, {
       roketo,
       account: accountSWR.data,

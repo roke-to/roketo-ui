@@ -47,7 +47,7 @@ function TokenBalance({ ticker, balance, className }: TokenBalanceProps) {
 
 function useWithdrawReadyBalances() {
   const { auth, roketo, tokens } = useRoketoContext();
-  const accountSWR = useAccount({ auth, roketo });
+  const accountSWR = useAccount();
 
   const streamsSWR = useStreams({ auth, roketo, account: accountSWR.data });
 
