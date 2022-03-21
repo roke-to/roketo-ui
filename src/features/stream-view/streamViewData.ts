@@ -1,4 +1,4 @@
-import { isDead, isFundable } from 'shared/api/roketo/helpers';
+import { isDead } from 'shared/api/roketo/helpers';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import type { TokenFormatter } from 'shared/helpers/formatting';
 
@@ -38,13 +38,10 @@ export function streamViewData(stream: RoketoStream, tokenFormatter: ReturnType<
   return {
     dateEnd,
     progresses,
-    tf,
     isDead: isDead(stream),
-    isFundable: isFundable(stream),
     percentages,
     link,
     timestampEnd,
-    secondsLeft,
     progress: {
       full,
       withdrawn,
