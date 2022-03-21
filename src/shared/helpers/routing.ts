@@ -4,6 +4,5 @@ export const routes = {
   streams: '/streams',
   send: '/',
   receive: '/receive',
-  stream: (id: string) => `/streams/${id}`,
-  streamPattern: '/streams/:id',
+  stream: '/streams/:id',
 };
