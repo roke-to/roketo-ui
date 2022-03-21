@@ -1,10 +1,24 @@
 import React from 'react';
-import { utils } from 'near-api-js';
 import numbro from 'numbro';
 import classNames from 'classnames';
 
 import { useRoketoContext } from 'app/roketo-context';
 import { TokenImage } from 'shared/kit/TokenImage';
+import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+import { SECONDS_IN_MINUTE, SECONDS_IN_HOUR, SECONDS_IN_DAY } from 'shared/api/roketo/constants';
+
+function multiplyAmountByTimePeriod(amount: number, period: string) {
+  switch (period) {
+    case 'min':
+      return amount * SECONDS_IN_MINUTE;
+    case 'hour':
+      return amount * SECONDS_IN_HOUR;
+    case 'day':
+      return amount * SECONDS_IN_DAY;
+    default:
+      return amount;
+  }
+}
 
 type AccountStreamCardProps = {
   token: string;
@@ -25,22 +39,9 @@ export function AccountStreamCard({
 }: AccountStreamCardProps) {
   const { tokens } = useRoketoContext();
   const tokenMeta = tokens.get(token);
-  let multiplier = 1;
-  switch (period) {
-    case 'min':
-      multiplier = 60;
-      break;
-    case 'hour':
-      multiplier = 60 * 60;
-      break;
-    case 'day':
-      multiplier = 60 * 60 * 24;
-      break;
+  const tf = useTokenFormatter(token);
 
-    // no default
-  }
-
-  const balanceValue = Number(utils.format.formatNearAmount(balance)) * multiplier;
+  const balanceValue = tf.amount(multiplyAmountByTimePeriod(Number(balance), period));
 
   return (
     <div
@@ -78,7 +79,7 @@ export function AccountStreamCard({
 
         <div className="ml-auto lg:mt-0 mt-4">
           <span className=" text-3xl">
-            {balanceValue < 0.001 ? '<0.001' : numbro(balanceValue).format({ mantissa: 3 })}
+            {Number(balanceValue) < 0.001 ? '<0.001' : numbro(balanceValue).format({ mantissa: 3 })}
           </span>
           {showPeriod ? <span>{period !== '' ? `/${period}` : ''}</span> : ''}
         </div>
