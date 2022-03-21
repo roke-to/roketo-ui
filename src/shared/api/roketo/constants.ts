@@ -20,3 +20,7 @@ export const STREAM_ACTION_TYPE = {
   PAUSE: 'Pause',
   STOP: 'Stop',
 } as const;
+
+export const SECONDS_IN_MINUTE = 60;
+export const SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
+export const SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;

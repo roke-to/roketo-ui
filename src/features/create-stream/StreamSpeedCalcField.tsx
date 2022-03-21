@@ -4,6 +4,7 @@ import { differenceInDays, addMonths } from 'date-fns';
 
 import { usePrev } from 'shared/hooks/usePrev';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+import { SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE } from 'shared/api/roketo/constants';
 
 type SpeedInputProps = {
   className?: string;
@@ -39,10 +40,6 @@ export function StreamSpeedCalcField({ onChange, deposit = 0, token }: StreamSpe
   const [days, setDays] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [hours, setHours] = useState(0);
-
-  const SECONDS_IN_MINUTE = 60;
-  const SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
-  const SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
 
   const daysInMonths = differenceInDays(addMonths(new Date(), months), new Date());
 
