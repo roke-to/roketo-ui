@@ -1,15 +1,27 @@
 # Roke.to dApp
 
-Direct X-to-Y tokens streaming with no 3rd parties. Forget about paydays and boost control of your payment flows on a new level.
+## Run dev server
+Dev server use .env.development
+```$
+# yarn start
+```
+## Build for production
 
-For a business — truly automatize payrolls with repetitive actions needed, give grants to projects smoothy without step-by-step payouts, send money easily to community members for each repeatable task. Now you can deal with it without any hassle.
+```$
+# cp .env.<mainnet/testnet> .env.production.local
+# yarn build
+```
 
-For a freelancer, artist, community member, new project, or any other earner — own your funds at any moment. Don't be deluded with payroll, all your finances become predictable and accessible. Withdraw funds at any moment without locks, penalties and fees.
-
-Developed by [Kikimora Labs](https://kikimora.ch/).
+## .env
+* .env.development - for local dev server
+* .env.development.local - for override .env.development (git ignored)
+* .env.production - for common vars
+* .env.mainnet - for mainnet`s vars only
+* .env.testnet - for testnet`s vars only
 
 # Links
 
-- [Official Website](https://www.roke.to/)
-- [Roke.to dApp](https://app.roke.to/)
-- [Docs](https://docs.roke.to/)
+- [Landing](https://www.roke.to/) (webflow, outside repo)
+- [dApp](test.app-v2.roke.to) (testnet)
+- [Docs](https://www.notion.so/kikimora-labs/Roketo-2056455fdcf4452f9e690601cc49d7a4)
+- [API docs](/streaming/README.md)

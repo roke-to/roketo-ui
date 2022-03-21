@@ -29,5 +29,5 @@ jobs:
         with:
           branch: master
           folder: frontend/build
-          repository-name: Kikimora-Labs/roketo-dapp-public
+          repository-name: roke-to/roketo-dapp-public
           ssh-key: ${{ secrets.DEPLOY_KEY }}
