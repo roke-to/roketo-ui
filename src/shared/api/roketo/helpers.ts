@@ -31,10 +31,6 @@ export function isDead(stream: RoketoStream) {
   );
 }
 
-export function isFundable(stream: RoketoStream) {
-  return stream.available_to_withdraw !== stream.balance;
-}
-
 export const getEmptyAccount = (id: string = 'any'): RoketoAccount => ({
   account_id: id,
   dynamic_inputs: [],
