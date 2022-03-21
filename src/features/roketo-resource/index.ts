@@ -38,13 +38,10 @@ export function useAccount({ auth, roketo }: UseAccountProps): SWRResponse<Roket
 type UseStreamsProps = {
   auth: NearAuth;
   roketo: Roketo;
-  accountSWR: SWRResponse<RoketoAccount>;
+  account?: RoketoAccount;
 }
 
-export function useStreams({ auth, roketo, accountSWR }: UseStreamsProps) {
-  const account = accountSWR.data;
-
-
+export function useStreams({ auth, roketo, account }: UseStreamsProps) {
   const swr = useSWR(
     () => {
       const key = account
@@ -81,11 +78,10 @@ export function useStreams({ auth, roketo, accountSWR }: UseStreamsProps) {
 
 type UseSingleStreamProps = {
   roketo: Roketo;
-  accountSWR: SWRResponse<RoketoAccount>;
+  account?: RoketoAccount;
 }
 
-export function useSingleStream(streamId: string, { roketo, accountSWR }: UseSingleStreamProps) {
-  const account = accountSWR.data;
+export function useSingleStream(streamId: string, { roketo, account }: UseSingleStreamProps) {
   const swr = useSWR<RoketoStream>(
     () => {
       const key = account
@@ -128,22 +124,19 @@ export function useSingleStream(streamId: string, { roketo, accountSWR }: UseSin
 
 type UseSingleStreamHistoryProps = {
   roketo: Roketo;
-  accountSWR: SWRResponse<RoketoAccount>;
-  streamSWR: SWRResponse<RoketoStream>;
+  account?: RoketoAccount;
+  stream?: RoketoStream;
 }
 
 export function useSingleStreamHistory(
   { pageSize = 3 },
-  { roketo, accountSWR, streamSWR }: UseSingleStreamHistoryProps,
+  { roketo, account, stream }: UseSingleStreamHistoryProps,
 ) {
   const PAGE_SIZE = pageSize;
-  const account = accountSWR.data;
-  const stream = streamSWR.data;
   const streamId = stream ? stream.id : '';
   const [page, setPage] = useState(0);
-  const ready = !!stream;
 
-  const maxPage = ready ? Math.ceil(stream.history_len / PAGE_SIZE) - 1 : 0;
+  const maxPage = stream ? Math.ceil(stream.history_len / PAGE_SIZE) - 1 : 0;
 
   const nextPage = () => {
     setPage(page + 1);

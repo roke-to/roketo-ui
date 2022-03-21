@@ -14,7 +14,7 @@ export function StreamsPage() {
   const { auth, roketo } = useRoketoContext();
   const [filteredItems, setFiltered] = useState<RoketoStream[]>([]);
   const accountSWR = useAccount({ auth, roketo });
-  const streamsSWR = useStreams({ auth, roketo, accountSWR });
+  const streamsSWR = useStreams({ auth, roketo, account: accountSWR.data });
 
   const isIncomingStream = (stream: RoketoStream) => stream.owner_id !== auth.accountId;
 
