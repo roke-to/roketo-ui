@@ -11,12 +11,12 @@ jobs:
       with:
         node-version: '16.x'
         cache: 'yarn'
-        cache-dependency-path: frontend/yarn.lock
+        cache-dependency-path: yarn.lock
 
     - name: Install 🔧
-      working-directory: frontend
+      working-directory: .
       run: yarn
 
     - name: Run ESLint 🌸
-      working-directory: frontend
+      working-directory: .
       run: yarn eslint

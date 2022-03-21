@@ -15,10 +15,10 @@ jobs:
         with:
           node-version: '16.x'
           cache: 'yarn'
-          cache-dependency-path: frontend/yarn.lock
+          cache-dependency-path: yarn.lock
 
       - name: Install and Build 🔧
-        working-directory: frontend
+        working-directory: .
         run: |
           yarn
           mv .env.mainnet .env.production.local
@@ -28,6 +28,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           branch: master
-          folder: frontend/build
+          folder: build
           repository-name: roke-to/roketo-dapp-public
           ssh-key: ${{ secrets.DEPLOY_KEY }}
