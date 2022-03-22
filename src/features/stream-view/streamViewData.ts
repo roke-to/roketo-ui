@@ -13,7 +13,7 @@ export function streamViewData(stream: RoketoStream, tokenFormatter: ReturnType<
     ),
   );
 
-  const dateEnd = new Date(new Date().getTime() + microsecondsLeft);
+  const dateEnd = new Date(microsecondsLeft > 0 ? Date.now() + microsecondsLeft : 0);
   const timestampEnd = dateEnd.getTime();
 
   // progress bar calculations
