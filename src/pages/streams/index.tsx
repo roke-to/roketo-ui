@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 
-import { useRoketoContext } from 'app/roketo-context';
 import { StreamCard } from 'features/stream-view';
 import { StreamFilters } from 'features/filtering/streams';
 import { Button } from 'shared/kit/Button';
@@ -11,12 +10,9 @@ import { PageError } from 'shared/components/PageError';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 export function StreamsPage() {
-  const { auth } = useRoketoContext();
   const [filteredItems, setFiltered] = useState<RoketoStream[]>([]);
   const accountSWR = useAccount();
   const streamsSWR = useStreams({ account: accountSWR.data });
-
-  const isIncomingStream = (stream: RoketoStream) => stream.owner_id !== auth.accountId;
 
   const streams = streamsSWR.data;
   const { inputs, outputs } = streams || {};
@@ -83,7 +79,6 @@ export function StreamsPage() {
             key={stream.id}
             stream={stream}
             className="mb-4"
-            direction={isIncomingStream(stream) ? 'in' : 'out'}
           />
         ))
       )}

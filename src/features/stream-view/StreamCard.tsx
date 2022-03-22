@@ -38,11 +38,10 @@ const streamType: RoketoStream = {
 
 type StreamCardProps = {
   stream: RoketoStream;
-  direction: RoketoStream["direction"];
   className: string;
 };
 
-export function StreamCard({ stream = streamType, direction, className }: StreamCardProps) {
+export function StreamCard({ stream = streamType, className }: StreamCardProps) {
   const tf = useTokenFormatter(stream.ticker);
 
   const {
@@ -87,7 +86,7 @@ export function StreamCard({ stream = streamType, direction, className }: Stream
               <span className="uppercase">{stream.ticker}</span>
             </div>
 
-            <StreamingSpeed stream={stream} direction={direction} />
+            <StreamingSpeed stream={stream} />
 
             <div className="whitespace-nowrap">
               {isIdling(stream) ? (
@@ -120,7 +119,7 @@ export function StreamCard({ stream = streamType, direction, className }: Stream
       </Link>
       <div className="hidden xl:block" />
       <div className="flex gap-5 justify-between xl:justify-end col-span-12 xl:col-span-5 w-full items-center flex-wrap md:flex-nowrap">
-        {direction === 'in' ? (
+        {stream.direction === 'in' ? (
           <div className="w-44">
             <div className="text-gray">Sender:</div>
             <div className="break-words">{stream.owner_id}</div>

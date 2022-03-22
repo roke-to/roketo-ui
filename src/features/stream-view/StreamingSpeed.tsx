@@ -7,11 +7,10 @@ import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 type StreamingSpeedProps = {
   stream: RoketoStream;
-  direction?: RoketoStream["direction"];
   className?: string;
 }
 
-export function StreamingSpeed({ stream, direction, className }: StreamingSpeedProps) {
+export function StreamingSpeed({ stream, className }: StreamingSpeedProps) {
   const tf = useTokenFormatter(stream.ticker);
   const speedInfo = tf.tokensPerMeaningfulPeriod(Number(stream.tokens_per_tick));
 
@@ -22,9 +21,9 @@ export function StreamingSpeed({ stream, direction, className }: StreamingSpeedP
         className,
       )}
     >
-      {direction === 'out' ? (
+      {stream.direction === 'out' ? (
         <StreamOutIcon />
-      ) : direction === 'in' ? (
+      ) : stream.direction === 'in' ? (
         <StreamInIcon />
       ) : (
         ''
