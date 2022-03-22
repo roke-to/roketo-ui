@@ -58,7 +58,7 @@ function StreamCopyUrlBlock({ className, link }: { className: string, link: stri
 }
 
 export function StreamPage() {
-  const params = useParams() as { id: string };
+  const params = useParams<{ id: string }>();
 
   const accountSWR = useAccount();
   const streamSWR = useSingleStream(params.id, accountSWR.data);
@@ -81,7 +81,6 @@ export function StreamPage() {
 
   const maybeAccount = accountSWR.data;
   const maybeStream = streamSWR.data;
-  console.log('stream', maybeStream)
   const tf = useTokenFormatter(maybeStream ? maybeStream.ticker : '');
 
   const streamHistory = streamHistorySWR.data || [];
