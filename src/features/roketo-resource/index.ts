@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import useSWR, { SWRResponse } from 'swr';
+import { differenceInSeconds } from 'date-fns';
 
 import { useRoketoContext } from 'app/roketo-context';
 import { STREAM_DIRECTION, STREAM_STATUS } from 'shared/api/roketo/constants';
 import { RoketoStream, RoketoAccount } from 'shared/api/roketo/interfaces/entities';
+import { TICK_TO_S } from 'shared/api/roketo/config';
 
 export function identifyStreamsDirection(streams: RoketoStream[], accountId: string) {
   return streams.map((stream) => ({
@@ -31,12 +33,37 @@ export function useAccount(): SWRResponse<RoketoAccount> {
   return swr;
 }
 
-type UseStreamsProps = {
-  account?: RoketoAccount;
+function interpolateStream(stream: RoketoStream, cachedBalance: string, cachedAt: number) {
+  const secondsPassed = differenceInSeconds(Date.now(), cachedAt);
+
+  return {
+    ...stream,
+    available_to_withdraw: String(Math.min(
+      Number(cachedBalance) + Number(stream.tokens_per_tick) * TICK_TO_S * secondsPassed,
+      Number(stream.balance)
+    )),
+  };
 }
 
-export function useStreams({ account }: UseStreamsProps) {
+type Balances = {
+  values: {
+    [id: string]: string;
+  };
+  cachedAt: number;
+};
+
+const BALANCES_PLACEHOLDER: Balances = {
+  values: {},
+  cachedAt: 0,
+};
+
+const INTERPOLATIONS_BETWEEN_MULTIPLE_FETCHES = 29;
+
+export function useStreams({ account }: { account?: RoketoAccount }) {
   const { auth, roketo } = useRoketoContext();
+
+  const balances = useRef<Balances>(BALANCES_PLACEHOLDER);
+  const interpolationsLeft = useRef(0);
 
   const swr = useSWR(
     () => {
@@ -62,6 +89,15 @@ export function useStreams({ account }: UseStreamsProps) {
         auth.accountId,
       );
 
+      balances.current = {
+        values: identified.reduce((balancesDraft, stream) => Object.assign(balancesDraft, {
+          [stream.id]: stream.available_to_withdraw
+        }), {}),
+        cachedAt: Date.now()
+      };
+
+      interpolationsLeft.current = INTERPOLATIONS_BETWEEN_MULTIPLE_FETCHES;
+
       return {
         inputs: identified.filter((stream) => stream.direction === STREAM_DIRECTION.IN),
         outputs: identified.filter((stream) => stream.direction === STREAM_DIRECTION.OUT),
@@ -69,11 +105,44 @@ export function useStreams({ account }: UseStreamsProps) {
     },
   );
 
+  React.useEffect(() => {
+    const pollerId = setTimeout(() => {
+      if (!swr.data || interpolationsLeft.current <= 0) {
+        swr.mutate();
+      } else {
+        interpolationsLeft.current -= 1;
+
+        const interpolateAll = (stream: RoketoStream) => interpolateStream(stream, balances.current.values[stream.id], balances.current.cachedAt);
+
+        swr.mutate({
+          inputs: swr.data.inputs.map(interpolateAll),
+          outputs: swr.data.outputs.map(interpolateAll),
+        }, { revalidate: false });
+      }
+    }, 1000);
+
+    return () => clearTimeout(pollerId);
+  }, [swr]);
+
   return swr;
 }
 
+type Balance = {
+  value: string;
+  cachedAt: number;
+};
+
+const BALANCE_PLACEHOLDER: Balance = {
+  value: '',
+  cachedAt: 0,
+};
+
+const INTERPOLATIONS_BETWEEN_SINGLE_FETCHES = 9;
+
 export function useSingleStream(streamId: string, account?: RoketoAccount) {
   const { roketo } = useRoketoContext();
+  const balance = useRef<Balance>(BALANCE_PLACEHOLDER);
+  const interpolationsLeft = useRef(0);
 
   const swr = useSWR<RoketoStream>(
     () => {
@@ -84,6 +153,13 @@ export function useSingleStream(streamId: string, account?: RoketoAccount) {
     },
     async () => {
       const stream = await roketo.api.getStream({ streamId });
+
+      balance.current = {
+        value: stream.available_to_withdraw,
+        cachedAt: Date.now(),
+      };
+
+      interpolationsLeft.current = INTERPOLATIONS_BETWEEN_SINGLE_FETCHES;
 
       return stream;
     },
@@ -102,11 +178,18 @@ export function useSingleStream(streamId: string, account?: RoketoAccount) {
   const isCompleted = stream.balance === stream.available_to_withdraw;
 
   React.useEffect(() => {
-    const startPoller = () => setInterval(swr.mutate, 1000);
-
     if (stream.status === STREAM_STATUS.ACTIVE && !isCompleted) {
-      const id = startPoller();
-      return () => clearInterval(id);
+      const pollerId = setTimeout(() => {
+        if (!swr.data || interpolationsLeft.current <= 0) {
+          swr.mutate();
+        } else {
+          interpolationsLeft.current -= 1;
+
+          swr.mutate(interpolateStream(swr.data, balance.current.value, balance.current.cachedAt), { revalidate: false });
+        }
+      }, 1000);
+
+      return () => clearTimeout(pollerId);
     }
 
     return undefined;
