@@ -73,11 +73,7 @@ export function StreamDashboard({ stream, account }: StreamDashboardProps) {
         {' '}
         {stream.ticker}
       </div>
-      <StreamingSpeed
-        stream={stream}
-        direction={direction}
-        className="mt-6 mb-6"
-      />
+      <StreamingSpeed stream={stream} className="mt-6 mb-6" />
       {isDead ? (
         ''
       ) : (
