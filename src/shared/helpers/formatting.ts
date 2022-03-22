@@ -1,4 +1,14 @@
 import numbro from 'numbro';
+import {
+  TICK_TO_MS,
+  TICK_TO_S,
+  TICK_TO_MINUTE,
+  TICK_TO_HOUR,
+  TICK_TO_DAY,
+  TICK_TO_WEEK,
+  TICK_TO_MONTH,
+  TICK_TO_YEAR,
+} from 'shared/api/roketo/config';
 
 export const tokens = {
   NEAR: {
@@ -18,15 +28,6 @@ export const tokens = {
 };
 
 export function TokenFormatter(tokenDecimals: number) {
-  const TICK_TO_MS = 10 ** 6;
-  const TICK_TO_S = 10 ** 9;
-  const TICK_TO_MINUTE = TICK_TO_S * 60;
-  const TICK_TO_HOUR = TICK_TO_MINUTE * 60;
-  const TICK_TO_DAY = TICK_TO_HOUR * 24;
-  const TICK_TO_WEEK = TICK_TO_DAY * 7;
-  const TICK_TO_MONTH = TICK_TO_WEEK * 4;
-  const TICK_TO_YEAR = TICK_TO_MONTH * 12;
-
   const MP = 10 ** tokenDecimals;
 
   // const bigValueFormatter = Intl.NumberFormat('en-US', {
