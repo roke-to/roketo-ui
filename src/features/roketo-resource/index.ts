@@ -139,6 +139,16 @@ export function useSingleStreamHistory(
   };
   const canGoBack = page > 1;
 
+  const streamHistoryFetcher = async (key1: unknown, key2: unknown, key3: unknown, pageToFetch: number) => {
+    const streamHistory = await roketo.api.getStreamHistory({
+      streamId,
+      from: pageToFetch * pageSize,
+      to: (pageToFetch + 1) * pageSize,
+    });
+
+    return streamHistory;
+  };
+
   const swr = useSWR(
     () => {
       const key = stream
@@ -147,15 +157,7 @@ export function useSingleStreamHistory(
 
       return key;
     },
-    async () => {
-      const streamHistory = await roketo.api.getStreamHistory({
-        streamId,
-        from: page * pageSize,
-        to: (page + 1) * pageSize,
-      });
-
-      return streamHistory;
-    },
+    streamHistoryFetcher,
     {
       onError: (error) => {
         console.debug('useSingleStreamHistory error', error);
@@ -172,16 +174,7 @@ export function useSingleStreamHistory(
 
       return key;
     },
-
-    async () => {
-      const streamHistory = await roketo.api.getStreamHistory({
-        streamId,
-        from: (page + 1) * pageSize,
-        to: (page + 2) * pageSize,
-      });
-
-      return streamHistory;
-    },
+    streamHistoryFetcher,
   );
 
   return {
