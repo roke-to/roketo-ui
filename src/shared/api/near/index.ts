@@ -9,6 +9,7 @@ export async function createNearInstance() {
     walletUrl: NEAR_CONFIG.walletUrl,
     networkId: NEAR_CONFIG.networkId,
     keyStore,
+    headers: {},
   });
 
   return near;

@@ -34,7 +34,7 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "formik": "^2.2.9",
     "gh-pages": "^2.2.0",
-    "near-api-js": "^0.43.1",
+    "near-api-js": "^0.44.2",
     "near-seed-phrase": "^0.1.1",
     "numbro": "^2.3.5",
     "postcss": "^7.0.39",
