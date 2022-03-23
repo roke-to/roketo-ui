@@ -19,7 +19,7 @@ const STREAM_STATUS_FILTER = {
   [STREAM_STATUS.INTERRUPTED]: 'Interrupted',
 };
 
-export function useStreamFilters(streams: RoketoStream[]) {
+export function useStreamFilters(streams: RoketoStream[] | undefined) {
   const statusOptions = useMemo(
     () => ({
       [STREAM_STATUS_FILTER.ALL]: () => true,

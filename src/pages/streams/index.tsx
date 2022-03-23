@@ -10,21 +10,21 @@ import { PageError } from 'shared/components/PageError';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 export function StreamsPage() {
-  const [filteredItems, setFiltered] = useState<RoketoStream[]>([]);
+  const [filteredItems, setFiltered] = useState<RoketoStream[] | undefined>(undefined);
+
   const accountSWR = useAccount();
   const streamsSWR = useStreams({ account: accountSWR.data });
 
   const streams = streamsSWR.data;
   const { inputs, outputs } = streams || {};
 
-  const allStreams = useMemo<RoketoStream[]>(() => {
-    if (!inputs || !outputs) {
-      return [];
-    }
+  const allStreams = useMemo<RoketoStream[] | undefined>(
+    () => ((inputs || outputs) && [...(inputs || []), ...(outputs || [])]),
+    [inputs, outputs]
+  );
 
-    const concatted = inputs.concat(outputs);
-    return concatted;
-  }, [inputs, outputs]);
+  const areStreamsIniting = !allStreams || !filteredItems;
+
   const error = accountSWR.error || streamsSWR.error;
 
   return (
@@ -51,7 +51,7 @@ export function StreamsPage() {
             streamsSWR.mutate();
           }}
         />
-      ) : !streams ? (
+      ) : areStreamsIniting ? (
         <div>Loading</div>
       ) : allStreams.length === 0 ? (
         <div className="flex flex-col w-80 mx-auto">
