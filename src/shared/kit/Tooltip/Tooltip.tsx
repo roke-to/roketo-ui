@@ -1,7 +1,7 @@
 import React from 'react';
 
 import RCTooltip from 'rc-tooltip';
-import type { AlignType } from 'rc-trigger/lib/interface';
+import type { TooltipProps as RCTooltipProps } from 'rc-tooltip/lib/Tooltip';
 
 import './Tooltip.scss';
 
@@ -11,7 +11,7 @@ type TooltipProps = {
   html?: never;
   overlay: React.ReactNode;
   className?: string;
-  align?: AlignType;
+  align?: RCTooltipProps["align"];
 };
 
 export function Tooltip({
