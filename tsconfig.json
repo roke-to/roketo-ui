@@ -11,7 +11,9 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+      "es5",
+      "es6"
     ],
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
