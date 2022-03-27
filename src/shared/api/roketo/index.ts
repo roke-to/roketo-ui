@@ -1,11 +1,21 @@
-import * as nearAPI from "near-api-js";
-import { Contract, WalletConnection } from "near-api-js";
+import * as nearAPI from 'near-api-js';
+import {Contract, WalletConnection} from 'near-api-js';
 
-import { ROKETO_CONTRACT_NAME } from "./config";
-import { RoketoContract } from './interfaces/contracts';
-import { RoketoApi } from './interfaces/roketo-api';
-import { RoketoTokenStatus, RoketoStatus } from './interfaces/entities';
-import { RoketoContractApi } from "./contract-api";
+import {
+  CONTRACT_CHANGE_METHODS as NEAR_CHANGE_METHODS,
+  CONTRACT_VIEW_METHODS as NEAR_VIEW_METHODS,
+} from 'shared/api/near/constants';
+
+import {ROKETO_CONTRACT_NAME} from './config';
+import {RoketoContract} from './interfaces/contracts';
+import {RoketoApi} from './interfaces/roketo-api';
+import {RoketoStatus, RoketoTokenStatus} from './interfaces/entities';
+import {RoketoContractApi} from './contract-api';
+import {
+  NEAR_BRIDGE,
+  CONTRACT_CHANGE_METHODS as ROKETO_CHANGE_METHODS,
+  CONTRACT_VIEW_METHODS as ROKETO_VIEW_METHODS,
+} from './constants';
 
 export interface Roketo {
   api: RoketoApi;
@@ -29,22 +39,8 @@ export async function initRoketo({
 }): Promise<Roketo> {
   const account = await walletConnection.account();
   const contract = new nearAPI.Contract(account, ROKETO_CONTRACT_NAME, {
-    viewMethods: [
-      "get_account",
-      "get_stream",
-      "get_stream_history",
-      "get_status",
-    ],
-    changeMethods: [
-      "create_stream",
-      "deposit",
-      "update_account",
-      "start_stream",
-      "pause_stream",
-      "stop_stream",
-      "change_auto_deposit",
-      "start_cron",
-    ],
+    viewMethods: ROKETO_VIEW_METHODS,
+    changeMethods: ROKETO_CHANGE_METHODS,
   }) as RoketoContract;
 
   const status = await contract.get_status({});
@@ -64,8 +60,8 @@ export async function initRoketo({
       name: token.ticker,
       address: token.account_id,
       contract: new nearAPI.Contract(account, token.account_id, {
-        viewMethods: ["ft_balance_of"],
-        changeMethods: ["ft_transfer", "ft_transfer_call"],
+        viewMethods: NEAR_VIEW_METHODS,
+        changeMethods: NEAR_CHANGE_METHODS,
       }),
     };
   });
@@ -80,17 +76,17 @@ export async function initRoketo({
     tokens: tokensMap,
   });
 
-  const tokenMeta = (ticker: string) => status.tokens.find((t) => t.ticker === ticker);;
+  const tokenMeta = (ticker: string) => status.tokens.find((t) => t.ticker === ticker);
 
   const isBridged = (ticker: string) => {
     const meta = tokenMeta(ticker);
-    const bridges = ["factory.bridge.near"];
-
-    if (meta && bridges.some((bridge) => meta.account_id.endsWith(bridge))) {
-      return true;
+    if (!meta) {
+      return false;
     }
 
-    return false;
+    const bridges = [NEAR_BRIDGE];
+
+    return bridges.some((bridge) => meta.account_id.endsWith(bridge));
   };
 
   return {
