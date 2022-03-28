@@ -4,9 +4,8 @@ import { format, formatDuration, intervalToDuration } from 'date-fns';
 import numbro from 'numbro';
 import copy from 'clipboard-copy';
 
-import { useRoketoContext } from 'app/roketo-context';
+// import { useRoketoContext } from 'app/roketo-context';
 import { CopyIcon } from 'shared/icons/Copy';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { shortEnLocale } from 'shared/helpers/date';
 import { DurationTimer } from 'shared/components/DurationTimer';
 import { isIdling, streamDirection, getEmptyAccount, getEmptyStream } from 'shared/api/roketo/helpers';
@@ -53,8 +52,8 @@ export function StreamOverviewCard({
   className,
   ...rest
 }: StreamOverviewCardProps) {
-  const { roketo } = useRoketoContext();
-  const tf = useTokenFormatter(stream.ticker);
+  // const { roketo } = useRoketoContext();
+  // const tf = useTokenFormatter(stream.ticker);
   const {
     dateEnd,
     percentages,
@@ -62,7 +61,9 @@ export function StreamOverviewCard({
     progress: {
       full, streamed, left, available,
     },
-  } = streamViewData(stream, tf);
+  } = streamViewData(stream);
+
+  console.log('log', percentages, full, left, available, streamed)
 
   const duration = intervalToDuration({
     start: new Date(),
@@ -107,17 +108,17 @@ export function StreamOverviewCard({
       <HorizontalData label="Stream Created:">
         {format(new Date(Number(stream.timestamp_created) / 1000000), 'Yo MMM do')}
       </HorizontalData>
-      <HorizontalData label="Token:">{stream.ticker}</HorizontalData>
+      {/* <HorizontalData label="Token:">{stream.ticker}</HorizontalData> */}
       <HorizontalData label="Total:">
-        {tf.amount(full)}
+        {/* {tf.amount(full)} */}
         {' '}
-        {stream.ticker}
+        {/* {stream.ticker} */}
       </HorizontalData>
       <HorizontalData label="Tokens Transferred:">
         <span>
-          {tf.amount(streamed)}
+          {/* {tf.amount(streamed)} */}
           {' '}
-          {stream.ticker}
+          {/* {stream.ticker} */}
           {' '}
           <span className="text-gray">
             (
@@ -131,9 +132,9 @@ export function StreamOverviewCard({
       </HorizontalData>
       <HorizontalData label="Tokens Left:">
         <span>
-          {tf.amount(left)}
+          {/* {tf.amount(left)} */}
           {' '}
-          {stream.ticker}
+          {/* {stream.ticker} */}
           {' '}
           <span className="text-gray">
             (
@@ -146,23 +147,23 @@ export function StreamOverviewCard({
         </span>
       </HorizontalData>
       <HorizontalData label="Tokens Available:">
-        {tf.amount(available)}
+        {/* {tf.amount(available)} */}
         {' '}
-        {stream.ticker}
+        {/* {stream.ticker} */}
       </HorizontalData>
       <HorizontalData label="Stream update & withdrawal fee:">
-        {tf.amount(
+        {/* {tf.amount(
           (Number(stream.available_to_withdraw)
             * (roketo.tokenMeta(stream.ticker)?.commission_percentage || 0))
             / 100,
-        )}
+        )} */}
         {' '}
-        {stream.ticker}
+        {/* {stream.ticker} */}
         {' '}
         <span className="text-gray">
           (
           {numbro(
-            roketo.tokenMeta(stream.ticker)?.commission_percentage || 0 / 100,
+            // roketo.tokenMeta(stream.ticker)?.commission_percentage || 0 / 100,
           ).format({
             output: 'percent',
             mantissa: 2,
@@ -174,13 +175,13 @@ export function StreamOverviewCard({
         <StreamingSpeed stream={stream} />
       </HorizontalData>
 
-      {direction === 'in' ? (
+      {/* {direction === 'in' ? (
         <HorizontalData label="Latest Withdrawal:">
           {format(new Date(Number(account.last_action) / 1000000), 'MMM dd, Yo  H:m')}
         </HorizontalData>
       ) : (
         ''
-      )}
+      )} */}
 
       <HorizontalData label="Stream ID:">
         <div className="inline-block w-24 overflow-ellipsis overflow-hidden">

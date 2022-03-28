@@ -63,8 +63,7 @@ export function StreamControls({ stream, minimal, className }: StreamControlsPro
   const isIncoming = auth.accountId === stream.receiver_id;
   const isExternalStream = !isOutgoing && !isIncoming;
 
-  const isDead = stream.status === STREAM_STATUS.INTERRUPTED
-    || stream.status === STREAM_STATUS.FINISHED;
+  const isDead = stream.status === STREAM_STATUS.Finished;
   const [menuOpened, setMenuOpened] = useState(false);
 
   const controls = useStreamControl(stream.id);
@@ -109,7 +108,7 @@ export function StreamControls({ stream, minimal, className }: StreamControlsPro
         opened={opened}
         className="top-full w-44"
       >
-        {stream.status !== STREAM_STATUS.ACTIVE && isOutgoing ? (
+        {stream.status !== STREAM_STATUS.Active && isOutgoing ? (
           <>
             <DropdownMenuItem>
               <button
@@ -125,7 +124,7 @@ export function StreamControls({ stream, minimal, className }: StreamControlsPro
             <DropdownMenuDivider />
           </>
         ) : null}
-        {stream.status !== STREAM_STATUS.PAUSED ? (
+        {stream.status !== STREAM_STATUS.Paused ? (
           <>
             <DropdownMenuItem>
               <button

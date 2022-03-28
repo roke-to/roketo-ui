@@ -7,11 +7,11 @@ import { FormField } from 'shared/kit/FormField';
 import { Input } from 'shared/kit/Input';
 import { Button } from 'shared/kit/Button';
 import { TokenImage } from 'shared/kit/TokenImage';
-import { DropdownMenu, DropdownMenuItem } from 'shared/kit/DropdownMenu';
+import { DropdownMenu } from 'shared/kit/DropdownMenu';
 import { DropdownOpener } from 'shared/kit/DropdownOpener';
-import { RadioButton } from 'shared/kit/RadioButton';
+// import { RadioButton } from 'shared/kit/RadioButton';
 import { Tooltip } from 'shared/kit/Tooltip';
-import { TokenFormatter } from 'shared/helpers/formatting';
+// import { TokenFormatter } from 'shared/helpers/formatting';
 import { env } from 'shared/config';
 import { useRoketoContext } from 'app/roketo-context';
 import { StreamSpeedCalcField } from './StreamSpeedCalcField';
@@ -67,7 +67,7 @@ type CreateStreamFormProps = {
 };
 
 export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
-  const { near, auth, tokens, roketo } = useRoketoContext();
+  const { near, auth } = useRoketoContext();
 
   const schema = CreateStreamFormSchema({
     accountId: auth.accountId,
@@ -78,7 +78,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
 
   const [submitError, setError] = useState<Error | null>(null);
 
-  const tokensNames = tokens.tickers;
+  // const tokensNames = tokens.tickers;
   const formikOnSubmit = async (values: CreateStreamFormValues, formikHelpers: FormikHelpers<CreateStreamFormValues>) => {
     console.debug('Formik submit', values, formikHelpers);
     try {
@@ -113,10 +113,11 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
         handleSubmit,
         isSubmitting,
       }) => {
-        const tokenMeta = roketo.tokenMeta(values.token);
-        const formatter = TokenFormatter(
-          tokens.get(values.token).metadata.decimals,
-        );
+        // const tokenMeta = roketo.tokenMeta(values.token);
+        console.log('values.token', values.token)
+        // const formatter = TokenFormatter(
+        //   tokens.get(values.token).metadata.decimals,
+        // );
         return (
           <form className="max-w-lg mx-auto w-full" onSubmit={handleSubmit}>
             <Field name="receiver">
@@ -171,7 +172,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                       className="z-10"
                       onClose={() => setDropdownOpened(false)}
                     >
-                      {tokensNames.map((option: string) => (
+                      {/* {tokensNames.map((option: string) => (
                         <DropdownMenuItem
                           className="focus-within:border-blue"
                           key={option}
@@ -197,7 +198,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                             }}
                           />
                         </DropdownMenuItem>
-                      ))}
+                      ))} */}
                     </DropdownMenu>
                   </FormField>
                 )}
@@ -254,9 +255,10 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                               return 'none';
                             }
 
-                            const { formattedValue, unit } = formatter.tokensPerMeaningfulPeriod(field.value);
+                            // const { formattedValue, unit } = formatter.tokensPerMeaningfulPeriod(field.value);
 
-                            return `${formattedValue} ${values.token} / ${unit}`;
+                            // return `${formattedValue} ${values.token} / ${unit}`;
+                            return 'none'
                           })()}
                         </div>
                       </div>
@@ -266,7 +268,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                     {' '}
                     <StreamSpeedCalcField
                       token={values.token}
-                      deposit={Number(formatter.toInt(values.deposit))}
+                      deposit={0}
                       onChange={(speed) => {
                         setFieldValue(field.name, speed, false);
                         setFieldTouched(field.name, true, false);
@@ -332,9 +334,9 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                 <p className="text-left text-gray w-2/3 text-sm">
                   You will be charged
                   {' '}
-                  {tokenMeta && formatter.amount(tokenMeta.commission_on_create)}
+                  {/* {tokenMeta && formatter.amount(tokenMeta.commission_on_create)} */}
                   {' '}
-                  {tokenMeta?.ticker}
+                  {/* {tokenMeta?.ticker} */}
                   {' '}
                   fee for that stream
                 </p>

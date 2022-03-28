@@ -6,19 +6,18 @@ import { useRoketoContext } from 'app/roketo-context';
 import {
   streamViewData,
   StreamOverviewCard,
-  StreamActionHistory,
+  // StreamActionHistory,
 } from 'features/stream-view';
 import {
   useAccount,
   useSingleStream,
-  useSingleStreamHistory,
+  // useSingleStreamHistory,
 } from 'features/roketo-resource';
 import { StreamDashboard } from 'features/stream-view/StreamDashboard';
 import { LinkIcon } from 'shared/icons/Link';
 import { ArrowLeftIcon } from 'shared/icons/ArrowLeft';
 import { routes } from 'shared/helpers/routing';
 import { PageError } from 'shared/components/PageError';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import type { RoketoAccount, RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 function BackButton({ to }: { to: string }) {
@@ -68,34 +67,34 @@ export function StreamPage() {
     },
   );
 
-  const PAGE_SIZE = 10;
+  // const PAGE_SIZE = 10;
 
-  const {
-    swr: streamHistorySWR,
-    nextPage,
-    prevPage,
-    maxPage,
-    currentPage,
-  } = useSingleStreamHistory(
-    { pageSize: 10 },
-    {
-      roketo,
-      accountSWR,
-      streamSWR,
-    },
-  );
+  // const {
+  //   swr: streamHistorySWR,
+  //   nextPage,
+  //   prevPage,
+  //   maxPage,
+  //   currentPage,
+  // } = useSingleStreamHistory(
+  //   { pageSize: 10 },
+  //   {
+  //     roketo,
+  //     accountSWR,
+  //     streamSWR,
+  //   },
+  // );
 
   const maybeAccount = accountSWR.data;
   const maybeStream = streamSWR.data;
   console.log('stream', maybeStream)
-  const tf = useTokenFormatter(maybeStream ? maybeStream.ticker : '');
+  // const tf = useTokenFormatter(maybeStream ? maybeStream.ticker : '');
 
-  const streamHistory = streamHistorySWR.data || [];
+  // const streamHistory = streamHistorySWR.data || [];
 
   const pageError = streamSWR.error || accountSWR.error;
 
   const renderStreamData = (stream: RoketoStream, account: RoketoAccount) => {
-    const { link } = streamViewData(stream, tf);
+    const { link } = streamViewData(stream);
     return (
       <>
         <div className="flex flex-col lg:flex-row justify-between">
@@ -109,7 +108,7 @@ export function StreamPage() {
             account={account}
           />
         </div>
-        <StreamActionHistory
+        {/* <StreamActionHistory
           pageSize={PAGE_SIZE}
           loading={!streamHistorySWR.data}
           stream={stream}
@@ -119,7 +118,7 @@ export function StreamPage() {
           onNextPageClick={nextPage}
           maxPage={maxPage}
           currentPage={currentPage}
-        />
+        /> */}
       </>
     );
   };

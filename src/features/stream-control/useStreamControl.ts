@@ -9,21 +9,21 @@ export function useStreamControl(streamId?: string) {
   const { roketo } = useRoketoContext();
   const [loading, setLoading] = React.useState(false);
 
-  async function updateAllAndWithdraw({ tokensWithoutStorage = 0 }) {
+  async function updateAllAndWithdraw() {
     console.debug('updating all account');
-    await roketo.api.updateAccount({ tokensWithoutStorage });
+    // await roketo.api.updateAccount({ tokensWithoutStorage });
     console.debug('update completed');
   }
 
-  async function depositFunc({ token, deposit }: { token: string, deposit: string }) {
+  async function depositFunc({ token }: { token: string, deposit: string }) {
     assertMethodHasStreamId(streamId);
     console.debug('depositing', token, streamId);
 
-    await roketo.api.depositStream({
-      token,
-      deposit,
-      streamId,
-    });
+    // await roketo.api.depositStream({
+    //   token,
+    //   deposit,
+    //   streamId,
+    // });
     // token === 'NEAR'
     //   ? await roketo.api.depositStream({
     //       streamId,

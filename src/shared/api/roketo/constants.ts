@@ -1,10 +1,8 @@
 export const STREAM_STATUS = {
-  INITIALIZED: 'INITIALIZED',
-  ACTIVE: 'ACTIVE',
-  PAUSED: 'PAUSED',
-  ARCHIVED: 'ARCHIVED',
-  FINISHED: 'FINISHED',
-  INTERRUPTED: 'INTERRUPTED',
+  Initialized: 'Initialized',
+  Active: 'Active',
+  Paused: 'Paused',
+  Finished: 'Finished'
 } as const;
 
 export const STREAM_DIRECTION = {

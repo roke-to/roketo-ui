@@ -2,18 +2,18 @@ import React from 'react';
 import classNames from 'classnames';
 import { StreamOutIcon } from 'shared/icons/StreamOut';
 import { StreamInIcon } from 'shared/icons/StreamIn';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 type StreamingSpeedProps = {
   stream: RoketoStream;
-  direction?: RoketoStream["direction"];
+  direction?: string;
   className?: string;
 }
 
 export function StreamingSpeed({ stream, direction, className }: StreamingSpeedProps) {
-  const tf = useTokenFormatter(stream.ticker);
-  const speedInfo = tf.tokensPerMeaningfulPeriod(Number(stream.tokens_per_tick));
+  // const tf = useTokenFormatter(stream.ticker);
+  // const speedInfo = tf.tokensPerMeaningfulPeriod(Number(stream.tokens_per_sec));
+  console.log('stream', stream)
 
   return (
     <div
@@ -32,14 +32,14 @@ export function StreamingSpeed({ stream, direction, className }: StreamingSpeedP
       <span className="ml-2">
         <span>
           @
-          {speedInfo.formattedValue}
+          {/* {speedInfo.formattedValue} */}
         </span>
         <span>
           {' '}
-          {stream.ticker}
+          {/* {stream.ticker} */}
           {' '}
           /
-          {speedInfo.unit}
+          {/* {speedInfo.unit} */}
         </span>
       </span>
     </div>

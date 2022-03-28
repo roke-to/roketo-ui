@@ -1,10 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { TokenImage } from 'shared/kit/TokenImage';
 import { ArcProgressBar } from 'shared/kit/ProgressBar';
 import { Tooltip } from 'shared/kit/Tooltip';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { streamDirection } from 'shared/api/roketo/helpers';
 import type { RoketoAccount, RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
@@ -13,7 +11,6 @@ import { StreamWithdrawButton } from '../stream-control/StreamWithdrawButton';
 
 import { streamViewData } from './streamViewData';
 import { StreamingSpeed } from './StreamingSpeed';
-import { StreamProgressPercentage } from './StreamProgressPercentage';
 
 type StreamDashboardProps = {
   stream: RoketoStream;
@@ -21,15 +18,15 @@ type StreamDashboardProps = {
 };
 
 export function StreamDashboard({ stream, account }: StreamDashboardProps) {
-  const tf = useTokenFormatter(stream.ticker);
 
   const {
     progresses,
     percentages,
     isDead,
     progress: { full, withdrawn, streamed },
-  } = streamViewData(stream, tf);
+  } = streamViewData(stream);
   const direction = streamDirection({ stream, account });
+  console.log('log', percentages, full, withdrawn, streamed)
 
   return (
     <div className={classNames('flex', 'flex-col', 'items-center')}>
@@ -38,7 +35,7 @@ export function StreamDashboard({ stream, account }: StreamDashboardProps) {
           align={{ offset: [0, -20] }}
           overlay={(
             <div className="text-left">
-              <StreamProgressPercentage
+              {/* <StreamProgressPercentage
                 className="whitespace-nowrap mb-2"
                 label="Withdrawn"
                 colorClass="bg-streams-withdrawn"
@@ -51,7 +48,7 @@ export function StreamDashboard({ stream, account }: StreamDashboardProps) {
                 colorClass="bg-streams-streamed"
                 formattedFloatValue={`${tf.amount(streamed)} ${stream.ticker}`}
                 percentageValue={percentages.streamed}
-              />
+              /> */}
             </div>
           )}
         >
@@ -64,18 +61,18 @@ export function StreamDashboard({ stream, account }: StreamDashboardProps) {
         </div>
       </div>
 
-      <TokenImage size={14} tokenName={stream.ticker} className="mb-8" />
-      <div className="text-6xl font-semibold">{tf.amount(streamed)}</div>
+      {/* <TokenImage size={14} tokenName={stream.ticker} className="mb-8" /> */}
+      {/* <div className="text-6xl font-semibold">{tf.amount(streamed)}</div> */}
       <div className="text-gray font-semibold">
         of
         {' '}
-        {tf.amount(full)}
+        {/* {tf.amount(full)} */}
         {' '}
-        {stream.ticker}
+        {/* {stream.ticker} */}
       </div>
       <StreamingSpeed
         stream={stream}
-        direction={direction}
+        // direction={direction}
         className="mt-6 mb-6"
       />
       {isDead ? (

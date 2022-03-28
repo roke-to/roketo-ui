@@ -4,11 +4,11 @@ import { Near, WalletConnection } from 'near-api-js';
 import { NEAR_CONFIG } from 'shared/api/near/config';
 import { createNearInstance, getNearAuth, NearAuth } from 'shared/api/near';
 import { initRoketo, Roketo } from 'shared/api/roketo';
-import { Tokens } from 'features/ft-tokens';
+import { initFT, RichTokens } from 'shared/api/ft';
 
 type AppServices = {
   auth: NearAuth;
-  tokens: Tokens;
+  tokens: RichTokens;
   roketo: Roketo;
   near: Near;
   walletConnection: WalletConnection;
@@ -26,25 +26,25 @@ export function RoketoContextProvider({
     const init = async () => {
       const near = await createNearInstance();
       const walletConnection = new WalletConnection(near, NEAR_CONFIG.contractName);
-      const auth = getNearAuth(walletConnection);
+      const auth = await getNearAuth(walletConnection);
 
       const roketo = await initRoketo({
-        walletConnection,
+        accountId: auth.accountId,
+        account: auth.account,
       });
 
-      const tokens = new Tokens({
-        account: walletConnection.account(),
-        tokens: roketo.status.tokens,
+      const tokens = await initFT({
+        account: auth.account,
+        tokens: roketo.dao.tokens,
       });
-
-      await tokens.init();
+      console.log('tokens', tokens)
 
       setContext({
         auth,
         near,
         roketo,
         walletConnection,
-        tokens,
+        tokens, 
       });
     };
 

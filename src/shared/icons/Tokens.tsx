@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRoketoContext } from 'app/roketo-context';
+// import { useRoketoContext } from 'app/roketo-context';
 
 type NearTokenImageProps = {
   className?: string;
@@ -67,14 +67,14 @@ type TokenIconProps = {
 };
 
 export function TokenIcon({ tokenName, className, ...rest }: TokenIconProps) {
-  const { tokens } = useRoketoContext();
-  const image = tokens.get(tokenName).metadata.icon;
+  // const { tokens } = useRoketoContext();
+  // const image = tokens.get(tokenName).metadata.icon;
 
-  if (image) {
-    return (
-      <img src={image} alt={tokenName} className={className} {...rest} />
-    );
-  }
+  // if (image) {
+  //   return (
+  //     <img src={image} alt={tokenName} className={className} {...rest} />
+  //   );
+  // }
   const Component = isValidTokenName(tokenName) ? currentTokens[tokenName] : FallbackTokenImage;
   return <Component className={className} {...rest} />;
 }

@@ -22,9 +22,9 @@ export type NearAuth = {
   logout: () => void,
 }
 
-export function getNearAuth(walletConnection: WalletConnection): NearAuth {
-  const accountId = walletConnection.getAccountId();
-  const account = walletConnection.account();
+export async function getNearAuth(walletConnection: WalletConnection): Promise<NearAuth> {
+  const accountId = await walletConnection.getAccountId();
+  const account = await walletConnection.account();
 
   async function login() {
     const appTitle = 'Roketo Token Streaming Service';

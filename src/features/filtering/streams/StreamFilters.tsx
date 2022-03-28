@@ -17,11 +17,11 @@ const sorts = {
   },
   highSpeedFirst: {
     label: 'With high speed',
-    fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'tokens_per_tick'),
+    fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'tokens_per_sec'),
   },
   highSpeedLast: {
     label: 'With low speed',
-    fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'tokens_per_tick') * -1,
+    fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'tokens_per_sec') * -1,
   },
   mostRecent: {
     label: 'Most recent',
@@ -29,12 +29,10 @@ const sorts = {
   },
 };
 const statusPriority = [
-  STREAM_STATUS.INITIALIZED,
-  STREAM_STATUS.ACTIVE,
-  STREAM_STATUS.PAUSED,
-  STREAM_STATUS.INTERRUPTED,
-  STREAM_STATUS.FINISHED,
-  STREAM_STATUS.ARCHIVED,
+  STREAM_STATUS.Initialized,
+  STREAM_STATUS.Active,
+  STREAM_STATUS.Paused,
+  STREAM_STATUS.Finished,
 ];
 function defaultStreamSort(a: RoketoStream, b: RoketoStream) {
   return statusPriority.indexOf(a.status) - statusPriority.indexOf(b.status);

@@ -49,14 +49,9 @@ export function CroncatButton() {
   // }
 
   const accountData = accountSWR.data;
-
   console.log('accountData', accountData);
 
-  const cronStatus = accountData
-    ? accountData.cron_task
-      ? CRON_STATUS.RUNNING
-      : CRON_STATUS.NOT_RUNNING
-    : CRON_STATUS.INITIALIZING;
+  const cronStatus = CRON_STATUS.NOT_RUNNING;
 
   // const cadences = [
   //   {

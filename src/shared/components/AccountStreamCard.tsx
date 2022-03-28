@@ -2,10 +2,9 @@ import React from 'react';
 import numbro from 'numbro';
 import classNames from 'classnames';
 
-import { useRoketoContext } from 'app/roketo-context';
 import { TokenImage } from 'shared/kit/TokenImage';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { SECONDS_IN_MINUTE, SECONDS_IN_HOUR, SECONDS_IN_DAY } from 'shared/api/roketo/constants';
+import { useRoketoContext } from 'app/roketo-context';
 
 function multiplyAmountByTimePeriod(amount: number, period: string) {
   switch (period) {
@@ -38,10 +37,8 @@ export function AccountStreamCard({
   className,
 }: AccountStreamCardProps) {
   const { tokens } = useRoketoContext();
-  const tokenMeta = tokens.get(token);
-  const tf = useTokenFormatter(token);
 
-  const balanceValue = tf.amount(multiplyAmountByTimePeriod(Number(balance), period));
+  const balanceValue = multiplyAmountByTimePeriod(Number(balance), period);
 
   return (
     <div
@@ -59,9 +56,7 @@ export function AccountStreamCard({
           </div>
           <div className="">
             <div className="font-bold">
-              {tokenMeta.metadata.name}
-              ,
-              {token}
+              {tokens[token].meta.symbol}
             </div>
             {streamsLength > 0 ? (
               <div className="text-gray text-sm">

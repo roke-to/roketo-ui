@@ -1,52 +1,50 @@
 import React, { useMemo } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
-import classNames from 'classnames';
 import Modal from 'react-modal';
 
 import { Button } from 'shared/kit/Button';
-import { TokenImage } from 'shared/kit/TokenImage';
 import { Tooltip } from 'shared/kit/Tooltip';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { useBool } from 'shared/hooks/useBool';
 import { useRoketoContext } from 'app/roketo-context';
 import { useAccount, useStreams } from 'features/roketo-resource';
 
 import { useStreamControl } from './useStreamControl';
 
-type TokenBalanceProps = {
-  ticker: string;
-  balance: number;
-  className: string;
-};
+// type TokenBalanceProps = {
+//   ticker: string;
+//   balance: number;
+//   className: string;
+// };
 
-function TokenBalance({ ticker, balance, className }: TokenBalanceProps) {
-  const { tokens } = useRoketoContext();
-  const tf = useTokenFormatter(ticker);
-  const token = tokens.get(ticker);
-  const balanceInt = tf.amount(balance);
-  return (
-    <div
-      className={classNames(
-        'inline-flex items-center p-2 rounded-lg bg-card2',
-        className,
-      )}
-    >
-      <TokenImage tokenName={ticker} className="mr-2" />
-      {' '}
-      <div>
-        <div>
-          <span className="font-semibold">{balanceInt}</span>
-          {' '}
-          <span className="text-gray">{ticker}</span>
-        </div>
-        <div>{token.metadata.name}</div>
-      </div>
-    </div>
-  );
-}
+// function TokenBalance({ ticker, balance, className }: TokenBalanceProps) {
+//   const { tokens } = useRoketoContext();
+//   // const tf = useTokenFormatter(ticker);
+//   const token = tokens.get(ticker);
+//   const balanceInt = tf.amount(balance);
+
+//   return (
+//     <div
+//       className={classNames(
+//         'inline-flex items-center p-2 rounded-lg bg-card2',
+//         className,
+//       )}
+//     >
+//       <TokenImage tokenName={ticker} className="mr-2" />
+//       {' '}
+//       <div>
+//         <div>
+//           <span className="font-semibold">{balanceInt}</span>
+//           {' '}
+//           <span className="text-gray">{ticker}</span>
+//         </div>
+//         <div>{token.metadata.name}</div>
+//       </div>
+//     </div>
+//   );
+// }
 
 function useWithdrawReadyBalances() {
-  const { auth, roketo, tokens } = useRoketoContext();
+  const { auth, roketo } = useRoketoContext();
   const accountSWR = useAccount({ auth, roketo });
 
   const streamsSWR = useStreams({ auth, roketo, accountSWR });
@@ -54,15 +52,15 @@ function useWithdrawReadyBalances() {
   const balances = useMemo(() => {
     const balancesValue: Record<string, number> = {};
     if (accountSWR.data && streamsSWR.data) {
-      accountSWR.data.ready_to_withdraw.forEach(([ticker, balance]) => {
-        balancesValue[ticker] = balancesValue[ticker] || 0;
-        balancesValue[ticker] += Number(balance);
-      });
+      // accountSWR.data.ready_to_withdraw.forEach(([ticker, balance]) => {
+      //   balancesValue[ticker] = balancesValue[ticker] || 0;
+      //   balancesValue[ticker] += Number(balance);
+      // });
 
-      streamsSWR.data.inputs.forEach((stream) => {
-        balancesValue[stream.ticker] = balancesValue[stream.ticker] || 0;
-        balancesValue[stream.ticker] += Number(stream.available_to_withdraw);
-      });
+      // streamsSWR.data.inputs.forEach((stream) => {
+      //   balancesValue[stream.ticker] = balancesValue[stream.ticker] || 0;
+      //   balancesValue[stream.ticker] += Number(stream.available_to_withdraw);
+      // });
     }
 
     return balancesValue;
@@ -81,7 +79,7 @@ function useWithdrawReadyBalances() {
       return Promise.all(
         tickers.map(async (ticker) => ({
           ticker,
-          hasStorageBalance: Boolean(await tokens.ftStorageBalance(ticker)),
+          hasStorageBalance: true,
         })),
       );
     },
@@ -95,9 +93,10 @@ function useWithdrawReadyBalances() {
     ({ hasStorageBalance }) => !hasStorageBalance,
   );
 
-  const tokensRequireManualDeposit = notRegisteredTokens.filter(
-    ({ ticker }) => roketo.isBridged(ticker),
-  );
+  const tokensRequireManualDeposit = notRegisteredTokens;
+  // .filter(
+  //   ({ ticker }) => roketo.isBridged(ticker),
+  // );
 
   const isSafeToWithdraw = tokensRequireManualDeposit.length === 0 && tokensSWR.data;
 
@@ -129,9 +128,7 @@ export function StreamWithdrawButton(props: StreamWithdrawButtonProps) {
   } = useWithdrawReadyBalances();
 
   async function updateAllAndWithdraw() {
-    await streamControl.updateAllAndWithdraw({
-      tokensWithoutStorage: notRegisteredTokens.length,
-    });
+    await streamControl.updateAllAndWithdraw();
     mutate(['account', auth.accountId]);
   }
 
@@ -187,14 +184,14 @@ export function StreamWithdrawButton(props: StreamWithdrawButtonProps) {
                 <>
                   <p className="font-semibold mb-2">Available balances:</p>
                   <div>
-                    {balances.map(([ticker, balance]) => (
+                    {/* {balances.map(([ticker, balance]) => (
                       <TokenBalance
                         ticker={ticker}
                         balance={balance}
                         className="w-full mb-2"
                         key={ticker}
                       />
-                    ))}
+                    ))} */}
                   </div>
                 </>
               ) : (

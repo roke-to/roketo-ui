@@ -6,10 +6,8 @@ import { formatDuration, intervalToDuration } from 'date-fns';
 
 import { ProgressBar } from 'shared/kit/ProgressBar';
 import { Button } from 'shared/kit/Button';
-import { TokenImage } from 'shared/kit/TokenImage';
 import { routes } from 'shared/helpers/routing';
 import { LinkIcon } from 'shared/icons/Link';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { shortEnLocale } from 'shared/helpers/date';
 import { isIdling } from 'shared/api/roketo/helpers';
 import { DurationTimer } from 'shared/components/DurationTimer';
@@ -18,32 +16,15 @@ import { StreamControls } from '../stream-control';
 
 import { streamViewData } from './streamViewData';
 import { StreamingSpeed } from './StreamingSpeed';
-import { StreamProgressPercentage } from './StreamProgressPercentage';
-
-const streamType: RoketoStream = {
-  id: '51ofCnrPfZ8WA4NWJAnGYvNM1yqDfsVQqpaoxkYz3aZE',
-  description: 'qweqweqwe',
-  owner_id: 'ggoshanov.testnet',
-  receiver_id: 'sdf.testnet',
-  ticker: 'NEAR',
-  timestamp_created: '1633966709524321545',
-  balance: '1990000000000000000000000',
-  tokens_per_tick: '33333333333333',
-  status: 'ACTIVE',
-  tokens_total_withdrawn: '0',
-  available_to_withdraw: '1990000000000000000000000',
-  history_len: 4,
-  direction: 'out',
-};
 
 type StreamCardProps = {
   stream: RoketoStream;
-  direction: RoketoStream["direction"];
+  direction: string;
   className: string;
 };
 
-export function StreamCard({ stream = streamType, direction, className }: StreamCardProps) {
-  const tf = useTokenFormatter(stream.ticker);
+export function StreamCard({ stream, direction, className }: StreamCardProps) {
+  // const tf = useTokenFormatter(stream.ticker);
 
   const {
     dateEnd,
@@ -52,7 +33,9 @@ export function StreamCard({ stream = streamType, direction, className }: Stream
     percentages,
     progress: { full, withdrawn, streamed },
     link,
-  } = streamViewData(stream, tf);
+  } = streamViewData(stream);
+
+  console.log('log', percentages, full, withdrawn, streamed)
 
   const duration = intervalToDuration({
     start: new Date(),
@@ -75,16 +58,16 @@ export function StreamCard({ stream = streamType, direction, className }: Stream
         className="w-full col-span-12 xl:col-span-6 justify-self-start"
       >
         <div className="flex items-center">
-          <TokenImage tokenName={stream.ticker} className="mr-4" />
+          {/* <TokenImage tokenName={stream.ticker} className="mr-4" /> */}
           <div className="w-full gap-4 flex items-end flex-wrap">
             <div className="text-2xl whitespace-nowrap flex-shrink-0">
-              {tf.amount(streamed)}
+              {/* {tf.amount(streamed)} */}
               {' '}
               of
               {' '}
-              {tf.amount(full)}
+              {/* {tf.amount(full)} */}
               {' '}
-              <span className="uppercase">{stream.ticker}</span>
+              {/* <span className="uppercase">{stream.ticker}</span> */}
             </div>
 
             <StreamingSpeed stream={stream} direction={direction} />
@@ -103,7 +86,7 @@ export function StreamCard({ stream = streamType, direction, className }: Stream
         </div>
         <ProgressBar className="mt-5" progresses={progresses} />
         <div className="flex text-sm mt-3 mr-3">
-          <StreamProgressPercentage
+          {/* <StreamProgressPercentage
             className="mr-4"
             label="Withdrawn"
             colorClass="bg-streams-withdrawn"
@@ -115,7 +98,7 @@ export function StreamCard({ stream = streamType, direction, className }: Stream
             colorClass="bg-streams-streamed"
             formattedFloatValue={`${tf.amount(streamed)} ${stream.ticker}`}
             percentageValue={percentages.streamed}
-          />
+          /> */}
         </div>
       </Link>
       <div className="hidden xl:block" />

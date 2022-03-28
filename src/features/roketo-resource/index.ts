@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import useSWR, { SWRResponse } from 'swr';
 
+import { isDead } from 'shared/api/roketo/helpers';
 import { STREAM_DIRECTION, STREAM_STATUS } from 'shared/api/roketo/constants';
 import { RoketoStream, RoketoAccount } from 'shared/api/roketo/interfaces/entities';
 import { NearAuth } from 'shared/api/near';
@@ -24,9 +25,11 @@ type UseAccountProps = {
 }
 
 export function useAccount({ auth, roketo }: UseAccountProps): SWRResponse<RoketoAccount> {
+  console.log('auth', auth, roketo);
+
   const swr = useSWR(
     ['account', auth.accountId],
-    roketo.api.getCurrentAccount,
+    roketo.api.getAccount.bind(roketo.api),
     {
       errorRetryInterval: 250,
     },
@@ -44,21 +47,16 @@ type UseStreamsProps = {
 export function useStreams({ auth, roketo, accountSWR }: UseStreamsProps) {
   const account = accountSWR.data;
 
-
   const swr = useSWR(
     () => {
       const key = account
-        ? ['streams', account.account_id, account.last_action]
+        ? ['streams', account.last_created_stream]
         : false;
 
       return key;
     },
     async () => {
-      const streams = [
-        ...account?.dynamic_inputs || [],
-        ...account?.dynamic_outputs || [],
-        ...account?.static_streams || [],
-      ];
+      const streams = [ '' ];
 
       const fetchedStreams = await Promise.all(
         streams.map((streamId) => roketo.api.getStream({ streamId })),
@@ -89,7 +87,7 @@ export function useSingleStream(streamId: string, { roketo, accountSWR }: UseSin
   const swr = useSWR<RoketoStream>(
     () => {
       const key = account
-        ? ['stream', streamId, account.account_id, account.last_action]
+        ? ['stream', streamId, account.last_created_stream]
         : false;
       return key;
     },
@@ -104,101 +102,97 @@ export function useSingleStream(streamId: string, { roketo, accountSWR }: UseSin
     },
   );
 
-  const stream = swr.data || {
-    balance: null,
-    available_to_withdraw: null,
-    status: null,
-  };
+  const stream = swr.data;
 
-  const isCompleted = stream.balance === stream.available_to_withdraw;
+  const isCompleted = isDead(stream);
 
   React.useEffect(() => {
     const startPoller = () => setInterval(swr.mutate, 1000);
 
-    if (stream.status === STREAM_STATUS.ACTIVE && !isCompleted) {
+    if (stream?.status === STREAM_STATUS.Active && !isCompleted) {
       const id = startPoller();
       return () => clearInterval(id);
     }
 
     return undefined;
-  }, [stream.status, isCompleted, swr]);
+  }, [stream?.status, isCompleted, swr]);
 
   return swr;
 }
 
-type UseSingleStreamHistoryProps = {
-  roketo: Roketo;
-  accountSWR: SWRResponse<RoketoAccount>;
-  streamSWR: SWRResponse<RoketoStream>;
-}
+// type UseSingleStreamHistoryProps = {
+//   roketo: Roketo;
+//   accountSWR: SWRResponse<RoketoAccount>;
+//   streamSWR: SWRResponse<RoketoStream>;
+// }
 
-export function useSingleStreamHistory(
-  { pageSize = 3 },
-  { roketo, accountSWR, streamSWR }: UseSingleStreamHistoryProps,
-) {
-  const PAGE_SIZE = pageSize;
-  const account = accountSWR.data;
-  const stream = streamSWR.data;
-  const streamId = stream ? stream.id : '';
-  const [page, setPage] = useState(0);
-  const ready = !!stream;
+// export function useSingleStreamHistory(
+//   { pageSize = 3 },
+//   { roketo, accountSWR, streamSWR }: UseSingleStreamHistoryProps,
+// ) {
+//   const PAGE_SIZE = pageSize;
+//   const account = accountSWR.data;
+//   const stream = streamSWR.data;
+//   const streamId = stream ? stream.id : '';
+//   const [page, setPage] = useState(0);
+//   const ready = !!stream;
 
-  const maxPage = ready ? Math.ceil(stream.history_len / PAGE_SIZE) - 1 : 0;
+//   const maxPage = ready ? Math.ceil(stream.history_len / PAGE_SIZE) - 1 : 0;
 
-  const nextPage = () => {
-    setPage(page + 1);
-  };
-  const prevPage = () => {
-    setPage(page - 1);
-  };
-  const canGoBack = page > 1;
+//   const nextPage = () => {
+//     setPage(page + 1);
+//   };
+//   const prevPage = () => {
+//     setPage(page - 1);
+//   };
+//   const canGoBack = page > 1;
 
-  const swr = useSWR(
-    () => {
-      const key = stream
-        ? ['stream_history', stream.id, account?.last_action, page]
-        : false;
+//   const swr = useSWR(
+//     () => {
+//       const key = stream
+//         ? ['stream_history', stream.id, account?.last_action, page]
+//         : false;
 
-      return key;
-    },
-    async () => {
-      const streamHistory = await roketo.api.getStreamHistory({
-        streamId,
-        from: page * PAGE_SIZE,
-        to: (page + 1) * PAGE_SIZE,
-      });
+//       return key;
+//     },
+//     async () => {
+//       const streamHistory = await roketo.api.getStreamHistory({
+//         streamId,
+//         from: page * PAGE_SIZE,
+//         to: (page + 1) * PAGE_SIZE,
+//       });
 
-      return streamHistory;
-    },
-    {
-      onError: (error) => {
-        console.debug('useSingleStreamHistory error', error);
-      },
-    },
-  );
+//       return streamHistory;
+//     },
+//     {
+//       onError: (error) => {
+//         console.debug('useSingleStreamHistory error', error);
+//       },
+//     },
+//   );
 
-  // ebanuty hack to prefetch next page
-  useSWR(
-    () => {
-      const key = stream
-        ? ['stream_history', stream.id, account?.last_action, page + 1]
-        : false;
+//   // ebanuty hack to prefetch next page
+//   useSWR(
+//     () => {
+//       const key = stream
+//         ? ['stream_history', stream.id, account?.last_action, page + 1]
+//         : false;
 
-      return key;
-    },
+//       return key;
+//     },
 
-    async () => {
-      const streamHistory = await roketo.api.getStreamHistory({
-        streamId,
-        from: (page + 1) * PAGE_SIZE,
-        to: (page + 2) * PAGE_SIZE,
-      });
+//     async () => {
+//       const streamHistory = await roketo.api.getStreamHistory({
+//         streamId,
+//         from: (page + 1) * PAGE_SIZE,
+//         to: (page + 2) * PAGE_SIZE,
+//       });
 
-      return streamHistory;
-    },
-  );
+//       return streamHistory;
+//     },
+//   );
 
-  return {
-    swr, canGoBack, nextPage, prevPage, maxPage, currentPage: page,
-  };
-}
+//   return {
+//     swr, canGoBack, nextPage, prevPage, maxPage, currentPage: page,
+//   };
+// }

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { STREAM_STATUS, STREAM_DIRECTION } from 'shared/api/roketo/constants';
+import { STREAM_STATUS } from 'shared/api/roketo/constants';
 
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { useFilter, useFilters } from '../lib';
@@ -15,29 +15,25 @@ const STREAM_STATUS_FILTER = {
   ACTIVE: 'Active',
   PAUSED: 'Paused',
   ARCHIVED: 'Archived',
-  [STREAM_STATUS.FINISHED]: 'Finished',
-  [STREAM_STATUS.INTERRUPTED]: 'Interrupted',
+  [STREAM_STATUS.Finished]: 'Finished',
 };
 
 export function useStreamFilters(streams: RoketoStream[]) {
   const statusOptions = useMemo(
     () => ({
       [STREAM_STATUS_FILTER.ALL]: () => true,
-      [STREAM_STATUS_FILTER.ACTIVE]: (stream: RoketoStream) => stream.status === STREAM_STATUS.ACTIVE,
-      [STREAM_STATUS_FILTER.PAUSED]: (stream: RoketoStream) => stream.status === STREAM_STATUS.PAUSED,
-      [STREAM_STATUS_FILTER.ARCHIVED]: (stream: RoketoStream) => stream.status === STREAM_STATUS.ARCHIVED,
-      [STREAM_STATUS_FILTER[STREAM_STATUS.INTERRUPTED]]:
-        (stream: RoketoStream) => stream.status === STREAM_STATUS.INTERRUPTED,
-      [STREAM_STATUS_FILTER[STREAM_STATUS.FINISHED]]:
-        (stream: RoketoStream) => stream.status === STREAM_STATUS.FINISHED,
+      [STREAM_STATUS_FILTER.ACTIVE]: (stream: RoketoStream) => stream.status === STREAM_STATUS.Active,
+      [STREAM_STATUS_FILTER.PAUSED]: (stream: RoketoStream) => stream.status === STREAM_STATUS.Paused,
+      [STREAM_STATUS_FILTER[STREAM_STATUS.Finished]]:
+        (stream: RoketoStream) => stream.status === STREAM_STATUS.Finished,
     }),
     [],
   );
   const directionOptions = useMemo(
     () => ({
       [STREAM_TYPE_FILTER.ALL]: () => true,
-      [STREAM_TYPE_FILTER.INCOMING]: (stream: RoketoStream) => STREAM_DIRECTION.IN === stream.direction,
-      [STREAM_TYPE_FILTER.OUTGOING]: (stream: RoketoStream) => STREAM_DIRECTION.OUT === stream.direction,
+      // [STREAM_TYPE_FILTER.INCOMING]: (stream: RoketoStream) => STREAM_DIRECTION.IN === stream.direction,
+      // [STREAM_TYPE_FILTER.OUTGOING]: (stream: RoketoStream) => STREAM_DIRECTION.OUT === stream.direction,
     }),
     [],
   );

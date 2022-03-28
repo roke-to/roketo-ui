@@ -3,7 +3,6 @@ import { format } from 'date-fns';
 import classNames from 'classnames';
 
 import { timestamp } from 'shared/helpers/formatting';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { STREAM_ACTION_TYPE } from 'shared/api/roketo/constants';
 import type { RoketoStream, StreamAction } from 'shared/api/roketo/interfaces/entities';
 
@@ -91,7 +90,7 @@ export function StreamActionHistory({
   className,
   ...rest
 }: StreamActionHistoryProps) {
-  const tf = useTokenFormatter(stream.ticker);
+  // const tf = useTokenFormatter(stream.ticker);
 
   return (
     <div className={classNames('border-separate Table', className)} {...rest}>
@@ -125,16 +124,16 @@ export function StreamActionHistory({
                   <ActionType actionType={entry.action_type} />
                 </TdCell>
                 <TdCell>
-                  {entry.amount
+                  {/* {entry.amount
                     ? `${tf.amount(entry.amount)} ${stream.ticker}`
-                    : ''}
+                    : ''} */}
                 </TdCell>
                 <TdCell>
-                  {entry.commission_on_withdraw
+                  {/* {entry.commission_on_withdraw
                     ? `${tf.amount(entry.commission_on_withdraw)} ${
                       stream.ticker
                     }`
-                    : ''}
+                    : ''} */}
                 </TdCell>
                 <TdCell>
                   {format(

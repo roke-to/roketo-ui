@@ -1,102 +1,96 @@
 import * as nearAPI from "near-api-js";
-import { Contract, WalletConnection } from "near-api-js";
+import { Account } from "near-api-js";
 
 import { ROKETO_CONTRACT_NAME } from "./config";
 import { RoketoContract } from './interfaces/contracts';
 import { RoketoApi } from './interfaces/roketo-api';
-import { RoketoTokenStatus, RoketoStatus } from './interfaces/entities';
+// import { RoketoTokenStatus, RoketoStatus } from './interfaces/entities';
 import { RoketoContractApi } from "./contract-api";
+import { RoketoAccount, RoketoDao } from "./interfaces/entities";
 
 export interface Roketo {
   api: RoketoApi;
-  status: RoketoStatus;
-  tokenMeta: (ticker: string) => RoketoTokenStatus | undefined;
-  isBridged: (ticker: string) => boolean;
+  dao: RoketoDao;
+  account: RoketoAccount;
+  // status: RoketoStatus;
+  // tokenMeta: (ticker: string) => RoketoTokenStatus | undefined;
+  // isBridged: (ticker: string) => boolean;
 }
 
-const tokensToMap = (tokens: RoketoTokenStatus[]) => {
-  const map: Record<string, RoketoTokenStatus> = {};
-  tokens.forEach((token) => {
-    map[token.ticker] = token;
-  });
-  return map;
-};
+// const tokensToMap = (tokens: RoketoTokenStatus[]) => {
+//   const map: Record<string, RoketoTokenStatus> = {};
+//   tokens.forEach((token) => {
+//     map[token.ticker] = token;
+//   });
+//   return map;
+// };
 
 export async function initRoketo({
-  walletConnection,
+  account,
+  accountId,
 }: {
-  walletConnection: WalletConnection;
+  account: Account;
+  accountId: string;
 }): Promise<Roketo> {
-  const account = await walletConnection.account();
   const contract = new nearAPI.Contract(account, ROKETO_CONTRACT_NAME, {
     viewMethods: [
-      "get_account",
+      "get_stats",
+      "get_dao",
+      "get_token",
       "get_stream",
-      "get_stream_history",
-      "get_status",
+      "get_account",
+      "get_account_incoming_streams",
+      "get_account_outgoing_streams",
+      "get_account_ft",
     ],
     changeMethods: [
-      "create_stream",
-      "deposit",
-      "update_account",
+      // "account_deposit_near", need for unlisted tokens
       "start_stream",
       "pause_stream",
       "stop_stream",
-      "change_auto_deposit",
-      "start_cron",
+      "withdraw",
+      // "change_receiver",
     ],
   }) as RoketoContract;
 
-  const status = await contract.get_status({});
-  const ft: Record<
-    string,
-    {
-      name: string;
-      address: string;
-      contract: Contract;
-    }
-  > = {};
-
-  const tokensMap = tokensToMap(status.tokens);
-
-  status.tokens.forEach((token) => {
-    ft[token.ticker] = {
-      name: token.ticker,
-      address: token.account_id,
-      contract: new nearAPI.Contract(account, token.account_id, {
-        viewMethods: ["ft_balance_of"],
-        changeMethods: ["ft_transfer", "ft_transfer_call"],
-      }),
-    };
-  });
+  // @ts-ignore
+  // await contract.account_deposit_near({}, "200000000000000", 100000000000000000000000)
 
   // create high level api for outside usage
-  const api = RoketoContractApi({
+  const api = new RoketoContractApi({
     contract,
-    ft,
-    walletConnection,
     account,
-    operationalCommission: status.operational_commission,
-    tokens: tokensMap,
+    accountId,
   });
 
-  const tokenMeta = (ticker: string) => status.tokens.find((t) => t.ticker === ticker);;
+  const roketoUserAccount = await api.getAccount();
+  const dao = await api.getDao();
 
-  const isBridged = (ticker: string) => {
-    const meta = tokenMeta(ticker);
-    const bridges = ["factory.bridge.near"];
+  const inc = await contract.get_account_incoming_streams({ account_id: accountId, from: 0, limit: 10 });;
+  const out = await contract.get_account_outgoing_streams({ account_id: accountId, from: 0, limit: 10 });;
+  const aft = await contract.get_account_ft({ account_id: accountId, token_account_id: "wrap.testnet" });;
+  const tkn = await contract.get_token({ token_account_id: "wrap.testnet" });
+  const sts = await contract.get_stats();
 
-    if (meta && bridges.some((bridge) => meta.account_id.endsWith(bridge))) {
-      return true;
-    }
-
-    return false;
-  };
-
+  // api.createStream({
+  //   name: 'test',
+  //   description: 'lol',
+  //   receiverId: 'dcversus2.testnet',
+  //   deposit: '1250000000000000000000',
+  //   tokensPerSec: 1111111111111,
+  //   token: 'NEAR',
+  //   callbackUrl: ''
+  // });
+  console.log('get_account_incoming_streams', inc);
+  console.log('get_account_outgoing_streams', out);
+  console.log('get_account_ft', aft);
+  console.log('get_dao', dao);
+  console.log('get_token', tkn);
+  console.log('get_stats', sts);
+  
   return {
     api,
-    status,
-    tokenMeta,
-    isBridged,
+    dao,
+    account: roketoUserAccount,
   };
 }
