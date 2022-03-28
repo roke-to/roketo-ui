@@ -7,9 +7,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          framework: cypress
-          tests: "./cypress/integration/tests/login.spec.js"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          #framework: cypress
+          #tests: "./cypress/integration/tests/*.js"
+          #token: ${{ secrets.GITHUB_TOKEN }}
           has-tests-label: true
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
