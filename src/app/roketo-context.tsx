@@ -4,7 +4,7 @@ import {Near, WalletConnection} from 'near-api-js';
 import {NEAR_CONFIG} from 'shared/api/near/config';
 import {createNearInstance, getNearAuth, NearAuth} from 'shared/api/near';
 import {initRoketo, Roketo} from 'shared/api/roketo';
-import {initPriceOracle} from 'shared/api/priceOracle';
+import {initPriceOracle, PriceOracle} from 'shared/api/priceOracle';
 
 import {Tokens} from 'features/ft-tokens';
 
@@ -12,6 +12,7 @@ type AppServices = {
   auth: NearAuth;
   tokens: Tokens;
   roketo: Roketo;
+  priceOracle: PriceOracle,
   near: Near;
   walletConnection: WalletConnection;
 };
@@ -35,7 +36,6 @@ export function RoketoContextProvider({
       });
 
       const priceOracle = await initPriceOracle({walletConnection});
-
       console.log(priceOracle);
 
       const tokens = new Tokens({
@@ -49,6 +49,7 @@ export function RoketoContextProvider({
         auth,
         near,
         roketo,
+        priceOracle,
         walletConnection,
         tokens,
       });
