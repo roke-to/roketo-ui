@@ -1,4 +1,4 @@
-type TokenId = string;
+export type TokenId = string;
 
 export type Price = {
   multiplier: string,
@@ -18,4 +18,8 @@ export type TokenPriceRaw = [
 
 export type TokenPriceCollection = {
   [tokenId: TokenId]: Price,
+};
+
+export type TokenMultiplierMap = {
+  [tokenId: TokenId]: number,
 };

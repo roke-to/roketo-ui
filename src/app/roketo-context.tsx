@@ -35,7 +35,7 @@ export function RoketoContextProvider({
         walletConnection,
       });
 
-      const priceOracle = await initPriceOracle({walletConnection});
+      const priceOracle = await initPriceOracle({account: auth.account});
       console.log(priceOracle);
 
       const tokens = new Tokens({
