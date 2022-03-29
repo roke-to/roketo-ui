@@ -159,7 +159,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                     >
                       <div className="inline-flex items-center">
                         <TokenImage
-                          tokenName={field.value}
+                          tokenAccountId={field.value}
                           className="mr-1"
                         />
                         {' '}

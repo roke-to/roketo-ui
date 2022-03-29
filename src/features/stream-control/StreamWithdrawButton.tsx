@@ -6,7 +6,7 @@ import { Button } from 'shared/kit/Button';
 import { Tooltip } from 'shared/kit/Tooltip';
 import { useBool } from 'shared/hooks/useBool';
 import { useRoketoContext } from 'app/roketo-context';
-import { useAccount, useStreams } from 'features/roketo-resource';
+import { useStreams } from 'features/roketo-resource';
 
 import { useStreamControl } from './useStreamControl';
 
@@ -44,14 +44,11 @@ import { useStreamControl } from './useStreamControl';
 // }
 
 function useWithdrawReadyBalances() {
-  const { auth, roketo } = useRoketoContext();
-  const accountSWR = useAccount({ auth, roketo });
-
-  const streamsSWR = useStreams({ auth, roketo, accountSWR });
+  const streamsSWR = useStreams();
 
   const balances = useMemo(() => {
     const balancesValue: Record<string, number> = {};
-    if (accountSWR.data && streamsSWR.data) {
+    if (streamsSWR.data) {
       // accountSWR.data.ready_to_withdraw.forEach(([ticker, balance]) => {
       //   balancesValue[ticker] = balancesValue[ticker] || 0;
       //   balancesValue[ticker] += Number(balance);
@@ -64,7 +61,7 @@ function useWithdrawReadyBalances() {
     }
 
     return balancesValue;
-  }, [accountSWR.data, streamsSWR.data]);
+  }, [streamsSWR.data]);
 
   const tokensSWR = useSWR(
     () => {
@@ -88,7 +85,7 @@ function useWithdrawReadyBalances() {
     },
   );
 
-  const loading = !accountSWR.data || !streamsSWR.data || !tokensSWR.data;
+  const loading = !streamsSWR.data || !tokensSWR.data;
   const notRegisteredTokens = (tokensSWR.data || []).filter(
     ({ hasStorageBalance }) => !hasStorageBalance,
   );

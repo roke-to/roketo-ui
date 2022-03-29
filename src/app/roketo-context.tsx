@@ -27,6 +27,17 @@ export function RoketoContextProvider({
       const near = await createNearInstance();
       const walletConnection = new WalletConnection(near, NEAR_CONFIG.contractName);
       const auth = await getNearAuth(walletConnection);
+      
+      if (!auth.signedIn) {
+        // @ts-ignore
+        setContext({
+          near,
+          walletConnection,
+          auth
+        });
+
+        return;
+      }
 
       const roketo = await initRoketo({
         accountId: auth.accountId,
@@ -42,8 +53,8 @@ export function RoketoContextProvider({
       setContext({
         auth,
         near,
-        roketo,
         walletConnection,
+        roketo,
         tokens, 
       });
     };

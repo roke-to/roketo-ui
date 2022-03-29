@@ -31,6 +31,7 @@ export function Routing() {
   });
 
   const { auth } = useRoketoContext();
+  console.log('auth', auth)
 
   return (
     <Router basename={env.PUBLIC_URL}>

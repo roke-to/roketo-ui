@@ -5,20 +5,20 @@ import { StreamCard } from 'features/stream-view';
 import { StreamFilters } from 'features/filtering/streams';
 import { Button } from 'shared/kit/Button';
 import { routes } from 'shared/helpers/routing';
-import { useAccount, useStreams } from 'features/roketo-resource';
+import { useStreams } from 'features/roketo-resource';
 import { StreamWithdrawButton } from 'features/stream-control/StreamWithdrawButton';
 import { PageError } from 'shared/components/PageError';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 export function StreamsPage() {
-  const { auth, roketo } = useRoketoContext();
+  const { auth } = useRoketoContext();
   const [filteredItems, setFiltered] = useState<RoketoStream[]>([]);
-  const accountSWR = useAccount({ auth, roketo });
-  const streamsSWR = useStreams({ auth, roketo, accountSWR });
+  const streamsSWR = useStreams();
 
-  const isIncomingStream = (stream: RoketoStream) => stream.owner_id !== auth.accountId;
+  const isIncomingStream = (stream: RoketoStream) => stream.receiver_id === auth.accountId;
 
   const streams = streamsSWR.data;
+  const { error } = streamsSWR;
   const { inputs, outputs } = streams || {};
 
   const allStreams = useMemo<RoketoStream[]>(() => {
@@ -29,7 +29,6 @@ export function StreamsPage() {
     const concatted = inputs.concat(outputs);
     return concatted;
   }, [inputs, outputs]);
-  const error = accountSWR.error || streamsSWR.error;
 
   return (
     <div className="container mx-auto p-12">
@@ -51,7 +50,6 @@ export function StreamsPage() {
           className="max-w-2xl mx-auto py-32"
           message={error.message}
           onRetry={() => {
-            accountSWR.mutate();
             streamsSWR.mutate();
           }}
         />

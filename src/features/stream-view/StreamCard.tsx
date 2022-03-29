@@ -4,6 +4,7 @@ import copy from 'clipboard-copy';
 import { Link } from 'react-router-dom';
 import { formatDuration, intervalToDuration } from 'date-fns';
 
+import { TokenImage } from 'shared/kit/TokenImage';
 import { ProgressBar } from 'shared/kit/ProgressBar';
 import { Button } from 'shared/kit/Button';
 import { routes } from 'shared/helpers/routing';
@@ -58,7 +59,7 @@ export function StreamCard({ stream, direction, className }: StreamCardProps) {
         className="w-full col-span-12 xl:col-span-6 justify-self-start"
       >
         <div className="flex items-center">
-          {/* <TokenImage tokenName={stream.ticker} className="mr-4" /> */}
+          <TokenImage tokenAccountId={stream.token_account_id} className="mr-4" />
           <div className="w-full gap-4 flex items-end flex-wrap">
             <div className="text-2xl whitespace-nowrap flex-shrink-0">
               {/* {tf.amount(streamed)} */}

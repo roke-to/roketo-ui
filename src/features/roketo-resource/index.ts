@@ -2,30 +2,13 @@ import React from 'react';
 import useSWR, { SWRResponse } from 'swr';
 
 import { isDead } from 'shared/api/roketo/helpers';
-import { STREAM_DIRECTION, STREAM_STATUS } from 'shared/api/roketo/constants';
+import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import { RoketoStream, RoketoAccount } from 'shared/api/roketo/interfaces/entities';
-import { NearAuth } from 'shared/api/near';
 import { Roketo } from 'shared/api/roketo';
+import { useRoketoContext } from 'app/roketo-context';
 
-export function identifyStreamsDirection(streams: RoketoStream[], accountId: string) {
-  return streams.map((stream) => ({
-    ...stream,
-    direction:
-        stream.owner_id === accountId
-          ? STREAM_DIRECTION.OUT
-          : stream.receiver_id === accountId
-            ? STREAM_DIRECTION.IN
-            : null,
-  }));
-}
-
-type UseAccountProps = {
-  auth: NearAuth;
-  roketo: Roketo;
-}
-
-export function useAccount({ auth, roketo }: UseAccountProps): SWRResponse<RoketoAccount> {
-  console.log('auth', auth, roketo);
+export function useAccount(): SWRResponse<RoketoAccount> {
+  const { auth, roketo } = useRoketoContext();
 
   const swr = useSWR(
     ['account', auth.accountId],
@@ -38,38 +21,18 @@ export function useAccount({ auth, roketo }: UseAccountProps): SWRResponse<Roket
   return swr;
 }
 
-type UseStreamsProps = {
-  auth: NearAuth;
-  roketo: Roketo;
-  accountSWR: SWRResponse<RoketoAccount>;
-}
-
-export function useStreams({ auth, roketo, accountSWR }: UseStreamsProps) {
-  const account = accountSWR.data;
+export function useStreams() {
+  const { auth, roketo } = useRoketoContext();
 
   const swr = useSWR(
-    () => {
-      const key = account
-        ? ['streams', account.last_created_stream]
-        : false;
-
-      return key;
-    },
+    ['streams', auth.accountId, roketo.account.last_created_stream],
     async () => {
-      const streams = [ '' ];
-
-      const fetchedStreams = await Promise.all(
-        streams.map((streamId) => roketo.api.getStream({ streamId })),
-      );
-
-      const identified = identifyStreamsDirection(
-        fetchedStreams,
-        auth.accountId,
-      );
+      const inputs = await roketo.api.getAccountIncomingStreams({ from: 0, limit: 100 });
+      const outputs = await roketo.api.getAccountOutgoingtreams({ from: 0, limit: 100 });
 
       return {
-        inputs: identified.filter((stream) => stream.direction === STREAM_DIRECTION.IN),
-        outputs: identified.filter((stream) => stream.direction === STREAM_DIRECTION.OUT),
+        inputs,
+        outputs
       };
     },
   );
@@ -119,80 +82,3 @@ export function useSingleStream(streamId: string, { roketo, accountSWR }: UseSin
 
   return swr;
 }
-
-// type UseSingleStreamHistoryProps = {
-//   roketo: Roketo;
-//   accountSWR: SWRResponse<RoketoAccount>;
-//   streamSWR: SWRResponse<RoketoStream>;
-// }
-
-// export function useSingleStreamHistory(
-//   { pageSize = 3 },
-//   { roketo, accountSWR, streamSWR }: UseSingleStreamHistoryProps,
-// ) {
-//   const PAGE_SIZE = pageSize;
-//   const account = accountSWR.data;
-//   const stream = streamSWR.data;
-//   const streamId = stream ? stream.id : '';
-//   const [page, setPage] = useState(0);
-//   const ready = !!stream;
-
-//   const maxPage = ready ? Math.ceil(stream.history_len / PAGE_SIZE) - 1 : 0;
-
-//   const nextPage = () => {
-//     setPage(page + 1);
-//   };
-//   const prevPage = () => {
-//     setPage(page - 1);
-//   };
-//   const canGoBack = page > 1;
-
-//   const swr = useSWR(
-//     () => {
-//       const key = stream
-//         ? ['stream_history', stream.id, account?.last_action, page]
-//         : false;
-
-//       return key;
-//     },
-//     async () => {
-//       const streamHistory = await roketo.api.getStreamHistory({
-//         streamId,
-//         from: page * PAGE_SIZE,
-//         to: (page + 1) * PAGE_SIZE,
-//       });
-
-//       return streamHistory;
-//     },
-//     {
-//       onError: (error) => {
-//         console.debug('useSingleStreamHistory error', error);
-//       },
-//     },
-//   );
-
-//   // ebanuty hack to prefetch next page
-//   useSWR(
-//     () => {
-//       const key = stream
-//         ? ['stream_history', stream.id, account?.last_action, page + 1]
-//         : false;
-
-//       return key;
-//     },
-
-//     async () => {
-//       const streamHistory = await roketo.api.getStreamHistory({
-//         streamId,
-//         from: (page + 1) * PAGE_SIZE,
-//         to: (page + 2) * PAGE_SIZE,
-//       });
-
-//       return streamHistory;
-//     },
-//   );
-
-//   return {
-//     swr, canGoBack, nextPage, prevPage, maxPage, currentPage: page,
-//   };
-// }

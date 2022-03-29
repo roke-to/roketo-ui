@@ -20,7 +20,7 @@ export type CreateStreamApiProps = {
   callbackUrl?: string;
 };
 
-export type StreamsProps = { accountId: string, from: number, limit: number };
+export type StreamsProps = { from: number, limit: number };
 
 export interface RoketoApi {
   // Get account overview info

@@ -51,7 +51,7 @@ export function AccountStreamCard({
         <div className="flex items-center">
           <div className="w-12 mr-4">
             <span className="flex-shrink-0 rounded-full bg-card2 inline-flex items-center justify-center w-12 h-12">
-              <TokenImage tokenName={token} />
+              <TokenImage tokenAccountId={token} />
             </span>
           </div>
           <div className="">

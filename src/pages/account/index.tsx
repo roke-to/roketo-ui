@@ -6,17 +6,17 @@ import { AccountColumn } from 'shared/components/AccountColumn';
 import { StreamWithdrawIcon } from 'shared/icons/StreamWithdraw';
 import { StreamOutIcon } from 'shared/icons/StreamOut';
 import { StreamInIcon } from 'shared/icons/StreamIn';
-import { useAccount } from 'features/roketo-resource';
-import { PageError } from 'shared/components/PageError';
+// import { useAccount } from 'features/roketo-resource';
+// import { PageError } from 'shared/components/PageError';
 import { CroncatButton } from 'features/croncat/CroncatButton';
 
 export function AccountPage() {
-  const { auth, roketo, tokens } = useRoketoContext();
-  const accountSWR = useAccount({ auth, roketo });
+  const { tokens, roketo } = useRoketoContext();
+  // const accountSWR = useAccount();
   console.log('tokens', tokens)
 
-  const account = accountSWR.data;
-  const pageError = accountSWR.error;
+  // const account = accountSWR.data;
+  // const pageError = accountSWR.error;
 
   return (
     <div className="container mx-auto p-12">
@@ -27,38 +27,30 @@ export function AccountPage() {
         </div>
       </div>
 
-      {pageError ? (
-        <PageError
-          className="max-w-2xl mx-auto py-32"
-          message={pageError.message}
-          onRetry={accountSWR.mutate}
+      <div className="grid grid-cols-3 gap-4">
+        <AccountColumn
+          icon={<StreamInIcon />}
+          header="Receiving"
+          account={roketo?.account}
+          tokensField="total_incoming"
+          key="AccountInputs"
         />
-      ) : (
-        <div className="grid grid-cols-3 gap-4">
-          <AccountColumn
-            icon={<StreamInIcon />}
-            header="Receiving"
-            account={account}
-            tokensField="total_incoming"
-            key="AccountInputs"
-          />
-          <AccountColumn
-            icon={<StreamOutIcon />}
-            header="Sending"
-            account={account}
-            tokensField="total_outgoing"
-            key="AccountOutputs"
-          />
-          <AccountColumn
-            icon={<StreamWithdrawIcon />}
-            header="Withdrawn"
-            account={account}
-            tokensField="total_received"
-            key="AccountWithdrawn"
-            showPeriod={false}
-          />
-        </div>
-      )}
+        <AccountColumn
+          icon={<StreamOutIcon />}
+          header="Sending"
+          account={roketo?.account}
+          tokensField="total_outgoing"
+          key="AccountOutputs"
+        />
+        <AccountColumn
+          icon={<StreamWithdrawIcon />}
+          header="Withdrawn"
+          account={roketo?.account}
+          tokensField="total_received"
+          key="AccountWithdrawn"
+          showPeriod={false}
+        />
+      </div>
     </div>
   );
 }
