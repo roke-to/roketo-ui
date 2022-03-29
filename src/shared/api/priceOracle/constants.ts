@@ -1,11 +1,3 @@
-export const PRICE_ORACLE_CONTRACT_NAME = 'priceoracle.testnet' as const;
-
-// TODO: научиться определять dev и prod окружение
-// export const PRICE_ORACLE_CONTRACT_NAME = 'priceoracle.near' as const;
-// export const ORACLE_SOURCE_ID = 'pythia.near' as const;
-
-export const ORACLE_SOURCE_ID = 'oracle-1.testnet' as const;
-
 export const DECIMAL = 10;
 
 const NEAR_MULTIPLIER = DECIMAL ** 24;
