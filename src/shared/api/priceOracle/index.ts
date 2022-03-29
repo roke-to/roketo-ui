@@ -1,14 +1,13 @@
 import numbro from 'numbro';
 import * as nearAPI from 'near-api-js';
 
-import {TokenPriceCollection, TokenMultiplierMap, TokenPriceRaw, TokenId} from './interfaces/entites';
+import {env} from 'shared/config';
 
+import {TokenPriceCollection, TokenMultiplierMap, TokenPriceRaw, TokenId} from './interfaces/entites';
 import {PriceOracleContract} from './interfaces/contract';
 import {
   CONTRACT_CHANGE_METHODS_LIST,
   CONTRACT_VIEW_METHODS_LIST,
-  ORACLE_SOURCE_ID,
-  PRICE_ORACLE_CONTRACT_NAME,
   TOKEN_MULTIPLIER_MAP,
   DECIMAL,
 } from './constants';
@@ -74,13 +73,13 @@ const convertTokenToUsd = (
 export const initPriceOracle = async (
   {account}: {account: nearAPI.ConnectedWalletAccount}
 ): Promise<PriceOracle> => {
-  const priceOracleContract = new nearAPI.Contract(account, PRICE_ORACLE_CONTRACT_NAME, {
+  const priceOracleContract = new nearAPI.Contract(account, env.PRICE_ORACLE_CONTRACT_NAME, {
     viewMethods: CONTRACT_VIEW_METHODS_LIST,
     changeMethods: CONTRACT_CHANGE_METHODS_LIST,
   }) as PriceOracleContract;
 
   const rawAssets = await priceOracleContract.get_assets({});
-  const tokenMap = convertRawPriceToTokenMap(rawAssets, ORACLE_SOURCE_ID);
+  const tokenMap = convertRawPriceToTokenMap(rawAssets, env.PRICE_ORACLE_SOURCE_ID);
 
   const getPriceInUsd = convertTokenToUsd(tokenMap, TOKEN_MULTIPLIER_MAP);
 
