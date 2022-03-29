@@ -7,6 +7,7 @@ import { routes } from 'shared/helpers/routing';
 import { useAccount, useStreams } from 'features/roketo-resource';
 import { StreamWithdrawButton } from 'features/stream-control/StreamWithdrawButton';
 import { PageError } from 'shared/components/PageError';
+import { useRoketoContext } from 'app/roketo-context';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 export function StreamsPage() {
@@ -14,6 +15,9 @@ export function StreamsPage() {
 
   const accountSWR = useAccount();
   const streamsSWR = useStreams({ account: accountSWR.data });
+  const {priceOracle} = useRoketoContext();
+
+  const nearConversionRate = priceOracle.getPriceInUsd('wrap.testnet', 1);
 
   const streams = streamsSWR.data;
   const { inputs, outputs } = streams || {};
@@ -41,6 +45,10 @@ export function StreamsPage() {
         onFilterDone={setFiltered}
         className="mb-10 relative z-10"
       />
+
+      <div>Current currency conversion rate is:
+        <h2>{`1 Near is approximately equals to ${nearConversionRate}$`}</h2>
+      </div>
 
       {error ? (
         <PageError
