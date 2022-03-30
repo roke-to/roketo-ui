@@ -3,13 +3,12 @@ import { Account } from "near-api-js";
 
 import { ROKETO_CONTRACT_NAME } from "./config";
 import { RoketoContract } from './interfaces/contracts';
-import { RoketoApi } from './interfaces/roketo-api';
 // import { RoketoTokenStatus, RoketoStatus } from './interfaces/entities';
 import { RoketoContractApi } from "./contract-api";
 import { RoketoAccount, RoketoDao } from "./interfaces/entities";
 
 export interface Roketo {
-  api: RoketoApi;
+  api: RoketoContractApi;
   dao: RoketoDao;
   account: RoketoAccount;
   // status: RoketoStatus;
@@ -63,14 +62,24 @@ export async function initRoketo({
     accountId,
   });
 
-  const roketoUserAccount = await api.getAccount();
-  const dao = await api.getDao();
+  const roketoUserAccountPromise = api.getAccount();
 
-  const inc = await contract.get_account_incoming_streams({ account_id: accountId, from: 0, limit: 10 });;
-  const out = await contract.get_account_outgoing_streams({ account_id: accountId, from: 0, limit: 10 });;
-  const aft = await contract.get_account_ft({ account_id: accountId, token_account_id: "wrap.testnet" });;
-  const tkn = await contract.get_token({ token_account_id: "wrap.testnet" });
-  const sts = await contract.get_stats();
+  const daoPromise = api.getDao();
+
+  const incPromise = contract.get_account_incoming_streams({ account_id: accountId, from: 0, limit: 10 });
+  const outPromise = contract.get_account_outgoing_streams({ account_id: accountId, from: 0, limit: 10 });
+  const aftPromise = contract.get_account_ft({ account_id: accountId, token_account_id: "wrap.testnet" });
+  const tknPromise = contract.get_token({ token_account_id: "wrap.testnet" });
+  const stsPromise = contract.get_stats();
+
+  const [
+    roketoUserAccount,
+    dao, inc, out, aft, tkn, sts,
+  ] = await Promise.all([
+    roketoUserAccountPromise,
+    daoPromise,
+    incPromise, outPromise, aftPromise, tknPromise, stsPromise,
+  ]);
 
   // api.createStream({
   //   name: 'test',

@@ -7,11 +7,11 @@ import { FormField } from 'shared/kit/FormField';
 import { Input } from 'shared/kit/Input';
 import { Button } from 'shared/kit/Button';
 import { TokenImage } from 'shared/kit/TokenImage';
-import { DropdownMenu } from 'shared/kit/DropdownMenu';
+import { DropdownMenu, DropdownMenuItem } from 'shared/kit/DropdownMenu';
 import { DropdownOpener } from 'shared/kit/DropdownOpener';
-// import { RadioButton } from 'shared/kit/RadioButton';
+import { RadioButton } from 'shared/kit/RadioButton';
 import { Tooltip } from 'shared/kit/Tooltip';
-// import { TokenFormatter } from 'shared/helpers/formatting';
+import { TokenFormatter } from 'shared/helpers/formatting';
 import { env } from 'shared/config';
 import { useRoketoContext } from 'app/roketo-context';
 import { StreamSpeedCalcField } from './StreamSpeedCalcField';
@@ -67,18 +67,16 @@ type CreateStreamFormProps = {
 };
 
 export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
-  const { near, auth } = useRoketoContext();
+  const { near, auth, tokens } = useRoketoContext();
 
   const schema = CreateStreamFormSchema({
     accountId: auth.accountId,
     near,
   });
 
-  const [dropdownOpened, setDropdownOpened] = useState(false);
-
+  const [isDropdownOpened, setIsDropdownOpened] = useState(false);
   const [submitError, setError] = useState<Error | null>(null);
 
-  // const tokensNames = tokens.tickers;
   const formikOnSubmit = async (values: CreateStreamFormValues, formikHelpers: FormikHelpers<CreateStreamFormValues>) => {
     console.debug('Formik submit', values, formikHelpers);
     try {
@@ -90,6 +88,9 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
       }
     }
   };
+
+  const allAvailableTokens = Object.values(tokens);
+
   return (
     <Formik<CreateStreamFormValues>
       initialValues={{
@@ -113,11 +114,12 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
         handleSubmit,
         isSubmitting,
       }) => {
-        // const tokenMeta = roketo.tokenMeta(values.token);
-        console.log('values.token', values.token)
-        // const formatter = TokenFormatter(
-        //   tokens.get(values.token).metadata.decimals,
-        // );
+        const activeTokenAccountId = values.token;
+        const activeToken = tokens[activeTokenAccountId];
+        const {meta: tokenMeta, roketoMeta} = activeToken;
+
+        const formatterForChosenToken = TokenFormatter(tokenMeta.decimals);
+
         return (
           <form className="max-w-lg mx-auto w-full" onSubmit={handleSubmit}>
             <Field name="receiver">
@@ -155,7 +157,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                     <DropdownOpener
                       minimal
                       className="bg-input text-white focus-within:border-blue hover:border-blue text-xl h-14 px-4 py-3 border border-border w-36"
-                      onChange={setDropdownOpened}
+                      onChange={setIsDropdownOpened}
                     >
                       <div className="inline-flex items-center">
                         <TokenImage
@@ -163,42 +165,47 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                           className="mr-1"
                         />
                         {' '}
-                        <span>{field.value}</span>
+                        <span>{tokenMeta.symbol}</span>
                       </div>
                     </DropdownOpener>
 
                     <DropdownMenu
-                      opened={dropdownOpened}
+                      opened={isDropdownOpened}
                       className="z-10"
-                      onClose={() => setDropdownOpened(false)}
+                      onClose={() => setIsDropdownOpened(false)}
                     >
-                      {/* {tokensNames.map((option: string) => (
-                        <DropdownMenuItem
-                          className="focus-within:border-blue"
-                          key={option}
-                        >
-                          <RadioButton
-                            label={(
-                              <div className="inline-flex items-center">
-                                <TokenImage
-                                  size={6}
-                                  tokenName={option}
-                                  className="mr-1"
-                                />
-                                {' '}
-                                <span>{option}</span>
-                              </div>
-                            )}
-                            active={field.value === option}
-                            value={option}
-                            onChange={(value) => {
-                              setDropdownOpened(false);
-                              setFieldValue(field.name, value, false);
-                              setFieldTouched(field.name, true, false);
-                            }}
-                          />
-                        </DropdownMenuItem>
-                      ))} */}
+                      {allAvailableTokens.map(token => {
+                        const {symbol} = token.meta;
+                        const {tokenAccountId} = token.api;
+
+                        return (
+                          <DropdownMenuItem
+                            className="focus-within:border-blue"
+                            key={tokenAccountId}
+                          >
+                            <RadioButton
+                              label={(
+                                <div className="inline-flex items-center">
+                                  <TokenImage
+                                    size={6}
+                                    tokenAccountId={tokenAccountId}
+                                    className="mr-1"
+                                  />
+                                  {' '}
+                                  <span>{symbol}</span>
+                                </div>
+                              )}
+                              active={field.value === tokenAccountId}
+                              value={tokenAccountId}
+                              onChange={(value) => {
+                                setIsDropdownOpened(false);
+                                setFieldValue(field.name, value, false);
+                                setFieldTouched(field.name, true, false);
+                              }}
+                            />
+                          </DropdownMenuItem>
+                        );
+                      })}
                     </DropdownMenu>
                   </FormField>
                 )}
@@ -255,10 +262,9 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                               return 'none';
                             }
 
-                            // const { formattedValue, unit } = formatter.tokensPerMeaningfulPeriod(field.value);
+                            const { formattedValue, unit } = formatterForChosenToken.tokensPerMeaningfulPeriod(field.value);
 
-                            // return `${formattedValue} ${values.token} / ${unit}`;
-                            return 'none'
+                            return `${formattedValue} ${tokenMeta.symbol} / ${unit}`;
                           })()}
                         </div>
                       </div>
@@ -267,8 +273,8 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                   >
                     {' '}
                     <StreamSpeedCalcField
-                      token={values.token}
-                      deposit={0}
+                      tokenAccountId={values.token}
+                      deposit={Number(formatterForChosenToken.toInt(values.deposit))}
                       onChange={(speed) => {
                         setFieldValue(field.name, speed, false);
                         setFieldTouched(field.name, true, false);
@@ -331,15 +337,17 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                   </span>
                 </label>
 
-                <p className="text-left text-gray w-2/3 text-sm">
-                  You will be charged
-                  {' '}
-                  {/* {tokenMeta && formatter.amount(tokenMeta.commission_on_create)} */}
-                  {' '}
-                  {/* {tokenMeta?.ticker} */}
-                  {' '}
-                  fee for that stream
-                </p>
+                {tokenMeta &&
+                  <p className="text-left text-gray w-2/3 text-sm">
+                    You will be charged
+                    {' '}
+                    {formatterForChosenToken.amount(roketoMeta.commission_on_create)}
+                    {' '}
+                    {tokenMeta.symbol}
+                    {' '}
+                    fee for that stream
+                  </p>
+                }
               </div>
 
               <Button

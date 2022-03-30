@@ -69,7 +69,7 @@ type TokenIconProps = {
 
 export function TokenIcon({ tokenAccountId, className, ...rest }: TokenIconProps) {
   const { tokens } = useRoketoContext();
-  const image = tokens[tokenAccountId].meta.icon;
+  const image = tokens[tokenAccountId]?.meta?.icon;
 
   if (image) {
     return (

@@ -1,23 +1,24 @@
 import {
   RoketoAccount,
-  RoketoStatus,
   RoketoStream,
-  StreamAction,
   RoketoDao
 } from './entities';
 
 export type CreateStreamApiProps = {
-  name: string;
   description: string;
   deposit: string;
+  commissionOnCreate: string,
   receiverId: string;
-  token: string;
+  tokenAccountId: string;
   tokensPerSec: number;
+  name?: string;
   cliffPeriodSec?: string;
   isAutoStart?: boolean;
   isExpirable?: boolean,
   isLocked?: boolean,
   callbackUrl?: string;
+  // fix later
+  handleTransferStream: any,
 };
 
 export type StreamsProps = { from: number, limit: number };

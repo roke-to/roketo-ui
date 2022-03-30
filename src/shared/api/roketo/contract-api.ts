@@ -1,7 +1,5 @@
-import BigNumber from 'bignumber.js';
 import { Account, Contract, WalletConnection } from 'near-api-js';
-
-import { TokenMetadata } from 'shared/api/ft/types';
+import BigNumber from 'bignumber.js';
 
 import { GAS_SIZE } from './config';
 import { RoketoContract } from './interfaces/contracts';
@@ -9,19 +7,6 @@ import { RoketoContract } from './interfaces/contracts';
 import { RoketoTokenStatus, RoketoAccount, RoketoStream } from './interfaces/entities';
 import { CreateStreamApiProps, StreamsProps } from './interfaces/roketo-api'
 import { getEmptyAccount } from './helpers';
-
-type FTContract = Contract & {
-  ft_balance_of: (options: { account_id: string }) => Promise<never>;
-  ft_metadata: () => Promise<TokenMetadata>;
-  storage_balance_of: (options: { account_id: string }) => Promise<never>;
-};
-
-function createFTContract(account: Account, address: string) {
-  return new Contract(account, address, {
-    viewMethods: ['ft_balance_of', 'ft_metadata', 'storage_balance_of'],
-    changeMethods: ['ft_transfer', 'ft_transfer_call', 'storage_deposit', 'near_deposit'],
-  }) as FTContract; // TODO: type without type assertion
-}
 
 type NewRoketoApiProps = {
   accountId: string;
@@ -100,59 +85,44 @@ export class RoketoContractApi {
   }
 
   async createStream({
-    name,
     description,
     deposit,
     receiverId,
-    token,
+    tokenAccountId,
+    commissionOnCreate,
     tokensPerSec,
     cliffPeriodSec,
     isAutoStart = true,
     isExpirable,
     isLocked,
-    callbackUrl
+    callbackUrl,
+    handleTransferStream,
   }: CreateStreamApiProps) {
-    let res;
-    console.log('name', name)
-    // const createCommission = tokens[token].commission_on_create;
-    const tokenContract = createFTContract(this.account, 'wrap.testnet');
-
-    // const accountId = this.walletConnection.getAccountId();
-
-    // @ts-ignore
-    // await tokenContract.storage_deposit({ account_id: this.contract.contractId }, GAS_SIZE, '1250000000000000000000' )
-    // await tokenContract.near_deposit({}, GAS_SIZE, '12500000000000000000000' )
-    const r = await tokenContract.ft_balance_of({ account_id: this.accountId })
-    console.log('r', r, isAutoStart)
+    const totalCost = new BigNumber(deposit).plus(commissionOnCreate).toFixed();
+    const transferPayload = {
+      Create: {
+        request: {
+          description,
+          balance: deposit,
+          owner_id: this.accountId,
+          receiver_id: receiverId,
+          token_name: tokenAccountId,
+          tokens_per_sec: tokensPerSec,
+          cliff_period_sec: cliffPeriodSec,
+          is_locked: isLocked,
+          is_auto_start_enabled: isAutoStart,
+          is_expirable: isExpirable,
+        }
+      },
+    };
 
     try {
-        // const tokenContract = ft[token].contract;
-        // @ts-ignore
-        res = await tokenContract.ft_transfer_call({
-          args: {
-            receiver_id: this.contract.contractId,
-            amount: new BigNumber(deposit).toFixed(),
-            memo: 'Roketo transfer',
-            msg: JSON.stringify({
-              Create: { request: {
-                description,
-                balance: deposit,
-                owner_id: this.accountId,
-                receiver_id: receiverId,
-                token_name: token,
-                tokens_per_sec: tokensPerSec,
-                cliff_period_sec: cliffPeriodSec,
-                is_locked: isLocked,
-                // is_auto_start_enabled: isAutoStart,
-                is_expirable: isExpirable,
-              }},
-            }),
-          },
-          gas: GAS_SIZE,
-          amount: 1,
-          callbackUrl,
-      });
-      return res;
+      return handleTransferStream(
+        transferPayload,
+        totalCost,
+        GAS_SIZE,
+        callbackUrl
+      );
     } catch (error) {
       console.debug(error);
       throw error;

@@ -1,9 +1,7 @@
 import { Contract } from 'near-api-js';
 import {
   RoketoAccount,
-  RoketoStatus,
   RoketoStream,
-  StreamAction,
   RoketoDao,
   RoketoTokenStats,
   RoketoTokenMeta,

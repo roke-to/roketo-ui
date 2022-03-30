@@ -1,5 +1,3 @@
-import { number } from "yargs";
-
 // it's a number represented by string
 type StringInt = string;
 
