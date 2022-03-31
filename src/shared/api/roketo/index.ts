@@ -75,9 +75,9 @@ export async function initRoketo({
   // api.createStream({
   //   name: 'test',
   //   description: 'lol',
-  //   receiverId: 'dcversus2.testnet',
+  //   receiverId: 'dcversus.testnet',
   //   deposit: '1250000000000000000000',
-  //   tokensPerSec: 1111111111111,
+  //   tokensPerSec: 1,
   //   token: 'NEAR',
   //   callbackUrl: ''
   // });

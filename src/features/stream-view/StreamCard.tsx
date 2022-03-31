@@ -13,10 +13,13 @@ import { shortEnLocale } from 'shared/helpers/date';
 import { isIdling } from 'shared/api/roketo/helpers';
 import { DurationTimer } from 'shared/components/DurationTimer';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import { useRoketoContext } from 'app/roketo-context';
+
 import { StreamControls } from '../stream-control';
 
 import { streamViewData } from './streamViewData';
 import { StreamingSpeed } from './StreamingSpeed';
+import { StreamProgressPercentage } from './StreamProgressPercentage';
 
 type StreamCardProps = {
   stream: RoketoStream;
@@ -26,6 +29,8 @@ type StreamCardProps = {
 
 export function StreamCard({ stream, direction, className }: StreamCardProps) {
   // const tf = useTokenFormatter(stream.ticker);
+  const { tokens } = useRoketoContext();
+  const { formatter, meta } = tokens[stream.token_account_id];
 
   const {
     dateEnd,
@@ -62,13 +67,13 @@ export function StreamCard({ stream, direction, className }: StreamCardProps) {
           <TokenImage tokenAccountId={stream.token_account_id} className="mr-4" />
           <div className="w-full gap-4 flex items-end flex-wrap">
             <div className="text-2xl whitespace-nowrap flex-shrink-0">
-              {/* {tf.amount(streamed)} */}
+              {formatter.amount(streamed)}
               {' '}
               of
               {' '}
-              {/* {tf.amount(full)} */}
+              {formatter.amount(full)}
               {' '}
-              {/* <span className="uppercase">{stream.ticker}</span> */}
+              <span className="uppercase">{meta.symbol}</span>
             </div>
 
             <StreamingSpeed stream={stream} direction={direction} />
@@ -87,19 +92,19 @@ export function StreamCard({ stream, direction, className }: StreamCardProps) {
         </div>
         <ProgressBar className="mt-5" progresses={progresses} />
         <div className="flex text-sm mt-3 mr-3">
-          {/* <StreamProgressPercentage
+          <StreamProgressPercentage
             className="mr-4"
             label="Withdrawn"
             colorClass="bg-streams-withdrawn"
-            formattedFloatValue={`${tf.amount(withdrawn)} ${stream.ticker}`}
+            formattedFloatValue={`${formatter.amount(withdrawn)} ${meta.symbol}`}
             percentageValue={percentages.withdrawn}
           />
           <StreamProgressPercentage
             label="Streamed"
             colorClass="bg-streams-streamed"
-            formattedFloatValue={`${tf.amount(streamed)} ${stream.ticker}`}
+            formattedFloatValue={`${formatter.amount(streamed)} ${meta.symbol}`}
             percentageValue={percentages.streamed}
-          /> */}
+          />
         </div>
       </Link>
       <div className="hidden xl:block" />

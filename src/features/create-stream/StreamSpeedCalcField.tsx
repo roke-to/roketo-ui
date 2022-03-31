@@ -4,7 +4,7 @@ import { differenceInDays, addMonths } from 'date-fns';
 
 import { usePrev } from 'shared/hooks/usePrev';
 import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
-import { SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE } from 'shared/api/roketo/constants';
+import { SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE } from 'shared/constants';
 
 type SpeedInputProps = {
   className?: string;

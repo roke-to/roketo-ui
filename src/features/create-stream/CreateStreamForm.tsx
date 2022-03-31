@@ -94,7 +94,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
     <Formik<CreateStreamFormValues>
       initialValues={{
         receiver: '',
-        token: 'NEAR',
+        token: 'wrap.testnet',
         speed: 0,
         deposit: 0,
         autoStart: true,

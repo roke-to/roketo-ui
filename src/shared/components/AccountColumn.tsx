@@ -80,7 +80,7 @@ export function AccountColumn({
           .map((tokenAccountId: string) => (
             <AccountStreamCard
               key={tokenAccountId}
-              token={tokenAccountId}
+              tokenAccountId={tokenAccountId}
               balance={tokensData[tokenAccountId]}
               streamsLength={0}
               period={selectedPeriod}
