@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
-import SignInPage from './pages/Login';
-import HomePage from './pages/HomePage';
+import SignInPage from '../pages/Login';
+import HomePage from '../pages/HomePage';
 context('Viewport', () => {
     beforeEach(() => {
         cy.visit('https://test.app-v2.roke.to/#/authorize')
