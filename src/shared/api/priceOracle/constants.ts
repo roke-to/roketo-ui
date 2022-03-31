@@ -1,7 +1,5 @@
-export const DECIMAL = 10;
-
-const NEAR_MULTIPLIER = DECIMAL ** 24;
-const DAI_MULTIPLIER = DECIMAL ** 18;
+const NEAR_MULTIPLIER = 10 ** 24;
+const DAI_MULTIPLIER = 10 ** 18;
 
 export const TOKEN_MULTIPLIER_MAP = {
   // TestNet

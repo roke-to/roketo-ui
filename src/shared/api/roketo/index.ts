@@ -80,13 +80,8 @@ export async function initRoketo({
 
   const isBridged = (ticker: string) => {
     const meta = tokenMeta(ticker);
-    if (!meta) {
-      return false;
-    }
 
-    const bridges = [NEAR_BRIDGE];
-
-    return bridges.some((bridge) => meta.account_id.endsWith(bridge));
+    return Boolean(meta?.account_id.endsWith(NEAR_BRIDGE));
   };
 
   return {

@@ -1,12 +1,11 @@
-import React, {useEffect, useState, useContext} from 'react';
-import {Near, WalletConnection} from 'near-api-js';
+import React, { useEffect, useState, useContext } from 'react';
+import { Near, WalletConnection } from 'near-api-js';
 
-import {NEAR_CONFIG} from 'shared/api/near/config';
-import {createNearInstance, getNearAuth, NearAuth} from 'shared/api/near';
-import {initRoketo, Roketo} from 'shared/api/roketo';
-import {initPriceOracle, PriceOracle} from 'shared/api/priceOracle';
-
-import {Tokens} from 'features/ft-tokens';
+import { NEAR_CONFIG } from 'shared/api/near/config';
+import { createNearInstance, getNearAuth, NearAuth } from 'shared/api/near';
+import { initRoketo, Roketo } from 'shared/api/roketo';
+import { initPriceOracle, PriceOracle } from 'shared/api/priceOracle';
+import { Tokens } from 'features/ft-tokens';
 
 type AppServices = {
   auth: NearAuth;
@@ -31,12 +30,10 @@ export function RoketoContextProvider({
       const walletConnection = new WalletConnection(near, NEAR_CONFIG.contractName);
       const auth = getNearAuth(walletConnection);
 
-      const roketo = await initRoketo({
-        walletConnection,
-      });
-
-      const priceOracle = await initPriceOracle({account: auth.account});
-      console.log(priceOracle);
+      const [roketo, priceOracle] = await Promise.all([
+        initRoketo({walletConnection}),
+        initPriceOracle({account: auth.account}),
+      ]);
 
       const tokens = new Tokens({
         account: walletConnection.account(),

@@ -1,6 +1,6 @@
 export type TokenId = string;
 
-export type Price = {
+type Price = {
   multiplier: string,
   decimals: number,
 };
