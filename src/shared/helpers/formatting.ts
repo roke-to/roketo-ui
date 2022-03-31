@@ -29,33 +29,33 @@ export function TokenFormatter(tokenDecimals: number) {
 
   const MP = 10 ** tokenDecimals;
 
-  // const bigValueFormatter = Intl.NumberFormat('en-US', {
-  //   minimumIntegerDigits: 1,
-  //   maximumFractionDigits: 2,
-  //   minimumFractionDigits: 2,
-  // });
-  // const smallValueFormatter = Intl.NumberFormat('en-US', {
-  //   minimumSignificantDigits: 2,
-  //   maximumSignificantDigits: 4,
-  //   maximumFractionDigits: tokenDecimals,
-  // });
+  const bigValueFormatter = Intl.NumberFormat('en-US', {
+    minimumIntegerDigits: 1,
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+  });
+  const smallValueFormatter = Intl.NumberFormat('en-US', {
+    minimumSignificantDigits: 2,
+    maximumSignificantDigits: 4,
+    maximumFractionDigits: tokenDecimals,
+  });
 
-  const formatSmartly = (value: numbro.Numbro | number) => 
-    // if (value < 1) {
-    //   return smallValueFormatter.format(value);
-    // }
-    
-    // if (value < 1000000) {
-    //   return bigValueFormatter.format(value);
-    // }
+  const formatSmartly = (value: number) => {
+      if (value < 1) {
+        return smallValueFormatter.format(value);
+      }
 
-     numbro(value).format({
-      mantissa: 3,
-      trimMantissa: true,
-      optionalMantissa: true,
-      average: true,
-    })
-  ;
+      if (value < 1000000) {
+        return bigValueFormatter.format(value);
+      }
+
+      return numbro(value).format({
+        mantissa: 3,
+        trimMantissa: true,
+        optionalMantissa: true,
+        average: true,
+      });
+    }
 
   return {
     tokenPerSecondToInt: (tps: number) => numbro(tps).multiply(MP).divide(TICK_TO_S).format({
@@ -68,7 +68,7 @@ export function TokenFormatter(tokenDecimals: number) {
       return formatted;
     },
     tokensPerMS: (tokensPerTick: number) => {
-      const value = numbro(tokensPerTick).multiply(TICK_TO_MS).divide(MP);
+      const value = numbro(tokensPerTick).multiply(TICK_TO_MS).divide(MP).value();
       return formatSmartly(value);
     },
     tokensPerS: (tokensPerTick: number) => {
@@ -106,8 +106,7 @@ export function TokenFormatter(tokenDecimals: number) {
           .multiply(multiplier)
           .divide(MP)
           .value();
-        const isOk = value > 0.01;
-        return isOk;
+        return value > 0.01;
       }) || TICK_TO_YEAR;
 
       const value = numbro(tokensPerTick)

@@ -30,11 +30,13 @@ function SpeedInput({ className, value, onChange, label }: SpeedInputProps) {
 type StreamSpeedCalcFieldProps = {
   onChange: (speed: number) => void;
   deposit: number;
-  token: string;
+  tokenAccountId: string;
 };
 
-export function StreamSpeedCalcField({ onChange, deposit = 0, token }: StreamSpeedCalcFieldProps) {
-  const formatter = useTokenFormatter(token);
+export function StreamSpeedCalcField({ onChange, deposit = 0, tokenAccountId }: StreamSpeedCalcFieldProps) {
+  const formatter = useTokenFormatter(tokenAccountId);
+  
+  console.log({formatter});
 
   const [months, setMonths] = useState(0);
   const [days, setDays] = useState(0);

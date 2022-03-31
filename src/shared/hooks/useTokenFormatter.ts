@@ -1,10 +1,9 @@
-// import { useRoketoContext } from 'app/roketo-context';
+import { useRoketoContext } from 'app/roketo-context';
 import { TokenFormatter } from 'shared/helpers/formatting';
 
-export function useTokenFormatter(tokenName: string) {
-  // const { tokens } = useRoketoContext();
-  // const token = tokens.get(tokenName);
-  console.log('tokenName', tokenName)
+export function useTokenFormatter(tokenAccountId: string) {
+  const { tokens } = useRoketoContext();
+  const currentToken = tokens[tokenAccountId];
 
-  return TokenFormatter(10);
+  return TokenFormatter(currentToken.meta.decimals);
 }

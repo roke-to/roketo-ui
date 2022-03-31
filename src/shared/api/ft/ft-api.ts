@@ -40,20 +40,20 @@ export class FTApi {
     return res;
   }
 
-  async transfer(request: any, deposit: number, gas: number, callbackUrl: string) {
-    let res;
+  transfer = async (payload: any, deposit: number, gas: number, callbackUrl: string) => {
+    console.log('FTApi.transfer() ===>', {payload, deposit, gas, callbackUrl});
 
     try {
-      res = await this.contract.ft_transfer_call({
+      const res = await this.contract.ft_transfer_call({
         args: {
           receiver_id: this.contract.contractId,
           amount: new BigNumber(deposit).toFixed(),
           memo: 'Roketo transfer',
-          msg: JSON.stringify(request),
+          msg: JSON.stringify(payload),
         },
         gas,
         callbackUrl,
-    });
+      });
 
       return res;
     } catch (error) {
