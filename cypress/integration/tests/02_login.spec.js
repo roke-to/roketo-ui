@@ -22,6 +22,7 @@ it('login with Pass phrase', () => {
     signPage.pressNext();
     cy.wait(6000);
     signPage.pressNext();
+    cy.wait(6000);
     home.checkPage();
 })
 
