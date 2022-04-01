@@ -1,5 +1,9 @@
 class SignInPage {
 
+  checkPage(){
+    cy.url().should('contains', 'https://wallet.testnet.near.org/login/');
+  }
+
   importExistingAccount() {
     cy.get('.buttons > .link').click({force: true});
   }

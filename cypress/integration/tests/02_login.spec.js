@@ -15,6 +15,7 @@ it('login with Pass phrase', () => {
     cy.wait(6000);
     //redirect to wallet
     const signPage = new SignInPage(); 
+    signPage.checkPage();
     signPage.importExistingAccount();
 
     signPage.recoverAccount();
