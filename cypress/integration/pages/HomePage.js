@@ -7,7 +7,7 @@ class HomePage {
   }
   
   checkPage(){
-       cy.url().should('contains', 'http:///test.app-v2.roke.to/');
+       cy.url().should('contains', 'https://test.app-v2.roke.to/');
   }
   goToSignIn() {
     cy.get('.inline-flex').click();
