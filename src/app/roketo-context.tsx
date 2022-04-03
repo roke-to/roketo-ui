@@ -42,6 +42,8 @@ export function RoketoContextProvider({
         tokens: roketo.dao.tokens,
       });
 
+      console.log({near, roketo, tokens});
+
       setContext({
         auth,
         near,

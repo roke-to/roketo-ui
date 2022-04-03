@@ -8,7 +8,7 @@ import { useSingleStream } from 'features/roketo-resource';
 import { StreamDashboard } from 'features/stream-view/StreamDashboard';
 import { LinkIcon } from 'shared/icons/Link';
 import { ArrowLeftIcon } from 'shared/icons/ArrowLeft';
-import { getStreamLink, routes } from 'shared/helpers/routing';
+import { getStreamLink, ROUTES_MAP } from 'shared/helpers/routing';
 import { PageError } from 'shared/components/PageError';
 
 function BackButton({ to }: { to: string }) {
@@ -59,7 +59,7 @@ export function StreamPage() {
   return (
     <div className="container mx-auto p-12">
       <div className="mb-10">
-        <BackButton to={routes.streams} />
+        <BackButton to={ROUTES_MAP.streams.path} />
       </div>
       {pageError &&
         <PageError

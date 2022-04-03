@@ -1,0 +1,8 @@
+@import 'src/shared/ui/kit/palette';
+
+.root {
+  color: $light-black;
+  background-color: $white;
+
+  min-height: 100vh;
+}

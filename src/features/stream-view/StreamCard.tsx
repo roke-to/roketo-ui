@@ -6,7 +6,7 @@ import { Link, generatePath } from 'react-router-dom';
 import { TokenImage } from 'shared/kit/TokenImage';
 import { ProgressBar } from 'shared/kit/ProgressBar';
 import { Button } from 'shared/kit/Button';
-import { getStreamLink, routes } from 'shared/helpers/routing';
+import { getStreamLink, ROUTES_MAP } from 'shared/helpers/routing';
 import { LinkIcon } from 'shared/icons/Link';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { useToken } from 'shared/hooks/useToken';
@@ -35,6 +35,8 @@ export function StreamCard({ stream, className }: StreamCardProps) {
 
   const link = getStreamLink(stream.id);
 
+  const streamRoutePath = ROUTES_MAP.stream.path;
+
   return (
     <div
       className={classNames(
@@ -44,7 +46,7 @@ export function StreamCard({ stream, className }: StreamCardProps) {
       )}
     >
       <Link
-        to={generatePath(routes.stream, { id: stream.id })}
+        to={generatePath(streamRoutePath, { id: stream.id })}
         className="w-full col-span-12 xl:col-span-6 justify-self-start"
       >
         <div className="flex items-center">
@@ -107,7 +109,7 @@ export function StreamCard({ stream, className }: StreamCardProps) {
             className="ml-3"
             variant="filled"
             onClick={() => copy(link)}
-            to={generatePath(routes.stream, { id: stream.id })}
+            to={generatePath(streamRoutePath, { id: stream.id })}
           >
             <LinkIcon />
           </Button>

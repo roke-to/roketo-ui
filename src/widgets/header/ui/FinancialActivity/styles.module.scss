@@ -1,0 +1,22 @@
+.root {
+  display: flex;
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+
+  & > :first-child {
+    margin-right: 8px;
+  }
+
+  &:not(:last-child) {
+    margin-right: 26px;
+  }
+}
+
+.balance {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+}

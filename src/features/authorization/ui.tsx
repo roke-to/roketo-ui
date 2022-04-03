@@ -1,0 +1,45 @@
+import React from 'react';
+
+import {useRoketoContext} from '@app/app/roketo-context';
+import {useUser} from '@app/shared/api/roketo-web';
+
+import {LogoutIcon} from '@uikit/icons/LogOut';
+
+import {env} from '@app/shared/config';
+
+import styles from './index.module.scss';
+
+export const Authorization = () => {
+  const {auth} = useRoketoContext();
+  const userSWR = useUser();
+
+  const {name, email, accountId} = userSWR.data ?? {};
+  const {login, logout, signedIn} = auth;
+
+  if (!signedIn) {
+    return (
+      <button type='button' onClick={login}>
+        Sign in with NEAR Wallet <LogoutIcon />
+      </button>
+    )
+  }
+
+  return (
+    <div className={styles.root}>
+      <span className={styles.name}>
+        {name || accountId}
+      </span>
+
+      <img
+        className={styles.avatar}
+        src={`${env.WEB_API_URL}/users/${accountId}/avatar?email=${email}`}
+        alt="user avatar"
+      />
+
+      <button type='button' onClick={logout}>
+        <LogoutIcon />
+      </button>
+    </div>
+  );
+};
+

@@ -3,12 +3,12 @@ import * as nearAPI from 'near-api-js';
 
 import {env} from 'shared/config';
 
-import {TokenId, TokenMultiplierMap, TokenPriceCollection, TokenPriceRaw} from './interfaces/entites';
+import {TokenAccountId, TokenMultiplierMap, TokenPriceCollection, TokenPriceRaw} from './interfaces/entites';
 import {PriceOracleContract} from './interfaces/contract';
 import {CONTRACT_CHANGE_METHODS_LIST, CONTRACT_VIEW_METHODS_LIST, TOKEN_MULTIPLIER_MAP,} from './constants';
 
 export interface PriceOracle {
-  getPriceInUsd: (tokenId: TokenId, amount: number | string) => number,
+  getPriceInUsd: (tokenId: TokenAccountId, amount: number | string) => string | number,
 }
 
 const convertRawPriceToTokenMap = (
@@ -47,9 +47,9 @@ const convertRawPriceToTokenMap = (
  */
 const convertTokenToUsdFactory = (
   priceTokenMap: TokenPriceCollection, tokenToMultiplierMap: TokenMultiplierMap
-) => (tokenId: TokenId, amount: number | string): number => {
-  const tokenPrice = priceTokenMap[tokenId];
-  const tokenMultiplier = tokenToMultiplierMap[tokenId];
+) => (tokenAccountId: TokenAccountId, amount: number | string) => {
+  const tokenPrice = priceTokenMap[tokenAccountId];
+  const tokenMultiplier = tokenToMultiplierMap[tokenAccountId];
 
   if (!tokenPrice || !tokenMultiplier) {
     return 0;
@@ -61,7 +61,10 @@ const convertTokenToUsdFactory = (
     .multiply(tokenMultiplier)
     .multiply(Number(multiplier))
     .divide(10 ** decimals)
-    .value();
+    .format({
+      mantissa: 3,
+      trimMantissa: true,
+    });
 };
 
 export const initPriceOracle = async (

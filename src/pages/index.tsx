@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
+
 import {
   HashRouter as Router,
   Route,
@@ -11,9 +12,10 @@ import { PrivateRoute } from 'shared/components/PrivateRoute';
 import { useRoketoContext } from 'app/roketo-context';
 
 import { env } from 'shared/config';
-import { routes } from 'shared/helpers/routing';
+import { ROUTES_MAP } from 'shared/helpers/routing';
 import { SendPage } from './send';
-import { StreamsPage } from './streams';
+import { StreamsPage } from './LegacyStreams';
+import { MyStreamsPage } from './MyStreamsPage';
 import { AccountPage } from './account';
 import { AuthorizePage } from './authorize';
 import { StreamPage } from './stream';
@@ -34,6 +36,17 @@ export function Routing() {
 
   const { auth } = useRoketoContext();
 
+  const {
+    send,
+    stream,
+    account,
+    profile,
+    streams,
+    myStreams,
+    authorize,
+    notifications,
+  } = ROUTES_MAP;
+
   return (
     <Router basename={env.PUBLIC_URL}>
       <Header />
@@ -41,56 +54,60 @@ export function Routing() {
       <Switch>
         <PrivateRoute
           exact
-          redirect={<Redirect to={routes.send} />}
+          redirect={<Redirect to={send.path} />}
           allowed={!auth.signedIn}
-          path={routes.authorize}
+          path={authorize.path}
         >
           <AuthorizePage />
         </PrivateRoute>
         
         <PrivateRoute
           exact
-          redirect={<Redirect to={routes.authorize} />}
+          redirect={<Redirect to={authorize.path} />}
           allowed={auth.signedIn}
-          path={routes.send}
+          path={send.path}
         >
           <SendPage />
         </PrivateRoute>
 
         <PrivateRoute
           exact
-          redirect={<Redirect to={routes.authorize} />}
+          redirect={<Redirect to={authorize.path} />}
           allowed={auth.signedIn}
-          path={routes.account}
+          path={account.path}
         >
           <AccountPage />
         </PrivateRoute>
 
-        <Route exact path={routes.stream}>
+        <Route exact path={stream.path}>
           <StreamPage />
+        </Route>
+
+        <Route path={myStreams.path} exact>
+          <MyStreamsPage />
         </Route>
 
         <PrivateRoute
           exact
-          redirect={<Redirect to={routes.authorize} />}
+          redirect={<Redirect to={authorize.path} />}
           allowed={auth.signedIn}
-          path={routes.streams}
+          path={streams.path}
         >
           <StreamsPage />
         </PrivateRoute>
         <PrivateRoute
           exact
-          redirect={<Redirect to={routes.authorize} />}
+          redirect={<Redirect to={authorize.path} />}
           allowed={auth.signedIn}
-          path={routes.profile}
+          path={profile.path}
         >
           <ProfilePage />
         </PrivateRoute>
         <PrivateRoute
           exact
-          redirect={<Redirect to={routes.authorize} />}
+          redirect={<Redirect to={authorize.path} />}
           allowed={auth.signedIn}
-          path={routes.notifications}
+          path={notifications.path}
         >
           <NotificationsPage />
         </PrivateRoute>

@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { StreamCard } from 'features/stream-view/StreamCard';
 import { StreamFilters } from 'features/filtering/StreamFilters';
 import { Button } from 'shared/kit/Button';
-import { routes } from 'shared/helpers/routing';
+import { ROUTES_MAP } from 'shared/helpers/routing';
 import { useStreams } from 'features/roketo-resource';
 import { WithdrawAllButton } from 'features/stream-control/WithdrawAllButton';
 import { PageError } from 'shared/components/PageError';
@@ -69,7 +69,7 @@ export function StreamsPage() {
           <Button
             variant="main"
             link
-            to={routes.send}
+            to={ROUTES_MAP.send.path}
           >
             Create First Stream
           </Button>
