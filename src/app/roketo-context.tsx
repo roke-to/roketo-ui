@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Near, WalletConnection } from 'near-api-js';
 
-import { NEAR_CONFIG } from 'shared/api/near/config';
+import { env } from 'shared/config';
 import { createNearInstance, getNearAuth, NearAuth } from 'shared/api/near';
 import { initRoketo, Roketo } from 'shared/api/roketo';
 import { initFT, RichTokens } from 'shared/api/ft';
@@ -25,7 +25,7 @@ export function RoketoContextProvider({
   useEffect(() => {
     const init = async () => {
       const near = await createNearInstance();
-      const walletConnection = new WalletConnection(near, NEAR_CONFIG.contractName);
+      const walletConnection = new WalletConnection(near, env.ROKETO_CONTRACT_NAME);
       const auth = await getNearAuth(walletConnection);
       
       if (!auth.signedIn) {

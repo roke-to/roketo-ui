@@ -8,7 +8,7 @@ type NearAuthButtonProps = {
   className?: string;
 };
 
-export function NearAuthButton(props: NearAuthButtonProps) {
+export function NearAuthButton({ variant, className }: NearAuthButtonProps) {
   const {
     auth: {
       logout,
@@ -19,13 +19,13 @@ export function NearAuthButton(props: NearAuthButtonProps) {
   } = useRoketoContext();
 
   return signedIn ? (
-    <Button type="button" onClick={logout} {...props}>
+    <Button type="button" onClick={logout} variant={variant} className={className}>
       Sign out (
       {accountId}
       )
     </Button>
   ) : (
-    <Button type="button" onClick={login} {...props}>
+    <Button type="button" onClick={login} variant={variant} className={className}>
       Sign in with NEAR Wallet
     </Button>
   );

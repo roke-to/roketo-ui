@@ -16,7 +16,7 @@ function useDurationTimer(untilTimestamp: number | string) {
   useEffect(() => {
     const untilDateValue = new Date(Number(untilTimestamp));
 
-    if (!isValidDate(untilDateValue)) return;
+    if (!isValidDate(untilDateValue)) return undefined;
 
     const id = setInterval(() => {
       const isExpired = new Date().getTime() > untilDateValue.getTime();

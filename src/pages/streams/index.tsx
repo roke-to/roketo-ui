@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from 'react';
 
-import { StreamCard } from 'features/stream-view';
-import { StreamFilters } from 'features/filtering/streams';
+import { StreamCard } from 'features/stream-view/StreamCard';
+import { StreamFilters } from 'features/filtering/StreamFilters';
 import { Button } from 'shared/kit/Button';
 import { routes } from 'shared/helpers/routing';
 import { useStreams } from 'features/roketo-resource';
-import { StreamWithdrawButton } from 'features/stream-control/StreamWithdrawButton';
+import { WithdrawAllButton } from 'features/stream-control/WithdrawAllButton';
 import { PageError } from 'shared/components/PageError';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
@@ -31,9 +31,9 @@ export function StreamsPage() {
       <div className="flex mb-12">
         <h1 className="text-3xl ">All Streams</h1>
         <div className="flex-grow" />
-        <StreamWithdrawButton variant="main" size="normal">
-          Update streams and withdraw
-        </StreamWithdrawButton>
+        <WithdrawAllButton>
+          Withdraw all
+        </WithdrawAllButton>
       </div>
       <StreamFilters
         items={allStreams}
@@ -41,7 +41,7 @@ export function StreamsPage() {
         className="mb-10 relative z-10"
       />
 
-      {error ? (
+      {error &&
         <PageError
           className="max-w-2xl mx-auto py-32"
           message={error.message}
@@ -49,9 +49,13 @@ export function StreamsPage() {
             streamsSWR.mutate();
           }}
         />
-      ) : !streams ? (
+      }
+      
+      {!streams && !error &&
         <div>Loading</div>
-      ) : allStreams.length === 0 ? (
+      }
+
+      {streams && allStreams.length === 0 &&
         <div className="flex flex-col w-80 mx-auto">
           <h3 className="text-3xl text-center my-12 ">
             You dont have any streams yet.
@@ -64,14 +68,18 @@ export function StreamsPage() {
             Create First Stream
           </Button>
         </div>
-      ) : filteredItems.length === 0 ? (
+      }
+      
+      {streams && filteredItems.length === 0 && allStreams.length > 0 &&
         <h3 className="text-3xl text-center my-12 w-80 mx-auto">
           No streams matching your filters.
           {' '}
           <br />
           Try selecting different filters!
         </h3>
-      ) : (
+      }
+
+      {filteredItems.length > 0 &&
         filteredItems.map((stream: any) => (
           <StreamCard
             key={stream.id}
@@ -79,7 +87,7 @@ export function StreamsPage() {
             className="mb-4"
           />
         ))
-      )}
+      }
     </div>
   );
 }

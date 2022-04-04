@@ -5,19 +5,20 @@ import { ArcProgressBar } from 'shared/kit/ProgressBar';
 import { Tooltip } from 'shared/kit/Tooltip';
 import { useGetStreamDirection, STREAM_DIRECTION } from 'shared/hooks/useGetStreamDirection';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+import { useToken } from 'shared/hooks/useToken';
 import { TokenImage } from 'shared/kit/TokenImage';
+import { STREAM_STATUS } from 'shared/api/roketo/constants';
 
-import { StreamControls } from '../stream-control';
-import { StreamWithdrawButton } from '../stream-control/StreamWithdrawButton';
+import { StreamControls } from 'features/stream-control/StreamControls';
+import { WithdrawButton } from 'features/stream-control/WithdrawButton';
+import { streamViewData } from 'features/roketo-resource';
 
-import { streamViewData } from './streamViewData';
 import { StreamingSpeed } from './StreamingSpeed';
 import { StreamProgressPercentage } from './StreamProgressPercentage';
 
 export function StreamDashboard({ stream }: { stream: RoketoStream }) {
   const { token_account_id: tokenAccountId } = stream;
-  const { formatter, meta } = useTokenFormatter(tokenAccountId);
+  const { formatter, meta } = useToken(tokenAccountId);
   const direction = useGetStreamDirection(stream);
 
   const {
@@ -74,24 +75,17 @@ export function StreamDashboard({ stream }: { stream: RoketoStream }) {
         stream={stream}
         className="mt-6 mb-6"
       />
-      {isDead ? (
-        ''
-      ) : (
+
+      {!isDead &&
         <div className="flex relative z-10">
           <StreamControls stream={stream} className="mr-2" />
 
           {/* render withdraw funds button */}
-          {direction === STREAM_DIRECTION.IN ? (
-            <StreamWithdrawButton
-              loadingText="Withdrawing..."
-              variant="outlined"
-              color="dark"
-            >
-              Withdraw from all streams
-            </StreamWithdrawButton>
-          ) : null}
+          {direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.Active &&
+            <WithdrawButton stream={stream} />
+          }
         </div>
-      )}
+      }
     </div>
   );
 }

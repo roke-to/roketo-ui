@@ -50,8 +50,6 @@ export function useFilters({ items, filters }: { items: RoketoStream[], filters:
 
       // run filter for every possible function
       Object.keys(filter.options).forEach((option) => {
-        console.assert(option in filter.options, 'Never happens'); // Type guard
-
         filterRunResult[option] = filteredItemsValue.filter(filter.options[option]);
       });
 

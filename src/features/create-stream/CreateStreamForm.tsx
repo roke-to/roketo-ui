@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Formik, Field, FieldProps, FormikHelpers } from 'formik';
+import { Formik, Field, FieldProps } from 'formik';
 import * as Yup from 'yup';
 import type { Near } from 'near-api-js';
 
@@ -77,8 +77,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
   const [isDropdownOpened, setIsDropdownOpened] = useState(false);
   const [submitError, setError] = useState<Error | null>(null);
 
-  const formikOnSubmit = async (values: CreateStreamFormValues, formikHelpers: FormikHelpers<CreateStreamFormValues>) => {
-    console.debug('Formik submit', values, formikHelpers);
+  const formikOnSubmit = async (values: CreateStreamFormValues) => {
     try {
       const res = await onSubmit(values);
       return res;
@@ -86,6 +85,8 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
       if (error instanceof Error) {
         setError(error);
       }
+
+      return undefined;
     }
   };
 
@@ -134,7 +135,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                     <input
                       placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
                       id="ownerInput"
-                      {...field}
+                      {...field} 
                     />
                   </Input>
                 </FormField>
@@ -276,7 +277,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                   >
                     {' '}
                     <StreamSpeedCalcField
-                      deposit={Number(formatter.toYocto(values.deposit))}
+                      deposit={formatter.toYocto(values.deposit)}
                       onChange={(speed) => {
                         setFieldValue(field.name, speed, false);
                         setFieldTouched(field.name, true, false);

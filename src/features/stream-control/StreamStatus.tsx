@@ -27,11 +27,11 @@ type StreamStatusProps = {
   className?: string;
 };
 
-export function StreamStatus({ stream, className, ...rest }: StreamStatusProps) {
+export function StreamStatus({ stream, className }: StreamStatusProps) {
   const binding = bindings[stream.status] || {};
 
   return (
-    <div className={classNames(binding.colorClass, className)} {...rest}>
+    <div className={classNames(binding.colorClass, className)}>
       {binding.label}
     </div>
   );

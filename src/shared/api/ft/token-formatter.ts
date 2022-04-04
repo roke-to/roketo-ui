@@ -21,8 +21,12 @@ export class TokenFormatter {
   }
 
   static formatSmartly(value: number) {
-    if (value < 0.001) {
+    if (value !== 0 && value < 0.001) {
       return '<0.001';
+    }
+
+    if (value === 0) {
+      return '0';
     }
 
     return numbro(value).format({
@@ -43,6 +47,10 @@ export class TokenFormatter {
       optionalMantissa: true,
       average: true,
     });
+
+    if (value === 0) {
+      return '0';
+    }
 
     if (amount !== 0 && value < 0.001) {
       return '<0.001';

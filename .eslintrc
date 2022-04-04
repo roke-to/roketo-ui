@@ -16,15 +16,15 @@
     "project": "./tsconfig.json"
   },
   "rules": {
+    "jsx-a11y/label-has-associated-control": "off",
+    "react/require-default-props": "off",
     "react/react-in-jsx-scope": "off",
     "import/prefer-default-export": "off",
     "react/prop-types": "warn",
     "react/jsx-props-no-spreading": "warn",
     "no-nested-ternary": "warn",
     "no-underscore-dangle": "warn",
-    "react/require-default-props": "warn",
-    "consistent-return": "warn",
-    "jsx-a11y/label-has-associated-control": "warn"
+    "consistent-return": "warn"
   },
   "settings": {
     "import/resolver": {

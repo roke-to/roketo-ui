@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
+
 import { Filter, FilterOptionWithCounter } from 'shared/kit/Filter';
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';

@@ -1,10 +1,9 @@
-import { Account, Contract, WalletConnection } from 'near-api-js';
+import { Account } from 'near-api-js';
 import BigNumber from 'bignumber.js';
 
-import { GAS_SIZE } from './config';
+import { GAS_SIZE } from 'shared/config';
 import { RoketoContract } from './interfaces/contracts';
-// import { RoketoApi } from './interfaces/roketo-api';
-import { RoketoTokenStatus, RoketoAccount, RoketoStream } from './interfaces/entities';
+import { RoketoAccount, RoketoStream } from './interfaces/entities';
 import { CreateStreamApiProps, StreamsProps } from './interfaces/roketo-api'
 import { getEmptyAccount } from './helpers';
 
@@ -12,23 +11,10 @@ type NewRoketoApiProps = {
   accountId: string;
   account: Account;
   contract: RoketoContract;
-  walletConnection: WalletConnection;
-  ft?: Record<
-    string,
-    {
-      name: string;
-      address: string;
-      contract: Contract;
-    }
-  >;
-  operationalCommission?: string;
-  tokens?: Record<string, RoketoTokenStatus>;
 }
 
 export class RoketoContractApi {
   contract: RoketoContract;
-
-  // walletConnection: WalletConnection;
 
   account: Account;
 
@@ -36,13 +22,11 @@ export class RoketoContractApi {
 
   constructor({
     contract,
-    // walletConnection,
     account,
     accountId,
   }: NewRoketoApiProps) {
     this.contract = contract;
 
-    // this.walletConnection = walletConnection;
     this.account = account;
     this.accountId = accountId;
   }
@@ -106,7 +90,7 @@ export class RoketoContractApi {
           owner_id: this.accountId,
           receiver_id: receiverId,
           token_name: tokenAccountId,
-          tokens_per_sec: tokensPerSec,
+          tokens_per_sec: BigInt(tokensPerSec),
           cliff_period_sec: cliffPeriodSec,
           is_locked: isLocked,
           is_auto_start_enabled: isAutoStart,
@@ -115,23 +99,18 @@ export class RoketoContractApi {
       },
     };
 
-    try {
-      return handleTransferStream(
-        transferPayload,
-        totalCost,
-        GAS_SIZE,
-        callbackUrl
-      );
-    } catch (error) {
-      console.debug(error);
-      throw error;
-    }
+    return handleTransferStream(
+      transferPayload,
+      totalCost,
+      callbackUrl
+    );
   }
 
   async startStream({ streamId }: { streamId: string }) {
     const res = await this.contract.start_stream(
       { stream_id: streamId },
-      GAS_SIZE
+      GAS_SIZE,
+      '1'
     );
 
     return res;
@@ -140,7 +119,8 @@ export class RoketoContractApi {
   async pauseStream({ streamId }: { streamId: string }) {
     const res = await this.contract.pause_stream(
       { stream_id: streamId },
-      GAS_SIZE
+      GAS_SIZE,
+      '1'
     );
 
     return res;
@@ -149,7 +129,8 @@ export class RoketoContractApi {
   async stopStream({ streamId }: { streamId: string }) {
     const res = await this.contract.stop_stream(
       { stream_id: streamId },
-      GAS_SIZE
+      GAS_SIZE,
+      '1'
     );
     return res;
   }
@@ -157,7 +138,8 @@ export class RoketoContractApi {
   async withdraw({ streamIds }: { streamIds: string[] }) {
     const res = await this.contract.withdraw(
       { stream_ids: streamIds },
-      GAS_SIZE
+      GAS_SIZE,
+      '1'
     );
     return res;
   }

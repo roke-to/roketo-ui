@@ -5,7 +5,6 @@ import { AccountColumn } from 'shared/components/AccountColumn';
 import { StreamWithdrawIcon } from 'shared/icons/StreamWithdraw';
 import { StreamOutIcon } from 'shared/icons/StreamOut';
 import { StreamInIcon } from 'shared/icons/StreamIn';
-import { CroncatButton } from 'features/croncat/CroncatButton';
 
 export function AccountPage() {
   const { roketo } = useRoketoContext();
@@ -14,9 +13,6 @@ export function AccountPage() {
     <div className="container mx-auto p-12">
       <div className="md:flex justify-between items-center mb-10">
         <h1 className="text-3xl">My Account</h1>
-        <div className="flex items-center md:mt-0 mt-4">
-          <CroncatButton />
-        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4">

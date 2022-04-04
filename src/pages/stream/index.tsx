@@ -2,14 +2,10 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import copy from 'clipboard-copy';
 import classNames from 'classnames';
+
 import { useRoketoContext } from 'app/roketo-context';
-import {
-  StreamOverviewCard,
-} from 'features/stream-view';
-import {
-  useAccount,
-  useSingleStream,
-} from 'features/roketo-resource';
+import { StreamOverviewCard } from 'features/stream-view/StreamOverviewCard';
+import { useSingleStream } from 'features/roketo-resource';
 import { StreamDashboard } from 'features/stream-view/StreamDashboard';
 import { LinkIcon } from 'shared/icons/Link';
 import { ArrowLeftIcon } from 'shared/icons/ArrowLeft';
@@ -53,20 +49,12 @@ function StreamCopyUrlBlock({ className, link }: { className: string, link: stri
 }
 
 export function StreamPage() {
-  const { roketo } = useRoketoContext();
+  const { auth } = useRoketoContext();
   const params = useParams() as { id: string };
+  const streamSWR = useSingleStream(params.id);
 
-  const accountSWR = useAccount();
-  const streamSWR = useSingleStream(params.id, {
-      roketo,
-      accountSWR,
-    },
-  );
-
-  const maybeAccount = accountSWR.data;
   const maybeStream = streamSWR.data;
-
-  const pageError = streamSWR.error || accountSWR.error;
+  const pageError = streamSWR.error;
 
   const link = getStreamLink(maybeStream?.id);
 
@@ -75,37 +63,31 @@ export function StreamPage() {
       <div className="mb-10">
         <BackButton to={routes.streams} />
       </div>
-      {pageError ? (
+      {pageError &&
         <PageError
           className="max-w-2xl mx-auto py-32"
           message={pageError.message}
           onRetry={() => {
-            accountSWR.mutate();
             streamSWR.mutate();
           }}
         />
-      ) : !maybeStream ? (
-        <div>
-          <h1 className="text-center my-32 text-2xl text-semibold">
-            {' '}
-            Stream does not exists
-            {' '}
-          </h1>
-        </div>
-      ) : !maybeAccount ? (
+      }
+      {!pageError && auth.accountId && !maybeStream &&
         <div className="py-32 text-center text-gray text-2xl">Loading...</div>
-      ) : (
+      }
+
+      {auth.accountId && maybeStream &&
         <div className="flex flex-col lg:flex-row justify-between">
-          <div className="flex flex-col items-center flex-grow">
-            <StreamDashboard stream={maybeStream} />
-            <StreamCopyUrlBlock link={link} className="max-w-xl w-full mt-28" />
-          </div>
-          <StreamOverviewCard
-            className="mt-10 w-full lg:mt-0 lg:w-1/3 self-start"
-            stream={maybeStream}
-          />
+        <div className="flex flex-col items-center flex-grow">
+          <StreamDashboard stream={maybeStream} />
+          <StreamCopyUrlBlock link={link} className="max-w-xl w-full mt-28" />
         </div>
-      )}
+        <StreamOverviewCard
+          className="mt-10 w-full lg:mt-0 lg:w-1/3 self-start"
+          stream={maybeStream}
+        />
+        </div>
+      }
     </div>
   );
 }

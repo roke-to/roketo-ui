@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import { TokenImage } from 'shared/kit/TokenImage';
 import { SECONDS_IN_MINUTE, SECONDS_IN_HOUR, SECONDS_IN_DAY } from 'shared/constants';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+import { useToken } from 'shared/hooks/useToken';
 
 function multiplyAmountByTimePeriod(amount: number, period: string) {
   switch (period) {
@@ -35,7 +35,7 @@ export function AccountStreamCard({
   showPeriod = true,
   className,
 }: AccountStreamCardProps) {
-  const { formatter, meta } = useTokenFormatter(tokenAccountId);
+  const { formatter, meta } = useToken(tokenAccountId);
 
   const balanceValue = multiplyAmountByTimePeriod(Number(balance), period);
 

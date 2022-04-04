@@ -11,10 +11,10 @@ import { DurationTimer } from 'shared/components/DurationTimer';
 import { isIdling, getEmptyStream } from 'shared/api/roketo/helpers';
 import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { useGetStreamDirection, STREAM_DIRECTION } from 'shared/hooks/useGetStreamDirection';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+import { useToken } from 'shared/hooks/useToken';
+import { streamViewData } from 'features/roketo-resource';
 
 import { StreamingSpeed } from './StreamingSpeed';
-import { streamViewData } from './streamViewData';
 
 type DataWrapperProps = {
   label: string;
@@ -49,8 +49,7 @@ type StreamOverviewCardProps = {
 
 export function StreamOverviewCard({
   stream = getEmptyStream(),
-  className,
-  ...rest
+  className
 }: StreamOverviewCardProps) {
   const {
     dateEnd,
@@ -62,7 +61,7 @@ export function StreamOverviewCard({
   } = streamViewData(stream);
 
   const direction = useGetStreamDirection(stream);
-  const { meta, formatter, roketoMeta } = useTokenFormatter(stream.token_account_id);
+  const { meta, formatter, roketoMeta } = useToken(stream.token_account_id);
   const commissionPercentage = new BigNumber(roketoMeta.commission_coef.val)
     .shiftedBy(roketoMeta.commission_coef.pow)
     .toNumber();
@@ -76,10 +75,7 @@ export function StreamOverviewCard({
   });
 
   return (
-    <div
-      className={classNames('pt-10 p-9 bg-input rounded-3xl', className)}
-      {...rest}
-    >
+    <div className={classNames('pt-10 p-9 bg-input rounded-3xl', className)}>
       <div className="flex text-center justify-between">
         {direction === STREAM_DIRECTION.IN ? (
           <VerticalData label="Sender:" className="w-1/2 mr-4">

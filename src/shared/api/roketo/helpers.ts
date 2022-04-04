@@ -1,3 +1,8 @@
+import BigNumber from 'bignumber.js';
+import { millisecondsToSeconds } from 'date-fns';
+
+import { fromNanosecToSec } from 'shared/helpers/date';
+
 import { STREAM_STATUS } from './constants';
 import { RoketoStream, RoketoAccount } from './interfaces/entities';
 
@@ -12,8 +17,15 @@ export function isDead(stream?: RoketoStream) {
   return stream?.status === STREAM_STATUS.Finished;
 }
 
-export function isFundable(stream: RoketoStream) {
-  return stream.tokens_total_withdrawn !== stream.balance;
+export function getAvailableToWithdraw(stream: RoketoStream): BigNumber {
+  const nowSec = millisecondsToSeconds(Date.now());
+  const lastActionSec = fromNanosecToSec(stream.last_action);
+  const period = nowSec - lastActionSec;
+
+  return BigNumber.minimum(
+    stream.balance, 
+    Number(stream.tokens_per_sec) * period
+  );
 }
 
 export const getEmptyAccount = (): RoketoAccount => ({

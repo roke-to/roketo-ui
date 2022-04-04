@@ -96,10 +96,12 @@ export function Button({
   return restProps.link ? (
     <Link {...commonProps} {...restProps}>{content}</Link>
   ) : (
-    restProps.type === 'button' ? (
-      <button {...commonProps} {...restProps} type="button">{content}</button>
-    ) : (
-      <button {...commonProps} {...restProps} type="submit">{content}</button>
-    )
+    <button
+      {...commonProps}
+      {...restProps}
+      type={restProps.type === 'button' ? 'button' : 'submit'}
+    >
+      {content}
+    </button>
   );
 }

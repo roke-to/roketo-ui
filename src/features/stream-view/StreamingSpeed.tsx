@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+import { useToken } from 'shared/hooks/useToken';
 import { StreamOutIcon } from 'shared/icons/StreamOut';
 import { StreamInIcon } from 'shared/icons/StreamIn';
 import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
@@ -14,7 +14,7 @@ type StreamingSpeedProps = {
 
 export function StreamingSpeed({ stream, className }: StreamingSpeedProps) {
   const direction = useGetStreamDirection(stream);
-  const { formatter, meta } = useTokenFormatter(stream.token_account_id);
+  const { formatter, meta } = useToken(stream.token_account_id);
   const speedInfo = formatter.tokensPerMeaningfulPeriod(stream.tokens_per_sec);
 
   return (
@@ -24,13 +24,14 @@ export function StreamingSpeed({ stream, className }: StreamingSpeedProps) {
         className,
       )}
     >
-      {direction === STREAM_DIRECTION.OUT ? (
+      {direction === STREAM_DIRECTION.OUT &&
         <StreamOutIcon />
-      ) : direction === STREAM_DIRECTION.IN ? (
+      }
+
+      {direction === STREAM_DIRECTION.IN &&
         <StreamInIcon />
-      ) : (
-        ''
-      )}
+      }
+
       <span className="ml-2">
         <span>
           @

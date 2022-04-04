@@ -1,9 +1,9 @@
 import * as nearAPI from "near-api-js";
 import { Account } from "near-api-js";
 
-import { ROKETO_CONTRACT_NAME } from "./config";
+import { env } from "shared/config";
+
 import { RoketoContract } from './interfaces/contracts';
-// import { RoketoTokenStatus, RoketoStatus } from './interfaces/entities';
 import { RoketoContractApi } from "./contract-api";
 import { RoketoAccount, RoketoDao } from "./interfaces/entities";
 
@@ -11,18 +11,7 @@ export interface Roketo {
   api: RoketoContractApi;
   dao: RoketoDao;
   account: RoketoAccount;
-  // status: RoketoStatus;
-  // tokenMeta: (ticker: string) => RoketoTokenStatus | undefined;
-  // isBridged: (ticker: string) => boolean;
 }
-
-// const tokensToMap = (tokens: RoketoTokenStatus[]) => {
-//   const map: Record<string, RoketoTokenStatus> = {};
-//   tokens.forEach((token) => {
-//     map[token.ticker] = token;
-//   });
-//   return map;
-// };
 
 export async function initRoketo({
   account,
@@ -31,7 +20,7 @@ export async function initRoketo({
   account: Account;
   accountId: string;
 }): Promise<Roketo> {
-  const contract = new nearAPI.Contract(account, ROKETO_CONTRACT_NAME, {
+  const contract = new nearAPI.Contract(account, env.ROKETO_CONTRACT_NAME, {
     viewMethods: [
       "get_stats",
       "get_dao",
@@ -43,17 +32,12 @@ export async function initRoketo({
       "get_account_ft",
     ],
     changeMethods: [
-      // "account_deposit_near", need for unlisted tokens
       "start_stream",
       "pause_stream",
       "stop_stream",
       "withdraw",
-      // "change_receiver",
     ],
   }) as RoketoContract;
-
-  // @ts-ignore
-  // await contract.account_deposit_near({}, "200000000000000", 100000000000000000000000)
 
   // create high level api for outside usage
   const api = new RoketoContractApi({
@@ -87,6 +71,7 @@ export async function initRoketo({
   console.log('get_dao', dao);
   console.log('get_token', tkn);
   console.log('get_stats', sts);
+  console.log('getAccount', roketoUserAccount);
   
   return {
     api,

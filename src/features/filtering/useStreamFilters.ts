@@ -1,8 +1,10 @@
+import { useRoketoContext } from 'app/roketo-context';
 import { useMemo } from 'react';
-import { STREAM_STATUS } from 'shared/api/roketo/constants';
 
+import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
-import { useFilter, useFilters } from '../lib';
+
+import { useFilter, useFilters } from './lib';
 
 const STREAM_TYPE_FILTER = {
   ALL: 'All',
@@ -19,6 +21,8 @@ const STREAM_STATUS_FILTER = {
 };
 
 export function useStreamFilters(streams: RoketoStream[]) {
+  const { auth } = useRoketoContext();
+
   const statusOptions = useMemo(
     () => ({
       [STREAM_STATUS_FILTER.ALL]: () => true,
@@ -32,10 +36,10 @@ export function useStreamFilters(streams: RoketoStream[]) {
   const directionOptions = useMemo(
     () => ({
       [STREAM_TYPE_FILTER.ALL]: () => true,
-      // [STREAM_TYPE_FILTER.INCOMING]: (stream: RoketoStream) => STREAM_DIRECTION.IN === stream.direction,
-      // [STREAM_TYPE_FILTER.OUTGOING]: (stream: RoketoStream) => STREAM_DIRECTION.OUT === stream.direction,
+      [STREAM_TYPE_FILTER.INCOMING]: (stream: RoketoStream) => auth.accountId === stream.receiver_id,
+      [STREAM_TYPE_FILTER.OUTGOING]: (stream: RoketoStream) => auth.accountId === stream.owner_id,
     }),
-    [],
+    [auth.accountId],
   );
 
   const statusFilter = useFilter({

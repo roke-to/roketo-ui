@@ -13,12 +13,11 @@ import { shortEnLocale } from 'shared/helpers/date';
 import { isIdling } from 'shared/api/roketo/helpers';
 import { DurationTimer } from 'shared/components/DurationTimer';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+import { useToken } from 'shared/hooks/useToken';
 import { useGetStreamDirection, STREAM_DIRECTION } from 'shared/hooks/useGetStreamDirection';
+import { StreamControls } from 'features/stream-control/StreamControls';
+import { streamViewData } from 'features/roketo-resource';
 
-import { StreamControls } from '../stream-control';
-
-import { streamViewData } from './streamViewData';
 import { StreamingSpeed } from './StreamingSpeed';
 import { StreamProgressPercentage } from './StreamProgressPercentage';
 
@@ -28,7 +27,7 @@ type StreamCardProps = {
 };
 
 export function StreamCard({ stream, className }: StreamCardProps) {
-  const { formatter, meta } = useTokenFormatter(stream.token_account_id);
+  const { formatter, meta } = useToken(stream.token_account_id);
   const direction = useGetStreamDirection(stream);
 
   const {

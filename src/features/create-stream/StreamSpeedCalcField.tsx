@@ -28,11 +28,11 @@ function SpeedInput({ className, value, onChange, label }: SpeedInputProps) {
 }
 
 type StreamSpeedCalcFieldProps = {
-  onChange: (speed: number) => void;
-  deposit: number;
+  onChange: (speed: string) => void;
+  deposit: string;
 };
 
-export function StreamSpeedCalcField({ onChange, deposit = 0 }: StreamSpeedCalcFieldProps) {
+export function StreamSpeedCalcField({ onChange, deposit = '0' }: StreamSpeedCalcFieldProps) {
   const [months, setMonths] = useState(0);
   const [days, setDays] = useState(0);
   const [minutes, setMinutes] = useState(0);
@@ -47,9 +47,12 @@ export function StreamSpeedCalcField({ onChange, deposit = 0 }: StreamSpeedCalcF
   const tokensPerSec = (() => {
     const value = new BigNumber(deposit)
       .dividedToIntegerBy(durationInSeconds)
-      .toNumber();
+      .toFixed()
 
-    return !Number.isNaN(value) && value !== Infinity ? value : 0;
+
+    return value !== 'Infinity'
+      ? value
+      : '0';
   })();
 
   const prevSpeed = usePrev(tokensPerSec);

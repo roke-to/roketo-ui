@@ -8,7 +8,7 @@ type PrivateRouteProps = {
   allowed: boolean;
   redirect: React.ReactNode;
   path: string;
-  exact?: boolean;
+  exact: boolean;
 }
 
 export function PrivateRoute({

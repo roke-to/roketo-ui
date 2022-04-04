@@ -1,13 +1,13 @@
 import { connect, keyStores, WalletConnection, ConnectedWalletAccount } from 'near-api-js';
 
-import { NEAR_CONFIG } from './config';
+import { env } from 'shared/config';
 
 export async function createNearInstance() {
   const keyStore = new keyStores.BrowserLocalStorageKeyStore();
   const near = await connect({
-    nodeUrl: NEAR_CONFIG.nodeUrl,
-    walletUrl: NEAR_CONFIG.walletUrl,
-    networkId: NEAR_CONFIG.networkId,
+    nodeUrl: env.NEAR_NODE_URL,
+    walletUrl: env.WALLET_URL,
+    networkId: env.NEAR_NODE_URL,
     keyStore,
   });
 
@@ -30,7 +30,7 @@ export async function getNearAuth(walletConnection: WalletConnection): Promise<N
     const appTitle = 'Roketo Token Streaming Service';
   
     await walletConnection.requestSignIn(
-      NEAR_CONFIG.contractName,
+      env.ROKETO_CONTRACT_NAME,
       appTitle,
     );
   }
