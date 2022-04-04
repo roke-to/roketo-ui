@@ -4,8 +4,12 @@ class SignInPage {
     cy.url().should('contains', 'https://wallet.testnet.near.org/login/');
   }
 
-  importExistingAccount() {
+  firstImportExistingAccount() {
     cy.get('.buttons > .link').click({force: true});
+  }
+
+  importExistingAccount() {
+    cy.get('.account-selector > .gray-blue').click({force: true});
   }
 
   recoverAccount() {

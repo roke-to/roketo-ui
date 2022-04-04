@@ -15,7 +15,7 @@ it('login with Pass phrase', () => {
     cy.wait(6000);
     //redirect to wallet
     const signPage = new SignInPage(); 
-    signPage.importExistingAccount();
+    signPage.firstImportExistingAccount();
     signPage.recoverAccount();
     signPage.inputPassphrase('aunt service decline pelican actual kitchen size exhaust great prosper old attract');
     cy.wait(15000);
