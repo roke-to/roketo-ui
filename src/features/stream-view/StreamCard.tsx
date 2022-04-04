@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 import copy from 'clipboard-copy';
-import { Link } from 'react-router-dom';
+import { Link, generatePath } from 'react-router-dom';
 import { formatDuration, intervalToDuration } from 'date-fns';
 
 import { TokenImage } from 'shared/kit/TokenImage';
@@ -57,7 +57,7 @@ export function StreamCard({ stream, className }: StreamCardProps) {
       )}
     >
       <Link
-        to={routes.stream(stream.id)}
+        to={generatePath(routes.stream, { id: stream.id })}
         className="w-full col-span-12 xl:col-span-6 justify-self-start"
       >
         <div className="flex items-center">
@@ -127,7 +127,7 @@ export function StreamCard({ stream, className }: StreamCardProps) {
             className="ml-3"
             variant="filled"
             onClick={() => copy(link)}
-            to={routes.stream(stream.id)}
+            to={generatePath(routes.stream, { id: stream.id })}
           >
             <LinkIcon />
           </Button>

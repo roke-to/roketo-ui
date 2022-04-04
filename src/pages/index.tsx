@@ -64,7 +64,7 @@ export function Routing() {
           <AccountPage />
         </PrivateRoute>
 
-        <Route exact path={routes.streamPattern}>
+        <Route exact path={routes.stream}>
           <StreamPage />
         </Route>
 

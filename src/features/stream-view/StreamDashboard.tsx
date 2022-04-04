@@ -53,7 +53,7 @@ export function StreamDashboard({ stream }: { stream: RoketoStream }) {
             </div>
           )}
         >
-          <ArcProgressBar className="w-96 h-48" progresses={progresses} />
+          <ArcProgressBar className="w-96 h-72" progresses={progresses} />
         </Tooltip>
 
         <div className="flex justify-between pt-5 -mx-2 text-gray">

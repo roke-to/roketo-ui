@@ -5,6 +5,8 @@ type EnvType = {
   ROKETO_CONTRACT_NAME: string;
   WALLET_URL: string;
   PUBLIC_URL: string;
+  PRICE_ORACLE_CONTRACT_NAME: string,
+  PRICE_ORACLE_SOURCE_ID: string,
 }
 
 export const env = {
@@ -14,6 +16,8 @@ export const env = {
   ROKETO_CONTRACT_NAME: process.env.REACT_APP_ROKETO_CONTRACT_NAME,
   WALLET_URL: process.env.REACT_APP_WALLET_URL,
   PUBLIC_URL: process.env.PUBLIC_URL,
+  PRICE_ORACLE_CONTRACT_NAME: process.env.REACT_APP_PRICE_ORACLE_CONTRACT_NAME,
+  PRICE_ORACLE_SOURCE_ID: process.env.REACT_APP_PRICE_ORACLE_SOURCE_ID,
 } as EnvType;
 
 export const GAS_SIZE = "200000000000000";

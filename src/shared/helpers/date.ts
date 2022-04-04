@@ -14,7 +14,7 @@ export const shortEnLocale = {
 };
 
 export function isValidDate(d: Date) {
-  return d instanceof Date && !Number.isNaN(d);
+  return !Number.isNaN(d.getTime());
 }
 
 export function fromNanosecToSec(value: number | string) {

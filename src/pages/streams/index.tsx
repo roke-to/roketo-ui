@@ -7,24 +7,24 @@ import { routes } from 'shared/helpers/routing';
 import { useStreams } from 'features/roketo-resource';
 import { WithdrawAllButton } from 'features/stream-control/WithdrawAllButton';
 import { PageError } from 'shared/components/PageError';
+import { useRoketoContext } from 'app/roketo-context';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 export function StreamsPage() {
-  const [filteredItems, setFiltered] = useState<RoketoStream[]>([]);
+  const [filteredItems, setFiltered] = useState<RoketoStream[] | undefined>([]);
   const streamsSWR = useStreams();
+  const {priceOracle} = useRoketoContext();
 
   const streams = streamsSWR.data;
   const { error } = streamsSWR;
-  const { inputs, outputs } = streams || {};
+  const { inputs = [], outputs = [] } = streams || {};
 
-  const allStreams = useMemo<RoketoStream[]>(() => {
-    if (!inputs || !outputs) {
-      return [];
-    }
+  const allStreams = useMemo<RoketoStream[] | undefined>(
+    () => ((inputs || outputs) && [...(inputs || []), ...(outputs || [])]),
+    [inputs, outputs]
+  );
 
-    const concatted = inputs.concat(outputs);
-    return concatted;
-  }, [inputs, outputs]);
+  const nearConversionRate = priceOracle.getPriceInUsd('wrap.testnet', 1);
 
   return (
     <div className="container mx-auto p-12">
@@ -35,6 +35,11 @@ export function StreamsPage() {
           Withdraw all
         </WithdrawAllButton>
       </div>
+
+      <div>Current currency conversion rate is:
+        <h2>{`1 Near is approximately equals to ${nearConversionRate}$`}</h2>
+      </div>
+      
       <StreamFilters
         items={allStreams}
         onFilterDone={setFiltered}
@@ -55,7 +60,7 @@ export function StreamsPage() {
         <div>Loading</div>
       }
 
-      {streams && allStreams.length === 0 &&
+      {streams && allStreams?.length === 0 &&
         <div className="flex flex-col w-80 mx-auto">
           <h3 className="text-3xl text-center my-12 ">
             You dont have any streams yet.
@@ -70,7 +75,7 @@ export function StreamsPage() {
         </div>
       }
       
-      {streams && filteredItems.length === 0 && allStreams.length > 0 &&
+      {streams && filteredItems?.length === 0 && allStreams?.length !== 0 &&
         <h3 className="text-3xl text-center my-12 w-80 mx-auto">
           No streams matching your filters.
           {' '}
@@ -79,8 +84,8 @@ export function StreamsPage() {
         </h3>
       }
 
-      {filteredItems.length > 0 &&
-        filteredItems.map((stream: any) => (
+      {filteredItems?.length !== 0 &&
+        filteredItems?.map((stream: any) => (
           <StreamCard
             key={stream.id}
             stream={stream}

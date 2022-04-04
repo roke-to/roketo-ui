@@ -20,7 +20,7 @@ const STREAM_STATUS_FILTER = {
   [STREAM_STATUS.Finished]: 'Finished',
 };
 
-export function useStreamFilters(streams: RoketoStream[]) {
+export function useStreamFilters(streams: RoketoStream[] | undefined) {
   const { auth } = useRoketoContext();
 
   const statusOptions = useMemo(

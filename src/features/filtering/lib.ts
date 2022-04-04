@@ -37,8 +37,8 @@ export function useFilter<T extends Option>({ options }: { options: Record<strin
   return filter;
 }
 
-export function useFilters({ items, filters }: { items: RoketoStream[], filters: Filter<FilterFn>[] }) {
-  const [filteredItems, setFilteredItems] = useState<RoketoStream[]>([]);
+export function useFilters({ items, filters }: { items: (RoketoStream[] | undefined), filters: Filter<FilterFn>[] }) {
+  const [filteredItems, setFilteredItems] = useState<RoketoStream[] | undefined>(undefined);
   const [filterCounts, setFilterCounts] = useState<Record<string, number>[]>([]);
 
   useEffect(() => {
@@ -46,17 +46,17 @@ export function useFilters({ items, filters }: { items: RoketoStream[], filters:
     const filterCountsValue: Record<string, number>[] = [];
 
     filters.forEach((filter) => {
-      const filterRunResult: Record<string, RoketoStream[]> = {};
+      const filterRunResult: Record<string, RoketoStream[] | undefined> = {};
 
       // run filter for every possible function
       Object.keys(filter.options).forEach((option) => {
-        filterRunResult[option] = filteredItemsValue.filter(filter.options[option]);
+        filterRunResult[option] = filteredItemsValue?.filter(filter.options[option]);
       });
 
       // calc counts for every option in filter
       const currentFilterCount: Record<string, number> = {};
       Object.keys(filterRunResult).forEach(
-        (option) => { currentFilterCount[option] = filterRunResult[option].length; },
+        (option) => { currentFilterCount[option] = (filterRunResult[option] || []).length; },
       );
 
       filterCountsValue.push(currentFilterCount);

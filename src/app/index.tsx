@@ -7,12 +7,9 @@ import { RoketoContextProvider } from './roketo-context';
 import './index.scss';
 
 function App() {
-
   return (
     <RoketoContextProvider>
-      <div className="bg-dark text-white">
-        <Routing />
-      </div>
+      <Routing />
     </RoketoContextProvider>
   );
 }

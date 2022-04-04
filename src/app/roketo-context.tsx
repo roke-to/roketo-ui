@@ -5,11 +5,13 @@ import { env } from 'shared/config';
 import { createNearInstance, getNearAuth, NearAuth } from 'shared/api/near';
 import { initRoketo, Roketo } from 'shared/api/roketo';
 import { initFT, RichTokens } from 'shared/api/ft';
+import { initPriceOracle, PriceOracle } from 'shared/api/price-oracle';
 
 type AppServices = {
   auth: NearAuth;
   tokens: RichTokens;
   roketo: Roketo;
+  priceOracle: PriceOracle,
   near: Near;
   walletConnection: WalletConnection;
 };
@@ -39,10 +41,13 @@ export function RoketoContextProvider({
         return;
       }
 
-      const roketo = await initRoketo({
-        accountId: auth.accountId,
-        account: auth.account,
-      });
+      const [roketo, priceOracle] = await Promise.all([
+        initRoketo({
+          accountId: auth.accountId,
+          account: auth.account,
+        }),
+        initPriceOracle({account: auth.account}),
+      ]);
 
       const tokens = await initFT({
         accountId: auth.accountId,
@@ -53,8 +58,9 @@ export function RoketoContextProvider({
       setContext({
         auth,
         near,
-        walletConnection,
         roketo,
+        priceOracle,
+        walletConnection,
         tokens, 
       });
     };

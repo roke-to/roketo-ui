@@ -1,45 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { intervalToDuration, formatDuration } from 'date-fns';
 import { shortEnLocale, isValidDate } from 'shared/helpers/date';
-
-function useDurationTimer(untilTimestamp: number | string) {
-  const untilDate = new Date(Number(untilTimestamp));
-  const dateValid = isValidDate(untilDate);
-
-  const [expired, setExpired] = useState(
-    dateValid ? new Date().getTime() > untilDate.getTime() : true,
-  );
-  const [duration, setDuration] = useState(
-    expired ? null : intervalToDuration({ start: new Date(), end: untilDate }),
-  );
-
-  useEffect(() => {
-    const untilDateValue = new Date(Number(untilTimestamp));
-
-    if (!isValidDate(untilDateValue)) return undefined;
-
-    const id = setInterval(() => {
-      const isExpired = new Date().getTime() > untilDateValue.getTime();
-      setExpired(isExpired);
-      setDuration(null);
-
-      if (isExpired) {
-        return;
-      }
-
-      const newDurationValue = intervalToDuration({ start: new Date(), end: untilDateValue });
-      setDuration(newDurationValue);
-    }, 1000);
-
-    return () => clearInterval(id);
-  }, [untilTimestamp, expired]);
-
-  return {
-    duration,
-    dateValid,
-    expired,
-  };
-}
 
 type DurationTimerProps = {
   untilTimestamp: number | string;
@@ -48,11 +9,15 @@ type DurationTimerProps = {
 };
 
 export function DurationTimer({ untilTimestamp, suffix, finishedText }: DurationTimerProps) {
-  const { duration, dateValid, expired } = useDurationTimer(untilTimestamp);
+  const untilDate = new Date(untilTimestamp);
+  const dateValid = isValidDate(untilDate);
 
   if (!dateValid) {
     return <span>Invalid Date</span>;
   }
+
+  const expired = dateValid ? Date.now() > untilDate.getTime() : true;
+  const duration = expired ? null : intervalToDuration({ start: new Date(), end: untilDate });
 
   if (!duration || expired) {
     return <span>{finishedText}</span>;

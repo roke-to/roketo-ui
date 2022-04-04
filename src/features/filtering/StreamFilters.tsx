@@ -35,27 +35,38 @@ const statusPriority = [
   STREAM_STATUS.Paused,
   STREAM_STATUS.Finished,
 ];
+
 function defaultStreamSort(a: RoketoStream, b: RoketoStream) {
   return statusPriority.indexOf(a.status) - statusPriority.indexOf(b.status);
 }
 
 type StreamFiltersProps = {
-  items: RoketoStream[];
-  onFilterDone: (result: RoketoStream[]) => void;
+  items: RoketoStream[] | undefined;
+  onFilterDone: (result: RoketoStream[] | undefined) => void;
   className: string;
 };
 
 export function StreamFilters({ items, onFilterDone, className }: StreamFiltersProps) {
   const filter = useStreamFilters(items);
+  const {filteredItems} = filter.result;
+
   const [sorting, setSorting] = useState(sorts.mostRecent);
   const sortOptions = Object.values(sorts);
 
   useEffect(() => {
-    const sorted = [...filter.result.filteredItems];
-    sorted.sort(defaultStreamSort);
-    sorted.sort(sorting.fn);
-    onFilterDone(sorted);
-  }, [filter.result.filteredItems, onFilterDone, sorting.fn]);
+    if (!filteredItems) {
+      onFilterDone(filteredItems);
+
+      return;
+    }
+
+    const sortedStreams = [...filteredItems];
+
+    sortedStreams.sort(defaultStreamSort);
+    sortedStreams.sort(sorting.fn);
+
+    onFilterDone(sortedStreams);
+  }, [filteredItems, onFilterDone, sorting.fn]);
 
   return (
     <div className={classNames('md:flex', className)}>
