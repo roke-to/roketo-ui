@@ -1,7 +1,6 @@
 import React from 'react';
 import { generatePath } from 'react-router-dom';
 
-import { TokenFormatter } from 'shared/helpers/formatting';
 import { useRoketoContext } from 'app/roketo-context';
 import { CreateStreamForm, CreateStreamFormValues } from 'features/create-stream/CreateStreamForm';
 
@@ -10,6 +9,7 @@ const returnPath = `${window.location.origin}/#/${redirectUrl}`;
 
 export function SendPage() {
   const { roketo, tokens } = useRoketoContext();
+
   const handleClick = async (values: CreateStreamFormValues) => {
     const {
       receiver,
@@ -20,25 +20,19 @@ export function SendPage() {
       token,
     } = values;
 
-    const currentToken = tokens[token];
+    const { formatter, api, roketoMeta } = tokens[token];
 
-    const formatter = TokenFormatter(currentToken.meta.decimals);
-
-    const handleTransferStream = currentToken.api.transfer;
-    const commissionOnCreate = currentToken.roketoMeta.commission_on_create;
-
-    await roketo.api.createStream(
-      {
-        deposit: formatter.toInt(deposit),
-        description: comment,
-        receiverId: receiver,
-        tokenAccountId: token,
-        commissionOnCreate,
-        tokensPerSec: speed,
-        isAutoStart: autoStart,
-        callbackUrl: returnPath,
-        handleTransferStream,
-      });
+    await roketo.api.createStream({
+      deposit: formatter.toYocto(deposit),
+      description: comment,
+      receiverId: receiver,
+      tokenAccountId: token,
+      commissionOnCreate: roketoMeta.commission_on_create,
+      tokensPerSec: speed,
+      isAutoStart: autoStart,
+      callbackUrl: returnPath,
+      handleTransferStream: api.transfer,
+    });
   };
 
   return (

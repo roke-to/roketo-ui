@@ -12,23 +12,32 @@ export type RichTokens = {
     roketoMeta: RoketoTokenMeta;
     formatter: TokenFormatter;
     meta: TokenMetadata;
+    balance: string;
   }
 }
 
-export async function initFT({ account, tokens }: { account: Account, tokens: RoketoDao['tokens'] }) {
+type InitFRProps = {
+  accountId: string;
+  account: Account;
+  tokens: RoketoDao['tokens'];
+}
+
+export async function initFT({ accountId, account, tokens }: InitFRProps) {
   const richRokens: RichTokens = {};
 
   // eslint-disable-next-line no-restricted-syntax
   for await (const tokenAccountId of Object.keys(tokens)) {
-    const api = new FTApi(account, tokenAccountId);
+    const api = new FTApi(accountId, account, tokenAccountId);
     const meta = await api.getMetadata();
+    const balance = await api.getBalance();
     const formatter = new TokenFormatter(meta.decimals);
 
     richRokens[tokenAccountId] = {
       api,
       formatter,
       roketoMeta: tokens[tokenAccountId],
-      meta
+      meta,
+      balance
     };
   }
 

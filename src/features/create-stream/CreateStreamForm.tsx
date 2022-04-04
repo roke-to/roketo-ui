@@ -11,10 +11,10 @@ import { DropdownMenu, DropdownMenuItem } from 'shared/kit/DropdownMenu';
 import { DropdownOpener } from 'shared/kit/DropdownOpener';
 import { RadioButton } from 'shared/kit/RadioButton';
 import { Tooltip } from 'shared/kit/Tooltip';
-import { TokenFormatter } from 'shared/helpers/formatting';
 import { env } from 'shared/config';
 import { useRoketoContext } from 'app/roketo-context';
 import { StreamSpeedCalcField } from './StreamSpeedCalcField';
+import { Balance } from './Balance';
 
 type StreamFormSchemaParams = {
   near: Near;
@@ -116,9 +116,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
       }) => {
         const activeTokenAccountId = values.token;
         const activeToken = tokens[activeTokenAccountId];
-        const {meta: tokenMeta, roketoMeta} = activeToken;
-
-        const formatterForChosenToken = TokenFormatter(tokenMeta.decimals);
+        const { meta: tokenMeta, roketoMeta, formatter } = activeToken;
 
         return (
           <form className="max-w-lg mx-auto w-full" onSubmit={handleSubmit}>
@@ -224,6 +222,11 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                           className="ml-2"
                           overlay="Funds which will be used to create a stream for a set period."
                         />
+                        {' '}
+                        <Balance
+                          deposit={formatter.toYocto(values.deposit)}
+                          tokenAccountId={activeTokenAccountId}
+                        />
                       </span>
                     )}
                     className="w-2/3"
@@ -262,7 +265,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                               return 'none';
                             }
 
-                            const { formattedValue, unit } = formatterForChosenToken.tokensPerMeaningfulPeriod(field.value);
+                            const { formattedValue, unit } = formatter.tokensPerMeaningfulPeriod(field.value);
 
                             return `${formattedValue} ${tokenMeta.symbol} / ${unit}`;
                           })()}
@@ -273,8 +276,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                   >
                     {' '}
                     <StreamSpeedCalcField
-                      tokenAccountId={values.token}
-                      deposit={Number(formatterForChosenToken.toInt(values.deposit))}
+                      deposit={Number(formatter.toYocto(values.deposit))}
                       onChange={(speed) => {
                         setFieldValue(field.name, speed, false);
                         setFieldTouched(field.name, true, false);
@@ -341,7 +343,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                   <p className="text-left text-gray w-2/3 text-sm">
                     You will be charged
                     {' '}
-                    {formatterForChosenToken.amount(roketoMeta.commission_on_create)}
+                    {formatter.amount(roketoMeta.commission_on_create)}
                     {' '}
                     {tokenMeta.symbol}
                     {' '}

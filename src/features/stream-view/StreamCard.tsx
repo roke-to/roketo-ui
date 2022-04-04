@@ -7,13 +7,14 @@ import { formatDuration, intervalToDuration } from 'date-fns';
 import { TokenImage } from 'shared/kit/TokenImage';
 import { ProgressBar } from 'shared/kit/ProgressBar';
 import { Button } from 'shared/kit/Button';
-import { routes } from 'shared/helpers/routing';
+import { getStreamLink, routes } from 'shared/helpers/routing';
 import { LinkIcon } from 'shared/icons/Link';
 import { shortEnLocale } from 'shared/helpers/date';
 import { isIdling } from 'shared/api/roketo/helpers';
 import { DurationTimer } from 'shared/components/DurationTimer';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
-import { useRoketoContext } from 'app/roketo-context';
+import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+import { useGetStreamDirection, STREAM_DIRECTION } from 'shared/hooks/useGetStreamDirection';
 
 import { StreamControls } from '../stream-control';
 
@@ -23,14 +24,12 @@ import { StreamProgressPercentage } from './StreamProgressPercentage';
 
 type StreamCardProps = {
   stream: RoketoStream;
-  direction: string;
   className: string;
 };
 
-export function StreamCard({ stream, direction, className }: StreamCardProps) {
-  // const tf = useTokenFormatter(stream.ticker);
-  const { tokens } = useRoketoContext();
-  const { formatter, meta } = tokens[stream.token_account_id];
+export function StreamCard({ stream, className }: StreamCardProps) {
+  const { formatter, meta } = useTokenFormatter(stream.token_account_id);
+  const direction = useGetStreamDirection(stream);
 
   const {
     dateEnd,
@@ -38,10 +37,9 @@ export function StreamCard({ stream, direction, className }: StreamCardProps) {
     timestampEnd,
     percentages,
     progress: { full, withdrawn, streamed },
-    link,
   } = streamViewData(stream);
 
-  console.log('log', percentages, full, withdrawn, streamed)
+  const link = getStreamLink(stream.id);
 
   const duration = intervalToDuration({
     start: new Date(),
@@ -76,7 +74,7 @@ export function StreamCard({ stream, direction, className }: StreamCardProps) {
               <span className="uppercase">{meta.symbol}</span>
             </div>
 
-            <StreamingSpeed stream={stream} direction={direction} />
+            <StreamingSpeed stream={stream} />
 
             <div className="whitespace-nowrap">
               {isIdling(stream) ? (
@@ -109,7 +107,7 @@ export function StreamCard({ stream, direction, className }: StreamCardProps) {
       </Link>
       <div className="hidden xl:block" />
       <div className="flex gap-5 justify-between xl:justify-end col-span-12 xl:col-span-5 w-full items-center flex-wrap md:flex-nowrap">
-        {direction === 'in' ? (
+        {direction === STREAM_DIRECTION.IN ? (
           <div className="w-44">
             <div className="text-gray">Sender:</div>
             <div className="break-words">{stream.owner_id}</div>

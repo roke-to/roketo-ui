@@ -3,21 +3,22 @@ import classNames from 'classnames';
 
 import { ArcProgressBar } from 'shared/kit/ProgressBar';
 import { Tooltip } from 'shared/kit/Tooltip';
-import { streamDirection } from 'shared/api/roketo/helpers';
-import type { RoketoAccount, RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import { useGetStreamDirection, STREAM_DIRECTION } from 'shared/hooks/useGetStreamDirection';
+import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
+import { TokenImage } from 'shared/kit/TokenImage';
 
 import { StreamControls } from '../stream-control';
 import { StreamWithdrawButton } from '../stream-control/StreamWithdrawButton';
 
 import { streamViewData } from './streamViewData';
 import { StreamingSpeed } from './StreamingSpeed';
+import { StreamProgressPercentage } from './StreamProgressPercentage';
 
-type StreamDashboardProps = {
-  stream: RoketoStream;
-  account: RoketoAccount;
-};
-
-export function StreamDashboard({ stream, account }: StreamDashboardProps) {
+export function StreamDashboard({ stream }: { stream: RoketoStream }) {
+  const { token_account_id: tokenAccountId } = stream;
+  const { formatter, meta } = useTokenFormatter(tokenAccountId);
+  const direction = useGetStreamDirection(stream);
 
   const {
     progresses,
@@ -25,8 +26,7 @@ export function StreamDashboard({ stream, account }: StreamDashboardProps) {
     isDead,
     progress: { full, withdrawn, streamed },
   } = streamViewData(stream);
-  const direction = streamDirection({ stream, account });
-  console.log('log', percentages, full, withdrawn, streamed)
+
 
   return (
     <div className={classNames('flex', 'flex-col', 'items-center')}>
@@ -35,20 +35,20 @@ export function StreamDashboard({ stream, account }: StreamDashboardProps) {
           align={{ offset: [0, -20] }}
           overlay={(
             <div className="text-left">
-              {/* <StreamProgressPercentage
+              <StreamProgressPercentage
                 className="whitespace-nowrap mb-2"
                 label="Withdrawn"
                 colorClass="bg-streams-withdrawn"
-                formattedFloatValue={`${tf.amount(withdrawn)} ${stream.ticker}`}
+                formattedFloatValue={`${formatter.amount(withdrawn)} ${meta.symbol}`}
                 percentageValue={percentages.withdrawn}
               />
               <StreamProgressPercentage
                 className="whitespace-nowrap"
                 label="Streamed"
                 colorClass="bg-streams-streamed"
-                formattedFloatValue={`${tf.amount(streamed)} ${stream.ticker}`}
+                formattedFloatValue={`${formatter.amount(streamed)} ${meta.symbol}`}
                 percentageValue={percentages.streamed}
-              /> */}
+              />
             </div>
           )}
         >
@@ -61,18 +61,17 @@ export function StreamDashboard({ stream, account }: StreamDashboardProps) {
         </div>
       </div>
 
-      {/* <TokenImage size={14} tokenName={stream.ticker} className="mb-8" /> */}
-      {/* <div className="text-6xl font-semibold">{tf.amount(streamed)}</div> */}
+      <TokenImage size={14} tokenAccountId={tokenAccountId} className="mb-8" />
+      <div className="text-6xl font-semibold">{formatter.amount(streamed)}</div>
       <div className="text-gray font-semibold">
         of
         {' '}
-        {/* {tf.amount(full)} */}
+        {formatter.amount(full)}
         {' '}
-        {/* {stream.ticker} */}
+        {meta.symbol}
       </div>
       <StreamingSpeed
         stream={stream}
-        // direction={direction}
         className="mt-6 mb-6"
       />
       {isDead ? (
@@ -82,7 +81,7 @@ export function StreamDashboard({ stream, account }: StreamDashboardProps) {
           <StreamControls stream={stream} className="mr-2" />
 
           {/* render withdraw funds button */}
-          {direction === 'in' ? (
+          {direction === STREAM_DIRECTION.IN ? (
             <StreamWithdrawButton
               loadingText="Withdrawing..."
               variant="outlined"

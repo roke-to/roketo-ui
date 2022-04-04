@@ -5,11 +5,6 @@ export const STREAM_STATUS = {
   Finished: 'Finished'
 } as const;
 
-export const STREAM_DIRECTION = {
-  IN: 'in',
-  OUT: 'out',
-} as const;
-
 export const STREAM_ACTION_TYPE = {
   INIT: 'Init',
   DEPOSIT: 'Deposit',

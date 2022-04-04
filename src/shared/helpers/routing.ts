@@ -7,3 +7,7 @@ export const routes = {
   stream: (id: string) => `/streams/${id}`,
   streamPattern: '/streams/:id',
 };
+
+export function getStreamLink(streamId: string | undefined) {
+  return `${window.location.origin}/#/streams/${streamId}`;
+}

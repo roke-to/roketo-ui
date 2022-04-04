@@ -1,23 +1,6 @@
 import { STREAM_STATUS } from './constants';
 import { RoketoStream, RoketoAccount } from './interfaces/entities';
 
-type StreamDirectionProps = {
-  stream: RoketoStream;
-  account: RoketoAccount;
-}
-
-export function streamDirection({ stream, account }: StreamDirectionProps): string | null {
-  if (!account) return null;
-  console.log('stream', stream)
-
-  // if (stream.owner_id === account.account_id) {
-  //   return 'out';
-  // } if (stream.receiver_id === account.account_id) {
-  //   return 'in';
-  // }
-  return null;
-}
-
 export function isIdling(stream: RoketoStream) {
   return (
     stream.status === STREAM_STATUS.Initialized

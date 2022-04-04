@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import { TokenImage } from 'shared/kit/TokenImage';
 import { SECONDS_IN_MINUTE, SECONDS_IN_HOUR, SECONDS_IN_DAY } from 'shared/constants';
-import { useRoketoContext } from 'app/roketo-context';
+import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 
 function multiplyAmountByTimePeriod(amount: number, period: string) {
   switch (period) {
@@ -35,10 +35,9 @@ export function AccountStreamCard({
   showPeriod = true,
   className,
 }: AccountStreamCardProps) {
-  const { tokens } = useRoketoContext();
+  const { formatter, meta } = useTokenFormatter(tokenAccountId);
 
   const balanceValue = multiplyAmountByTimePeriod(Number(balance), period);
-  const { formatter, meta } = tokens[tokenAccountId];
 
   return (
     <div

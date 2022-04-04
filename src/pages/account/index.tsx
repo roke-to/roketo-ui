@@ -1,22 +1,14 @@
 import React from 'react';
-// import { formatDistance } from 'date-fns';
 
 import { useRoketoContext } from 'app/roketo-context';
 import { AccountColumn } from 'shared/components/AccountColumn';
 import { StreamWithdrawIcon } from 'shared/icons/StreamWithdraw';
 import { StreamOutIcon } from 'shared/icons/StreamOut';
 import { StreamInIcon } from 'shared/icons/StreamIn';
-// import { useAccount } from 'features/roketo-resource';
-// import { PageError } from 'shared/components/PageError';
 import { CroncatButton } from 'features/croncat/CroncatButton';
 
 export function AccountPage() {
-  const { tokens, roketo } = useRoketoContext();
-  // const accountSWR = useAccount();
-  console.log('tokens', tokens)
-
-  // const account = accountSWR.data;
-  // const pageError = accountSWR.error;
+  const { roketo } = useRoketoContext();
 
   return (
     <div className="container mx-auto p-12">

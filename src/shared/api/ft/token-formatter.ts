@@ -1,6 +1,14 @@
 
 import numbro from 'numbro';
-// import BigNumber from 'bignumber.js';
+
+import {
+  SECONDS_IN_YEAR,
+  SECONDS_IN_MONTH,
+  SECONDS_IN_WEEK,
+  SECONDS_IN_DAY,
+  SECONDS_IN_HOUR,
+  SECONDS_IN_MINUTE
+} from 'shared/constants';
 
 export class TokenFormatter {
   tokenDecimals: number;
@@ -12,6 +20,20 @@ export class TokenFormatter {
     this.MP = 10 ** tokenDecimals;
   }
 
+  static formatSmartly(value: number) {
+    if (value < 0.001) {
+      return '<0.001';
+    }
+
+    return numbro(value).format({
+     mantissa: 3,
+     trimMantissa: true,
+     optionalMantissa: true,
+     average: true,
+   })
+  }
+
+  // for display purposes, converts from yocto values
   amount(amount: number | string) {
     const value = numbro(amount).divide(this.MP).value();
 
@@ -28,110 +50,53 @@ export class TokenFormatter {
 
     return formatted;
   }
-}
 
-export function TokenFormatter2(tokenDecimals: number) {
-  const TICK_TO_MS = 10 ** 6;
-  const TICK_TO_S = 10 ** 9;
-  const TICK_TO_MINUTE = TICK_TO_S * 60;
-  const TICK_TO_HOUR = TICK_TO_MINUTE * 60;
-  const TICK_TO_DAY = TICK_TO_HOUR * 24;
-  const TICK_TO_WEEK = TICK_TO_DAY * 7;
-  const TICK_TO_MONTH = TICK_TO_WEEK * 4;
-  const TICK_TO_YEAR = TICK_TO_MONTH * 12;
+  toYocto(value: number | string) {
+    return numbro(value)
+      .multiply(this.MP)
+      .format({ mantissa: 0 });
+  }
 
-  const MP = 10 ** tokenDecimals;
+  // tries to find the best interval for display
+  // to avoid 0.0000000000000000000000000009839248 tokens per sec
+  tokensPerMeaningfulPeriod(tokensPerSec: number | string) {
+    const multipliers = [
+      1,
+      SECONDS_IN_MINUTE,
+      SECONDS_IN_HOUR,
+      SECONDS_IN_DAY,
+      SECONDS_IN_WEEK,
+      SECONDS_IN_MONTH,
+      SECONDS_IN_YEAR,
+    ];
+    const unit = {
+      1: 'second',
+      [SECONDS_IN_MINUTE]: 'minute',
+      [SECONDS_IN_HOUR]: 'hour',
+      [SECONDS_IN_DAY]: 'day',
+      [SECONDS_IN_WEEK]: 'week',
+      [SECONDS_IN_MONTH]: 'month',
+      [SECONDS_IN_YEAR]: 'year',
+    };
 
-  // const bigValueFormatter = Intl.NumberFormat('en-US', {
-  //   minimumIntegerDigits: 1,
-  //   maximumFractionDigits: 2,
-  //   minimumFractionDigits: 2,
-  // });
-  // const smallValueFormatter = Intl.NumberFormat('en-US', {
-  //   minimumSignificantDigits: 2,
-  //   maximumSignificantDigits: 4,
-  //   maximumFractionDigits: tokenDecimals,
-  // });
-
-  const formatSmartly = (value: numbro.Numbro | number) => 
-    // if (value < 1) {
-    //   return smallValueFormatter.format(value);
-    // }
-    
-    // if (value < 1000000) {
-    //   return bigValueFormatter.format(value);
-    // }
-
-     numbro(value).format({
-      mantissa: 3,
-      trimMantissa: true,
-      optionalMantissa: true,
-      average: true,
-    })
-  ;
-
-  return {
-    toInt: (floatValue: number | string) => numbro(floatValue).multiply(MP).format({ mantissa: 0 }),
-    amount: (amount: number | string) => {
-      const value = numbro(amount).divide(MP).value();
-      const formatted = formatSmartly(value);
-      return formatted;
-    },
-    tokensPerMS: (tokensPerTick: number) => {
-      const value = numbro(tokensPerTick).multiply(TICK_TO_MS).divide(MP);
-      return formatSmartly(value);
-    },
-    tokensPerS: (tokensPerTick: number) => {
-      const value = numbro(tokensPerTick)
-        .multiply(TICK_TO_S)
-        .divide(MP)
+    const firstGoodLookingMultiplier = multipliers.find((multiplier) => {
+      const value = numbro(tokensPerSec)
+        .multiply(multiplier)
+        .divide(this.MP)
         .value();
 
-      return formatSmartly(value);
-    },
+      const isOk = value > 0.1;
+      return isOk;
+    }) || SECONDS_IN_YEAR;
 
-    tokensPerMeaningfulPeriod: (tokensPerTick: number) => {
-      // tries to find the best interval for display
-      // to avoid 0.0000000000000000000000000009839248 tokens per sec
-      const multipliers = [
-        TICK_TO_S,
-        TICK_TO_MINUTE,
-        TICK_TO_HOUR,
-        TICK_TO_DAY,
-        TICK_TO_WEEK,
-        TICK_TO_MONTH,
-        TICK_TO_YEAR,
-      ];
-      const unit = {
-        [TICK_TO_S]: 'second',
-        [TICK_TO_MINUTE]: 'minute',
-        [TICK_TO_HOUR]: 'hour',
-        [TICK_TO_DAY]: 'day',
-        [TICK_TO_WEEK]: 'week',
-        [TICK_TO_MONTH]: 'month',
-        [TICK_TO_YEAR]: 'year',
-      };
-      const firstGoodLookingMultiplier = multipliers.find((multiplier) => {
-        const value = numbro(tokensPerTick)
-          .multiply(multiplier)
-          .divide(MP)
-          .value();
-        const isOk = value > 0.01;
-        return isOk;
-      }) || TICK_TO_YEAR;
+    const value = numbro(tokensPerSec)
+      .multiply(firstGoodLookingMultiplier)
+      .divide(this.MP)
+      .value();
 
-      const value = numbro(tokensPerTick)
-        .multiply(firstGoodLookingMultiplier)
-        .divide(MP)
-        .value();
-
-      return {
-        formattedValue: formatSmartly(value),
-        unit: unit[firstGoodLookingMultiplier],
-      };
-    },
-    ticksToMs: (ticks: number) => Math.round(ticks / TICK_TO_MS),
-    secondsToTicks: (seconds: number) => seconds * TICK_TO_S,
-    speedPerSecondToTick: (speedPerSec: number) => numbro(speedPerSec).multiply(TICK_TO_S).value(),
-  };
+    return {
+      formattedValue: TokenFormatter.formatSmartly(value),
+      unit: unit[firstGoodLookingMultiplier],
+    };
+  }
 }

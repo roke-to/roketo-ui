@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { intervalToDuration, formatDuration } from 'date-fns';
 import { shortEnLocale, isValidDate } from 'shared/helpers/date';
 
-function useDurationTimer(untilTimestamp: number) {
-  const untilDate = new Date(untilTimestamp);
+function useDurationTimer(untilTimestamp: number | string) {
+  const untilDate = new Date(Number(untilTimestamp));
   const dateValid = isValidDate(untilDate);
 
   const [expired, setExpired] = useState(
@@ -14,7 +14,7 @@ function useDurationTimer(untilTimestamp: number) {
   );
 
   useEffect(() => {
-    const untilDateValue = new Date(untilTimestamp);
+    const untilDateValue = new Date(Number(untilTimestamp));
 
     if (!isValidDate(untilDateValue)) return;
 
@@ -42,7 +42,7 @@ function useDurationTimer(untilTimestamp: number) {
 }
 
 type DurationTimerProps = {
-  untilTimestamp: number;
+  untilTimestamp: number | string;
   suffix?: string;
   finishedText?: string;
 };

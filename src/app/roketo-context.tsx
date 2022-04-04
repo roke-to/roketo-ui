@@ -45,10 +45,10 @@ export function RoketoContextProvider({
       });
 
       const tokens = await initFT({
+        accountId: auth.accountId,
         account: auth.account,
         tokens: roketo.dao.tokens,
       });
-      console.log('tokens', tokens)
 
       setContext({
         auth,

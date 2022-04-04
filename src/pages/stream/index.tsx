@@ -4,21 +4,17 @@ import copy from 'clipboard-copy';
 import classNames from 'classnames';
 import { useRoketoContext } from 'app/roketo-context';
 import {
-  streamViewData,
   StreamOverviewCard,
-  // StreamActionHistory,
 } from 'features/stream-view';
 import {
   useAccount,
   useSingleStream,
-  // useSingleStreamHistory,
 } from 'features/roketo-resource';
 import { StreamDashboard } from 'features/stream-view/StreamDashboard';
 import { LinkIcon } from 'shared/icons/Link';
 import { ArrowLeftIcon } from 'shared/icons/ArrowLeft';
-import { routes } from 'shared/helpers/routing';
+import { getStreamLink, routes } from 'shared/helpers/routing';
 import { PageError } from 'shared/components/PageError';
-import type { RoketoAccount, RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 function BackButton({ to }: { to: string }) {
   return (
@@ -67,61 +63,12 @@ export function StreamPage() {
     },
   );
 
-  // const PAGE_SIZE = 10;
-
-  // const {
-  //   swr: streamHistorySWR,
-  //   nextPage,
-  //   prevPage,
-  //   maxPage,
-  //   currentPage,
-  // } = useSingleStreamHistory(
-  //   { pageSize: 10 },
-  //   {
-  //     roketo,
-  //     accountSWR,
-  //     streamSWR,
-  //   },
-  // );
-
   const maybeAccount = accountSWR.data;
   const maybeStream = streamSWR.data;
-  console.log('stream', maybeStream)
-  // const tf = useTokenFormatter(maybeStream ? maybeStream.ticker : '');
-
-  // const streamHistory = streamHistorySWR.data || [];
 
   const pageError = streamSWR.error || accountSWR.error;
 
-  const renderStreamData = (stream: RoketoStream, account: RoketoAccount) => {
-    const { link } = streamViewData(stream);
-    return (
-      <>
-        <div className="flex flex-col lg:flex-row justify-between">
-          <div className="flex flex-col items-center flex-grow">
-            <StreamDashboard stream={stream} account={account} />
-            <StreamCopyUrlBlock link={link} className="max-w-xl w-full mt-28" />
-          </div>
-          <StreamOverviewCard
-            className="mt-10 w-full lg:mt-0 lg:w-1/3 self-start"
-            stream={stream}
-            account={account}
-          />
-        </div>
-        {/* <StreamActionHistory
-          pageSize={PAGE_SIZE}
-          loading={!streamHistorySWR.data}
-          stream={stream}
-          history={streamHistory}
-          className="mx-auto max-w-6xl my-24 w-full"
-          onPrevPageClick={prevPage}
-          onNextPageClick={nextPage}
-          maxPage={maxPage}
-          currentPage={currentPage}
-        /> */}
-      </>
-    );
-  };
+  const link = getStreamLink(maybeStream?.id);
 
   return (
     <div className="container mx-auto p-12">
@@ -148,7 +95,16 @@ export function StreamPage() {
       ) : !maybeAccount ? (
         <div className="py-32 text-center text-gray text-2xl">Loading...</div>
       ) : (
-        renderStreamData(maybeStream, maybeAccount)
+        <div className="flex flex-col lg:flex-row justify-between">
+          <div className="flex flex-col items-center flex-grow">
+            <StreamDashboard stream={maybeStream} />
+            <StreamCopyUrlBlock link={link} className="max-w-xl w-full mt-28" />
+          </div>
+          <StreamOverviewCard
+            className="mt-10 w-full lg:mt-0 lg:w-1/3 self-start"
+            stream={maybeStream}
+          />
+        </div>
       )}
     </div>
   );

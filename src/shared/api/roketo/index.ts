@@ -81,15 +81,6 @@ export async function initRoketo({
     incPromise, outPromise, aftPromise, tknPromise, stsPromise,
   ]);
 
-  // api.createStream({
-  //   name: 'test',
-  //   description: 'lol',
-  //   receiverId: 'dcversus.testnet',
-  //   deposit: '1250000000000000000000',
-  //   tokensPerSec: 1,
-  //   token: 'NEAR',
-  //   callbackUrl: ''
-  // });
   console.log('get_account_incoming_streams', inc);
   console.log('get_account_outgoing_streams', out);
   console.log('get_account_ft', aft);
