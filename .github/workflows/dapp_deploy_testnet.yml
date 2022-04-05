@@ -14,6 +14,11 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: yarn.lock
 
+      - name: Set up SSH client 🔒
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.API_CLIENT_KEY }}
+
       - name: Install and Build 🔧
         working-directory: .
         run: |
