@@ -1,8 +1,11 @@
+import { FTApi } from 'shared/api/ft/ft-api';
+
 import {
   RoketoAccount,
   RoketoStream,
   RoketoDao
 } from './entities';
+
 
 export type CreateStreamApiProps = {
   description: string;
@@ -17,8 +20,7 @@ export type CreateStreamApiProps = {
   isExpirable?: boolean,
   isLocked?: boolean,
   callbackUrl?: string;
-  // fix later
-  handleTransferStream: any,
+  handleTransferStream: FTApi['transfer'],
 };
 
 export type StreamsProps = { from: number, limit: number };

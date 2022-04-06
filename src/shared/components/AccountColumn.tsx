@@ -82,7 +82,6 @@ export function AccountColumn({
               key={tokenAccountId}
               tokenAccountId={tokenAccountId}
               balance={tokensData[tokenAccountId]}
-              streamsLength={0}
               period={selectedPeriod}
               showPeriod={showPeriod}
               className="mb-4"

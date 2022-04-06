@@ -57,7 +57,6 @@ export class RoketoContractApi {
     const res = await this.contract.get_stream({
       stream_id: streamId,
     });
-    console.log('res', res)
 
     return res.Ok;
   }

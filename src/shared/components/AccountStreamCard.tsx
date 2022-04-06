@@ -21,7 +21,6 @@ function multiplyAmountByTimePeriod(amount: number, period: string) {
 type AccountStreamCardProps = {
   tokenAccountId: string;
   balance: string;
-  streamsLength: number;
   period: string;
   showPeriod: boolean;
   className: string;
@@ -30,7 +29,6 @@ type AccountStreamCardProps = {
 export function AccountStreamCard({
   tokenAccountId,
   balance,
-  streamsLength,
   period = '',
   showPeriod = true,
   className,
@@ -57,17 +55,6 @@ export function AccountStreamCard({
             <div className="font-bold">
               {meta.symbol}
             </div>
-            {streamsLength > 0 ? (
-              <div className="text-gray text-sm">
-                from
-                {' '}
-                {streamsLength}
-                {' '}
-                steams
-              </div>
-            ) : (
-              ''
-            )}
           </div>
         </div>
 
