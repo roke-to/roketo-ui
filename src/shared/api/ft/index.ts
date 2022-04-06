@@ -28,9 +28,11 @@ export async function initFT({ accountId, account, tokens }: InitFRProps) {
 
   await Promise.all(Object.keys(tokens).map(async (tokenAccountId: string) => {
     const api = new FTApi(accountId, account, tokenAccountId);
-    const meta = await api.getMetadata();
-    const balance = await api.getBalance();
-    const isRegistered = await api.getIsRegistered();
+    const [ meta, balance, isRegistered ] = await Promise.all([
+      api.getMetadata(),
+      api.getBalance(),
+      api.getIsRegistered()
+    ])
     const formatter = new TokenFormatter(meta.decimals);
 
     richRokens[tokenAccountId] = {

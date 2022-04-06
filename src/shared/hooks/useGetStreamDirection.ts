@@ -11,6 +11,7 @@ type StreamDirectionKeyType = keyof typeof STREAM_DIRECTION;
 export function useGetStreamDirection(stream: RoketoStream): typeof STREAM_DIRECTION[StreamDirectionKeyType] {
   const { auth } = useRoketoContext();
 
+  // todo: case with 3rd person view
   return stream.receiver_id === auth.accountId
     ? STREAM_DIRECTION.IN
     : STREAM_DIRECTION.OUT;
