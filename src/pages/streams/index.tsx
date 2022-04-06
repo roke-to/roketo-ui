@@ -9,6 +9,7 @@ import { WithdrawAllButton } from 'features/stream-control/WithdrawAllButton';
 import { PageError } from 'shared/components/PageError';
 import { useRoketoContext } from 'app/roketo-context';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import { env } from 'shared/config';
 
 export function StreamsPage() {
   const [filteredItems, setFiltered] = useState<RoketoStream[] | undefined>([]);
@@ -17,14 +18,14 @@ export function StreamsPage() {
 
   const streams = streamsSWR.data;
   const { error } = streamsSWR;
-  const { inputs = [], outputs = [] } = streams || {};
+  const { inputs, outputs } = streams || {};
 
   const allStreams = useMemo<RoketoStream[] | undefined>(
     () => ((inputs || outputs) && [...(inputs || []), ...(outputs || [])]),
     [inputs, outputs]
   );
 
-  const nearConversionRate = priceOracle.getPriceInUsd('wrap.testnet', 1);
+  const nearConversionRate = priceOracle.getPriceInUsd(env.WNEAR_ID, 1);
 
   return (
     <div className="container mx-auto p-12">

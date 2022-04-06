@@ -1,4 +1,5 @@
 import { useRoketoContext } from 'app/roketo-context';
+import { env } from 'shared/config';
 import { useToken } from 'shared/hooks/useToken';
 
 export function Balance({ tokenAccountId }: { tokenAccountId: string }) {
@@ -6,7 +7,7 @@ export function Balance({ tokenAccountId }: { tokenAccountId: string }) {
   const { balance, formatter, meta } = useToken(tokenAccountId);
 
   // tmp: hard code for wNear
-  const actualBalance = tokenAccountId === 'wrap.testnet'
+  const actualBalance = tokenAccountId === env.WNEAR_ID
     ? auth.balance?.available || '0'
     : balance;
 

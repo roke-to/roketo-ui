@@ -26,8 +26,7 @@ type InitFRProps = {
 export async function initFT({ accountId, account, tokens }: InitFRProps) {
   const richRokens: RichTokens = {};
 
-  // eslint-disable-next-line no-restricted-syntax
-  for await (const tokenAccountId of Object.keys(tokens)) {
+  await Promise.all(Object.keys(tokens).map(async (tokenAccountId: string) => {
     const api = new FTApi(accountId, account, tokenAccountId);
     const meta = await api.getMetadata();
     const balance = await api.getBalance();
@@ -42,7 +41,7 @@ export async function initFT({ accountId, account, tokens }: InitFRProps) {
       balance,
       isRegistered
     };
-  }
+  }));
 
   return richRokens;
 }

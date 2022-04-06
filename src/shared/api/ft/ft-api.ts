@@ -69,7 +69,7 @@ export class FTApi {
     return res;
   }
 
-  transfer = async (payload: any, amount: number, callbackUrl: string) => {
+  transfer = async (payload: any, amount: string, callbackUrl?: string) => {
     const isRegistered = await this.getIsRegistered();
 
     const actions = [

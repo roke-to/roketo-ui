@@ -1,3 +1,5 @@
+import { env } from "shared/config";
+
 export function isWNearTokenId(tokenAccountId: string) {
-  return tokenAccountId === 'wrap.testnet' || tokenAccountId === 'wrap.near';
+  return tokenAccountId === env.WNEAR_ID;
 }
