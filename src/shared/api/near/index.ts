@@ -8,7 +8,7 @@ export async function createNearInstance() {
   const near = await connect({
     nodeUrl: env.NEAR_NODE_URL,
     walletUrl: env.WALLET_URL,
-    networkId: env.NEAR_NODE_URL,
+    networkId: env.NEAR_NETWORK_ID,
     keyStore,
     headers: {},
   });
