@@ -4,45 +4,31 @@ import copy from 'clipboard-copy';
 import { Link, generatePath } from 'react-router-dom';
 import { formatDuration, intervalToDuration } from 'date-fns';
 
+import { TokenImage } from 'shared/kit/TokenImage';
 import { ProgressBar } from 'shared/kit/ProgressBar';
 import { Button } from 'shared/kit/Button';
-import { TokenImage } from 'shared/kit/TokenImage';
-import { routes } from 'shared/helpers/routing';
+import { getStreamLink, routes } from 'shared/helpers/routing';
 import { LinkIcon } from 'shared/icons/Link';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
 import { shortEnLocale } from 'shared/helpers/date';
 import { isIdling } from 'shared/api/roketo/helpers';
 import { DurationTimer } from 'shared/components/DurationTimer';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
-import { StreamControls } from '../stream-control';
+import { useToken } from 'shared/hooks/useToken';
+import { useGetStreamDirection, STREAM_DIRECTION } from 'shared/hooks/useGetStreamDirection';
+import { StreamControls } from 'features/stream-control/StreamControls';
+import { streamViewData } from 'features/roketo-resource';
 
-import { streamViewData } from './streamViewData';
 import { StreamingSpeed } from './StreamingSpeed';
 import { StreamProgressPercentage } from './StreamProgressPercentage';
-
-const streamType: RoketoStream = {
-  id: '51ofCnrPfZ8WA4NWJAnGYvNM1yqDfsVQqpaoxkYz3aZE',
-  description: 'qweqweqwe',
-  owner_id: 'ggoshanov.testnet',
-  receiver_id: 'sdf.testnet',
-  ticker: 'NEAR',
-  timestamp_created: '1633966709524321545',
-  balance: '1990000000000000000000000',
-  tokens_per_tick: '33333333333333',
-  status: 'ACTIVE',
-  tokens_total_withdrawn: '0',
-  available_to_withdraw: '1990000000000000000000000',
-  history_len: 4,
-  direction: 'out',
-};
 
 type StreamCardProps = {
   stream: RoketoStream;
   className: string;
 };
 
-export function StreamCard({ stream = streamType, className }: StreamCardProps) {
-  const tf = useTokenFormatter(stream.ticker);
+export function StreamCard({ stream, className }: StreamCardProps) {
+  const { formatter, meta } = useToken(stream.token_account_id);
+  const direction = useGetStreamDirection(stream);
 
   const {
     dateEnd,
@@ -50,8 +36,9 @@ export function StreamCard({ stream = streamType, className }: StreamCardProps) 
     timestampEnd,
     percentages,
     progress: { full, withdrawn, streamed },
-    link,
-  } = streamViewData(stream, tf);
+  } = streamViewData(stream);
+
+  const link = getStreamLink(stream.id);
 
   const duration = intervalToDuration({
     start: new Date(),
@@ -74,16 +61,16 @@ export function StreamCard({ stream = streamType, className }: StreamCardProps) 
         className="w-full col-span-12 xl:col-span-6 justify-self-start"
       >
         <div className="flex items-center">
-          <TokenImage tokenName={stream.ticker} className="mr-4" />
+          <TokenImage tokenAccountId={stream.token_account_id} className="mr-4" />
           <div className="w-full gap-4 flex items-end flex-wrap">
             <div className="text-2xl whitespace-nowrap flex-shrink-0">
-              {tf.amount(streamed)}
+              {formatter.amount(streamed)}
               {' '}
               of
               {' '}
-              {tf.amount(full)}
+              {formatter.amount(full)}
               {' '}
-              <span className="uppercase">{stream.ticker}</span>
+              <span className="uppercase">{meta.symbol}</span>
             </div>
 
             <StreamingSpeed stream={stream} />
@@ -106,20 +93,20 @@ export function StreamCard({ stream = streamType, className }: StreamCardProps) 
             className="mr-4"
             label="Withdrawn"
             colorClass="bg-streams-withdrawn"
-            formattedFloatValue={`${tf.amount(withdrawn)} ${stream.ticker}`}
+            formattedFloatValue={`${formatter.amount(withdrawn)} ${meta.symbol}`}
             percentageValue={percentages.withdrawn}
           />
           <StreamProgressPercentage
             label="Streamed"
             colorClass="bg-streams-streamed"
-            formattedFloatValue={`${tf.amount(streamed)} ${stream.ticker}`}
+            formattedFloatValue={`${formatter.amount(streamed)} ${meta.symbol}`}
             percentageValue={percentages.streamed}
           />
         </div>
       </Link>
       <div className="hidden xl:block" />
       <div className="flex gap-5 justify-between xl:justify-end col-span-12 xl:col-span-5 w-full items-center flex-wrap md:flex-nowrap">
-        {stream.direction === 'in' ? (
+        {direction === STREAM_DIRECTION.IN ? (
           <div className="w-44">
             <div className="text-gray">Sender:</div>
             <div className="break-words">{stream.owner_id}</div>

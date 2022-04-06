@@ -16,3 +16,11 @@ export const shortEnLocale = {
 export function isValidDate(d: Date) {
   return !Number.isNaN(d.getTime());
 }
+
+export function fromNanosecToSec(value: number | string) {
+  return Number(value) / 1000 / 1000 / 1000;
+}
+
+export function fromNanosecToMilisec(value: number | string) {
+  return Number(value) / 1000 / 1000;
+}

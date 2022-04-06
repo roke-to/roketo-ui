@@ -7,8 +7,7 @@ import {
 import { RadioButton } from 'shared/kit/RadioButton';
 import { DropdownOpener } from 'shared/kit/DropdownOpener';
 import { useFilter } from 'features/filtering/lib';
-import { useAccount, useStreams } from 'features/roketo-resource';
-import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import { RoketoAccount } from 'shared/api/roketo/interfaces/entities';
 
 import { AccountStreamCard } from './AccountStreamCard';
 
@@ -20,11 +19,10 @@ const PERIODS = {
 };
 
 type AccountColumnProps = {
-  account: any;
+  account?: RoketoAccount;
   header: string;
   icon: React.ReactNode;
-  tokensField: string;
-  streamsType?: string;
+  tokensField: 'total_incoming' | 'total_outgoing' | 'total_received';
   showPeriod?: boolean;
   className?: string;
 };
@@ -34,33 +32,10 @@ export function AccountColumn({
   header,
   icon,
   tokensField,
-  streamsType,
   showPeriod = true,
   className,
 }: AccountColumnProps) {
-  const accountSWR = useAccount();
-  const streamsSWR = useStreams({ account: accountSWR.data });
-
-  const allStreams = streamsSWR.data;
-
-  let streams: RoketoStream[] = [];
-  if (streamsType === 'inputs') {
-    streams = allStreams ? allStreams.inputs : [];
-  } else if (streamsType === 'outputs') {
-    streams = allStreams ? allStreams.outputs : [];
-  }
-
-  let streamGroups = {} as any;
-  if (streams !== undefined) {
-    streamGroups = streams.reduce((groups: any, item: any) => {
-      const group = groups[item.ticker] || [];
-      group.push(item);
-      groups[item.ticker] = group; // eslint-disable-line no-param-reassign
-      return groups;
-    }, {});
-  }
-
-  const tokensData = account !== undefined ? account[tokensField] : [];
+  const tokensData = account !== undefined ? account[tokensField] : {};
 
   const periodsOptions = useFilter({ options: PERIODS });
   const [opened, setOpened] = useState(false);
@@ -100,19 +75,19 @@ export function AccountColumn({
         </span>
       </h2>
       <div>
-        {tokensData.map((item: any) => (
-          <AccountStreamCard
-            key={item[0]}
-            token={item[0]}
-            balance={item[1]}
-            streamsLength={
-              streamGroups[item[0]] ? streamGroups[item[0]].length : 0
-            }
-            period={selectedPeriod}
-            showPeriod={showPeriod}
-            className="mb-4"
-          />
-        ))}
+        {Object.keys(tokensData)
+          .filter((tokenAccountId: string) => tokensData[tokenAccountId] !== "0")
+          .map((tokenAccountId: string) => (
+            <AccountStreamCard
+              key={tokenAccountId}
+              tokenAccountId={tokenAccountId}
+              balance={tokensData[tokenAccountId]}
+              period={selectedPeriod}
+              showPeriod={showPeriod}
+              className="mb-4"
+            />
+          )
+        )}
       </div>
     </div>
   );

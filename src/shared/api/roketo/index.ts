@@ -1,93 +1,66 @@
-import * as nearAPI from 'near-api-js';
-import {Contract, WalletConnection} from 'near-api-js';
+import * as nearAPI from "near-api-js";
+import { Account } from "near-api-js";
 
-import {
-  CONTRACT_CHANGE_METHODS as NEAR_CHANGE_METHODS,
-  CONTRACT_VIEW_METHODS as NEAR_VIEW_METHODS,
-} from 'shared/api/near/constants';
+import { env } from "shared/config";
 
-import {ROKETO_CONTRACT_NAME} from './config';
-import {RoketoContract} from './interfaces/contracts';
-import {RoketoApi} from './interfaces/roketo-api';
-import {RoketoStatus, RoketoTokenStatus} from './interfaces/entities';
-import {RoketoContractApi} from './contract-api';
-import {
-  NEAR_BRIDGE,
-  CONTRACT_CHANGE_METHODS as ROKETO_CHANGE_METHODS,
-  CONTRACT_VIEW_METHODS as ROKETO_VIEW_METHODS,
-} from './constants';
+import { RoketoContract } from './interfaces/contracts';
+import { RoketoContractApi } from "./contract-api";
+import { RoketoAccount, RoketoDao } from "./interfaces/entities";
 
 export interface Roketo {
-  api: RoketoApi;
-  status: RoketoStatus;
-  tokenMeta: (ticker: string) => RoketoTokenStatus | undefined;
-  isBridged: (ticker: string) => boolean;
+  api: RoketoContractApi;
+  dao: RoketoDao;
+  account: RoketoAccount;
 }
 
-const tokensToMap = (tokens: RoketoTokenStatus[]) => {
-  const map: Record<string, RoketoTokenStatus> = {};
-  tokens.forEach((token) => {
-    map[token.ticker] = token;
-  });
-  return map;
-};
-
 export async function initRoketo({
-  walletConnection,
+  account,
+  accountId,
 }: {
-  walletConnection: WalletConnection;
+  account: Account;
+  accountId: string;
 }): Promise<Roketo> {
-  const account = await walletConnection.account();
-  const contract = new nearAPI.Contract(account, ROKETO_CONTRACT_NAME, {
-    viewMethods: ROKETO_VIEW_METHODS,
-    changeMethods: ROKETO_CHANGE_METHODS,
+  const contract = new nearAPI.Contract(account, env.ROKETO_CONTRACT_NAME, {
+    viewMethods: [
+      "get_stats",
+      "get_dao",
+      "get_token",
+      "get_stream",
+      "get_account",
+      "get_account_incoming_streams",
+      "get_account_outgoing_streams",
+      "get_account_ft",
+    ],
+    changeMethods: [
+      "start_stream",
+      "pause_stream",
+      "stop_stream",
+      "withdraw",
+    ],
   }) as RoketoContract;
 
-  const status = await contract.get_status({});
-  const ft: Record<
-    string,
-    {
-      name: string;
-      address: string;
-      contract: Contract;
-    }
-  > = {};
-
-  const tokensMap = tokensToMap(status.tokens);
-
-  status.tokens.forEach((token) => {
-    ft[token.ticker] = {
-      name: token.ticker,
-      address: token.account_id,
-      contract: new nearAPI.Contract(account, token.account_id, {
-        viewMethods: NEAR_VIEW_METHODS,
-        changeMethods: NEAR_CHANGE_METHODS,
-      }),
-    };
-  });
-
   // create high level api for outside usage
-  const api = RoketoContractApi({
+  const api = new RoketoContractApi({
     contract,
-    ft,
-    walletConnection,
     account,
-    operationalCommission: status.operational_commission,
-    tokens: tokensMap,
+    accountId,
   });
 
-  const tokenMeta = (ticker: string) => status.tokens.find((t) => t.ticker === ticker);
+  const roketoUserAccountPromise = api.getAccount();
 
-  const isBridged = (ticker: string) => {
-    const meta = tokenMeta(ticker);
+  const daoPromise = api.getDao();
 
-    return Boolean(meta?.account_id.endsWith(NEAR_BRIDGE));
-  };
+  const [
+    roketoUserAccount,
+    dao
+  ] = await Promise.all([
+    roketoUserAccountPromise,
+    daoPromise,
+  ]);
 
   return {
     api,
-    status,
-    tokenMeta,
-    isBridged,
+    dao,
+    account: roketoUserAccount,
   };
 }

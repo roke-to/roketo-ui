@@ -1,11 +1,9 @@
 import React from 'react';
-import numbro from 'numbro';
 import classNames from 'classnames';
 
-import { useRoketoContext } from 'app/roketo-context';
 import { TokenImage } from 'shared/kit/TokenImage';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
-import { SECONDS_IN_MINUTE, SECONDS_IN_HOUR, SECONDS_IN_DAY } from 'shared/api/roketo/constants';
+import { SECONDS_IN_MINUTE, SECONDS_IN_HOUR, SECONDS_IN_DAY } from 'shared/constants';
+import { useToken } from 'shared/hooks/useToken';
 
 function multiplyAmountByTimePeriod(amount: number, period: string) {
   switch (period) {
@@ -21,27 +19,23 @@ function multiplyAmountByTimePeriod(amount: number, period: string) {
 }
 
 type AccountStreamCardProps = {
-  token: string;
+  tokenAccountId: string;
   balance: string;
-  streamsLength: number;
   period: string;
   showPeriod: boolean;
   className: string;
 };
 
 export function AccountStreamCard({
-  token,
+  tokenAccountId,
   balance,
-  streamsLength,
   period = '',
   showPeriod = true,
   className,
 }: AccountStreamCardProps) {
-  const { tokens } = useRoketoContext();
-  const tokenMeta = tokens.get(token);
-  const tf = useTokenFormatter(token);
+  const { formatter, meta } = useToken(tokenAccountId);
 
-  const balanceValue = tf.amount(multiplyAmountByTimePeriod(Number(balance), period));
+  const balanceValue = multiplyAmountByTimePeriod(Number(balance), period);
 
   return (
     <div
@@ -54,32 +48,19 @@ export function AccountStreamCard({
         <div className="flex items-center">
           <div className="w-12 mr-4">
             <span className="flex-shrink-0 rounded-full bg-card2 inline-flex items-center justify-center w-12 h-12">
-              <TokenImage tokenName={token} />
+              <TokenImage tokenAccountId={tokenAccountId} />
             </span>
           </div>
           <div className="">
             <div className="font-bold">
-              {tokenMeta.metadata.name}
-              ,
-              {token}
+              {meta.symbol}
             </div>
-            {streamsLength > 0 ? (
-              <div className="text-gray text-sm">
-                from
-                {' '}
-                {streamsLength}
-                {' '}
-                steams
-              </div>
-            ) : (
-              ''
-            )}
           </div>
         </div>
 
         <div className="ml-auto lg:mt-0 mt-4">
           <span className=" text-3xl">
-            {Number(balanceValue) < 0.001 ? '<0.001' : numbro(balanceValue).format({ mantissa: 3 })}
+            {formatter.amount(balanceValue)}
           </span>
           {showPeriod ? <span>{period !== '' ? `/${period}` : ''}</span> : ''}
         </div>

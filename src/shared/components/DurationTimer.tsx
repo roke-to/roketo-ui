@@ -3,7 +3,7 @@ import { intervalToDuration, formatDuration } from 'date-fns';
 import { shortEnLocale, isValidDate } from 'shared/helpers/date';
 
 type DurationTimerProps = {
-  untilTimestamp: number;
+  untilTimestamp: number | string;
   suffix?: string;
   finishedText?: string;
 };

@@ -14,7 +14,6 @@ import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import { StreamStatus } from './StreamStatus';
-import { useStreamControl } from './useStreamControl';
 
 type PauseConfirmModalProps = {
   modalControl: BooleanControl;
@@ -55,19 +54,35 @@ type StreamControlsProps = {
   className: string;
 };
 
-export function StreamControls({ stream, minimal, className }: StreamControlsProps) {
-  const { auth } = useRoketoContext();
+export function StreamControls({ stream, minimal = false, className }: StreamControlsProps) {
+  const { auth, roketo } = useRoketoContext();
   const modalControl = useBool(false);
+  const [loading, setLoading] = useState(false);
+  const [menuOpened, setMenuOpened] = useState(false);
 
   const isOutgoing = auth.accountId === stream.owner_id;
   const isIncoming = auth.accountId === stream.receiver_id;
   const isExternalStream = !isOutgoing && !isIncoming;
 
-  const isDead = stream.status === STREAM_STATUS.INTERRUPTED
-    || stream.status === STREAM_STATUS.FINISHED;
-  const [menuOpened, setMenuOpened] = useState(false);
+  const isDead = stream.status === STREAM_STATUS.Finished;
 
-  const controls = useStreamControl(stream.id);
+  const handlePause = async () => {
+    setLoading(true);
+    await roketo.api.pauseStream({ streamId: stream.id });
+    setLoading(false);
+  }
+
+  const handleStart = async () => {
+    setLoading(true);
+    await roketo.api.startStream({ streamId: stream.id });
+    setLoading(false);
+  }
+
+  const handleStop = async () => {
+    setLoading(true);
+    await roketo.api.stopStream({ streamId: stream.id });
+    setLoading(false);
+  }
 
   if (isDead || isExternalStream) {
     return (
@@ -85,47 +100,48 @@ export function StreamControls({ stream, minimal, className }: StreamControlsPro
     if (isIncoming) {
       modalControl.turnOn();
     } else {
-      controls.pause();
+      handlePause();
     }
   }
 
-  const opened = menuOpened && !controls.loading;
+  const opened = menuOpened && !loading;
 
   return (
     <div className={classNames(className, 'relative inline-flex')}>
       <PauseConfirmModal
         modalControl={modalControl}
-        onConfirm={controls.pause}
+        onConfirm={handlePause}
       />
       <DropdownOpener
         minimal={minimal}
         opened={opened}
         onChange={setMenuOpened}
       >
-        {controls.loading ? 'Loading...' : <StreamStatus stream={stream} />}
+        {loading ? 'Loading...' : <StreamStatus stream={stream} />}
       </DropdownOpener>
       <DropdownMenu
         onClose={() => setMenuOpened(false)}
         opened={opened}
         className="top-full w-44"
       >
-        {stream.status !== STREAM_STATUS.ACTIVE && isOutgoing ? (
+        {stream.status !== STREAM_STATUS.Active && isOutgoing && (
           <>
             <DropdownMenuItem>
               <button
                 type="button"
                 className="inline-flex items-center font-semibold"
-                onClick={controls.restart}
+                onClick={handleStart}
               >
                 <StartIcon className="mr-4 flex-shrink-0" />
-                <span>Start stream </span>
+                <span>Start stream</span>
                 {' '}
               </button>
             </DropdownMenuItem>
             <DropdownMenuDivider />
           </>
-        ) : null}
-        {stream.status !== STREAM_STATUS.PAUSED ? (
+        )}
+
+        {stream.status !== STREAM_STATUS.Paused && (
           <>
             <DropdownMenuItem>
               <button
@@ -139,13 +155,13 @@ export function StreamControls({ stream, minimal, className }: StreamControlsPro
             </DropdownMenuItem>
             <DropdownMenuDivider />
           </>
-        ) : null}
+        )}
 
         <DropdownMenuItem>
           <button
             type="button"
             className="inline-flex items-center font-semibold"
-            onClick={controls.stop}
+            onClick={handleStop}
           >
             <StopIcon className="mr-4 flex-shrink-0" />
             <span> Stop stream </span>

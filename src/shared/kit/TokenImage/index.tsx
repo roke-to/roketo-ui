@@ -3,13 +3,13 @@ import classNames from 'classnames';
 import { TokenIcon } from 'shared/icons/Tokens';
 
 type TokenImageProps = {
-  tokenName: string;
+  tokenAccountId: string;
   size?: number;
   className?: string;
 };
 
 export function TokenImage({
-  tokenName,
+  tokenAccountId,
   size = 8,
   className,
 }: TokenImageProps) {
@@ -21,7 +21,7 @@ export function TokenImage({
         className,
       )}
     >
-      <TokenIcon className="w-full h-full rounded-full" tokenName={tokenName} />
+      <TokenIcon className="w-full h-full rounded-full" tokenAccountId={tokenAccountId} />
     </div>
   );
 }

@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Near, WalletConnection } from 'near-api-js';
 
-import { NEAR_CONFIG } from 'shared/api/near/config';
+import { env } from 'shared/config';
 import { createNearInstance, getNearAuth, NearAuth } from 'shared/api/near';
 import { initRoketo, Roketo } from 'shared/api/roketo';
-import { initPriceOracle, PriceOracle } from 'shared/api/priceOracle';
-import { Tokens } from 'features/ft-tokens';
+import { initFT, RichTokens } from 'shared/api/ft';
+import { initPriceOracle, PriceOracle } from 'shared/api/price-oracle';
 
 type AppServices = {
   auth: NearAuth;
-  tokens: Tokens;
+  tokens: RichTokens;
   roketo: Roketo;
   priceOracle: PriceOracle,
   near: Near;
@@ -27,20 +27,33 @@ export function RoketoContextProvider({
   useEffect(() => {
     const init = async () => {
       const near = await createNearInstance();
-      const walletConnection = new WalletConnection(near, NEAR_CONFIG.contractName);
-      const auth = getNearAuth(walletConnection);
+      const walletConnection = new WalletConnection(near, env.ROKETO_CONTRACT_NAME);
+      const auth = await getNearAuth(walletConnection);
+      
+      if (!auth.signedIn) {
+        // @ts-ignore
+        setContext({
+          near,
+          walletConnection,
+          auth
+        });
+
+        return;
+      }
 
       const [roketo, priceOracle] = await Promise.all([
-        initRoketo({walletConnection}),
+        initRoketo({
+          accountId: auth.accountId,
+          account: auth.account,
+        }),
         initPriceOracle({account: auth.account}),
       ]);
 
-      const tokens = new Tokens({
-        account: walletConnection.account(),
-        tokens: roketo.status.tokens,
+      const tokens = await initFT({
+        accountId: auth.accountId,
+        account: auth.account,
+        tokens: roketo.dao.tokens,
       });
-
-      await tokens.init();
 
       setContext({
         auth,
@@ -48,7 +61,7 @@ export function RoketoContextProvider({
         roketo,
         priceOracle,
         walletConnection,
-        tokens,
+        tokens, 
       });
     };
 

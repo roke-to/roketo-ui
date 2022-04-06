@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { differenceInDays, addMonths } from 'date-fns';
+import BigNumber from 'bignumber.js';
 
 import { usePrev } from 'shared/hooks/usePrev';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
-import { SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE } from 'shared/api/roketo/constants';
+import { SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE } from 'shared/constants';
 
 type SpeedInputProps = {
   className?: string;
@@ -28,14 +28,11 @@ function SpeedInput({ className, value, onChange, label }: SpeedInputProps) {
 }
 
 type StreamSpeedCalcFieldProps = {
-  onChange: (speed: number) => void;
-  deposit: number;
-  token: string;
+  onChange: (speed: string) => void;
+  deposit: string;
 };
 
-export function StreamSpeedCalcField({ onChange, deposit = 0, token }: StreamSpeedCalcFieldProps) {
-  const formatter = useTokenFormatter(token);
-
+export function StreamSpeedCalcField({ onChange, deposit = '0' }: StreamSpeedCalcFieldProps) {
   const [months, setMonths] = useState(0);
   const [days, setDays] = useState(0);
   const [minutes, setMinutes] = useState(0);
@@ -47,21 +44,24 @@ export function StreamSpeedCalcField({ onChange, deposit = 0, token }: StreamSpe
     + minutes * SECONDS_IN_MINUTE
     + hours * SECONDS_IN_HOUR;
 
-  const tokensPerTick = (() => {
-    const value = Math.round(
-      deposit / formatter.secondsToTicks(durationInSeconds),
-    );
+  const tokensPerSec = (() => {
+    const value = new BigNumber(deposit)
+      .dividedToIntegerBy(durationInSeconds)
+      .toFixed()
 
-    return !Number.isNaN(value) && value !== Infinity ? value : 0;
+
+    return value !== 'Infinity'
+      ? value
+      : '0';
   })();
 
-  const prevSpeed = usePrev(tokensPerTick);
+  const prevSpeed = usePrev(tokensPerSec);
 
   useEffect(() => {
-    if (prevSpeed !== tokensPerTick) {
-      onChange(tokensPerTick);
+    if (prevSpeed !== tokensPerSec) {
+      onChange(tokensPerSec);
     }
-  }, [tokensPerTick, onChange, prevSpeed]);
+  }, [tokensPerSec, onChange, prevSpeed]);
 
   return (
     <div className="flex">

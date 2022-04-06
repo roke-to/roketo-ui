@@ -1,165 +1,45 @@
-import React, { useRef, useState } from 'react';
-import useSWR, { SWRResponse } from 'swr';
-import { differenceInSeconds } from 'date-fns';
+import React from 'react';
+import { addSeconds } from 'date-fns';
+import BigNumber from 'bignumber.js';
+import useSWR from 'swr';
 
+import { getAvailableToWithdraw, isDead } from 'shared/api/roketo/helpers';
+import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import { useRoketoContext } from 'app/roketo-context';
-import { STREAM_DIRECTION, STREAM_STATUS } from 'shared/api/roketo/constants';
-import { RoketoStream, RoketoAccount } from 'shared/api/roketo/interfaces/entities';
-import { TICK_TO_S } from 'shared/api/roketo/config';
+import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import { SECONDS_IN_YEAR } from 'shared/constants';
 
-export function identifyStreamsDirection(streams: RoketoStream[], accountId: string) {
-  return streams.map((stream) => ({
-    ...stream,
-    direction:
-        stream.owner_id === accountId
-          ? STREAM_DIRECTION.OUT
-          : stream.receiver_id === accountId
-            ? STREAM_DIRECTION.IN
-            : null,
-  }));
-}
-
-export function useAccount(): SWRResponse<RoketoAccount> {
+export function useStreams() {
   const { auth, roketo } = useRoketoContext();
 
   const swr = useSWR(
-    ['account', auth.accountId],
-    roketo.api.getCurrentAccount,
-    {
-      errorRetryInterval: 250,
-    },
-  );
-
-  return swr;
-}
-
-function interpolateStream(stream: RoketoStream, cachedBalance: string, cachedAt: number) {
-  const secondsPassed = differenceInSeconds(Date.now(), cachedAt);
-
-  return {
-    ...stream,
-    available_to_withdraw: String(Math.min(
-      Number(cachedBalance) + Number(stream.tokens_per_tick) * TICK_TO_S * secondsPassed,
-      Number(stream.balance)
-    )),
-  };
-}
-
-type Balances = {
-  values: {
-    [id: string]: string;
-  };
-  cachedAt: number;
-};
-
-const BALANCES_PLACEHOLDER: Balances = {
-  values: {},
-  cachedAt: 0,
-};
-
-const INTERPOLATIONS_BETWEEN_MULTIPLE_FETCHES = 29;
-
-export function useStreams({ account }: { account?: RoketoAccount }) {
-  const { auth, roketo } = useRoketoContext();
-
-  const balances = useRef<Balances>(BALANCES_PLACEHOLDER);
-  const interpolationsLeft = useRef(0);
-
-  const swr = useSWR(
-    () => {
-      const key = account
-        ? ['streams', account.account_id, account.last_action]
-        : false;
-
-      return key;
-    },
+    ['streams', auth.accountId, roketo.account.last_created_stream],
     async () => {
-      const streams = [
-        ...account?.dynamic_inputs || [],
-        ...account?.dynamic_outputs || [],
-        ...account?.static_streams || [],
-      ];
-
-      const fetchedStreams = await Promise.all(
-        streams.map((streamId) => roketo.api.getStream({ streamId })),
-      );
-
-      const identified = identifyStreamsDirection(
-        fetchedStreams,
-        auth.accountId,
-      );
-
-      balances.current = {
-        values: identified.reduce((balancesDraft, stream) => Object.assign(balancesDraft, {
-          [stream.id]: stream.available_to_withdraw
-        }), {}),
-        cachedAt: Date.now()
-      };
-
-      interpolationsLeft.current = INTERPOLATIONS_BETWEEN_MULTIPLE_FETCHES;
+      const inputs = await roketo.api.getAccountIncomingStreams({ from: 0, limit: 100 });
+      const outputs = await roketo.api.getAccountOutgoingtreams({ from: 0, limit: 100 });
 
       return {
-        inputs: identified.filter((stream) => stream.direction === STREAM_DIRECTION.IN),
-        outputs: identified.filter((stream) => stream.direction === STREAM_DIRECTION.OUT),
+        inputs,
+        outputs
       };
     },
   );
 
-  React.useEffect(() => {
-    const pollerId = setTimeout(() => {
-      if (!swr.data || interpolationsLeft.current <= 0) {
-        swr.mutate();
-      } else {
-        interpolationsLeft.current -= 1;
-
-        const interpolateAll = (stream: RoketoStream) => interpolateStream(stream, balances.current.values[stream.id], balances.current.cachedAt);
-
-        swr.mutate({
-          inputs: swr.data.inputs.map(interpolateAll),
-          outputs: swr.data.outputs.map(interpolateAll),
-        }, { revalidate: false });
-      }
-    }, 1000);
-
-    return () => clearTimeout(pollerId);
-  }, [swr]);
-
   return swr;
 }
 
-type Balance = {
-  value: string;
-  cachedAt: number;
-};
-
-const BALANCE_PLACEHOLDER: Balance = {
-  value: '',
-  cachedAt: 0,
-};
-
-const INTERPOLATIONS_BETWEEN_SINGLE_FETCHES = 9;
-
-export function useSingleStream(streamId: string, account?: RoketoAccount) {
-  const { roketo } = useRoketoContext();
-  const balance = useRef<Balance>(BALANCE_PLACEHOLDER);
-  const interpolationsLeft = useRef(0);
+export function useSingleStream(streamId: string) {
+  const { auth, roketo } = useRoketoContext();
 
   const swr = useSWR<RoketoStream>(
     () => {
-      const key = account
-        ? ['stream', streamId, account.account_id, account.last_action]
+      const key = auth.accountId
+        ? ['stream', streamId, roketo.account.last_created_stream]
         : false;
       return key;
     },
     async () => {
       const stream = await roketo.api.getStream({ streamId });
-
-      balance.current = {
-        value: stream.available_to_withdraw,
-        cachedAt: Date.now(),
-      };
-
-      interpolationsLeft.current = INTERPOLATIONS_BETWEEN_SINGLE_FETCHES;
 
       return stream;
     },
@@ -169,98 +49,70 @@ export function useSingleStream(streamId: string, account?: RoketoAccount) {
     },
   );
 
-  const stream = swr.data || {
-    balance: null,
-    available_to_withdraw: null,
-    status: null,
-  };
+  const stream = swr.data;
 
-  const isCompleted = stream.balance === stream.available_to_withdraw;
+  const isCompleted = isDead(stream);
 
   React.useEffect(() => {
-    if (stream.status === STREAM_STATUS.ACTIVE && !isCompleted) {
-      const pollerId = setTimeout(() => {
-        if (!swr.data || interpolationsLeft.current <= 0) {
-          swr.mutate();
-        } else {
-          interpolationsLeft.current -= 1;
+    const startPoller = () => setInterval(swr.mutate, 1000);
 
-          swr.mutate(interpolateStream(swr.data, balance.current.value, balance.current.cachedAt), { revalidate: false });
-        }
-      }, 1000);
-
-      return () => clearTimeout(pollerId);
+    if (stream?.status === STREAM_STATUS.Active && !isCompleted) {
+      const id = startPoller();
+      return () => clearInterval(id);
     }
 
     return undefined;
-  }, [stream.status, isCompleted, swr]);
+  }, [stream?.status, isCompleted, swr]);
 
   return swr;
 }
 
-type UseSingleStreamHistoryProps = {
-  account?: RoketoAccount;
-  stream?: RoketoStream;
-}
+export function streamViewData(stream: RoketoStream) {
+  const MAX_SEC = SECONDS_IN_YEAR * 1000;
 
-export function useSingleStreamHistory(
-  { pageSize = 3 },
-  { account, stream }: UseSingleStreamHistoryProps,
-) {
-  const { roketo } = useRoketoContext();
+  const availableToWithdraw = getAvailableToWithdraw(stream);
 
-  const streamId = stream ? stream.id : '';
-  const [page, setPage] = useState(0);
+  const secondsLeft = BigNumber.minimum(
+    MAX_SEC,
+    new BigNumber(stream.balance)
+      .minus(availableToWithdraw)
+      .dividedBy(stream.tokens_per_sec)
+      .toFixed()
+  )
 
-  const maxPage = stream ? Math.ceil(stream.history_len / pageSize) - 1 : 0;
+  const timestampEnd = addSeconds(new Date(), Number(secondsLeft)).getTime();
+  const dateEnd = new Date(timestampEnd);
+  
+  // progress bar calculations
+  const full = new BigNumber(stream.balance).plus(stream.tokens_total_withdrawn);
+  const withdrawn = new BigNumber(stream.tokens_total_withdrawn);
+  const streamed = withdrawn.plus(availableToWithdraw);
 
-  const nextPage = () => {
-    setPage(page + 1);
+  const left = full.minus(streamed);
+  const progresses = [
+    withdrawn.dividedBy(full).toNumber(),
+    streamed.dividedBy(full).toNumber()
+  ];
+
+  const percentages = {
+    left: full.minus(streamed).dividedBy(full).toNumber(),
+    streamed: streamed.dividedBy(full).toNumber(),
+    withdrawn: withdrawn.dividedBy(full).toNumber(),
+    available: availableToWithdraw.dividedBy(full).toNumber(),
   };
-  const prevPage = () => {
-    setPage(page - 1);
-  };
-  const canGoBack = page > 1;
-
-  const streamHistoryFetcher = async (key1: unknown, key2: unknown, key3: unknown, pageToFetch: number) => {
-    const streamHistory = await roketo.api.getStreamHistory({
-      streamId,
-      from: pageToFetch * pageSize,
-      to: (pageToFetch + 1) * pageSize,
-    });
-
-    return streamHistory;
-  };
-
-  const swr = useSWR(
-    () => {
-      const key = stream
-        ? ['stream_history', stream.id, account?.last_action, page]
-        : false;
-
-      return key;
-    },
-    streamHistoryFetcher,
-    {
-      onError: (error) => {
-        console.debug('useSingleStreamHistory error', error);
-      },
-    },
-  );
-
-  // ebanuty hack to prefetch next page
-  useSWR(
-    () => {
-      const key = stream
-        ? ['stream_history', stream.id, account?.last_action, page + 1]
-        : false;
-
-      return key;
-    },
-    streamHistoryFetcher,
-  );
 
   return {
-    swr, canGoBack, nextPage, prevPage, maxPage, currentPage: page,
+    dateEnd,
+    progresses,
+    isDead: isDead(stream),
+    percentages,
+    timestampEnd,
+    progress: {
+      full: full.toFixed(),
+      withdrawn: withdrawn.toFixed(),
+      streamed: streamed.toFixed(),
+      left: left.toFixed(),
+      available: availableToWithdraw.toFixed(),
+    },
   };
 }

@@ -54,7 +54,8 @@ function FallbackTokenImage(props: FallbackTokenImageProps) {
 }
 
 const currentTokens = {
-  NEAR: NearTokenImage,
+  'wrap.testnet': NearTokenImage,
+  'wrap.near': NearTokenImage,
 };
 
 function isValidTokenName(tokenName: string): tokenName is keyof typeof currentTokens {
@@ -62,19 +63,21 @@ function isValidTokenName(tokenName: string): tokenName is keyof typeof currentT
 }
 
 type TokenIconProps = {
-  tokenName: string;
+  tokenAccountId: string;
   className?: string;
 };
 
-export function TokenIcon({ tokenName, className, ...rest }: TokenIconProps) {
+export function TokenIcon({ tokenAccountId, className, ...rest }: TokenIconProps) {
   const { tokens } = useRoketoContext();
-  const image = tokens.get(tokenName).metadata.icon;
+  const image = tokens[tokenAccountId]?.meta?.icon;
 
   if (image) {
     return (
-      <img src={image} alt={tokenName} className={className} {...rest} />
+      <img src={image} alt={tokenAccountId} className={className} {...rest} />
     );
   }
-  const Component = isValidTokenName(tokenName) ? currentTokens[tokenName] : FallbackTokenImage;
+
+  const Component = isValidTokenName(tokenAccountId) ? currentTokens[tokenAccountId] : FallbackTokenImage;
+
   return <Component className={className} {...rest} />;
 }

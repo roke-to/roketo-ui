@@ -1,35 +1,33 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { TokenImage } from 'shared/kit/TokenImage';
 import { ArcProgressBar } from 'shared/kit/ProgressBar';
 import { Tooltip } from 'shared/kit/Tooltip';
-import { useTokenFormatter } from 'shared/hooks/useTokenFormatter';
-import { streamDirection } from 'shared/api/roketo/helpers';
-import type { RoketoAccount, RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import { useGetStreamDirection, STREAM_DIRECTION } from 'shared/hooks/useGetStreamDirection';
+import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import { useToken } from 'shared/hooks/useToken';
+import { TokenImage } from 'shared/kit/TokenImage';
+import { STREAM_STATUS } from 'shared/api/roketo/constants';
 
-import { StreamControls } from '../stream-control';
-import { StreamWithdrawButton } from '../stream-control/StreamWithdrawButton';
+import { StreamControls } from 'features/stream-control/StreamControls';
+import { WithdrawButton } from 'features/stream-control/WithdrawButton';
+import { streamViewData } from 'features/roketo-resource';
 
-import { streamViewData } from './streamViewData';
 import { StreamingSpeed } from './StreamingSpeed';
 import { StreamProgressPercentage } from './StreamProgressPercentage';
 
-type StreamDashboardProps = {
-  stream: RoketoStream;
-  account: RoketoAccount;
-};
-
-export function StreamDashboard({ stream, account }: StreamDashboardProps) {
-  const tf = useTokenFormatter(stream.ticker);
+export function StreamDashboard({ stream }: { stream: RoketoStream }) {
+  const { token_account_id: tokenAccountId } = stream;
+  const { formatter, meta } = useToken(tokenAccountId);
+  const direction = useGetStreamDirection(stream);
 
   const {
     progresses,
     percentages,
     isDead,
     progress: { full, withdrawn, streamed },
-  } = streamViewData(stream, tf);
-  const direction = streamDirection({ stream, account });
+  } = streamViewData(stream);
+
 
   return (
     <div className={classNames('flex', 'flex-col', 'items-center')}>
@@ -42,20 +40,20 @@ export function StreamDashboard({ stream, account }: StreamDashboardProps) {
                 className="whitespace-nowrap mb-2"
                 label="Withdrawn"
                 colorClass="bg-streams-withdrawn"
-                formattedFloatValue={`${tf.amount(withdrawn)} ${stream.ticker}`}
+                formattedFloatValue={`${formatter.amount(withdrawn)} ${meta.symbol}`}
                 percentageValue={percentages.withdrawn}
               />
               <StreamProgressPercentage
                 className="whitespace-nowrap"
                 label="Streamed"
                 colorClass="bg-streams-streamed"
-                formattedFloatValue={`${tf.amount(streamed)} ${stream.ticker}`}
+                formattedFloatValue={`${formatter.amount(streamed)} ${meta.symbol}`}
                 percentageValue={percentages.streamed}
               />
             </div>
           )}
         >
-          <ArcProgressBar className="w-96 h-48" progresses={progresses} />
+          <ArcProgressBar className="w-96 h-72" progresses={progresses} />
         </Tooltip>
 
         <div className="flex justify-between pt-5 -mx-2 text-gray">
@@ -64,34 +62,30 @@ export function StreamDashboard({ stream, account }: StreamDashboardProps) {
         </div>
       </div>
 
-      <TokenImage size={14} tokenName={stream.ticker} className="mb-8" />
-      <div className="text-6xl font-semibold">{tf.amount(streamed)}</div>
+      <TokenImage size={14} tokenAccountId={tokenAccountId} className="mb-8" />
+      <div className="text-6xl font-semibold">{formatter.amount(streamed)}</div>
       <div className="text-gray font-semibold">
         of
         {' '}
-        {tf.amount(full)}
+        {formatter.amount(full)}
         {' '}
-        {stream.ticker}
+        {meta.symbol}
       </div>
-      <StreamingSpeed stream={stream} className="mt-6 mb-6" />
-      {isDead ? (
-        ''
-      ) : (
+      <StreamingSpeed
+        stream={stream}
+        className="mt-6 mb-6"
+      />
+
+      {!isDead &&
         <div className="flex relative z-10">
           <StreamControls stream={stream} className="mr-2" />
 
           {/* render withdraw funds button */}
-          {direction === 'in' ? (
-            <StreamWithdrawButton
-              loadingText="Withdrawing..."
-              variant="outlined"
-              color="dark"
-            >
-              Withdraw from all streams
-            </StreamWithdrawButton>
-          ) : null}
+          {direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.Active &&
+            <WithdrawButton stream={stream} />
+          }
         </div>
-      )}
+      }
     </div>
   );
 }

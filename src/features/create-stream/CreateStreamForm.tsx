@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Formik, Field, FieldProps, FormikHelpers } from 'formik';
+import { Formik, Field, FieldProps } from 'formik';
 import * as Yup from 'yup';
 import type { Near } from 'near-api-js';
 
@@ -11,10 +11,11 @@ import { DropdownMenu, DropdownMenuItem } from 'shared/kit/DropdownMenu';
 import { DropdownOpener } from 'shared/kit/DropdownOpener';
 import { RadioButton } from 'shared/kit/RadioButton';
 import { Tooltip } from 'shared/kit/Tooltip';
-import { TokenFormatter } from 'shared/helpers/formatting';
 import { env } from 'shared/config';
 import { useRoketoContext } from 'app/roketo-context';
+
 import { StreamSpeedCalcField } from './StreamSpeedCalcField';
+import { Balance } from './Balance';
 
 type StreamFormSchemaParams = {
   near: Near;
@@ -67,20 +68,17 @@ type CreateStreamFormProps = {
 };
 
 export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
-  const { near, auth, tokens, roketo } = useRoketoContext();
+  const { near, auth, tokens } = useRoketoContext();
 
   const schema = CreateStreamFormSchema({
     accountId: auth.accountId,
     near,
   });
 
-  const [dropdownOpened, setDropdownOpened] = useState(false);
-
+  const [isDropdownOpened, setIsDropdownOpened] = useState(false);
   const [submitError, setError] = useState<Error | null>(null);
 
-  const tokensNames = tokens.tickers;
-  const formikOnSubmit = async (values: CreateStreamFormValues, formikHelpers: FormikHelpers<CreateStreamFormValues>) => {
-    console.debug('Formik submit', values, formikHelpers);
+  const formikOnSubmit = async (values: CreateStreamFormValues) => {
     try {
       const res = await onSubmit(values);
       return res;
@@ -88,13 +86,18 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
       if (error instanceof Error) {
         setError(error);
       }
+
+      return undefined;
     }
   };
+
+  const allAvailableTokens = Object.values(tokens);
+
   return (
     <Formik<CreateStreamFormValues>
       initialValues={{
         receiver: '',
-        token: 'NEAR',
+        token: env.WNEAR_ID,
         speed: 0,
         deposit: 0,
         autoStart: true,
@@ -113,10 +116,10 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
         handleSubmit,
         isSubmitting,
       }) => {
-        const tokenMeta = roketo.tokenMeta(values.token);
-        const formatter = TokenFormatter(
-          tokens.get(values.token).metadata.decimals,
-        );
+        const activeTokenAccountId = values.token;
+        const activeToken = tokens[activeTokenAccountId];
+        const { meta: tokenMeta, roketoMeta, formatter } = activeToken;
+
         return (
           <form className="max-w-lg mx-auto w-full" onSubmit={handleSubmit}>
             <Field name="receiver">
@@ -133,7 +136,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                     <input
                       placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
                       id="ownerInput"
-                      {...field}
+                      {...field} 
                     />
                   </Input>
                 </FormField>
@@ -154,50 +157,55 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                     <DropdownOpener
                       minimal
                       className="bg-input text-white focus-within:border-blue hover:border-blue text-xl h-14 px-4 py-3 border border-border w-36"
-                      onChange={setDropdownOpened}
+                      onChange={setIsDropdownOpened}
                     >
                       <div className="inline-flex items-center">
                         <TokenImage
-                          tokenName={field.value}
+                          tokenAccountId={field.value}
                           className="mr-1"
                         />
                         {' '}
-                        <span>{field.value}</span>
+                        <span>{tokenMeta.symbol}</span>
                       </div>
                     </DropdownOpener>
 
                     <DropdownMenu
-                      opened={dropdownOpened}
+                      opened={isDropdownOpened}
                       className="z-10"
-                      onClose={() => setDropdownOpened(false)}
+                      onClose={() => setIsDropdownOpened(false)}
                     >
-                      {tokensNames.map((option: string) => (
-                        <DropdownMenuItem
-                          className="focus-within:border-blue"
-                          key={option}
-                        >
-                          <RadioButton
-                            label={(
-                              <div className="inline-flex items-center">
-                                <TokenImage
-                                  size={6}
-                                  tokenName={option}
-                                  className="mr-1"
-                                />
-                                {' '}
-                                <span>{option}</span>
-                              </div>
-                            )}
-                            active={field.value === option}
-                            value={option}
-                            onChange={(value) => {
-                              setDropdownOpened(false);
-                              setFieldValue(field.name, value, false);
-                              setFieldTouched(field.name, true, false);
-                            }}
-                          />
-                        </DropdownMenuItem>
-                      ))}
+                      {allAvailableTokens.map(token => {
+                        const {symbol} = token.meta;
+                        const {tokenAccountId} = token.api;
+
+                        return (
+                          <DropdownMenuItem
+                            className="focus-within:border-blue"
+                            key={tokenAccountId}
+                          >
+                            <RadioButton
+                              label={(
+                                <div className="inline-flex items-center">
+                                  <TokenImage
+                                    size={6}
+                                    tokenAccountId={tokenAccountId}
+                                    className="mr-1"
+                                  />
+                                  {' '}
+                                  <span>{symbol}</span>
+                                </div>
+                              )}
+                              active={field.value === tokenAccountId}
+                              value={tokenAccountId}
+                              onChange={(value) => {
+                                setIsDropdownOpened(false);
+                                setFieldValue(field.name, value, false);
+                                setFieldTouched(field.name, true, false);
+                              }}
+                            />
+                          </DropdownMenuItem>
+                        );
+                      })}
                     </DropdownMenu>
                   </FormField>
                 )}
@@ -215,6 +223,10 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                         <Tooltip
                           className="ml-2"
                           overlay="Funds which will be used to create a stream for a set period."
+                        />
+                        {' '}
+                        <Balance
+                          tokenAccountId={activeTokenAccountId}
                         />
                       </span>
                     )}
@@ -256,7 +268,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
 
                             const { formattedValue, unit } = formatter.tokensPerMeaningfulPeriod(field.value);
 
-                            return `${formattedValue} ${values.token} / ${unit}`;
+                            return `${formattedValue} ${tokenMeta.symbol} / ${unit}`;
                           })()}
                         </div>
                       </div>
@@ -265,8 +277,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                   >
                     {' '}
                     <StreamSpeedCalcField
-                      token={values.token}
-                      deposit={Number(formatter.toInt(values.deposit))}
+                      deposit={formatter.toYocto(values.deposit)}
                       onChange={(speed) => {
                         setFieldValue(field.name, speed, false);
                         setFieldTouched(field.name, true, false);
@@ -329,15 +340,17 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                   </span>
                 </label>
 
-                <p className="text-left text-gray w-2/3 text-sm">
-                  You will be charged
-                  {' '}
-                  {tokenMeta && formatter.amount(tokenMeta.commission_on_create)}
-                  {' '}
-                  {tokenMeta?.ticker}
-                  {' '}
-                  fee for that stream
-                </p>
+                {tokenMeta &&
+                  <p className="text-left text-gray w-2/3 text-sm">
+                    You will be charged
+                    {' '}
+                    {formatter.amount(roketoMeta.commission_on_create)}
+                    {' '}
+                    {tokenMeta.symbol}
+                    {' '}
+                    fee for that stream
+                  </p>
+                }
               </div>
 
               <Button

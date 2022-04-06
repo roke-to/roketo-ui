@@ -15,11 +15,10 @@ export function StreamProgressPercentage({
   formattedFloatValue,
   percentageValue,
   colorClass,
-  className,
-  ...rest
+  className
 }: StreamProgressPercentageProps) {
   return (
-    <div className={className} {...rest}>
+    <div className={className}>
       <Bullet className={classNames(colorClass, 'mr-1')} />
       <span>
         {label}:{' '}
