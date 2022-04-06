@@ -57,6 +57,7 @@ export class RoketoContractApi {
     const res = await this.contract.get_stream({
       stream_id: streamId,
     });
+    console.log('res', res)
 
     return res.Ok;
   }
@@ -81,27 +82,23 @@ export class RoketoContractApi {
     callbackUrl,
     handleTransferStream,
   }: CreateStreamApiProps) {
-    const totalCost = new BigNumber(deposit).plus(commissionOnCreate).toFixed();
+    const totalAmount = new BigNumber(deposit).plus(commissionOnCreate).toFixed();
     const transferPayload = {
-      Create: {
-        request: {
-          description,
-          balance: deposit,
-          owner_id: this.accountId,
-          receiver_id: receiverId,
-          token_name: tokenAccountId,
-          tokens_per_sec: BigInt(tokensPerSec),
-          cliff_period_sec: cliffPeriodSec,
-          is_locked: isLocked,
-          is_auto_start_enabled: isAutoStart,
-          is_expirable: isExpirable,
-        }
-      },
+      description,
+      balance: deposit,
+      owner_id: this.accountId,
+      receiver_id: receiverId,
+      token_name: tokenAccountId,
+      tokens_per_sec: BigInt(tokensPerSec),
+      cliff_period_sec: cliffPeriodSec,
+      is_locked: isLocked,
+      is_auto_start_enabled: isAutoStart,
+      is_expirable: isExpirable,
     };
 
     return handleTransferStream(
       transferPayload,
-      totalCost,
+      totalAmount,
       callbackUrl
     );
   }

@@ -34,7 +34,6 @@ export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
   for (const stream of activeInputs) {
     const tokenAccountId = stream.token_account_id;
     const available = getAvailableToWithdraw(stream);
-    console.log('available', available.toFixed())
 
     if (available.toFixed() !== '0') {
       streamIds.push(stream.id);
@@ -55,7 +54,6 @@ export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
 
   const preparedTokenData = tmpResult.map((value: TmpData) => {
     const { formatter, meta: { symbol } } = tokens[value.tokenAccountId];
-    console.log('value.available', value.available.toFixed())
     const amount = formatter.amount(value.available.toFixed());
 
     return {

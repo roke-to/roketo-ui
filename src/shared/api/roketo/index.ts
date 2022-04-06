@@ -50,29 +50,14 @@ export async function initRoketo({
 
   const daoPromise = api.getDao();
 
-  const incPromise = contract.get_account_incoming_streams({ account_id: accountId, from: 0, limit: 10 });
-  const outPromise = contract.get_account_outgoing_streams({ account_id: accountId, from: 0, limit: 10 });
-  const aftPromise = contract.get_account_ft({ account_id: accountId, token_account_id: "wrap.testnet" });
-  const tknPromise = contract.get_token({ token_account_id: "wrap.testnet" });
-  const stsPromise = contract.get_stats();
-
   const [
     roketoUserAccount,
-    dao, inc, out, aft, tkn, sts,
+    dao
   ] = await Promise.all([
     roketoUserAccountPromise,
     daoPromise,
-    incPromise, outPromise, aftPromise, tknPromise, stsPromise,
   ]);
 
-  console.log('get_account_incoming_streams', inc);
-  console.log('get_account_outgoing_streams', out);
-  console.log('get_account_ft', aft);
-  console.log('get_dao', dao);
-  console.log('get_token', tkn);
-  console.log('get_stats', sts);
-  console.log('getAccount', roketoUserAccount);
-  
   return {
     api,
     dao,

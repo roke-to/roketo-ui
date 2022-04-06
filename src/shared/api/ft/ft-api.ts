@@ -1,4 +1,4 @@
-import { Account, Contract } from 'near-api-js';
+import { Account, Contract, utils, transactions } from 'near-api-js';
 import BigNumber from 'bignumber.js';
 import JSONbig from 'json-bigint';
 
@@ -11,7 +11,7 @@ type FTContract = Contract & {
   storage_balance_of: (options: { account_id: string }) => Promise<{ total: string, available: string }>;
   ft_metadata: () => Promise<TokenMetadata>;
   near_deposit: (options: { }, gas: string, deposit: string) => Promise<never>;
-  storage_deposit: (options: { }, gas: string, deposit: string) => Promise<never>;
+  storage_deposit: (options: { }, gas: string, deposit: string | null) => Promise<never>;
   ft_transfer_call: ({ args, gas, callbackUrl, amount }: { args: any, gas: string, callbackUrl: string, amount: number }) => Promise<never>
 };
 
@@ -22,9 +22,12 @@ export class FTApi {
 
   currentUserAccountId: string;
 
+  account: Account;
+
   constructor(accountId: string, account: Account, tokenAccountId: string) {
     this.currentUserAccountId = accountId;
     this.tokenAccountId = tokenAccountId;
+    this.account = account;
 
     this.contract = new Contract(account, tokenAccountId, {
       viewMethods: ['ft_balance_of', 'ft_metadata', 'storage_balance_of'],
@@ -47,7 +50,7 @@ export class FTApi {
   async getIsRegistered(): Promise<boolean> {
     const res = await this.contract.storage_balance_of({ account_id: this.currentUserAccountId });
 
-    return res.total !== '0';
+    return res && res.total !== '0';
   }
 
   async nearDeposit(deposit: string): Promise<void> {
@@ -57,21 +60,69 @@ export class FTApi {
   }
   
   async storageDeposit(): Promise<void> {
-    const res = await this.contract.storage_deposit({}, GAS_SIZE, '1250000000000000000000');
+    const res = await this.contract.storage_deposit(
+      {},
+      GAS_SIZE,
+      utils.format.parseNearAmount('0.00125') // account creation costs 0.00125 NEAR for storage
+    );
+  
     return res;
   }
 
-  transfer = async (transferPayload: any, totalCost: number, callbackUrl: string) => {
-    const res = await this.contract.ft_transfer_call({
-      args: {
-        receiver_id: env.ROKETO_CONTRACT_NAME,
-        amount: new BigNumber(totalCost).toFixed(),
-        memo: 'Roketo transfer',
-        msg: JSONbig.stringify(transferPayload),
-      },
-      gas: GAS_SIZE,
-      callbackUrl,
-      amount: 1,
+  transfer = async (payload: any, amount: number, callbackUrl: string) => {
+    const isRegistered = await this.getIsRegistered();
+
+    const actions = [
+      transactions.functionCall(
+        "near_deposit",
+        {},
+        '30000000000000',
+        new BigNumber(amount).toFixed()
+      ),
+      transactions.functionCall(
+        'ft_transfer_call',
+        {
+          receiver_id: env.ROKETO_CONTRACT_NAME,
+          amount: new BigNumber(amount).toFixed(),
+          memo: 'Roketo transfer',
+          msg: JSONbig.stringify({
+            Create: {
+              request: payload
+            }
+          }),
+        },
+        '100000000000000',
+        1
+      ),
+      transactions.functionCall(
+        'ft_transfer_call',
+        {
+          receiver_id: env.ROKETO_CONTRACT_NAME,
+          amount: '1',
+          memo: 'Roketo transfer',
+          msg: '"Push"',
+        },
+        '100000000000000',
+        1
+      )
+    ];
+
+    if (!isRegistered) {
+      actions.unshift(
+        transactions.functionCall(
+          "storage_deposit",
+          {},
+          '30000000000000',
+          utils.format.parseNearAmount('0.00125') // account creation costs 0.00125 NEAR for storage
+        )
+      )
+    }
+
+    // @ts-ignore
+    const res = this.account.signAndSendTransaction({
+      receiverId: this.tokenAccountId,
+      walletCallbackUrl: callbackUrl,
+      actions
     });
 
     return res;

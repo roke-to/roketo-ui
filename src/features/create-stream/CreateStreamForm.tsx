@@ -13,6 +13,7 @@ import { RadioButton } from 'shared/kit/RadioButton';
 import { Tooltip } from 'shared/kit/Tooltip';
 import { env } from 'shared/config';
 import { useRoketoContext } from 'app/roketo-context';
+
 import { StreamSpeedCalcField } from './StreamSpeedCalcField';
 import { Balance } from './Balance';
 
@@ -225,7 +226,6 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                         />
                         {' '}
                         <Balance
-                          deposit={formatter.toYocto(values.deposit)}
                           tokenAccountId={activeTokenAccountId}
                         />
                       </span>

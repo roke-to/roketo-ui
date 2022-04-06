@@ -1,4 +1,5 @@
-import { connect, keyStores, WalletConnection, ConnectedWalletAccount } from 'near-api-js';
+import { connect, keyStores, WalletConnection, ConnectedWalletAccount,  } from 'near-api-js';
+import { AccountBalance } from 'near-api-js/lib/account';
 
 import { env } from 'shared/config';
 
@@ -16,6 +17,7 @@ export async function createNearInstance() {
 }
 
 export type NearAuth = {
+  balance?: AccountBalance;
   account: ConnectedWalletAccount;
   signedIn: boolean;
   accountId: string;
@@ -26,6 +28,12 @@ export type NearAuth = {
 export async function getNearAuth(walletConnection: WalletConnection): Promise<NearAuth> {
   const accountId = await walletConnection.getAccountId();
   const account = await walletConnection.account();
+
+  let balance;
+
+  if (accountId) {
+    balance = await account.getAccountBalance();
+  }
 
   async function login() {
     const appTitle = 'Roketo Token Streaming Service';
@@ -43,6 +51,7 @@ export async function getNearAuth(walletConnection: WalletConnection): Promise<N
   }
 
   return {
+    balance,
     account,
     signedIn: !!accountId,
     accountId,
