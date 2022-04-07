@@ -77,7 +77,8 @@ export class FTApi {
         "near_deposit",
         {},
         '30000000000000',
-        new BigNumber(amount).toFixed()
+        // we should add 1 for Push purposes
+        new BigNumber(amount).plus('1').toFixed()
       ),
       transactions.functionCall(
         'ft_transfer_call',
