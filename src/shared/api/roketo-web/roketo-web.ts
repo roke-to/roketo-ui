@@ -1,4 +1,5 @@
 import useSWR, { SWRResponse } from 'swr';
+import type { PublicConfiguration } from 'swr/dist/types';
 import * as client from '@roketo/api-client';
 import { WalletConnection } from 'near-api-js';
 
@@ -95,6 +96,14 @@ class TokenProvider {
 
 const tokenProvider = new TokenProvider();
 
+const onErrorRetry: PublicConfiguration<any, any, any>['onErrorRetry'] = async (error, key, config, revalidate, { retryCount }) => {
+  if (error.message.startsWith('HTTP-Code: 401') && retryCount <= 3) {
+    await tokenProvider.refreshToken();
+
+    revalidate({ retryCount });
+  }
+};
+
 const apiConfig = client.createConfiguration({
   ...serverConfig,
   authMethods: { bearer: { tokenProvider } }
@@ -108,15 +117,21 @@ export function useHello(): SWRResponse<client.HelloResponse> {
   const swr = useSWR(
     auth.accountId ? 'hello' : null,
     () => defaultApiClient.getHello(),
-    {
-      onErrorRetry: async (error, key, config, revalidate, { retryCount }) => {
-        if (error.message.startsWith('HTTP-Code: 401') && retryCount <= 3) {
-          tokenProvider.refreshToken();
+    { onErrorRetry },
+  );
 
-          revalidate({ retryCount });
-        }
-      }
-    }
+  return swr;
+}
+
+export const usersApiClient = new client.UsersApi(apiConfig);
+
+export function useUser(): SWRResponse<client.User> {
+  const { auth } = useRoketoContext();
+
+  const swr = useSWR(
+    auth.accountId ? 'user' : null,
+    () => usersApiClient.findOne(auth.accountId),
+    { onErrorRetry },
   );
 
   return swr;
