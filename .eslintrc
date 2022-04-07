@@ -20,6 +20,7 @@
     "react/require-default-props": "off",
     "react/react-in-jsx-scope": "off",
     "import/prefer-default-export": "off",
+    "class-methods-use-this": "warn",
     "react/prop-types": "warn",
     "react/jsx-props-no-spreading": "warn",
     "no-nested-ternary": "warn",

@@ -12,6 +12,7 @@ import { useRoketoContext } from 'app/roketo-context';
 
 import { env } from 'shared/config';
 import { routes } from 'shared/helpers/routing';
+import { useHello } from 'shared/api/roketo-web';
 import { SendPage } from './send';
 import { StreamsPage } from './streams';
 import { AccountPage } from './account';
@@ -31,6 +32,9 @@ export function Routing() {
   });
 
   const { auth } = useRoketoContext();
+
+  const hello = useHello();
+  console.log(hello.data?.data);
 
   return (
     <Router basename={env.PUBLIC_URL}>
