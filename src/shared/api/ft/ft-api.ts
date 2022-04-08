@@ -39,12 +39,20 @@ export class FTApi {
   }
 
   async getBalance(): Promise<string> {
+    if (!this.account.accountId) {
+      return '0';
+    }
+
     const res = await this.contract.ft_balance_of({ account_id: this.account.accountId });
 
     return res;
   }
 
   async getIsRegistered(): Promise<boolean> {
+    if (!this.account.accountId) {
+      return false;
+    }
+
     const res = await this.contract.storage_balance_of({ account_id: this.account.accountId });
 
     return res && res.total !== '0';

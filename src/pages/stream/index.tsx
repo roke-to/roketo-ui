@@ -3,7 +3,6 @@ import { useParams, Link } from 'react-router-dom';
 import copy from 'clipboard-copy';
 import classNames from 'classnames';
 
-import { useRoketoContext } from 'app/roketo-context';
 import { StreamOverviewCard } from 'features/stream-view/StreamOverviewCard';
 import { useSingleStream } from 'features/roketo-resource';
 import { StreamDashboard } from 'features/stream-view/StreamDashboard';
@@ -49,7 +48,6 @@ function StreamCopyUrlBlock({ className, link }: { className: string, link: stri
 }
 
 export function StreamPage() {
-  const { auth } = useRoketoContext();
   const params = useParams() as { id: string };
   const streamSWR = useSingleStream(params.id);
 
@@ -72,11 +70,11 @@ export function StreamPage() {
           }}
         />
       }
-      {!pageError && auth.accountId && !maybeStream &&
+      {!pageError && !maybeStream &&
         <div className="py-32 text-center text-gray text-2xl">Loading...</div>
       }
 
-      {auth.accountId && maybeStream &&
+      {maybeStream &&
         <div className="flex flex-col lg:flex-row justify-between">
         <div className="flex flex-col items-center flex-grow">
           <StreamDashboard stream={maybeStream} />

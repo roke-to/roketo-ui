@@ -27,6 +27,10 @@ export class RoketoContractApi {
   }
 
   async getAccount(): Promise<RoketoAccount> {
+    if (!this.account.accountId) {
+      return getEmptyAccount();
+    }
+
     const newAccount = await this.contract.get_account({ account_id: this.account.accountId });
 
     if (newAccount.Err) {
