@@ -15,10 +15,8 @@ export interface Roketo {
 
 export async function initRoketo({
   account,
-  accountId,
 }: {
   account: Account;
-  accountId: string;
 }): Promise<Roketo> {
   const contract = new nearAPI.Contract(account, env.ROKETO_CONTRACT_NAME, {
     viewMethods: [
@@ -43,7 +41,6 @@ export async function initRoketo({
   const api = new RoketoContractApi({
     contract,
     account,
-    accountId,
   });
 
   const roketoUserAccountPromise = api.getAccount();
