@@ -18,16 +18,15 @@ export type RichTokens = {
 }
 
 type InitFRProps = {
-  accountId: string;
   account: Account;
   tokens: RoketoDao['tokens'];
 }
 
-export async function initFT({ accountId, account, tokens }: InitFRProps) {
+export async function initFT({ account, tokens }: InitFRProps) {
   const richRokens: RichTokens = {};
 
   await Promise.all(Object.keys(tokens).map(async (tokenAccountId: string) => {
-    const api = new FTApi(accountId, account, tokenAccountId);
+    const api = new FTApi(account, tokenAccountId);
     const [ meta, balance, isRegistered ] = await Promise.all([
       api.getMetadata(),
       api.getBalance(),

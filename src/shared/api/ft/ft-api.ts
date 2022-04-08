@@ -20,12 +20,9 @@ export class FTApi {
 
   tokenAccountId: string;
 
-  currentUserAccountId: string;
-
   account: Account;
 
-  constructor(accountId: string, account: Account, tokenAccountId: string) {
-    this.currentUserAccountId = accountId;
+  constructor(account: Account, tokenAccountId: string) {
     this.tokenAccountId = tokenAccountId;
     this.account = account;
 
@@ -42,13 +39,13 @@ export class FTApi {
   }
 
   async getBalance(): Promise<string> {
-    const res = await this.contract.ft_balance_of({ account_id: this.currentUserAccountId });
+    const res = await this.contract.ft_balance_of({ account_id: this.account.accountId });
 
     return res;
   }
 
   async getIsRegistered(): Promise<boolean> {
-    const res = await this.contract.storage_balance_of({ account_id: this.currentUserAccountId });
+    const res = await this.contract.storage_balance_of({ account_id: this.account.accountId });
 
     return res && res.total !== '0';
   }

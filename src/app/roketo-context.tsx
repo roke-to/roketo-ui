@@ -43,14 +43,12 @@ export function RoketoContextProvider({
 
       const [roketo, priceOracle] = await Promise.all([
         initRoketo({
-          accountId: auth.accountId,
           account: auth.account,
         }),
         initPriceOracle({account: auth.account}),
       ]);
 
       const tokens = await initFT({
-        accountId: auth.accountId,
         account: auth.account,
         tokens: roketo.dao.tokens,
       });

@@ -8,7 +8,6 @@ import { CreateStreamApiProps, StreamsProps } from './interfaces/roketo-api'
 import { getEmptyAccount } from './helpers';
 
 type NewRoketoApiProps = {
-  accountId: string;
   account: Account;
   contract: RoketoContract;
 }
@@ -18,21 +17,17 @@ export class RoketoContractApi {
 
   account: Account;
 
-  accountId: string;
-
   constructor({
     contract,
     account,
-    accountId,
   }: NewRoketoApiProps) {
     this.contract = contract;
 
     this.account = account;
-    this.accountId = accountId;
   }
 
   async getAccount(): Promise<RoketoAccount> {
-    const newAccount = await this.contract.get_account({ account_id: this.accountId });
+    const newAccount = await this.contract.get_account({ account_id: this.account.accountId });
 
     if (newAccount.Err) {
       return getEmptyAccount();
@@ -42,13 +37,13 @@ export class RoketoContractApi {
   }
 
   async getAccountIncomingStreams({ from, limit }: StreamsProps): Promise<RoketoStream[]> {
-    const res = await this.contract.get_account_incoming_streams({ account_id: this.accountId, from, limit });
+    const res = await this.contract.get_account_incoming_streams({ account_id: this.account.accountId, from, limit });
     
     return res.Ok;
   }
 
   async getAccountOutgoingtreams({ from, limit }: StreamsProps): Promise<RoketoStream[]> {
-    const res = await this.contract.get_account_outgoing_streams({ account_id: this.accountId, from, limit });
+    const res = await this.contract.get_account_outgoing_streams({ account_id: this.account.accountId, from, limit });
 
     return res.Ok;
   }
@@ -85,7 +80,7 @@ export class RoketoContractApi {
     const transferPayload = {
       description,
       balance: deposit,
-      owner_id: this.accountId,
+      owner_id: this.account.accountId,
       receiver_id: receiverId,
       token_name: tokenAccountId,
       tokens_per_sec: BigInt(tokensPerSec),
