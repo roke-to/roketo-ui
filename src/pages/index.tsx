@@ -12,12 +12,12 @@ import { useRoketoContext } from 'app/roketo-context';
 
 import { env } from 'shared/config';
 import { routes } from 'shared/helpers/routing';
-import { useHello } from 'shared/api/roketo-web';
 import { SendPage } from './send';
 import { StreamsPage } from './streams';
 import { AccountPage } from './account';
 import { AuthorizePage } from './authorize';
 import { StreamPage } from './stream';
+import { ProfilePage } from './profile';
 
 export function Routing() {
   useEffect(() => {
@@ -32,9 +32,6 @@ export function Routing() {
   });
 
   const { auth } = useRoketoContext();
-
-  const hello = useHello();
-  console.log(hello.data?.data);
 
   return (
     <Router basename={env.PUBLIC_URL}>
@@ -79,6 +76,14 @@ export function Routing() {
           path={routes.streams}
         >
           <StreamsPage />
+        </PrivateRoute>
+        <PrivateRoute
+          exact
+          redirect={<Redirect to={routes.authorize} />}
+          allowed={auth.signedIn}
+          path={routes.profile}
+        >
+          <ProfilePage />
         </PrivateRoute>
       </Switch>
     </Router>
