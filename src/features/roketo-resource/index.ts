@@ -29,11 +29,11 @@ export function useStreams() {
 }
 
 export function useSingleStream(streamId: string) {
-  const { auth, roketo } = useRoketoContext();
+  const { roketo } = useRoketoContext();
 
   const swr = useSWR<RoketoStream>(
     () => {
-      const key = auth.accountId
+      const key = roketo.account
         ? ['stream', streamId, roketo.account.last_created_stream]
         : false;
       return key;

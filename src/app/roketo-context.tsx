@@ -29,17 +29,6 @@ export function RoketoContextProvider({
       const near = await createNearInstance();
       const walletConnection = new WalletConnection(near, env.ROKETO_CONTRACT_NAME);
       const auth = await getNearAuth(walletConnection);
-      
-      if (!auth.signedIn) {
-        // @ts-ignore
-        setContext({
-          near,
-          walletConnection,
-          auth
-        });
-
-        return;
-      }
 
       const [roketo, priceOracle] = await Promise.all([
         initRoketo({
