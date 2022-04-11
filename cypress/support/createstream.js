@@ -1,8 +1,7 @@
-/// <reference types="cypress" />
 import CreateStream from './pages/CreateStream';
 import Transaction from './pages/TransactionPage';
 import MyStreams from './pages/MyStreams';
-import { relogin } from './relogin';
+// import { relogin } from './relogin';
 
 export function createstream(testParams) {
     //relogin();

@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 import SignInPage from '../../support/pages/Login';
 import HomePage from '../../support/pages/HomePage';
 context('Viewport', () => {

@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 import SignInPage from './pages/Login';
 import HomePage from './pages/HomePage';
 

@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 import CreateStream from '../../support/pages/CreateStream';
 import Transaction from '../../support/pages/TransactionPage';
 import MyStreams from '../../support/pages/MyStreams';

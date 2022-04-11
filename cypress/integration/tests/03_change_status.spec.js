@@ -1,11 +1,13 @@
 import { createstream } from '../../support/createstream';
-
 import MyStreams from '../../support/pages/MyStreams';
 import Transaction from '../../support/pages/TransactionPage';
-import { createstream } from '../../support/createstream';
 import { login } from '../../support/login';
 import { relogin } from '../../support/relogin';
-
+context('Viewport', () => {
+    beforeEach(() => {
+        cy.visit('https://test.app-v2.roke.to/#/authorize')
+      }
+)
 it('run stream', () => {
     login();
     createstream();
@@ -38,4 +40,6 @@ it('stop stream', () => {
     cy.wait(5000);
     const  transaction = new Transaction();
     transaction.approve();
+})
+
 })
