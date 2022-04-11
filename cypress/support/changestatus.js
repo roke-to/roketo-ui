@@ -1,4 +1,5 @@
 import MyStreams from './pages/MyStreams';
+import Transaction from './pages/TransactionPage';
 
 export function changestatus(testParams) {
     const mystreams = new MyStreams();
