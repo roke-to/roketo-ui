@@ -27,7 +27,7 @@ it('Create a stream without Autostart', () => {
 
 it('Create a stream with Autostart', () => {
 
-    login();
+    relogin();
     cy.wait(3000);
     const stream = new CreateStream();
     stream.inputReciever('delusion.testnet');
