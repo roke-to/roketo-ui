@@ -18,6 +18,10 @@ export function isDead(stream?: RoketoStream) {
 }
 
 export function getAvailableToWithdraw(stream: RoketoStream): BigNumber {
+  if (isIdling(stream)) {
+    return new BigNumber(0);
+  }
+
   const nowSec = millisecondsToSeconds(Date.now());
   const lastActionSec = fromNanosecToSec(stream.last_action);
   const period = nowSec - lastActionSec;

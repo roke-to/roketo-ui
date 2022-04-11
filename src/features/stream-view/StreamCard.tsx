@@ -2,16 +2,12 @@ import classNames from 'classnames';
 import React from 'react';
 import copy from 'clipboard-copy';
 import { Link, generatePath } from 'react-router-dom';
-import { formatDuration, intervalToDuration } from 'date-fns';
 
 import { TokenImage } from 'shared/kit/TokenImage';
 import { ProgressBar } from 'shared/kit/ProgressBar';
 import { Button } from 'shared/kit/Button';
 import { getStreamLink, routes } from 'shared/helpers/routing';
 import { LinkIcon } from 'shared/icons/Link';
-import { shortEnLocale } from 'shared/helpers/date';
-import { isIdling } from 'shared/api/roketo/helpers';
-import { DurationTimer } from 'shared/components/DurationTimer';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { useToken } from 'shared/hooks/useToken';
 import { useGetStreamDirection, STREAM_DIRECTION } from 'shared/hooks/useGetStreamDirection';
@@ -31,22 +27,13 @@ export function StreamCard({ stream, className }: StreamCardProps) {
   const direction = useGetStreamDirection(stream);
 
   const {
-    dateEnd,
     progresses,
-    timestampEnd,
     percentages,
+    timeLeft,
     progress: { full, withdrawn, streamed },
   } = streamViewData(stream);
 
   const link = getStreamLink(stream.id);
-
-  const duration = intervalToDuration({
-    start: new Date(),
-    end: dateEnd,
-  });
-  const timeLeft = formatDuration(duration, {
-    locale: shortEnLocale,
-  });
 
   return (
     <div
@@ -76,14 +63,7 @@ export function StreamCard({ stream, className }: StreamCardProps) {
             <StreamingSpeed stream={stream} />
 
             <div className="whitespace-nowrap">
-              {isIdling(stream) ? (
-                timeLeft
-              ) : (
-                <DurationTimer
-                  untilTimestamp={timestampEnd}
-                  suffix=" remaining"
-                />
-              )}
+              {timeLeft && `${timeLeft} remaining`}
             </div>
           </div>
         </div>
