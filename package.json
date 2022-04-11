@@ -57,5 +57,8 @@
     "test": "craco test",
     "eslint": "eslint -c .eslintrc src --ext .js,.jsx,.ts,.tsx",
     "deploy": "yarn build && gh-pages -d build"
+  },
+  "devDependencies": {
+    "cypress": "^9.5.3"
   }
 }
