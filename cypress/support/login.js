@@ -7,9 +7,8 @@ export function login(testParams) {
     home.checkPage();
     home.goToSignIn();
     cy.wait(6000);
-    //redirect to wallet
     const signPage = new SignInPage(); 
-    signPage.importExistingAccount();
+    signPage.firstImportExistingAccount();
     signPage.recoverAccount();
     signPage.inputPassphrase('spring oxygen valve label drive wreck alert deputy close elbow virus habit');
     cy.wait(15000);

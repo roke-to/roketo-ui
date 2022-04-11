@@ -24,7 +24,7 @@ it('pause stream', () => {
     relogin();
     const mystreams = new MyStreams();
     mystreams.getPage();
-    cy.wait(10000);
+    cy.wait(20000);
     mystreams.changeStatus("pause")
     cy.wait(10000);
     const  transaction = new Transaction();
@@ -37,7 +37,7 @@ it('stop stream', () => {
     relogin();
     const mystreams = new MyStreams();
     mystreams.getPage();
-    cy.wait(10000);
+    cy.wait(20000);
     mystreams.changeStatus("stop");
     cy.wait(5000);
     const  transaction = new Transaction();

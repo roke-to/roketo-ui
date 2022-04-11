@@ -1,9 +1,9 @@
-import { relogin } from '../../support/relogin';
+import { login } from '../../support/login';
 import { createstream } from '../../support/createstream';
 import { changestatus } from '../../support/changestatus';
 
 it('login', ()=>{
-    relogin();
+    login();
 })
 it('create stream', ()=>{
     createstream();
