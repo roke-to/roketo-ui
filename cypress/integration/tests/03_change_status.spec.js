@@ -9,6 +9,8 @@ context('Viewport', () => {
       }
 )
 it('run stream', () => {
+    //try drop previous session
+    cy.wait(10000);
     login();
     createstream();
     const mystreams = new MyStreams();

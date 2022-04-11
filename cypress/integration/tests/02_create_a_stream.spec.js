@@ -8,7 +8,8 @@ context('Viewport', () => {
       }
 )
 it('Create a stream without Autostart', () => {
-
+    //try drop previous session
+    cy.wait(10000);
     login();
     cy.wait(3000);
     const stream = new CreateStream();
