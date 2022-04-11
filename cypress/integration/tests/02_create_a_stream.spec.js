@@ -2,6 +2,7 @@ import CreateStream from '../../support/pages/CreateStream';
 import Transaction from '../../support/pages/TransactionPage';
 import MyStreams from '../../support/pages/MyStreams';
 import { login } from '../../support/login';
+import { relogin } from '../../support/relogin';
 context('Viewport', () => {
     beforeEach(() => {
         cy.visit('https://test.app-v2.roke.to/#/authorize')
@@ -10,7 +11,7 @@ context('Viewport', () => {
 it('Create a stream without Autostart', () => {
     //try drop previous session
     cy.wait(10000);
-    login();
+    relogin();
     cy.wait(3000);
     const stream = new CreateStream();
     stream.inputReciever('delusion.testnet');
@@ -28,7 +29,7 @@ it('Create a stream without Autostart', () => {
 
 it('Create a stream with Autostart', () => {
 
-    relogin();
+    login();
     cy.wait(3000);
     const stream = new CreateStream();
     stream.inputReciever('delusion.testnet');
