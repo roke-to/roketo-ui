@@ -1,10 +1,7 @@
 class MyStreams{
     checkNewStreamStatus(value){
-        if ((value == "start")){
-          cy.get('.text-special-active').eq(0).should("have.text", "Active");
-        }else { //if pause
-            cy.get('.text-special-active').eq(0).should("have.text", "Paused");
-        }
+          cy.get('.text-special-active').eq(0).should("have.text", value);
+
     }
     changeStatus(value){
         cy.get('.text-special-active').eq(0).click();

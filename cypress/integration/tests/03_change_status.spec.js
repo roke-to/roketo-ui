@@ -17,7 +17,7 @@ it('run stream', () => {
     const  transaction = new Transaction();
     transaction.approve();
     cy.wait(10000);
-    mystreams.checkNewStreamStatus('start');
+    mystreams.checkNewStreamStatus('Active');
 })
 it('pause stream', () => {
     cy.wait(20000);

@@ -13,7 +13,7 @@ export function createstream(testParams) {
     stream.inputComments('comment-comment');
     stream.uncheckAutostart();
     stream.submit();
-    const  transaction = new Transaction();
+    const transaction = new Transaction();
     transaction.approve();
     cy.wait(20000);
     const mystreams = new MyStreams();
