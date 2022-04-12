@@ -1451,7 +1451,7 @@
 
 "@roketo/api-client@roke-to/roketo-api-client#v0.0.16":
   version "0.0.16"
-  resolved "git+ssh://git@github.com/roke-to/roketo-api-client.git#06b9eb57df5d833a92596ec3277e4963ed5dedf2"
+  resolved "https://codeload.github.com/roke-to/roketo-api-client/tar.gz/06b9eb57df5d833a92596ec3277e4963ed5dedf2"
   dependencies:
     es6-promise "^4.2.4"
     url-parse "^1.4.3"
