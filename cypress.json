@@ -1,3 +1,11 @@
 {
-    "chromeWebSecurity": false
+    "chromeWebSecurity": false,
+    "defaultCommandTimeout": 50000,
+    "e2e": {
+      "defaultCommandTimeout": 100000,
+      "slowTestThreshold": 50000
+    },
+    "component": {
+      "slowTestThreshold": 1500
+    }
 }
