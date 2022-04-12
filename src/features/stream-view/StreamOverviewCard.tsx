@@ -1,14 +1,13 @@
 import React from 'react';
 import classNames from 'classnames';
-import { format, formatDuration, intervalToDuration } from 'date-fns';
+import { format } from 'date-fns';
 import numbro from 'numbro';
 import copy from 'clipboard-copy';
 import BigNumber from 'bignumber.js';
 
 import { CopyIcon } from 'shared/icons/Copy';
-import { fromNanosecToMilisec, shortEnLocale } from 'shared/helpers/date';
-import { DurationTimer } from 'shared/components/DurationTimer';
-import { isIdling, getEmptyStream } from 'shared/api/roketo/helpers';
+import { fromNanosecToMilisec } from 'shared/helpers/date';
+import { getEmptyStream } from 'shared/api/roketo/helpers';
 import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { useGetStreamDirection, STREAM_DIRECTION } from 'shared/hooks/useGetStreamDirection';
 import { useToken } from 'shared/hooks/useToken';
@@ -52,9 +51,8 @@ export function StreamOverviewCard({
   className
 }: StreamOverviewCardProps) {
   const {
-    dateEnd,
     percentages,
-    timestampEnd,
+    timeLeft,
     progress: {
       full, streamed, left, available,
     },
@@ -65,14 +63,6 @@ export function StreamOverviewCard({
   const commissionPercentage = new BigNumber(roketoMeta.commission_coef.val)
     .shiftedBy(roketoMeta.commission_coef.pow)
     .toNumber();
-
-  const duration = intervalToDuration({
-    start: new Date(),
-    end: dateEnd,
-  });
-  const timeLeft = formatDuration(duration, {
-    locale: shortEnLocale,
-  });
 
   return (
     <div className={classNames('pt-10 p-9 bg-input rounded-3xl', className)}>
@@ -88,14 +78,7 @@ export function StreamOverviewCard({
         )}
 
         <VerticalData label="Time Remaining:" className="w-1/2">
-          {isIdling(stream) ? (
-            timeLeft
-          ) : (
-            <DurationTimer
-              untilTimestamp={timestampEnd}
-              finishedText="Finished"
-            />
-          )}
+          {timeLeft || 'Finished'}
         </VerticalData>
       </div>
       <div className="border-t border-border mt-8 mb-9" />

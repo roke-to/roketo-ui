@@ -1,13 +1,38 @@
-import React from 'react';
-import { addSeconds } from 'date-fns';
+import { useEffect, useState } from 'react';
 import BigNumber from 'bignumber.js';
-import useSWR from 'swr';
+import useSWR, { SWRResponse } from 'swr';
+import { formatDuration, intervalToDuration } from 'date-fns';
 
 import { getAvailableToWithdraw, isDead } from 'shared/api/roketo/helpers';
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import { useRoketoContext } from 'app/roketo-context';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { SECONDS_IN_YEAR } from 'shared/constants';
+import { shortEnLocale } from 'shared/helpers/date';
+
+function useExtrapolation({ swr, revalidationPeriod, isEnabled = true }: {
+  swr: SWRResponse,
+  revalidationPeriod: number,
+  isEnabled?: boolean,
+}) {
+  const [secondsTillRevalidation, setSecondsTillRevalidation] = useState(revalidationPeriod);
+
+  useEffect(() => {
+    if (!isEnabled) {
+      return;
+    }
+
+    const id = setTimeout(() => {
+      if (secondsTillRevalidation <= 0) {
+        setSecondsTillRevalidation(revalidationPeriod);
+        swr.mutate();
+      } else {
+        setSecondsTillRevalidation((secondsLeft) => secondsLeft - 1);
+      }
+    }, 1000);
+    return () => clearTimeout(id);
+  }, [swr, secondsTillRevalidation, revalidationPeriod, isEnabled]);
+}
 
 export function useStreams() {
   const { auth, roketo } = useRoketoContext();
@@ -24,6 +49,8 @@ export function useStreams() {
       };
     },
   );
+
+  useExtrapolation({ swr, revalidationPeriod: 30 });
 
   return swr;
 }
@@ -49,20 +76,7 @@ export function useSingleStream(streamId: string) {
     },
   );
 
-  const stream = swr.data;
-
-  const isCompleted = isDead(stream);
-
-  React.useEffect(() => {
-    const startPoller = () => setInterval(swr.mutate, 1000);
-
-    if (stream?.status === STREAM_STATUS.Active && !isCompleted) {
-      const id = startPoller();
-      return () => clearInterval(id);
-    }
-
-    return undefined;
-  }, [stream?.status, isCompleted, swr]);
+  useExtrapolation({ swr, revalidationPeriod: 10, isEnabled: swr.data?.status === STREAM_STATUS.Active });
 
   return swr;
 }
@@ -78,11 +92,17 @@ export function streamViewData(stream: RoketoStream) {
       .minus(availableToWithdraw)
       .dividedBy(stream.tokens_per_sec)
       .toFixed()
-  )
+  ).toNumber();
 
-  const timestampEnd = addSeconds(new Date(), Number(secondsLeft)).getTime();
-  const dateEnd = new Date(timestampEnd);
-  
+
+  const duration = intervalToDuration({ start: 0, end: secondsLeft * 1000 });
+
+  if (duration.days || duration.weeks || duration.months || duration.years) {
+    duration.seconds = 0;
+  }
+
+  const timeLeft = formatDuration(duration, { locale: shortEnLocale });
+
   // progress bar calculations
   const full = new BigNumber(stream.balance).plus(stream.tokens_total_withdrawn);
   const withdrawn = new BigNumber(stream.tokens_total_withdrawn);
@@ -102,11 +122,10 @@ export function streamViewData(stream: RoketoStream) {
   };
 
   return {
-    dateEnd,
     progresses,
     isDead: isDead(stream),
     percentages,
-    timestampEnd,
+    timeLeft,
     progress: {
       full: full.toFixed(),
       withdrawn: withdrawn.toFixed(),

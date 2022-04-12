@@ -85,15 +85,13 @@ export function StreamsPage() {
         </h3>
       }
 
-      {filteredItems?.length !== 0 &&
-        filteredItems?.map((stream: any) => (
-          <StreamCard
-            key={stream.id}
-            stream={stream}
-            className="mb-4"
-          />
-        ))
-      }
+      {filteredItems?.map((stream: RoketoStream) => (
+        <StreamCard
+          key={stream.id}
+          stream={stream}
+          className="mb-4"
+        />
+      ))}
     </div>
   );
 }
