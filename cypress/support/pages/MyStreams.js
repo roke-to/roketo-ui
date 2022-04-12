@@ -4,7 +4,7 @@ class MyStreams{
 
     }
     changeStatus(value){
-        cy.get('.text-special-active').eq(0).click();
+        //cy.get('.text-special-active').eq(0).click();
         if ((value == "start")||(value == "pause")){
             cy.get('.px-5:nth-child(1) > .inline-flex > span').eq(0).click({force: true});
         } else { //if stop
