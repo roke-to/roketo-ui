@@ -11,7 +11,7 @@ context('Viewport', () => {
 it('run stream', () => {
     //try drop previous session
     cy.wait(10000);
-    login();
+    relogin();
     createstream();
     const mystreams = new MyStreams();
     mystreams.changeStatus("start")
