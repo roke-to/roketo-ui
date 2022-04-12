@@ -13,7 +13,6 @@ export type RichTokens = {
     formatter: TokenFormatter;
     meta: TokenMetadata;
     balance: string;
-    isRegistered: boolean;
   }
 }
 
@@ -27,10 +26,9 @@ export async function initFT({ account, tokens }: InitFRProps) {
 
   await Promise.all(Object.keys(tokens).map(async (tokenAccountId: string) => {
     const api = new FTApi(account, tokenAccountId);
-    const [ meta, balance, isRegistered ] = await Promise.all([
+    const [ meta, balance ] = await Promise.all([
       api.getMetadata(),
       api.getBalance(),
-      api.getIsRegistered()
     ])
     const formatter = new TokenFormatter(meta.decimals);
 
@@ -39,8 +37,7 @@ export async function initFT({ account, tokens }: InitFRProps) {
       formatter,
       roketoMeta: tokens[tokenAccountId],
       meta,
-      balance,
-      isRegistered
+      balance
     };
   }));
 
