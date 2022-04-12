@@ -29,12 +29,12 @@ it('Create a stream without Autostart', () => {
 
 it('Create a stream with Autostart', () => {
 
-    login();
+    relogin();
     cy.wait(3000);
     const stream = new CreateStream();
     stream.inputReciever('delusion.testnet');
-    stream.inputDeposit('10');
-    stream.inputPeriod('10', '10', '10', '10');
+    stream.inputDeposit('1');
+    stream.inputPeriod('1000', '10', '10', '10');
     stream.inputComments('comment-comment');
     stream.submit();
     const  transaction = new Transaction();
