@@ -13,8 +13,7 @@ class MyStreams{
 
     }
     getPage(){
-        cy.visit('https://test.app-v2.roke.to/#/authorize');
-        //cy.visit('http://localhost:3001/#/streams');
+        cy.visit('https://test.app-v2.roke.to/#/streams');
     }
 }
 
