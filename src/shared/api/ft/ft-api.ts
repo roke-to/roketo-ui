@@ -50,17 +50,13 @@ export class FTApi {
   }
 
   async getIsRegistered(accountId: string): Promise<boolean> {
-    if (!this.account.accountId) {
-      return false;
-    }
-
     const res = await this.contract.storage_balance_of({ account_id: accountId });
 
     return res && res.total !== '0';
   }
 
   transfer = async (payload: RoketoCreateRequest, amount: string, callbackUrl?: string) => {
-    const [ isRegisteredSender, isRegisteredReciever ] = await Promise.all([
+    const [ isRegisteredSender, isRegisteredReceiver ] = await Promise.all([
       this.getIsRegistered(payload.owner_id),
       this.getIsRegistered(payload.receiver_id)
     ]);
@@ -112,7 +108,7 @@ export class FTApi {
       )
     }
 
-    if (!isRegisteredReciever) {
+    if (!isRegisteredReceiver) {
       actions.unshift(
         transactions.functionCall(
           "storage_deposit",
