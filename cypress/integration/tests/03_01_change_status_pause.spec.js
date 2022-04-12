@@ -8,19 +8,19 @@ context('Viewport', () => {
         cy.visit('https://test.app-v2.roke.to/#/authorize')
       }
 )
-it('pause stream', () => {
-    cy.wait(20000);
-    relogin();
-    const mystreams = new MyStreams();
-    mystreams.getPage();
-    cy.wait(20000);
-    mystreams.changeStatus("pause")
-    cy.wait(10000);
-    const  transaction = new Transaction();
-    transaction.approve();
-    cy.wait(10000);
-    mystreams.checkNewStreamStatus('Pause');
-})
+// it('pause stream', () => {
+//     cy.wait(20000);
+//     relogin();
+//     const mystreams = new MyStreams();
+//     mystreams.getPage();
+//     cy.wait(20000);
+//     mystreams.changeStatus("pause")
+//     cy.wait(10000);
+//     const  transaction = new Transaction();
+//     transaction.approve();
+//     cy.wait(10000);
+//     mystreams.checkNewStreamStatus('Pause');
+// })
 it('stop stream', () => {
     cy.wait(20000);
     relogin();
