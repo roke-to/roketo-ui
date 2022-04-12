@@ -1,10 +1,8 @@
 import CreateStream from './pages/CreateStream';
 import Transaction from './pages/TransactionPage';
 import MyStreams from './pages/MyStreams';
-// import { relogin } from './relogin';
 
 export function createstream(testParams) {
-    //relogin();
     cy.wait(3000);
     const stream = new CreateStream();
     stream.inputReciever('githubtest4.testnet');

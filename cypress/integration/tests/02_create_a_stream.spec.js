@@ -2,10 +2,8 @@ import CreateStream from '../../support/pages/CreateStream';
 import Transaction from '../../support/pages/TransactionPage';
 import MyStreams from '../../support/pages/MyStreams';
 import { login } from '../../support/login';
-import { relogin } from '../../support/relogin';
 
 it('Create a stream without Autostart', () => {
-    //try drop previous session
     cy.wait(10000);
     login();
     cy.wait(3000);

@@ -1,12 +1,10 @@
-import { createstream } from '../../support/createstream';
 import MyStreams from '../../support/pages/MyStreams';
 import Transaction from '../../support/pages/TransactionPage';
 import { login } from '../../support/login';
-import { relogin } from '../../support/relogin';
 
 it('stop stream', () => {
     cy.wait(20000);
-    relogin();
+    login();
     const mystreams = new MyStreams();
     mystreams.getPage();
     cy.wait(20000);
