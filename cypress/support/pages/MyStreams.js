@@ -1,8 +1,15 @@
 class MyStreams{
     checkNewStreamStatus(value){
-          cy.get('.text-special-active').eq(0).should("have.text", value);
-
+          cy.wait(3000);
+          cy.get('.grid').eq(0).then(($grid) => {
+            if (value=="Pause") {
+             cy.get('.text-special-hold').eq(0).should("have.text", value);
+           } else {
+             cy.get('.text-special-active').eq(0).should("have.text", value);
+           }
+           })
     }
+
     changeStatus(value){
         //cy.get('.text-special-active').eq(0).click();
         if ((value == "start")||(value == "pause")){
