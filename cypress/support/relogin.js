@@ -9,7 +9,7 @@ export function relogin() {
     const signPage = new SignInPage(); 
     signPage.relogin();
     signPage.recoverAccount();
-    signPage.inputPassphrase('spring oxygen valve label drive wreck alert deputy close elbow virus habit');
+    signPage.inputPassphrase('decrease april mistake inch lizard riot detail curious invite tip remain fan');
     cy.wait(15000);
     signPage.pressNext();
     cy.wait(6000);
