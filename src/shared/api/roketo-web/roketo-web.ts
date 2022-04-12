@@ -7,7 +7,7 @@ import { useRoketoContext } from 'app/roketo-context';
 import { env } from 'shared/config';
 import { createNearInstance } from '../near';
 
-const serverConfig = process.env.NODE_ENV !== 'production' ? { baseServer: new client.ServerConfiguration('http://localhost:3000', {}) } : {};
+const serverConfig = { baseServer: new client.ServerConfiguration(env.WEB_API_URL, {}) };
 
 class TokenProvider {
   private initialized: boolean = false;
