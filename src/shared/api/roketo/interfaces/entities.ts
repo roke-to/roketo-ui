@@ -10,10 +10,10 @@ type SafeFloat = { val: number, pow: number };
 type NanosecondsTimestamp = string;
 
 export type StreamStatus =
-  | "Initialized" // stream has been created, but not started, happens if "auto-start" is set to false when stream created
-  | "Active"      // stream is all set and money is flowing
-  | "Paused"      // stream has been set to pause, it may be started again any time
-  | "Finished";   // stream has streamed all it's balance and account has been updated.
+  | "Initialized"          // stream has been created, but not started, happens if "auto-start" is set to false when stream created
+  | "Active"               // stream is all set and money is flowing
+  | "Paused"               // stream has been set to pause, it may be started again any time
+  | { Finished: string }   // stream has streamed all it's balance and account has been updated.
 
 export type RoketoStream = {
   amount_to_push: StringInt;

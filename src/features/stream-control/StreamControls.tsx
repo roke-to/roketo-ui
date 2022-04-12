@@ -13,6 +13,7 @@ import { useRoketoContext } from 'app/roketo-context';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
+import { isDead } from 'shared/api/roketo/helpers';
 import { StreamStatus } from './StreamStatus';
 
 type PauseConfirmModalProps = {
@@ -64,8 +65,6 @@ export function StreamControls({ stream, minimal = false, className }: StreamCon
   const isIncoming = auth.accountId === stream.receiver_id;
   const isExternalStream = !isOutgoing && !isIncoming;
 
-  const isDead = stream.status === STREAM_STATUS.Finished;
-
   const handlePause = async () => {
     setLoading(true);
     await roketo.api.pauseStream({ streamId: stream.id });
@@ -84,7 +83,7 @@ export function StreamControls({ stream, minimal = false, className }: StreamCon
     setLoading(false);
   }
 
-  if (isDead || isExternalStream) {
+  if (isDead(stream) || isExternalStream) {
     return (
       <StreamStatus
         className={classNames(
