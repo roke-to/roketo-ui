@@ -3,6 +3,7 @@ import React from 'react';
 import { useRoketoContext } from 'app/roketo-context';
 import { Button } from 'shared/kit/Button';
 import { useUser } from 'shared/api/roketo-web';
+import { env } from 'shared/config';
 
 type NearAuthButtonProps = {
   variant?: string;
@@ -26,7 +27,7 @@ export function NearAuthButton({ variant, className }: NearAuthButtonProps) {
     <Button type="button" onClick={logout} variant={variant} className={className}>
       Sign out (
       {name || accountId}
-      <img src={`http://localhost:3000/users/${accountId}/avatar?email=${email}`} style={{ width: 32, height: 32, borderRadius: 16, margin: '0 2px 0 5px' }} alt="" />
+      <img src={`${env.WEB_API_URL}/users/${accountId}/avatar?email=${email}`} style={{ width: 32, height: 32, borderRadius: 16, margin: '0 2px 0 5px' }} alt="" />
       )
     </Button>
   ) : (

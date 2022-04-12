@@ -8,6 +8,7 @@ type EnvType = {
   PRICE_ORACLE_CONTRACT_NAME: string,
   PRICE_ORACLE_SOURCE_ID: string,
   WNEAR_ID: string;
+  WEB_API_URL: string;
 }
 
 export const env = {
@@ -20,6 +21,7 @@ export const env = {
   PRICE_ORACLE_CONTRACT_NAME: process.env.REACT_APP_PRICE_ORACLE_CONTRACT_NAME,
   PRICE_ORACLE_SOURCE_ID: process.env.REACT_APP_PRICE_ORACLE_SOURCE_ID,
   WNEAR_ID: process.env.REACT_APP_WNEAR_ID,
+  WEB_API_URL: process.env.REACT_APP_WEB_API_URL,
 } as EnvType;
 
 export const GAS_SIZE = "200000000000000";
