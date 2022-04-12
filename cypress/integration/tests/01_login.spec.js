@@ -1,5 +1,6 @@
 import SignInPage from '../../support/pages/Login';
 import HomePage from '../../support/pages/HomePage';
+
 context('Viewport', () => {
     beforeEach(() => {
         cy.visit('https://test.app-v2.roke.to/#/authorize')
@@ -14,9 +15,9 @@ it('login with Pass phrase', () => {
     cy.wait(6000);
     //redirect to wallet
     const signPage = new SignInPage(); 
-    signPage.firstImportExistingAccount();
+    signPage.importExistingAccount();
     signPage.recoverAccount();
-    signPage.inputPassphrase('decrease april mistake inch lizard riot detail curious invite tip remain fan');
+    signPage.inputPassphrase('winner scrub fan text ramp wage volcano old quiz key crucial oil');
     cy.wait(15000);
     signPage.pressNext();
     cy.wait(6000);

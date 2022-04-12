@@ -15,6 +15,10 @@ class MyStreams{
     getPage(){
         cy.visit('https://test.app-v2.roke.to/#/streams');
     }
+
+    withdraw(){
+        cy.get('.Button--main').click();
+    }
 }
 
 export default MyStreams;

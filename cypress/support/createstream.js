@@ -7,7 +7,7 @@ export function createstream(testParams) {
     //relogin();
     cy.wait(3000);
     const stream = new CreateStream();
-    stream.inputReciever('delusion.testnet');
+    stream.inputReciever('githubtest4.testnet');
     stream.inputDeposit('1');
     stream.inputPeriod('1000', '10', '10', '10');
     stream.inputComments('comment-comment');
