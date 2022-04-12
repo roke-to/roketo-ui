@@ -11,7 +11,7 @@ export function login(testParams) {
     signPage.importExistingAccount();
     signPage.recoverAccount();
     signPage.inputPassphrase('winner scrub fan text ramp wage volcano old quiz key crucial oil');
-    cy.wait(15000);
+    cy.wait(20000);
     signPage.pressNext();
     cy.wait(6000);
     signPage.pressNext();
