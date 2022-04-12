@@ -2,9 +2,10 @@ import { Account, Contract, utils, transactions } from 'near-api-js';
 import BigNumber from 'bignumber.js';
 import JSONbig from 'json-bigint';
 
-import { env, GAS_SIZE } from 'shared/config';
+import { env } from 'shared/config';
 
 import { TokenMetadata } from './types';
+import { RoketoCreateRequest } from '../roketo/interfaces/entities';
 
 type FTContract = Contract & {
   ft_balance_of: (options: { account_id: string }) => Promise<string>;
@@ -48,34 +49,21 @@ export class FTApi {
     return res;
   }
 
-  async getIsRegistered(): Promise<boolean> {
+  async getIsRegistered(accountId: string): Promise<boolean> {
     if (!this.account.accountId) {
       return false;
     }
 
-    const res = await this.contract.storage_balance_of({ account_id: this.account.accountId });
+    const res = await this.contract.storage_balance_of({ account_id: accountId });
 
     return res && res.total !== '0';
   }
 
-  async nearDeposit(deposit: string): Promise<void> {
-    const res = await this.contract.near_deposit({}, GAS_SIZE, deposit);
-
-    return res;
-  }
-  
-  async storageDeposit(): Promise<void> {
-    const res = await this.contract.storage_deposit(
-      {},
-      GAS_SIZE,
-      utils.format.parseNearAmount('0.00125') // account creation costs 0.00125 NEAR for storage
-    );
-  
-    return res;
-  }
-
-  transfer = async (payload: any, amount: string, callbackUrl?: string) => {
-    const isRegistered = await this.getIsRegistered();
+  transfer = async (payload: RoketoCreateRequest, amount: string, callbackUrl?: string) => {
+    const [ isRegisteredSender, isRegisteredReciever ] = await Promise.all([
+      this.getIsRegistered(payload.owner_id),
+      this.getIsRegistered(payload.receiver_id)
+    ]);
 
     const actions = [
       transactions.functionCall(
@@ -113,11 +101,22 @@ export class FTApi {
       )
     ];
 
-    if (!isRegistered) {
+    if (!isRegisteredSender) {
       actions.unshift(
         transactions.functionCall(
           "storage_deposit",
-          {},
+          { account_id: payload.owner_id },
+          '30000000000000',
+          utils.format.parseNearAmount('0.00125') // account creation costs 0.00125 NEAR for storage
+        )
+      )
+    }
+
+    if (!isRegisteredReciever) {
+      actions.unshift(
+        transactions.functionCall(
+          "storage_deposit",
+          { account_id: payload.receiver_id },
           '30000000000000',
           utils.format.parseNearAmount('0.00125') // account creation costs 0.00125 NEAR for storage
         )

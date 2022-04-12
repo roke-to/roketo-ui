@@ -6,9 +6,6 @@ type AccountId = string;
 
 type SafeFloat = { val: number, pow: number };
 
-// Divide it by 1e6 to receive JS milliseconds timestamp
-type NanosecondsTimestamp = string;
-
 export type StreamStatus =
   | "Initialized" // stream has been created, but not started, happens if "auto-start" is set to false when stream created
   | "Active"      // stream is all set and money is flowing
@@ -101,54 +98,14 @@ export type RoketoStats = {
   total_streams_unlisted: number
 };
 
-// old
-
-/**
- * `account_id` - FT token address, empty string for NEAR
- * `is_active` - true if token is working fine
- * `commission_on_create` - Commission in token used to create stream
- * `commission_percentage` - Charged on withdraw
- */
-export type RoketoTokenStatus = {
-  name: string;
-  ticker: string;
-  account_id: string;
-  is_active: boolean;
-  commission_on_create: StringInt;
-  commission_percentage: number;
-  total_commission: string;
-};
-
-/**
- * `dao_id` - Contract id of Roketo DAO
- * `num_tokens_listed` - Amount of whitelisted tokens
- * `operational_commission` - Commission for operation in NEAR. Required as deposit for those methods: `updateAccount`, `pauseStream`, `startStream`, `stopStream`
- * `tokens` - data for specific token
- */
-export type RoketoStatus = {
-  dao_id: string;
-  num_tokens_listed: number;
-  operational_commission: StringInt;
-  tokens: RoketoTokenStatus[];
-};
-
-type StreamActionType =
-  | "Init"
-  | "Deposit"
-  | "Start"
-  | "Withdraw"
-  | "Pause"
-  | "Stop";
-
-/**
- * `actor` - Account id who triggered action
- * `amount` - Int for `Deposit` action, `null` for others
- * `commission_on_withdraw` - Int for `Withdraw` action, `null` for others
- */
-export type StreamAction = {
-  actor: string;
-  action_type: StreamActionType;
-  amount: StringInt | null;
-  commission_on_withdraw: StringInt | null;
-  timestamp: NanosecondsTimestamp;
-};
+export type RoketoCreateRequest = {
+    description: string;
+    owner_id: string;
+    receiver_id: string;
+    balance: string;
+    tokens_per_sec: BigInt;
+    cliff_period_sec?: string;
+    is_auto_start_enabled?: boolean;
+    is_expirable?: boolean;
+    is_locked?: boolean;
+}

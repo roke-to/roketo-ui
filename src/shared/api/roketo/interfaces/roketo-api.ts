@@ -6,7 +6,6 @@ import {
   RoketoDao
 } from './entities';
 
-
 export type CreateStreamApiProps = {
   description: string;
   deposit: string;

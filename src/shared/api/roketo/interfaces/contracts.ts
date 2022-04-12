@@ -42,19 +42,6 @@ export type RoketoContract = Contract & {
   get_stats: ContractViewFunction<{}, RoketoStats>;
 
   // Change
-  // create_stream: ContractChangeFunction<{
-  //   description: string;
-  //   creator_id: string;
-  //   owner_id: string;
-  //   receiver_id: string;
-  //   token_account_id: string;
-  //   initial_balance: number;
-  //   tokens_per_sec: number;
-  //   cliff_period_sec: string;
-  //   is_auto_start_enabled: boolean;
-  //   is_expirable: boolean;
-  //   is_locked: boolean;
-  // }>;
   withdraw: ContractChangeFunction<{ stream_ids: string[] }>;
   start_stream: ContractChangeFunction<{ stream_id: string }>;
   pause_stream: ContractChangeFunction<{ stream_id: string }>;
