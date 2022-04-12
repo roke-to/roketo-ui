@@ -28,7 +28,9 @@ type StreamStatusProps = {
 };
 
 export function StreamStatus({ stream, className }: StreamStatusProps) {
-  const binding = bindings[stream.status] || {};
+  const binding = typeof stream.status === 'string'
+    ? bindings[stream.status]
+    : bindings[STREAM_STATUS.Finished];
 
   return (
     <div className={classNames(binding.colorClass, className)}>

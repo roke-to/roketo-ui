@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
 import { Filter, FilterOptionWithCounter } from 'shared/kit/Filter';
-import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 import { useStreamFilters } from './useStreamFilters';
@@ -29,16 +28,6 @@ const sorts = {
     fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'timestamp_created'),
   },
 };
-const statusPriority = [
-  STREAM_STATUS.Initialized,
-  STREAM_STATUS.Active,
-  STREAM_STATUS.Paused,
-  STREAM_STATUS.Finished,
-];
-
-function defaultStreamSort(a: RoketoStream, b: RoketoStream) {
-  return statusPriority.indexOf(a.status) - statusPriority.indexOf(b.status);
-}
 
 type StreamFiltersProps = {
   items: RoketoStream[] | undefined;
@@ -62,7 +51,6 @@ export function StreamFilters({ items, onFilterDone, className }: StreamFiltersP
 
     const sortedStreams = [...filteredItems];
 
-    sortedStreams.sort(defaultStreamSort);
     sortedStreams.sort(sorting.fn);
 
     onFilterDone(sortedStreams);

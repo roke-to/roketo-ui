@@ -14,7 +14,7 @@ export function isIdling(stream: RoketoStream) {
 }
 
 export function isDead(stream?: RoketoStream) {
-  return stream?.status === STREAM_STATUS.Finished;
+  return typeof stream?.status === 'object' && STREAM_STATUS.Finished in stream.status;
 }
 
 export function getAvailableToWithdraw(stream: RoketoStream): BigNumber {
