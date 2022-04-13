@@ -8,7 +8,7 @@ export function changestatus(testParams) {
     const  transaction = new Transaction();
     transaction.approve();
     cy.wait(10000);
-    if (testParams!="stop"){
+    if (testParams!=="stop"){
     mystreams.checkNewStreamStatus(testParams);
     }
 }
