@@ -17,7 +17,7 @@ it('login with Pass phrase', () => {
     const signPage = new SignInPage(); 
     signPage.importExistingAccount();
     signPage.recoverAccount();
-    signPage.inputPassphrase('winner scrub fan text ramp wage volcano old quiz key crucial oil');
+    signPage.inputPassphrase('accuse night project february offer fresh belt orbit rather battle zoo amused');
     cy.wait(15000);
     signPage.pressNext();
     cy.wait(6000);
