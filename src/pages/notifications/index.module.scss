@@ -1,0 +1,12 @@
+.unread {
+  position: relative;
+
+  &::after {
+    content: "*";
+    position: absolute;
+    top: -25px;
+    left: -3px;
+    font-size: 50px;
+    color: firebrick;
+  }
+}

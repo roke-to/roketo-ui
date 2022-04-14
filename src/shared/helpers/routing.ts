@@ -6,6 +6,7 @@ export const routes = {
   receive: '/receive',
   stream: '/streams/:id',
   profile: '/profile',
+  notifications: '/notifications',
 };
 
 export function getStreamLink(streamId: string | undefined) {
