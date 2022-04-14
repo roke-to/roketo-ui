@@ -4,12 +4,3 @@ export const STREAM_STATUS = {
   Paused: 'Paused',
   Finished: 'Finished'
 } as const;
-
-export const STREAM_ACTION_TYPE = {
-  INIT: 'Init',
-  DEPOSIT: 'Deposit',
-  START: 'Start',
-  WITHDRAW: 'Withdraw',
-  PAUSE: 'Pause',
-  STOP: 'Stop',
-} as const;

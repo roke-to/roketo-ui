@@ -1,4 +1,4 @@
-export const formatDistanceLocale = {
+const formatDistanceLocale = {
   xYears: '{{count}} years',
   xMonths: '{{count}} months',
   xDays: '{{count}}d',
@@ -12,10 +12,6 @@ type TokenType = keyof typeof formatDistanceLocale;
 export const shortEnLocale = {
   formatDistance: (token: TokenType, count: string) => formatDistanceLocale[token].replace('{{count}}', count),
 };
-
-export function isValidDate(d: Date) {
-  return !Number.isNaN(d.getTime());
-}
 
 export function fromNanosecToSec(value: number | string) {
   return Number(value) / 1000 / 1000 / 1000;

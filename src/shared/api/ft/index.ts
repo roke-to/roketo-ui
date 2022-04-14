@@ -22,7 +22,7 @@ type InitFRProps = {
 }
 
 export async function initFT({ account, tokens }: InitFRProps) {
-  const richRokens: RichTokens = {};
+  const richTokens: RichTokens = {};
 
   await Promise.all(Object.keys(tokens).map(async (tokenAccountId: string) => {
     const api = new FTApi(account, tokenAccountId);
@@ -32,7 +32,7 @@ export async function initFT({ account, tokens }: InitFRProps) {
     ])
     const formatter = new TokenFormatter(meta.decimals);
 
-    richRokens[tokenAccountId] = {
+    richTokens[tokenAccountId] = {
       api,
       formatter,
       roketoMeta: tokens[tokenAccountId],
@@ -41,5 +41,5 @@ export async function initFT({ account, tokens }: InitFRProps) {
     };
   }));
 
-  return richRokens;
+  return richTokens;
 }

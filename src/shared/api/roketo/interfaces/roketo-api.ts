@@ -38,7 +38,7 @@ export interface RoketoApi {
   getAccountIncomingStreams(params: StreamsProps): Promise<RoketoStream[]>;
 
   // Account outgoing streams
-  getAccountOutgoingtreams(params: StreamsProps): Promise<RoketoStream[]>;
+  getAccountOutgoingStreams(params: StreamsProps): Promise<RoketoStream[]>;
 
   // Withdraws funds to user's account
   withdraw({ streamIds }: { streamIds: string[] }): Promise<void>;

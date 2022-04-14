@@ -14,7 +14,7 @@ import { ProfileIcon } from 'shared/icons/Profile';
 function MinifiedHeader() {
   const logo = (
     <div className="flex justify-start items-center">
-      <img src={LogoText} alt="rocketo logo" />
+      <img src={LogoText} alt="roketo logo" />
     </div>
   );
   return (
@@ -76,7 +76,7 @@ function FullHeader() {
 
   const logo = (
     <div className="flex justify-start items-center">
-      <img src={LogoText} alt="rocketo logo" />
+      <img src={LogoText} alt="roketo logo" />
     </div>
   );
 

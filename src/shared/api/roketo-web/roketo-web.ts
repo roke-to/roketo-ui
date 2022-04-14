@@ -109,20 +109,6 @@ const apiConfig = client.createConfiguration({
   authMethods: { bearer: { tokenProvider } }
 });
 
-const defaultApiClient = new client.DefaultApi(apiConfig);
-
-export function useHello(): SWRResponse<client.HelloResponse> {
-  const { auth } = useRoketoContext();
-
-  const swr = useSWR(
-    auth.accountId ? 'hello' : null,
-    () => defaultApiClient.getHello(),
-    { onErrorRetry },
-  );
-
-  return swr;
-}
-
 export const usersApiClient = new client.UsersApi(apiConfig);
 
 export function useUser(): SWRResponse<client.User> {

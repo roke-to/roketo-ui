@@ -41,7 +41,7 @@ export function useStreams() {
     ['streams', auth.accountId, roketo.account.last_created_stream],
     async () => {
       const inputs = await roketo.api.getAccountIncomingStreams({ from: 0, limit: 100 });
-      const outputs = await roketo.api.getAccountOutgoingtreams({ from: 0, limit: 100 });
+      const outputs = await roketo.api.getAccountOutgoingStreams({ from: 0, limit: 100 });
 
       return {
         inputs,
