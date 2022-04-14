@@ -10,6 +10,7 @@ import { routes } from 'shared/helpers/routing';
 import LogoText from 'shared/images/logo_stream_with_text.svg';
 import { useBool } from 'shared/hooks/useBool';
 import { ProfileIcon } from 'shared/icons/Profile';
+import { BellIcon } from 'shared/icons/Bell';
 
 function MinifiedHeader() {
   const logo = (
@@ -69,6 +70,15 @@ function FullHeader() {
           icon={<ProfileIcon />}
         >
           Profile
+        </NavLink>
+      </li>
+      <li className="mb-2 lg:mr-2 lg:mb-0">
+        <NavLink
+          onClick={menuControl.turnOff}
+          to={routes.notifications}
+          icon={<BellIcon />}
+        >
+          Notifications
         </NavLink>
       </li>
     </ul>

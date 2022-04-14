@@ -18,6 +18,7 @@ import { AccountPage } from './account';
 import { AuthorizePage } from './authorize';
 import { StreamPage } from './stream';
 import { ProfilePage } from './profile';
+import { NotificationsPage } from './notifications';
 
 export function Routing() {
   useEffect(() => {
@@ -84,6 +85,14 @@ export function Routing() {
           path={routes.profile}
         >
           <ProfilePage />
+        </PrivateRoute>
+        <PrivateRoute
+          exact
+          redirect={<Redirect to={routes.authorize} />}
+          allowed={auth.signedIn}
+          path={routes.notifications}
+        >
+          <NotificationsPage />
         </PrivateRoute>
       </Switch>
     </Router>

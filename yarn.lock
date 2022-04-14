@@ -1481,9 +1481,9 @@
     schema-utils "^2.6.5"
     source-map "^0.7.3"
 
-"@roketo/api-client@roke-to/roketo-api-client#v0.0.16":
-  version "0.0.16"
-  resolved "https://codeload.github.com/roke-to/roketo-api-client/tar.gz/06b9eb57df5d833a92596ec3277e4963ed5dedf2"
+"@roketo/api-client@roke-to/roketo-api-client#v0.0.17":
+  version "0.0.17"
+  resolved "https://codeload.github.com/roke-to/roketo-api-client/tar.gz/35f9889931e6d0fc5b395c921c1cf548743c6586"
   dependencies:
     es6-promise "^4.2.4"
     url-parse "^1.4.3"

@@ -122,3 +122,17 @@ export function useUser(): SWRResponse<client.User> {
 
   return swr;
 }
+
+export const notificationsApiClient = new client.NotificationsApi(apiConfig);
+
+export function useNotifications(): SWRResponse<client.Notification[]> {
+  const { auth } = useRoketoContext();
+
+  const swr = useSWR(
+    auth.accountId ? 'notifications' : null,
+    () => notificationsApiClient.findAll(),
+    { onErrorRetry },
+  );
+
+  return swr;
+}
