@@ -6,7 +6,7 @@ type AccountId = string;
 
 type SafeFloat = { val: number, pow: number };
 
-export type StreamStatus =
+type StreamStatus =
   | "Initialized"          // stream has been created, but not started, happens if "auto-start" is set to false when stream created
   | "Active"               // stream is all set and money is flowing
   | "Paused"               // stream has been set to pause, it may be started again any time
@@ -31,7 +31,7 @@ export type RoketoStream = {
   tokens_total_withdrawn: StringInt;
 };
 
-type TokenAmmount = {
+type TokenAmount = {
   [tokenAccountId: string]: StringInt;
 }
 
@@ -44,9 +44,9 @@ export type RoketoAccount = {
   is_cron_allowed: boolean; // TODO
   last_created_stream: StreamId;
   stake: StringInt; // TODO
-  total_incoming: TokenAmmount;
-  total_outgoing: TokenAmmount;
-  total_received: TokenAmmount;
+  total_incoming: TokenAmount;
+  total_outgoing: TokenAmount;
+  total_received: TokenAmount;
 };
 
 // Then we list token we keep some information on roketo contract side

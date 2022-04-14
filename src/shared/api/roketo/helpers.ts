@@ -6,7 +6,7 @@ import { fromNanosecToSec } from 'shared/helpers/date';
 import { STREAM_STATUS } from './constants';
 import { RoketoStream, RoketoAccount } from './interfaces/entities';
 
-export function isIdling(stream: RoketoStream) {
+function isIdling(stream: RoketoStream) {
   return (
     stream.status === STREAM_STATUS.Initialized
     || stream.status === STREAM_STATUS.Paused

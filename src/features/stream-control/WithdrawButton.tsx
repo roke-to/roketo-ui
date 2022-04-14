@@ -19,7 +19,7 @@ export function WithdrawButton({ stream }: { stream: RoketoStream}) {
     <Button
       disabled={amount === '0'}
       type="button"
-      loadingText="Withdrow..."
+      loadingText="Withdraw..."
       variant="outlined"
       color="dark"
       onClick={handleWithdraw}

@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { GAS_SIZE } from 'shared/config';
 import { RoketoContract } from './interfaces/contracts';
 import { RoketoAccount, RoketoStream } from './interfaces/entities';
-import { CreateStreamApiProps, StreamsProps } from './interfaces/roketo-api'
+import { CreateStreamApiProps, RoketoApi, StreamsProps } from './interfaces/roketo-api';
 import { getEmptyAccount } from './helpers';
 
 type NewRoketoApiProps = {
@@ -12,7 +12,7 @@ type NewRoketoApiProps = {
   contract: RoketoContract;
 }
 
-export class RoketoContractApi {
+export class RoketoContractApi implements RoketoApi {
   contract: RoketoContract;
 
   account: Account;
@@ -46,7 +46,7 @@ export class RoketoContractApi {
     return res.Ok;
   }
 
-  async getAccountOutgoingtreams({ from, limit }: StreamsProps): Promise<RoketoStream[]> {
+  async getAccountOutgoingStreams({ from, limit }: StreamsProps): Promise<RoketoStream[]> {
     const res = await this.contract.get_account_outgoing_streams({ account_id: this.account.accountId, from, limit });
 
     return res.Ok;
