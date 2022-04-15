@@ -2,11 +2,11 @@ import { Account, Contract, utils, transactions } from 'near-api-js';
 import BigNumber from 'bignumber.js';
 import JSONbig from 'json-bigint';
 
+import { isWNearTokenId } from 'shared/helpers/isWNearTokenId';
 import { env } from 'shared/config';
 
 import { TokenMetadata } from './types';
 import { RoketoCreateRequest } from '../roketo/interfaces/entities';
-import { isWNearTokenId } from 'shared/helpers/isWNearTokenId';
 
 type FTContract = Contract & {
   ft_balance_of: (options: { account_id: string }) => Promise<string>;
