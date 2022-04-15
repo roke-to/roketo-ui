@@ -2,6 +2,7 @@ import { Account, Contract, utils, transactions } from 'near-api-js';
 import BigNumber from 'bignumber.js';
 import JSONbig from 'json-bigint';
 
+import { isWNearTokenId } from 'shared/helpers/isWNearTokenId';
 import { env } from 'shared/config';
 
 import { TokenMetadata } from './types';
@@ -63,13 +64,6 @@ export class FTApi {
 
     const actions = [
       transactions.functionCall(
-        "near_deposit",
-        {},
-        '30000000000000',
-        // we should add 1 for Push purposes
-        new BigNumber(amount).plus('1').toFixed()
-      ),
-      transactions.functionCall(
         'ft_transfer_call',
         {
           receiver_id: env.ROKETO_CONTRACT_NAME,
@@ -116,6 +110,18 @@ export class FTApi {
           '30000000000000',
           utils.format.parseNearAmount('0.00125') // account creation costs 0.00125 NEAR for storage
         )
+      )
+    }
+
+    if(isWNearTokenId(this.tokenAccountId)) {
+      actions.unshift(
+        transactions.functionCall(
+          "near_deposit",
+          {},
+          '30000000000000',
+          // we should add 1 for Push purposes
+          new BigNumber(amount).plus('1').toFixed()
+        ),
       )
     }
 
