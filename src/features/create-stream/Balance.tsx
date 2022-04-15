@@ -6,7 +6,6 @@ export function Balance({ tokenAccountId }: { tokenAccountId: string }) {
   const { auth } = useRoketoContext()
   const { balance, formatter, meta } = useToken(tokenAccountId);
 
-  // tmp: hard code for wNear
   const actualBalance = isWNearTokenId(tokenAccountId)
     ? auth.balance?.available || '0'
     : balance;
