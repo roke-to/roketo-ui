@@ -61,5 +61,9 @@
   },
   "devDependencies": {
     "cypress": "^9.5.3"
+  },
+  "resolutions": {
+    "//": "See https://github.com/facebook/create-react-app/issues/11773#issuecomment-996926736",
+    "react-error-overlay": "6.0.9"
   }
 }
