@@ -8,7 +8,7 @@ import {PriceOracleContract} from './interfaces/contract';
 import {CONTRACT_CHANGE_METHODS_LIST, CONTRACT_VIEW_METHODS_LIST, TOKEN_MULTIPLIER_MAP,} from './constants';
 
 export interface PriceOracle {
-  getPriceInUsd: (tokenId: TokenAccountId, amount: number | string) => string | number,
+  getPriceInUsd: (tokenId: TokenAccountId, amount: number | string) => string,
 }
 
 const convertRawPriceToTokenMap = (
@@ -52,7 +52,7 @@ const convertTokenToUsdFactory = (
   const tokenMultiplier = tokenToMultiplierMap[tokenAccountId];
 
   if (!tokenPrice || !tokenMultiplier) {
-    return 0;
+    return '0';
   }
 
   const {multiplier, decimals} = tokenPrice;

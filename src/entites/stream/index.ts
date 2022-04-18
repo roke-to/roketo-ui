@@ -1,1 +1,2 @@
-export type Stream = {}
+export * as streamLib from './lib';
+export * from './types';

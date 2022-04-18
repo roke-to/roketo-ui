@@ -11,7 +11,8 @@ import { STREAM_STATUS } from 'shared/api/roketo/constants';
 
 import { StreamControls } from 'features/stream-control/StreamControls';
 import { WithdrawButton } from 'features/stream-control/WithdrawButton';
-import { streamViewData } from 'features/roketo-resource';
+
+import {streamLib} from '@app/entites/stream';
 
 import { StreamingSpeed } from './StreamingSpeed';
 import { StreamProgressPercentage } from './StreamProgressPercentage';
@@ -26,7 +27,7 @@ export function StreamDashboard({ stream }: { stream: RoketoStream }) {
     percentages,
     isDead,
     progress: { full, withdrawn, streamed },
-  } = streamViewData(stream);
+  } = streamLib.streamViewData(stream);
 
 
   return (

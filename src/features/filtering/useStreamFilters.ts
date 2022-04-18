@@ -4,7 +4,8 @@ import { useMemo } from 'react';
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
-import { isDead } from 'shared/api/roketo/helpers';
+import {streamLib} from '@app/entites/stream';
+
 import { useFilter, useFilters } from './lib';
 
 const STREAM_TYPE_FILTER = {
@@ -28,7 +29,7 @@ export function useStreamFilters(streams: RoketoStream[] | undefined) {
       [STREAM_STATUS_FILTER.ALL]: () => true,
       [STREAM_STATUS_FILTER[STREAM_STATUS.Active]]: (stream: RoketoStream) => stream.status === STREAM_STATUS.Active,
       [STREAM_STATUS_FILTER[STREAM_STATUS.Paused]]: (stream: RoketoStream) => stream.status === STREAM_STATUS.Paused,
-      [STREAM_STATUS_FILTER[STREAM_STATUS.Finished]]: isDead,
+      [STREAM_STATUS_FILTER[STREAM_STATUS.Finished]]: streamLib.isDead,
     }),
     [],
   );

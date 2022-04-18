@@ -1,14 +1,9 @@
-import { useEffect, useState } from 'react';
-import BigNumber from 'bignumber.js';
-import useSWR, { SWRResponse } from 'swr';
-import { formatDuration, intervalToDuration } from 'date-fns';
+import {useEffect, useState} from 'react';
+import useSWR, {SWRResponse} from 'swr';
 
-import { getAvailableToWithdraw, isDead } from 'shared/api/roketo/helpers';
-import { STREAM_STATUS } from 'shared/api/roketo/constants';
-import { useRoketoContext } from 'app/roketo-context';
-import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
-import { SECONDS_IN_YEAR } from 'shared/constants';
-import { shortEnLocale } from 'shared/helpers/date';
+import {STREAM_STATUS} from 'shared/api/roketo/constants';
+import {useRoketoContext} from 'app/roketo-context';
+import type {RoketoStream} from 'shared/api/roketo/interfaces/entities';
 
 function useExtrapolation({ swr, revalidationPeriod, isEnabled = true }: {
   swr: SWRResponse,
@@ -81,57 +76,3 @@ export function useSingleStream(streamId: string) {
   return swr;
 }
 
-export function streamViewData(stream: RoketoStream) {
-  const MAX_SEC = SECONDS_IN_YEAR * 1000;
-
-  const availableToWithdraw = getAvailableToWithdraw(stream);
-
-  const secondsLeft = BigNumber.minimum(
-    MAX_SEC,
-    new BigNumber(stream.balance)
-      .minus(availableToWithdraw)
-      .dividedBy(stream.tokens_per_sec)
-      .toFixed()
-  ).toNumber();
-
-
-  const duration = intervalToDuration({ start: 0, end: secondsLeft * 1000 });
-
-  if (duration.days || duration.weeks || duration.months || duration.years) {
-    duration.seconds = 0;
-  }
-
-  const timeLeft = formatDuration(duration, { locale: shortEnLocale });
-
-  // progress bar calculations
-  const full = new BigNumber(stream.balance).plus(stream.tokens_total_withdrawn);
-  const withdrawn = new BigNumber(stream.tokens_total_withdrawn);
-  const streamed = withdrawn.plus(availableToWithdraw);
-
-  const left = full.minus(streamed);
-  const progresses = [
-    withdrawn.dividedBy(full).toNumber(),
-    streamed.dividedBy(full).toNumber()
-  ];
-
-  const percentages = {
-    left: full.minus(streamed).dividedBy(full).toNumber(),
-    streamed: streamed.dividedBy(full).toNumber(),
-    withdrawn: withdrawn.dividedBy(full).toNumber(),
-    available: availableToWithdraw.dividedBy(full).toNumber(),
-  };
-
-  return {
-    progresses,
-    isDead: isDead(stream),
-    percentages,
-    timeLeft,
-    progress: {
-      full: full.toFixed(),
-      withdrawn: withdrawn.toFixed(),
-      streamed: streamed.toFixed(),
-      left: left.toFixed(),
-      available: availableToWithdraw.toFixed(),
-    },
-  };
-}

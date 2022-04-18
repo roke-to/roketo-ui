@@ -5,4 +5,31 @@
   background-color: $white;
 
   min-height: 100vh;
+  padding: 28px 0;
 }
+
+.section {
+  margin: 28px 0;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.spaceBetween {
+  justify-content: space-between;
+}
+
+.buttonsWrapper {
+  & > :not(:last-child) {
+    margin-right: 16px;
+  }
+}
+
+.title {
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 40px;
+}
+

@@ -11,9 +11,9 @@ import { StartIcon } from 'shared/icons/Start';
 import { StopIcon } from 'shared/icons/Stop';
 import { useRoketoContext } from 'app/roketo-context';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import {streamLib} from '@app/entites/stream';
 
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
-import { isDead } from 'shared/api/roketo/helpers';
 import { StreamStatus } from './StreamStatus';
 
 type PauseConfirmModalProps = {
@@ -83,7 +83,7 @@ export function StreamControls({ stream, minimal = false, className }: StreamCon
     setLoading(false);
   }
 
-  if (isDead(stream) || isExternalStream) {
+  if (streamLib.isDead(stream) || isExternalStream) {
     return (
       <StreamStatus
         className={classNames(

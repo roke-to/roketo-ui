@@ -1,14 +1,15 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { Button } from 'shared/kit/Button';
+import {Button} from '@app/shared/ui/kit/components/Button';
+
 import { Tooltip } from 'shared/kit/Tooltip';
 import { useRoketoContext } from 'app/roketo-context';
 import { useStreams } from 'features/roketo-resource';
-import { getAvailableToWithdraw } from 'shared/api/roketo/helpers';
 import { TokenImage } from 'shared/kit/TokenImage';
-import { STREAM_STATUS } from 'shared/api/roketo/constants';
-import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+
+import {streamLib} from '@app/entites/stream';
+import {getAvailableToWithdraw} from '@app/entites/stream/lib';
 
 export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
   const { tokens, roketo } = useRoketoContext();
@@ -17,9 +18,7 @@ export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
   const streams = streamsSWR.data;
   const { inputs = [] } = streams || {};
 
-  const activeInputs = inputs.filter((stream: RoketoStream) => 
-    stream.status === STREAM_STATUS.Active
-  );
+  const activeInputs = inputs.filter(streamLib.isActiveStream);
 
   type TmpData = {
     available: BigNumber;
@@ -104,10 +103,6 @@ export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
       )}
     >
       <Button
-        type="button"
-        loadingText="Updating account..."
-        variant="main"
-        size="normal"
         onClick={handleWithdraw}
       >
         {children}

@@ -1,0 +1,25 @@
+@import 'src/shared/ui/kit/palette';
+
+.card {
+  display: flex;
+  flex-direction: column;
+  
+  min-width: 200px;
+
+  & > :not(:last-child) {
+    margin-bottom: 6px;
+  }
+}
+
+.title {
+  color: $bluish-grey;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.finance {
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 36px;
+}
