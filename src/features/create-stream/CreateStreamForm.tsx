@@ -156,7 +156,6 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                     error={meta.error}
                   >
                     <DropdownOpener
-                      minimal
                       className="bg-input text-white focus-within:border-blue hover:border-blue text-xl h-14 px-4 py-3 border border-border w-36"
                       onChange={setIsDropdownOpened}
                     >
