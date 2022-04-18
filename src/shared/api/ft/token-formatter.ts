@@ -65,6 +65,17 @@ export class TokenFormatter {
       .format({ mantissa: 0 });
   }
 
+  toHumanReadableValue(amount: number | string, decimals: number = 0): string {
+    return numbro(amount)
+      .divide(this.MP)
+      .format({
+        mantissa: decimals,
+        trimMantissa: true,
+        optionalMantissa: true,
+        average: true,
+      });
+  }
+
   // tries to find the best interval for display
   // to avoid 0.0000000000000000000000000009839248 tokens per sec
   tokensPerMeaningfulPeriod(tokensPerSec: number | string) {

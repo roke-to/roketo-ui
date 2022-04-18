@@ -13,8 +13,11 @@ export function WithdrawButton({ stream }: { stream: RoketoStream}) {
   const { formatter, meta: { symbol } } = tokens[tokenAccountId];
   const amount = formatter.amount(available.toFixed());
 
-  const handleWithdraw = () => 
-    roketo.api.withdraw({ streamIds: [ stream.id ] })
+  const handleWithdraw = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+
+    roketo.api.withdraw({ streamIds: [ stream.id ] });
+  }
 
   return (
     <Button

@@ -1,0 +1,35 @@
+@import 'src/shared/ui/kit/palette';
+
+.root {
+  padding: 16px 22px;
+  border-top: 1px solid $light-grey;
+
+  &:hover {
+    background-color: #FBFCFF;
+
+    .controls {
+      visibility: visible;
+    }
+  }
+}
+
+.flexCenter {
+  display: flex;
+  align-items: center;
+}
+
+.description {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+
+  // TODO: move to UI-kit mixins
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.controls {
+  visibility: hidden;
+}

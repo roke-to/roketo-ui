@@ -1,0 +1,23 @@
+@import 'src/shared/ui/kit/palette';
+
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+.progressBar {
+  width: 70%;
+}
+
+.status {
+  font-size: 14px;
+  line-height: 20px;
+
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.symbol {
+  font-weight: 600;
+  color: $grey;
+}
