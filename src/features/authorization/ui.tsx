@@ -3,7 +3,7 @@ import React from 'react';
 import {useRoketoContext} from 'app/roketo-context';
 import {useUser} from 'shared/api/roketo-web';
 
-import {LogoutIcon} from '@uikit/icons/LogOut';
+import {LogoutIcon} from '@ui/icons/LogOut';
 
 import {env} from 'shared/config';
 

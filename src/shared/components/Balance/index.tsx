@@ -8,7 +8,7 @@ const CRYPTO_MODE = 'crypto'
 type BalanceProps = {
   tokenAccountId: string,
   className?: string,
-  // Отображать баланс в долларовом эквиваленте или в криптовалюте
+  // Display balance in USD or in Crypto currency
   mode?: 'usd' | 'crypto',
 }
 

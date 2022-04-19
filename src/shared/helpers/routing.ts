@@ -30,7 +30,6 @@ export const ROUTES_MAP = {
   },
   stream: {
     path: '/streams/:id',
-    // todo: (id) => `Stream ${id}`
     title: 'Stream'
   },
   profile: {

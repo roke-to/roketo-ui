@@ -3,9 +3,9 @@ import React from 'react';
 import {env} from 'shared/config';
 import {TimePeriod} from 'shared/constants';
 
-import {WalletIcon} from '@uikit/icons/Wallet';
-import {IncomeIcon} from '@uikit/icons/Income';
-import {OutcomeIcon} from '@uikit/icons/Outcome';
+import {WalletIcon} from '@ui/icons/Wallet';
+import {IncomeIcon} from '@ui/icons/Income';
+import {OutcomeIcon} from '@ui/icons/Outcome';
 import {Balance} from 'shared/components/Balance';
 
 import {TokenAmountSpeed} from '../TokenAmountSpeed';

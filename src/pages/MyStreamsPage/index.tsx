@@ -3,8 +3,8 @@ import cn from 'classnames';
 
 import {ROUTES_MAP} from 'shared/helpers/routing';
 
-import {Layout} from '@uikit/components/Layout';
-import {Button} from 'shared/ui/kit/components/Button';
+import {Layout} from '@ui/components/Layout';
+import {Button} from 'shared/ui/components/Button';
 
 import {WithdrawAllButton} from 'features/stream-control/WithdrawAllButton';
 import {FinancialStatus} from 'widgets/financialStatus';

@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "paths": {
-      "@uikit/*": ["./shared/ui/kit/*"],
+      "@ui/*": ["./shared/ui/*"],
     }
   }
 }

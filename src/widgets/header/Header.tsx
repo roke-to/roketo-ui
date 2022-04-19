@@ -1,7 +1,7 @@
 import React from 'react';
 
-import {DarkLogo} from '@uikit/icons/Logo';
-import {Layout} from '@uikit/components/Layout';
+import {DarkLogo} from '@ui/icons/Logo';
+import {Layout} from '@ui/components/Layout';
 import {Authorization} from 'features/authorization';
 
 import {ROUTES_MAP} from 'shared/helpers/routing';
