@@ -8,7 +8,6 @@ module.exports = {
   },
   webpack: {
     alias: {
-      '@app': path.join(path.resolve(__dirname, "./src")),
       '@uikit': path.join(path.resolve(__dirname, "./src/shared/ui/kit")),
     },
   },

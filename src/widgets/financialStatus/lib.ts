@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js';
 
-import {Stream, streamLib} from '@app/entites/stream';
-import {RichTokens} from '@app/shared/api/ft';
-import {PriceOracle} from '@app/shared/api/price-oracle';
+import {Stream, streamLib} from 'entites/stream';
+import {RichTokens} from 'shared/api/ft';
+import {PriceOracle} from 'shared/api/price-oracle';
 
 const INITIAL_VALUE = new BigNumber(0);
 

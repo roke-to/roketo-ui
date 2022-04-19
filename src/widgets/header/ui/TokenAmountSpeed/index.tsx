@@ -1,9 +1,9 @@
 import React from 'react';
 
-import {useRoketoContext} from '@app/app/roketo-context';
-import {getBalancePerDesiredPeriod} from '@app/shared/helpers/speed';
+import {useRoketoContext} from 'app/roketo-context';
+import {getBalancePerDesiredPeriod} from 'shared/helpers/speed';
 
-import {TIME_PERIOD_SIGNS, TimePeriod} from '@app/shared/constants';
+import {TIME_PERIOD_SIGNS, TimePeriod} from 'shared/constants';
 
 const TOKEN_FIELD_MAP: {
   [type: string]: 'total_incoming' | 'total_outgoing',

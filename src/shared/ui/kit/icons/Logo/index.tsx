@@ -1,6 +1,6 @@
 import React from 'react';
 
-import darkLogoSvg from '@app/shared/images/dark-logo-stream.svg';
+import darkLogoSvg from 'shared/images/dark-logo-stream.svg';
 
 type Props = {
   className?: string,

@@ -12,7 +12,7 @@ import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import { StreamControls } from 'features/stream-control/StreamControls';
 import { WithdrawButton } from 'features/stream-control/WithdrawButton';
 
-import {streamLib} from '@app/entites/stream';
+import {streamLib} from 'entites/stream';
 
 import { StreamingSpeed } from './StreamingSpeed';
 import { StreamProgressPercentage } from './StreamProgressPercentage';

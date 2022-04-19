@@ -2,9 +2,9 @@ import React from 'react';
 
 import {DarkLogo} from '@uikit/icons/Logo';
 import {Layout} from '@uikit/components/Layout';
-import {Authorization} from '@app/features/authorization';
+import {Authorization} from 'features/authorization';
 
-import {ROUTES_MAP} from '@app/shared/helpers/routing';
+import {ROUTES_MAP} from 'shared/helpers/routing';
 
 import {PageList} from './ui/PagesList';
 import {FinancialActivity} from './ui/FinancialActivity';

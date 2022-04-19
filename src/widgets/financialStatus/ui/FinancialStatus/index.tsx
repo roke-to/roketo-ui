@@ -1,10 +1,10 @@
 import React from 'react';
 import cn from 'classnames';
 
-import {useRoketoContext} from '@app/app/roketo-context';
-import {useStreams} from '@app/features/roketo-resource';
+import {useRoketoContext} from 'app/roketo-context';
+import {useStreams} from 'features/roketo-resource';
 
-import {streamLib} from '@app/entites/stream';
+import {streamLib} from 'entites/stream';
 
 import {FinancialInfo} from '../FinancialInfo';
 import {collectTotalFinancialAmountInfo, countTotalUSDWithdrawal} from '../../lib';

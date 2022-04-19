@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {ProgressBar} from '@app/shared/ui/components/ProgressBar';
+import {ProgressBar} from 'shared/ui/components/ProgressBar';
 
 import styles from './styles.module.scss';
 

@@ -1,3 +1,3 @@
-import {RoketoStream} from '@app/shared/api/roketo/interfaces/entities';
+import {RoketoStream} from 'shared/api/roketo/interfaces/entities';
 
 export type Stream = RoketoStream;

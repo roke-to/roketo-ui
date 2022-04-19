@@ -14,7 +14,7 @@ import { Tooltip } from 'shared/kit/Tooltip';
 import { env } from 'shared/config';
 import { useRoketoContext } from 'app/roketo-context';
 
-import { Balance } from '@app/shared/components/Balance';
+import { Balance } from 'shared/components/Balance';
 
 import { StreamSpeedCalcField } from './StreamSpeedCalcField';
 

@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
-import {streamLib} from '@app/entites/stream';
+import {streamLib} from 'entites/stream';
 
 import { useFilter, useFilters } from './lib';
 

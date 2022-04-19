@@ -1,9 +1,9 @@
 import BigNumber from 'bignumber.js';
 import {formatDuration, intervalToDuration, millisecondsToSeconds} from 'date-fns';
 
-import {STREAM_STATUS} from '@app/shared/api/roketo/constants';
-import {fromNanosecToSec, shortEnLocale} from '@app/shared/helpers/date';
-import {SECONDS_IN_YEAR} from '@app/shared/constants';
+import {STREAM_STATUS} from 'shared/api/roketo/constants';
+import {fromNanosecToSec, shortEnLocale} from 'shared/helpers/date';
+import {SECONDS_IN_YEAR} from 'shared/constants';
 
 import {Stream} from './types';
 

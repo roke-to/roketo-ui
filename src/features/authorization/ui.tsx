@@ -1,11 +1,11 @@
 import React from 'react';
 
-import {useRoketoContext} from '@app/app/roketo-context';
-import {useUser} from '@app/shared/api/roketo-web';
+import {useRoketoContext} from 'app/roketo-context';
+import {useUser} from 'shared/api/roketo-web';
 
 import {LogoutIcon} from '@uikit/icons/LogOut';
 
-import {env} from '@app/shared/config';
+import {env} from 'shared/config';
 
 import styles from './index.module.scss';
 

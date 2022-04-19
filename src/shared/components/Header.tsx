@@ -12,7 +12,7 @@ import { useBool } from 'shared/hooks/useBool';
 import { ProfileIcon } from 'shared/icons/Profile';
 import { BellIcon } from 'shared/icons/Bell';
 
-import RedesignedHeader from '@app/widgets/header/Header';
+import RedesignedHeader from 'widgets/header/Header';
 
 function MinifiedHeader() {
   const logo = (

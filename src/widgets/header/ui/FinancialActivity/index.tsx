@@ -1,12 +1,12 @@
 import React from 'react';
 
-import {env} from '@app/shared/config';
-import {TimePeriod} from '@app/shared/constants';
+import {env} from 'shared/config';
+import {TimePeriod} from 'shared/constants';
 
 import {WalletIcon} from '@uikit/icons/Wallet';
 import {IncomeIcon} from '@uikit/icons/Income';
 import {OutcomeIcon} from '@uikit/icons/Outcome';
-import {Balance} from '@app/shared/components/Balance';
+import {Balance} from 'shared/components/Balance';
 
 import {TokenAmountSpeed} from '../TokenAmountSpeed';
 

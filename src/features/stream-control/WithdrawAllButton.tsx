@@ -1,15 +1,15 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import {Button} from '@app/shared/ui/kit/components/Button';
+import {Button} from 'shared/ui/kit/components/Button';
 
 import { Tooltip } from 'shared/kit/Tooltip';
 import { useRoketoContext } from 'app/roketo-context';
 import { useStreams } from 'features/roketo-resource';
 import { TokenImage } from 'shared/kit/TokenImage';
 
-import {streamLib} from '@app/entites/stream';
-import {getAvailableToWithdraw} from '@app/entites/stream/lib';
+import {streamLib} from 'entites/stream';
+import {getAvailableToWithdraw} from 'entites/stream/lib';
 
 export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
   const { tokens, roketo } = useRoketoContext();

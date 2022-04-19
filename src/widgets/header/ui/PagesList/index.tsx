@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Route} from "@app/shared/helpers/routing";
+import {Route} from "shared/helpers/routing";
 import NavigationLink from "@uikit/components/NavigationLink";
 
 import styles from './styles.module.scss';

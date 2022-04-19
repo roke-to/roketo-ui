@@ -1,7 +1,7 @@
 import {
   SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE,
   TimePeriod,
-} from '@app/shared/constants';
+} from 'shared/constants';
 
 export const getBalancePerDesiredPeriod = (balancePerSecond: number, period: TimePeriod): number => {
   switch (period) {

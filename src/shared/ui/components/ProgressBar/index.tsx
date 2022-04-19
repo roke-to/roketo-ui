@@ -1,7 +1,7 @@
 import React from 'react';
 import cn from 'classnames';
 
-import {getRoundedPercentageRatio} from '@app/shared/helpers/math';
+import {getRoundedPercentageRatio} from 'shared/helpers/math';
 
 import styles from './styles.module.scss';
 

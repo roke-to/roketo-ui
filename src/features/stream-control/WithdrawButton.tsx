@@ -4,7 +4,7 @@ import { Button } from 'shared/kit/Button';
 import { useRoketoContext } from 'app/roketo-context';
 import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
-import {streamLib} from '@app/entites/stream';
+import {streamLib} from 'entites/stream';
 
 export function WithdrawButton({ stream }: { stream: RoketoStream}) {
   const { tokens, roketo } = useRoketoContext();

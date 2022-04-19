@@ -1,13 +1,13 @@
 import React from 'react';
 import cn from 'classnames';
 
-import {ROUTES_MAP} from '@app/shared/helpers/routing';
+import {ROUTES_MAP} from 'shared/helpers/routing';
 
 import {Layout} from '@uikit/components/Layout';
-import {Button} from '@app/shared/ui/kit/components/Button';
+import {Button} from 'shared/ui/kit/components/Button';
 
-import {WithdrawAllButton} from '@app/features/stream-control/WithdrawAllButton';
-import {FinancialStatus} from '@app/widgets/financialStatus';
+import {WithdrawAllButton} from 'features/stream-control/WithdrawAllButton';
+import {FinancialStatus} from 'widgets/financialStatus';
 
 import styles from './styles.module.scss';
 

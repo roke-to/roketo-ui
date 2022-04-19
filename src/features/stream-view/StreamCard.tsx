@@ -12,7 +12,7 @@ import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { useToken } from 'shared/hooks/useToken';
 import { useGetStreamDirection, STREAM_DIRECTION } from 'shared/hooks/useGetStreamDirection';
 import { StreamControls } from 'features/stream-control/StreamControls';
-import {streamLib} from '@app/entites/stream';
+import {streamLib} from 'entites/stream';
 
 import { StreamingSpeed } from './StreamingSpeed';
 import { StreamProgressPercentage } from './StreamProgressPercentage';
