@@ -1,8 +1,8 @@
 import React from 'react';
 import cn from 'classnames';
 
-import {ProgressBar} from '@app/shared/ui/components/ProgressBar';
-import {TokenFormatter} from '@app/shared/api/ft/token-formatter';
+import {ProgressBar} from 'shared/ui/components/ProgressBar';
+import {TokenFormatter} from 'shared/api/ft/token-formatter';
 
 import styles from './styles.module.scss';
 

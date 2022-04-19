@@ -1,7 +1,7 @@
 import React from 'react';
 import cn from 'classnames';
 
-import {useStreams} from '@app/features/roketo-resource';
+import {useStreams} from 'features/roketo-resource';
 
 import {StreamCard} from '../StreamCard';
 

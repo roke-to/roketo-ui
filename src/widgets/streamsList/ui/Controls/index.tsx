@@ -2,15 +2,14 @@ import React, {useCallback} from 'react';
 import cn from 'classnames';
 import copy from 'clipboard-copy';
 
-import {LinkIcon} from '@uikit/icons/Link';
-import {WithdrawButton} from '@app/features/stream-control/WithdrawButton';
+import {LinkIcon} from '@ui/icons/Link';
+import {WithdrawButton} from 'features/stream-control/WithdrawButton';
 
-import {getStreamLink} from '@app/shared/helpers/routing';
-import {RoketoStream} from '@app/shared/api/roketo/interfaces/entities';
+import {getStreamLink} from 'shared/helpers/routing';
+import {isActiveStream} from 'shared/api/roketo/helpers';
+import {RoketoStream} from 'shared/api/roketo/interfaces/entities';
 
-import {STREAM_DIRECTION, useGetStreamDirection} from '@app/shared/hooks/useGetStreamDirection';
-
-import {isActiveStream} from '@app/entites/stream/lib';
+import {STREAM_DIRECTION, useGetStreamDirection} from 'shared/hooks/useGetStreamDirection';
 import styles from './styles.module.scss';
 
 const StreamLinkButton = ({onCLick}: { onCLick: (event: React.SyntheticEvent) => void }) => (

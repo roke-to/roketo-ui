@@ -2,17 +2,17 @@ import React from 'react';
 import cn from 'classnames';
 import {generatePath, Link} from 'react-router-dom';
 
-import {RoketoStream} from '@app/shared/api/roketo/interfaces/entities';
-import {ROUTES_MAP} from '@app/shared/helpers/routing';
-import {streamViewData} from '@app/entites/stream/lib';
+import {RoketoStream} from 'shared/api/roketo/interfaces/entities';
+import {ROUTES_MAP} from 'shared/helpers/routing';
 
-import {useToken} from '@app/shared/hooks/useToken';
-import {STREAM_DIRECTION, useGetStreamDirection} from '@app/shared/hooks/useGetStreamDirection';
+import {useToken} from 'shared/hooks/useToken';
+import {STREAM_DIRECTION, useGetStreamDirection} from 'shared/hooks/useGetStreamDirection';
+import {streamViewData} from 'features/roketo-resource';
 
 import {Name} from '../Name';
 import {StreamStatus} from '../StreamStatus';
-import {Controls} from '../Controls';
 
+import {Controls} from '../Controls';
 import styles from './styles.module.scss';
 
 type StreamCardProps = {
