@@ -11,8 +11,7 @@ import { getEmptyStream } from 'shared/api/roketo/helpers';
 import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { useGetStreamDirection, STREAM_DIRECTION } from 'shared/hooks/useGetStreamDirection';
 import { useToken } from 'shared/hooks/useToken';
-
-import {streamLib} from 'entites/stream';
+import {streamViewData} from 'features/roketo-resource';
 
 import { StreamingSpeed } from './StreamingSpeed';
 
@@ -57,7 +56,7 @@ export function StreamOverviewCard({
     progress: {
       full, streamed, left, available,
     },
-  } = streamLib.streamViewData(stream);
+  } = streamViewData(stream);
 
   const direction = useGetStreamDirection(stream);
   const { meta, formatter, roketoMeta } = useToken(stream.token_account_id);

@@ -12,7 +12,7 @@ import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { useToken } from 'shared/hooks/useToken';
 import { useGetStreamDirection, STREAM_DIRECTION } from 'shared/hooks/useGetStreamDirection';
 import { StreamControls } from 'features/stream-control/StreamControls';
-import {streamLib} from 'entites/stream';
+import {streamViewData} from 'features/roketo-resource';
 
 import { StreamingSpeed } from './StreamingSpeed';
 import { StreamProgressPercentage } from './StreamProgressPercentage';
@@ -31,7 +31,7 @@ export function StreamCard({ stream, className }: StreamCardProps) {
     percentages,
     timeLeft,
     progress: { full, withdrawn, streamed },
-  } = streamLib.streamViewData(stream);
+  } = streamViewData(stream);
 
   const link = getStreamLink(stream.id);
 

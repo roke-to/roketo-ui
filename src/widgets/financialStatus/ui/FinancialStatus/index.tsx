@@ -3,12 +3,11 @@ import cn from 'classnames';
 
 import {useRoketoContext} from 'app/roketo-context';
 import {useStreams} from 'features/roketo-resource';
-
-import {streamLib} from 'entites/stream';
+import {isActiveStream} from 'shared/api/roketo/helpers';
 
 import {FinancialInfo} from '../FinancialInfo';
-import {collectTotalFinancialAmountInfo, countTotalUSDWithdrawal} from '../../lib';
 
+import {collectTotalFinancialAmountInfo, countTotalUSDWithdrawal} from '../../lib';
 import styles from './styles.module.scss';
 
 type FinancialStatusProps = {
@@ -20,8 +19,8 @@ export const FinancialStatus = ({className}: FinancialStatusProps) => {
 
   const {inputs = [], outputs = []} = streams || {};
 
-  const activeInputStreams = inputs.filter(streamLib.isActiveStream);
-  const activeOutputStreams = outputs.filter(streamLib.isActiveStream);
+  const activeInputStreams = inputs.filter(isActiveStream);
+  const activeOutputStreams = outputs.filter(isActiveStream);
 
   const outcomeAmountInfo = collectTotalFinancialAmountInfo(
     activeOutputStreams,

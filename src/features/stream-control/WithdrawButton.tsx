@@ -4,11 +4,11 @@ import { Button } from 'shared/kit/Button';
 import { useRoketoContext } from 'app/roketo-context';
 import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
-import {streamLib} from 'entites/stream';
+import { getAvailableToWithdraw } from 'shared/api/roketo/helpers';
 
 export function WithdrawButton({ stream }: { stream: RoketoStream}) {
   const { tokens, roketo } = useRoketoContext();
-  const available = streamLib.getAvailableToWithdraw(stream);
+  const available = getAvailableToWithdraw(stream);
   const tokenAccountId = stream.token_account_id;
   const { formatter, meta: { symbol } } = tokens[tokenAccountId];
   const amount = formatter.amount(available.toFixed());

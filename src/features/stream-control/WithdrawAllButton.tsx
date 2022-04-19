@@ -8,8 +8,7 @@ import { useRoketoContext } from 'app/roketo-context';
 import { useStreams } from 'features/roketo-resource';
 import { TokenImage } from 'shared/kit/TokenImage';
 
-import {streamLib} from 'entites/stream';
-import {getAvailableToWithdraw} from 'entites/stream/lib';
+import { getAvailableToWithdraw, isActiveStream } from 'shared/api/roketo/helpers';
 
 export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
   const { tokens, roketo } = useRoketoContext();
@@ -18,7 +17,7 @@ export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
   const streams = streamsSWR.data;
   const { inputs = [] } = streams || {};
 
-  const activeInputs = inputs.filter(streamLib.isActiveStream);
+  const activeInputs = inputs.filter(isActiveStream);
 
   type TmpData = {
     available: BigNumber;
