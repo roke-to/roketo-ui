@@ -12,6 +12,7 @@ export enum ButtonType {
 export enum DisplayMode {
   primary = 'primary',
   action = 'action',
+  invisible = 'invisible',
 }
 
 type Props = {
@@ -37,7 +38,7 @@ export const Button = ({
     [styles.root]: true,
     [styles.primary]: displayMode === DisplayMode.primary,
     [styles.action]: displayMode === DisplayMode.action,
-  });
+  }, className);
 
   const button = (
     <button
@@ -53,7 +54,7 @@ export const Button = ({
 
   if (link) {
     return (
-      <Link to={link} className={className}>
+      <Link to={link}>
         {button}
       </Link>
     );
