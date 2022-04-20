@@ -19,8 +19,19 @@ export const StreamsList = ({className}: Props) => {
   const allStreams = [...(inputs ?? []), ...(outputs ?? [])];
 
   return (
-    <div className={cn(styles.root, className)}>
-      {allStreams.map(stream => <StreamCard stream={stream} key={stream.id} />)}
-    </div>
+    <section className={cn(styles.flexColumn, className)}>
+      <div className={cn(styles.withPaddings, 'grid grid-cols-6 gap-x-10')}>
+        <h3 className={styles.title}>Name</h3>
+        <h3 className={styles.title}>Amount to stream</h3>
+        <h3 className={styles.title}>Comment</h3>
+      </div>
+
+      {allStreams.map(stream => (
+        <StreamCard
+          stream={stream}
+          key={stream.id}
+          className={cn(styles.withPaddings, 'grid grid-cols-6 gap-x-10')}/>
+      ))}
+    </section>
   );
 };

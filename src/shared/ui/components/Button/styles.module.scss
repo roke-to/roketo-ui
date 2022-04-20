@@ -1,6 +1,24 @@
 @import 'src/shared/ui/palette';
 
 .root {
+  cursor: pointer;
+
+  transition: background-color 500ms;
+}
+
+.primary {
+  background-color: $light-blue;
+  color: $blue;
+
+  padding: 8px 12px;
+  border-radius: 6px;
+
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 15px;
+}
+
+.action {
   background-color: $blue;
   color: $white;
 

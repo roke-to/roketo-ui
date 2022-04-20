@@ -45,32 +45,34 @@ export const StreamCard = ({stream, className}: StreamCardProps) => {
   const streamPageLink = generatePath(ROUTES_MAP.stream.path, {id});
 
   return (
-    <Link to={streamPageLink} className={className}>
-      <div className={cn(styles.root, styles.flexCenter, 'grid grid-cols-6 gap-x-10')}>
-        <Name
-          name={name}
-          label={label}
-        />
+    <div className={cn(styles.root, styles.flexCenter, className)}>
 
-        <StreamStatus
-          streamed={streamed}
-          withdrawn={withdrawn}
-          total={total}
-          symbol={meta.symbol}
-        />
+      <Link to={streamPageLink}>
+        <Name name={name} label={label}/>
+      </Link>
 
-        <p
-          className={cn(styles.description, 'col-span-2 grow-0')}
-        >
+
+      <StreamStatus
+        streamed={streamed}
+        withdrawn={withdrawn}
+        total={total}
+        symbol={meta.symbol}
+      />
+
+      <Link to={streamPageLink} className='col-span-2 grow-0'>
+        <p className={styles.description}>
           {description}
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eaque in iste libero officiis perspiciatis provident, quasi repellendus tempora veritatis voluptates? Assumenda atque fuga magni officia placeat quaerat quos recusandae sapiente.
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eaque in iste libero officiis perspiciatis provident,
+          quasi repellendus tempora veritatis voluptates? Assumenda atque fuga magni officia placeat quaerat quos
+          recusandae sapiente.
         </p>
+      </Link>
 
-        <Controls
-          stream={stream}
-          className={cn(styles.controls, 'col-span-2 grow-0')}
-        />
-      </div>
-    </Link>
+
+      <Controls
+        stream={stream}
+        className={cn(styles.controls, 'col-span-2 grow-0')}
+      />
+    </div>
   );
 };

@@ -1,4 +1,17 @@
-.root {
+@import 'src/shared/ui/palette';
+
+.flexColumn {
   display: flex;
   flex-direction: column;
+}
+
+.withPaddings {
+  padding: 16px 22px;
+}
+
+.title {
+  color: $light-black;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
 }

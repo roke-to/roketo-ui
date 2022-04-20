@@ -14,7 +14,7 @@ import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { isDead } from 'shared/api/roketo/helpers';
 
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
-import { StreamStatus } from './StreamStatus';
+import { StreamStatus } from '../StreamStatus';
 
 type PauseConfirmModalProps = {
   modalControl: BooleanControl;
@@ -52,7 +52,7 @@ function PauseConfirmModal({ modalControl, onConfirm }: PauseConfirmModalProps) 
 type StreamControlsProps = {
   stream: RoketoStream;
   minimal?: boolean;
-  className: string;
+  className?: string;
 };
 
 export function StreamControls({ stream, minimal = false, className }: StreamControlsProps) {
@@ -95,7 +95,7 @@ export function StreamControls({ stream, minimal = false, className }: StreamCon
     );
   }
 
-  function onClickPause() {
+  const onClickPause = () => {
     if (isIncoming) {
       modalControl.turnOn();
     } else {
@@ -111,6 +111,7 @@ export function StreamControls({ stream, minimal = false, className }: StreamCon
         modalControl={modalControl}
         onConfirm={handlePause}
       />
+
       <DropdownOpener
         minimal={minimal}
         opened={opened}
@@ -118,6 +119,7 @@ export function StreamControls({ stream, minimal = false, className }: StreamCon
       >
         {loading ? 'Loading...' : <StreamStatus stream={stream} />}
       </DropdownOpener>
+
       <DropdownMenu
         onClose={() => setMenuOpened(false)}
         opened={opened}
