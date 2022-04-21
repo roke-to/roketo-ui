@@ -113,7 +113,6 @@ export function StreamControls({ stream, minimal = false, className }: StreamCon
       />
 
       <DropdownOpener
-        minimal={minimal}
         opened={opened}
         onChange={setMenuOpened}
       >

@@ -5,7 +5,6 @@ import copy from 'clipboard-copy';
 import {LinkIcon} from '@ui/icons/Link';
 
 import {WithdrawButton} from 'features/stream-control/WithdrawButton';
-import {StreamControls} from 'features/stream-control/StreamControls';
 
 import {getStreamLink} from 'shared/helpers/routing';
 import {isActiveStream} from 'shared/api/roketo/helpers';
@@ -40,15 +39,8 @@ export const Controls = (props: Props) => {
   const direction = useGetStreamDirection(stream);
   const showWithdraw = direction === STREAM_DIRECTION.IN && isActiveStream(stream);
 
-  const showStreamControls = true;
-
   return (
     <div className={cn(styles.root, className)}>
-
-      {showStreamControls &&
-        <StreamControls stream={stream} />
-      }
-
       {showWithdraw &&
         <WithdrawButton stream={stream}/>
       }

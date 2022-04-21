@@ -1,0 +1,18 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  display: flex;
+  align-items: center;
+}
+
+.dropdownWrapper {
+  position: relative;
+}
+
+.dropdownMenu {
+  margin-top: 10px;
+  position: absolute;
+
+  right: 50%;
+  transform: translateX(50%);
+}

@@ -1,6 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import styles from './styles.module.scss';
+
 type RadioButtonProps<T> = {
   active: boolean;
   label: React.ReactNode;
@@ -12,7 +14,7 @@ export function RadioButton<T>({
   active, label, value, onChange,
 }: RadioButtonProps<T>) {
   return (
-    <label className="inline-flex items-center whitespace-nowrap">
+    <label className={styles.root}>
       <input
         type="radio"
         className="invisible w-0 h-0 absolute"
@@ -20,13 +22,10 @@ export function RadioButton<T>({
         onChange={() => onChange(value)}
       />
       <div
-        className={classNames(
-          active ? 'border-blue border-4' : 'border-border border-2',
-          'border-full w-3 h-3 rounded-full',
-        )}
+        className={classNames({[styles.radio]: true, [styles.radioActive]: active})}
       />
 
-      <div className={classNames(active ? 'font-semibold' : '', 'ml-3 flex')}>
+      <div className={styles.text}>
         {label}
       </div>
     </label>

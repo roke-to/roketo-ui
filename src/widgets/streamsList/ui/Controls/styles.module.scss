@@ -3,6 +3,7 @@
 .root {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
 
   & > :not(:last-child) {
     margin-right: 16px;
