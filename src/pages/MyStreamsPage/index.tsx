@@ -1,14 +1,14 @@
-import React, {useMemo, useState} from 'react';
+import React, {useMemo, useState, useCallback} from 'react';
 import cn from 'classnames';
-
-import {ROUTES_MAP} from 'shared/helpers/routing';
 
 import {Layout} from '@ui/components/Layout';
 import {Button} from '@ui/components/Button';
+import {Modal} from '@ui/components/Modal';
 
 import {WithdrawAllButton} from 'features/stream-control/WithdrawAllButton';
 import {useStreams} from 'features/roketo-resource';
 import {StreamFilters} from 'features/filtering/StreamFilters';
+import {CreateStream} from 'features/create-stream/CreateStream';
 
 import {FinancialStatus} from 'widgets/financialStatus';
 import {StreamsList} from 'widgets/streamsList';
@@ -28,6 +28,12 @@ export const MyStreamsPage = () => {
     [inputs, outputs]
   );
 
+  const [isModalOpened, setIsModalOpened] = useState<boolean>(true);
+  const toggleModal = useCallback(
+    () => setIsModalOpened(!isModalOpened),
+    [setIsModalOpened, isModalOpened]
+  );
+
   return (
     <div className={styles.root}>
       <Layout>
@@ -37,7 +43,7 @@ export const MyStreamsPage = () => {
           <div className={cn(styles.flex, styles.buttonsWrapper)}>
             <WithdrawAllButton>Withdraw tokens</WithdrawAllButton>
 
-            <Button link={ROUTES_MAP.send.path}>Create stream</Button>
+            <Button onClick={toggleModal}>Create stream</Button>
           </div>
         </section>
 
@@ -51,6 +57,10 @@ export const MyStreamsPage = () => {
         {filteredItems &&
           <StreamsList streams={filteredItems} className={styles.section}/>
         }
+
+        <Modal isOpen={isModalOpened} onCloseModal={toggleModal}>
+          <CreateStream />
+        </Modal>
       </Layout>
     </div>
   );

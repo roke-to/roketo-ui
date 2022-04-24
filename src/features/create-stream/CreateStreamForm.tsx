@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Formik, Field, FieldProps } from 'formik';
-import * as Yup from 'yup';
-import type { Near } from 'near-api-js';
 
-import { FormField } from 'shared/kit/FormField';
-import { Input } from 'shared/kit/Input';
+import { FormField } from '@ui/components/FormField';
+import { FormikInput } from 'shared/components/FormikInput';
 import { Button } from 'shared/kit/Button';
 import { TokenImage } from 'shared/kit/TokenImage';
 import { DropdownMenu, DropdownMenuItem } from 'shared/kit/DropdownMenu';
@@ -16,44 +14,9 @@ import { useRoketoContext } from 'app/roketo-context';
 
 import { Balance } from 'shared/components/Balance';
 
-import { StreamSpeedCalcField } from './StreamSpeedCalcField';
-
-type StreamFormSchemaParams = {
-  near: Near;
-  accountId: string;
-};
-
-const CreateStreamFormSchema = ({ near, accountId }: StreamFormSchemaParams) => Yup.object().shape({
-  receiver: Yup.string()
-    .required('Receiver is a required')
-    .test(
-      'receiver-not-equal-owner',
-      'Receiver can not be the same as owner',
-      (value) => value !== accountId,
-    )
-    .test(
-      'receiver-is-valida-address',
-      'Address does not exists',
-      async (value) => {
-        try {
-          return Boolean(value && await near.connection.provider.query({
-            request_type: 'view_account',
-            finality: 'final',
-            account_id: value,
-          }));
-        } catch (error) {
-          return false;
-        }
-      },
-    ),
-  token: Yup.string().required(),
-  deposit: Yup.number()
-    .required()
-    .moreThan(0, 'Deposit should be more than 0'),
-  speed: Yup.number().required().moreThan(0, 'Choose stream duration'),
-  autoStart: Yup.boolean(),
-  comment: Yup.string().max(255),
-});
+// import { StreamSpeedCalcField } from './StreamSpeedCalcField';
+import {getFormValidationSchema} from './lib';
+import {INITIAL_FORM_VALUES} from './constants';
 
 export type CreateStreamFormValues = {
   receiver: string;
@@ -71,10 +34,7 @@ type CreateStreamFormProps = {
 export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
   const { near, auth, tokens } = useRoketoContext();
 
-  const schema = CreateStreamFormSchema({
-    accountId: auth.accountId,
-    near,
-  });
+  const schema = getFormValidationSchema(near, auth.accountId);
 
   const [isDropdownOpened, setIsDropdownOpened] = useState(false);
   const [submitError, setError] = useState<Error | null>(null);
@@ -96,14 +56,7 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
 
   return (
     <Formik<CreateStreamFormValues>
-      initialValues={{
-        receiver: '',
-        token: env.WNEAR_ID,
-        speed: 0,
-        deposit: 0,
-        autoStart: true,
-        comment: '',
-      }}
+      initialValues={INITIAL_FORM_VALUES}
       validationSchema={schema}
       onSubmit={formikOnSubmit}
       validateOnBlur={false}
@@ -123,26 +76,12 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
 
         return (
           <form className="max-w-lg mx-auto w-full" onSubmit={handleSubmit}>
-            <Field name="receiver">
-              {({
-                field,
-                meta,
-              }: FieldProps<CreateStreamFormValues['receiver']>) => (
-                <FormField
-                  label="Receiver:"
-                  className="mb-4"
-                  error={meta.error}
-                >
-                  <Input>
-                    <input
-                      placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
-                      id="ownerInput"
-                      {...field} 
-                    />
-                  </Input>
-                </FormField>
-              )}
-            </Field>
+            <Field
+              name="receiver"
+              label="Receiver:"
+              component={FormikInput}
+              placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
+            />
 
             <div className="flex mb-4">
               <Field name="token">
@@ -211,33 +150,23 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                 )}
               </Field>
 
-              <Field name="deposit">
-                {({
-                  field,
-                  meta,
-                }: FieldProps<CreateStreamFormValues['deposit']>) => (
-                  <FormField
-                    label={(
-                      <span>
+              <Field
+                name="deposit"
+                label={(
+                  <span>
                         <span>Stream deposit:</span>
                         <Tooltip
                           overlay="Funds which will be used to create a stream for a set period."
                         />
-                        {' '}
-                        <Balance
-                          tokenAccountId={activeTokenAccountId}
-                        />
+                    {' '}
+                    <Balance
+                      tokenAccountId={activeTokenAccountId}
+                    />
                       </span>
-                    )}
-                    className="w-2/3"
-                    error={meta.error}
-                  >
-                    <Input>
-                      <input placeholder="0.00" {...field} />
-                    </Input>
-                  </FormField>
                 )}
-              </Field>
+                placeholder="0.00"
+                component={FormikInput}
+              />
             </div>
 
             <div className="block mb-4">
@@ -274,13 +203,13 @@ export function CreateStreamForm({ onSubmit }: CreateStreamFormProps) {
                     error={meta.error}
                   >
                     {' '}
-                    <StreamSpeedCalcField
-                      deposit={formatter.toYocto(values.deposit)}
-                      onChange={(speed) => {
-                        setFieldValue(field.name, speed, false);
-                        setFieldTouched(field.name, true, false);
-                      }}
-                    />
+                    {/* <StreamSpeedCalcField */}
+                    {/*   deposit={formatter.toYocto(values.deposit)} */}
+                    {/*   onChange={(speed) => { */}
+                    {/*     setFieldValue(field.name, speed, false); */}
+                    {/*     setFieldTouched(field.name, true, false); */}
+                    {/*   }} */}
+                    {/* /> */}
                   </FormField>
                 )}
               </Field>

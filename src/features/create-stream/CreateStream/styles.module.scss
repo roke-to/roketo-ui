@@ -1,0 +1,47 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  display: flex;
+
+  min-width: 1000px;
+
+  flex-direction: column;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 28px;
+
+  margin-bottom: 16px;
+}
+
+.description {
+  font-size: 16px;
+  line-height: 24px;
+
+  margin-bottom: 25px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+
+  & > :not(:last-child) {
+    margin-bottom: 32px;
+  }
+}
+
+.row {
+  display: flex;
+
+  justify-content: space-around;
+
+  &Item {
+    flex: 1;
+  }
+
+  & > :not(:last-child) {
+    margin-right: 25px;
+  }
+}

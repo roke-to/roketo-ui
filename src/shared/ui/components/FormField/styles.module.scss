@@ -1,0 +1,47 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  & > :not(:last-child) {
+    margin-bottom: 6px;
+  }
+}
+
+.label {
+  font-size: 12px;
+  line-height: 15px;
+  font-weight: 500;
+
+  position: relative;
+}
+
+.description {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 15px;
+
+  color: $bluish-grey;
+}
+
+.error {
+  color: darkred;
+  font-size: 12px;
+  line-height: 15px;
+}
+
+.required {
+  &:after {
+    content: "*";
+
+    position: absolute;
+    top: 0;
+    right: -10px;
+
+    color: red;
+  }
+}
+
+
