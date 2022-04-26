@@ -30,7 +30,7 @@ export const FormField = ({
       }
 
       {error &&
-        <div className={styles.root}>{error}</div>
+        <div className={styles.error}>{error}</div>
       }
     </div>
   )

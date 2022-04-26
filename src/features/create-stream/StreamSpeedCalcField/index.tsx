@@ -47,8 +47,6 @@ type StreamSpeedCalcFieldProps = {
 
   isRequired?: boolean,
   className?: string;
-
-  error?: never;
 };
 
 export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {

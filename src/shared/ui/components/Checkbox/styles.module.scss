@@ -1,0 +1,32 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  display: flex;
+  align-items: center;
+
+  & > :not(:last-child) {
+    margin-right: 12px;
+  }
+}
+
+.description {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+
+  color: $light-black;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+
+  border: 1px solid $grey;
+  background-color: $white;
+
+  outline: 1px solid transparent;
+}
+
+.error {
+  border-color: $danger;
+}
