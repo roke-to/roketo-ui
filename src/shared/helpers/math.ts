@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 const PERCENTAGE_MULTIPLIER = 100;
 
 // Retrieves a percentage ratio from A/B
-export const getExactPercentageRatio = (a: string | number, b: string | number): BigNumber => {
+const getExactPercentageRatio = (a: string | number, b: string | number): BigNumber => {
   const aBN = new BigNumber(a);
   const bBN = new BigNumber(b);
 

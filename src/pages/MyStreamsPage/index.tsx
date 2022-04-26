@@ -4,16 +4,14 @@ import cn from 'classnames';
 import {ROUTES_MAP} from 'shared/helpers/routing';
 
 import {Layout} from '@ui/components/Layout';
-import {Button} from 'shared/ui/components/Button';
+import {Button} from '@ui/components/Button';
 
 import {WithdrawAllButton} from 'features/stream-control/WithdrawAllButton';
 import {FinancialStatus} from 'widgets/financialStatus';
 
 import styles from './styles.module.scss';
 
-export const MyStreamsPage = () => {
-  const a = 'My streams Page';
-  return (
+export const MyStreamsPage = () => (
     <div className={styles.root}>
       <Layout>
         <section className={cn(styles.flex, styles.spaceBetween)}>
@@ -27,13 +25,10 @@ export const MyStreamsPage = () => {
         </section>
 
         <FinancialStatus className={styles.section} />
-
-        {a}
       </Layout>
     </div>
 
   );
-};
 
 export default MyStreamsPage;
 

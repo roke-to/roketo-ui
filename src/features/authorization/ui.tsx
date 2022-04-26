@@ -13,7 +13,8 @@ export const Authorization = () => {
   const {auth} = useRoketoContext();
   const userSWR = useUser();
 
-  const {name, email, accountId} = userSWR.data ?? {};
+  const {name, email} = userSWR.data ?? {};
+  const {accountId} = auth;
   const {login, logout, signedIn} = auth;
 
   if (!signedIn) {

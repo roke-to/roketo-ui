@@ -30,7 +30,7 @@ export function Balance({ tokenAccountId, className, mode = CRYPTO_MODE }: Balan
 
   return (
     <span className={className}>
-      {`Balance ${amount} ${currencySymbol}`}
+      {`Balance: ${currencySymbol} ${amount} `}
     </span>
   );
 }

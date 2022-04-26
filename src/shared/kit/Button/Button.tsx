@@ -2,16 +2,12 @@ import React from 'react';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import './Button.scss';
-// import styles from './Button.scss';
 
 const variants = {
   main: 'main',
   filled: 'filled',
   outlined: 'outlined',
 };
-
-// const sizes = ['normal', 'big'];
-// const colors = ['dark', 'light'];
 
 type CommonButtonProps = {
   icon?: never;

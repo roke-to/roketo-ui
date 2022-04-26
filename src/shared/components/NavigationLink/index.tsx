@@ -1,8 +1,6 @@
 import React from 'react';
-import cn from 'classnames';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import styles from './styles.module.scss';
 
 type Props = {
   children?: React.ReactNode,
@@ -20,19 +18,10 @@ const NavigationLink = (props: Props) => {
     onClick,
   } = props;
 
-  const match = useRouteMatch(to);
-  const isActive = match?.isExact ?? false;
-
-  const classNames = cn(
-    styles.root,
-    {[styles.active]: isActive},
-    className,
-  );
-
   return (
     <Link
       to={to}
-      className={classNames}
+      className={className}
       onClick={onClick}
     >
       {children}

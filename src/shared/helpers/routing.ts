@@ -24,10 +24,6 @@ export const ROUTES_MAP = {
     path: '/',
     title: 'Create Stream',
   },
-  receive: {
-    path: '/receive',
-    title: 'Receive stream',
-  },
   stream: {
     path: '/streams/:id',
     title: 'Stream'
