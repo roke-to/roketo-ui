@@ -46,18 +46,21 @@ export type FormValues = {
   token: string;
 }
 
-export const CreateStream = () => {
+type CreateStreamProps = {
+  onFormSubmit: (values: FormValues) => Promise<void>;
+  onFormCancel: () => void;
+}
+
+export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) => {
   const {near, auth} = useRoketoContext();
 
   const [submitError, setError] = useState<Error | null>(null);
 
   const validationSchema = getFormValidationSchema(near, auth.accountId);
 
-  const handleFormSubmit = async (formValues: FormValues) => {
-    setError(new Error('some error'));
-
-    // alert(JSON.stringify(formValues));
-    console.log(formValues);
+  const handleFormSubmit = (formValues: FormValues) => {
+    onFormSubmit(formValues)
+      .catch(error => setError(error));
   }
 
   return (
@@ -81,7 +84,6 @@ export const CreateStream = () => {
           setFieldTouched,
         }) => {
           const activeTokenAccountId = values.token;
-          console.log('activeTokenAccountId ==>', activeTokenAccountId, values);
 
           return (
             <form onSubmit={handleSubmit} className={styles.form}>
@@ -138,6 +140,10 @@ export const CreateStream = () => {
                   label="Stream duration:"
                   deposit={values.deposit}
                   component={StreamSpeedCalcField}
+                  onSpeedChange={(speed: number) => {
+                    setFieldValue('speed', speed, false);
+                    setFieldTouched('speed', true, false);
+                  }}
                   className={styles.rowItem}
                 />
               </Row>
@@ -168,7 +174,10 @@ export const CreateStream = () => {
                   <StreamCreationError error={submitError.message} />
                 }
 
-                <Button displayMode={ButtonDisplayMode.simple}>
+                <Button
+                  displayMode={ButtonDisplayMode.simple}
+                  onClick={onFormCancel}
+                >
                   Cancel
                 </Button>
 

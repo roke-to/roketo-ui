@@ -38,6 +38,7 @@ const SpeedInput = ({className, value, onChange, label}: SpeedInputProps) => (
 type StreamSpeedCalcFieldProps = {
   deposit: number,
   tokenAccountId: string,
+  onSpeedChange: (speed: string) => void,
 
   field: FieldInputProps<any>,
   form: FormikState<any>,
@@ -58,6 +59,7 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
     className,
     isRequired,
     description,
+    onSpeedChange,
     tokenAccountId,
   } = props;
 
@@ -66,7 +68,6 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
   const {formatter} = token;
 
   const error = form.errors[field.name];
-  const onFiledChange = field.onChange;
 
   const [months, setMonths] = useState(0);
   const [days, setDays] = useState(0);
@@ -80,9 +81,9 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
 
   useEffect(() => {
     if (prevSpeed !== tokensPerSec) {
-      onFiledChange(tokensPerSec);
+      onSpeedChange(tokensPerSec);
     }
-  }, [tokensPerSec, onFiledChange, prevSpeed]);
+  }, [tokensPerSec, onSpeedChange, prevSpeed]);
 
   const handleInputChangeFactory = (
     setValue: Dispatch<SetStateAction<number>>
