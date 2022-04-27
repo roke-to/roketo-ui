@@ -1,37 +1,33 @@
 import React from 'react';
-
 import RCTooltip from 'rc-tooltip';
 import type { TooltipProps as RCTooltipProps } from 'rc-tooltip/lib/Tooltip';
+import 'rc-tooltip/assets/bootstrap_white.css';
 
-import './Tooltip.scss';
+import styles from './styles.module.scss';
 
 type TooltipProps = {
-  placement?: string;
+  placement?: RCTooltipProps["placement"];
   children?: React.ReactElement;
-  html?: never;
-  overlay: React.ReactNode;
-  className?: string;
+  overlay: RCTooltipProps["overlay"];
   align?: RCTooltipProps["align"];
+  overlayClassName?: RCTooltipProps["overlayClassName"];
 };
 
 export function Tooltip({
   placement = 'top',
   children,
-  html,
   overlay,
   align,
-  ...rest
+  overlayClassName
 }: TooltipProps) {
   return (
     <RCTooltip
       align={align}
       placement={placement}
-      overlay={
-        html ? <div dangerouslySetInnerHTML={{ __html: html }} /> : overlay
-      }
-      {...rest}
+      overlay={overlay}
+      overlayClassName={overlayClassName || styles.defaultOverlay}
     >
-      {children || <span className="Tooltip__defaultIcon">?</span>}
+      {children || <span className={styles.defaultIcon}>?</span>}
     </RCTooltip>
   );
 }
