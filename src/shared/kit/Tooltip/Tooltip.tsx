@@ -3,7 +3,7 @@ import React from 'react';
 import RCTooltip from 'rc-tooltip';
 import type { TooltipProps as RCTooltipProps } from 'rc-tooltip/lib/Tooltip';
 
-import './Tooltip.scss';
+import './styles.module.scss';
 
 type TooltipProps = {
   placement?: string;
