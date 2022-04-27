@@ -46,7 +46,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.0",
     "react-styleguidist": "^11.2.0",
-    "sass": "1.32.8",
+    "sass": "^1.49.9",
     "swr": "^1.1.1",
     "tailwind-css-variables": "^3.0.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17",
