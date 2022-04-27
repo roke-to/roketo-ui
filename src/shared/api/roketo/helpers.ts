@@ -49,7 +49,6 @@ export const getEmptyAccount = (): RoketoAccount => ({
 });
 
 export const getEmptyStream = (id: string = 'any'): RoketoStream => ({
-  amount_to_push: "1250000000000000000000",
   balance: "1249999999999999990000",
   creator_id: "dcversus.testnet",
   description: "lol",

@@ -13,7 +13,6 @@ type StreamStatus =
   | { Finished: string }   // stream has streamed all it's balance and account has been updated.
 
 export type RoketoStream = {
-  amount_to_push: StringInt;
   balance: StringInt; // Tokens that are not withdrawn, tho they can be already streamed
   cliff?: StringInt;
   creator_id: AccountId;

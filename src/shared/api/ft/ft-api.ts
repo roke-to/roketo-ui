@@ -77,17 +77,6 @@ export class FTApi {
         },
         '100000000000000',
         1
-      ),
-      transactions.functionCall(
-        'ft_transfer_call',
-        {
-          receiver_id: env.ROKETO_CONTRACT_NAME,
-          amount: '1',
-          memo: 'Roketo transfer',
-          msg: '"Push"',
-        },
-        '100000000000000',
-        1
       )
     ];
 
