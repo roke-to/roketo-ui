@@ -21,7 +21,7 @@ export type RoketoStream = {
   id: StreamId; // Stream unique id
   is_expirable: boolean;
   is_locked: boolean;
-  last_action: number;
+  last_action: number; // is a timestamp of the last update called for the account
   owner_id: AccountId; // Account id of stream sender
   receiver_id: AccountId; // Account id of stream receiver
   status: StreamStatus; // Stream status
@@ -31,7 +31,7 @@ export type RoketoStream = {
   tokens_total_withdrawn: StringInt;
 };
 
-type TokenAmount = {
+export type TokenAmount = {
   [tokenAccountId: string]: StringInt;
 }
 

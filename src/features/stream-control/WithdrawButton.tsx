@@ -2,8 +2,9 @@ import React from 'react';
 
 import { Button } from 'shared/kit/Button';
 import { useRoketoContext } from 'app/roketo-context';
-import { getAvailableToWithdraw } from 'shared/api/roketo/helpers';
 import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+
+import { getAvailableToWithdraw } from 'shared/api/roketo/helpers';
 
 export function WithdrawButton({ stream }: { stream: RoketoStream}) {
   const { tokens, roketo } = useRoketoContext();

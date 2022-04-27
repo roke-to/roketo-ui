@@ -6,11 +6,13 @@ import { StreamsIcon } from 'shared/icons/Streams';
 import { SendIcon } from 'shared/icons/Send';
 import { NavLink } from 'shared/kit/NavLink';
 import { NearAuthButton } from 'features/near-auth/NearAuthButton';
-import { routes } from 'shared/helpers/routing';
+import { ROUTES_MAP } from 'shared/helpers/routing';
 import LogoText from 'shared/images/logo_stream_with_text.svg';
 import { useBool } from 'shared/hooks/useBool';
 import { ProfileIcon } from 'shared/icons/Profile';
 import { BellIcon } from 'shared/icons/Bell';
+
+import RedesignedHeader from 'widgets/header/Header';
 
 function MinifiedHeader() {
   const logo = (
@@ -39,43 +41,54 @@ function FullHeader() {
       <li className="mb-2 lg:mr-2 lg:mb-0">
         <NavLink
           onClick={menuControl.turnOff}
-          to={routes.account}
+          to={ROUTES_MAP.account.path}
           icon={<AccountIcon />}
         >
-          Account
+          {ROUTES_MAP.account.title}
         </NavLink>
       </li>
       <li className="mb-2 lg:mr-2 lg:mb-0">
         <NavLink
           onClick={menuControl.turnOff}
-          to={routes.streams}
+          to={ROUTES_MAP.streams.path}
           icon={<StreamsIcon />}
         >
-          My Streams
+          {ROUTES_MAP.streams.title}
         </NavLink>
       </li>
+
       <li className="mb-2 lg:mr-2 lg:mb-0">
         <NavLink
           onClick={menuControl.turnOff}
-          to={routes.send}
+          to={ROUTES_MAP.myStreams.path}
+          icon={<StreamsIcon />}
+        >
+          {ROUTES_MAP.myStreams.title}
+        </NavLink>
+      </li>
+
+      <li className="mb-2 lg:mr-2 lg:mb-0">
+        <NavLink
+          onClick={menuControl.turnOff}
+          to={ROUTES_MAP.send.path}
           icon={<SendIcon />}
         >
-          Send
+          {ROUTES_MAP.send.title}
         </NavLink>
       </li>
       <li className="mb-2 lg:mr-2 lg:mb-0">
         <NavLink
           onClick={menuControl.turnOff}
-          to={routes.profile}
+          to={ROUTES_MAP.profile.path}
           icon={<ProfileIcon />}
         >
-          Profile
+          {ROUTES_MAP.profile.title}
         </NavLink>
       </li>
       <li className="mb-2 lg:mr-2 lg:mb-0">
         <NavLink
           onClick={menuControl.turnOff}
-          to={routes.notifications}
+          to={ROUTES_MAP.notifications.path}
           icon={<BellIcon />}
         >
           Notifications
@@ -136,7 +149,12 @@ function FullHeader() {
   );
 }
 export function Header() {
-  const match = useRouteMatch('/authorize');
+  const match = useRouteMatch(ROUTES_MAP.authorize.path);
+  const isRedesignedPage = useRouteMatch(ROUTES_MAP.myStreams.path);
+
+  if (isRedesignedPage) {
+    return <RedesignedHeader />;
+  }
 
   if (match) {
     return <MinifiedHeader />;

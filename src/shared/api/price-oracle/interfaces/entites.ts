@@ -1,4 +1,4 @@
-export type TokenId = string;
+export type TokenAccountId = string;
 
 type Price = {
   multiplier: string,
@@ -12,14 +12,14 @@ type PriceOracleSource = {
 };
 
 export type TokenPriceRaw = [
-  tokenId: TokenId,
+  tokenAccountId: TokenAccountId,
   value: {reports: PriceOracleSource[]},
 ];
 
 export type TokenPriceCollection = {
-  [tokenId: TokenId]: Price,
+  [tokenAccountId: TokenAccountId]: Price,
 };
 
 export type TokenMultiplierMap = {
-  [tokenId: TokenId]: number,
+  [tokenAccountId: TokenAccountId]: number,
 };

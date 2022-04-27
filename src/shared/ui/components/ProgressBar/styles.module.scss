@@ -1,0 +1,32 @@
+@import 'src/shared/ui/palette';
+
+.progressBar {
+  width: 100%;
+
+  height: 8px;
+  background-color: $light-grey;
+  border-radius: 12px;
+
+  position: relative;
+}
+
+.streamed {
+  background-color: $blue;
+}
+
+.progress {
+  position: absolute;
+  border-radius: 12px;
+
+  height: 100%;
+  width: 0%;
+
+  transition: width 2s;
+
+  top: 0;
+  left: 0;
+}
+
+.withdrawn {
+  background-color: $orange;
+}

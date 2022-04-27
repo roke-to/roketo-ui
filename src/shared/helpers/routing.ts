@@ -1,12 +1,41 @@
-export const routes = {
-  authorize: '/authorize',
-  account: '/account',
-  streams: '/streams',
-  send: '/',
-  receive: '/receive',
-  stream: '/streams/:id',
-  profile: '/profile',
-  notifications: '/notifications',
+export type Route = {
+  path: string,
+  title: String,
+}
+
+export const ROUTES_MAP = {
+  authorize: {
+    path: '/authorize',
+    title: 'Authorize',
+  },
+  account: {
+    path: '/account',
+    title: 'Account',
+  },
+  streams: {
+    path: '/streams',
+    title: 'Streams [OLD]'
+  },
+  myStreams: {
+    path: '/myStreams',
+    title: 'Streams',
+  },
+  send: {
+    path: '/',
+    title: 'Create Stream',
+  },
+  stream: {
+    path: '/streams/:id',
+    title: 'Stream'
+  },
+  profile: {
+    path: '/profile',
+    title: 'Profile',
+  },
+  notifications: {
+    path: '/notifications',
+    title: 'Notifications',
+  },
 };
 
 export function getStreamLink(streamId: string | undefined) {

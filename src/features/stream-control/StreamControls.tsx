@@ -11,9 +11,9 @@ import { StartIcon } from 'shared/icons/Start';
 import { StopIcon } from 'shared/icons/Stop';
 import { useRoketoContext } from 'app/roketo-context';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import { isDead } from 'shared/api/roketo/helpers';
 
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
-import { isDead } from 'shared/api/roketo/helpers';
 import { StreamStatus } from './StreamStatus';
 
 type PauseConfirmModalProps = {

@@ -6,6 +6,8 @@ import { fromNanosecToSec } from 'shared/helpers/date';
 import { STREAM_STATUS } from './constants';
 import { RoketoStream, RoketoAccount } from './interfaces/entities';
 
+export const isActiveStream = (stream: RoketoStream) => stream.status === STREAM_STATUS.Active;
+
 function isIdling(stream: RoketoStream) {
   return (
     stream.status === STREAM_STATUS.Initialized

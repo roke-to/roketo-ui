@@ -9,9 +9,6 @@ const variants = {
   outlined: 'outlined',
 };
 
-// const sizes = ['normal', 'big'];
-// const colors = ['dark', 'light'];
-
 type CommonButtonProps = {
   icon?: never;
   children?: React.ReactNode;

@@ -11,7 +11,7 @@ import { getEmptyStream } from 'shared/api/roketo/helpers';
 import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { useGetStreamDirection, STREAM_DIRECTION } from 'shared/hooks/useGetStreamDirection';
 import { useToken } from 'shared/hooks/useToken';
-import { streamViewData } from 'features/roketo-resource';
+import {streamViewData} from 'features/roketo-resource';
 
 import { StreamingSpeed } from './StreamingSpeed';
 

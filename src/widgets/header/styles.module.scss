@@ -1,0 +1,34 @@
+@import 'src/shared/ui/palette';
+
+.wrapper {
+  border-bottom: 1px solid $light-grey;
+
+  background-color: $white;
+}
+
+.root {
+  padding: 20px 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  margin-right: 40px;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+
+  & > :not(:last-child) {
+    margin-right: 42px;
+  }
+}
+

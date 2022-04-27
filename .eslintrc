@@ -19,6 +19,9 @@
     "jsx-a11y/label-has-associated-control": "off",
     "react/require-default-props": "off",
     "react/react-in-jsx-scope": "off",
+    "import/no-extraneous-dependencies": "warn",
+    "react/function-component-definition": "off",
+    "react/no-unescaped-entities": "warn",
     "import/prefer-default-export": "off",
     "class-methods-use-this": "warn",
     "react/prop-types": "warn",
@@ -28,8 +31,14 @@
     "consistent-return": "warn"
   },
   "settings": {
-    "import/resolver": {
-      "typescript": {}
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
     },
-  },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true, // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/unist`
+        "project": "./tsconfig.json"
+      }
+    }
+  }
 }

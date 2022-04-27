@@ -2,13 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 @import './styles/ReactModal.scss';
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 @import './styles/burgerMenu.scss';
 @import './styles/table.scss';
 
 html {
   height: 100%;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

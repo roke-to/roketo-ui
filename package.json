@@ -45,6 +45,7 @@
     "react-modal": "^3.14.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.0",
+    "react-styleguidist": "^11.2.0",
     "sass": "^1.49.9",
     "swr": "^1.1.1",
     "tailwind-css-variables": "^3.0.1",
@@ -57,7 +58,8 @@
     "build": "CI=false craco build",
     "test": "craco test",
     "eslint": "eslint -c .eslintrc src --ext .js,.jsx,.ts,.tsx",
-    "deploy": "yarn build && gh-pages -d build"
+    "deploy": "yarn build && gh-pages -d build",
+    "build-styleguidist": "yarn styleguidist server"
   },
   "devDependencies": {
     "cypress": "^9.5.3"
