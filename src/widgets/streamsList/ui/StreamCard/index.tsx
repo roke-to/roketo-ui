@@ -4,13 +4,10 @@ import {generatePath, Link} from 'react-router-dom';
 
 import {RoketoStream} from 'shared/api/roketo/interfaces/entities';
 import {ROUTES_MAP} from 'shared/helpers/routing';
-
-import {useToken} from 'shared/hooks/useToken';
 import {STREAM_DIRECTION, useGetStreamDirection} from 'shared/hooks/useGetStreamDirection';
-import {streamViewData} from 'features/roketo-resource';
 
 import {Name} from '../Name';
-import {StreamStatus} from '../StreamStatus';
+import {StreamProgress} from '../StreamProgress';
 
 import {Controls} from '../Controls';
 import styles from './styles.module.scss';
@@ -24,16 +21,7 @@ export const StreamCard = ({stream, className}: StreamCardProps) => {
   const {
     id,
     description,
-    token_account_id: tokenAccountId,
   } = stream;
-
-  const {progress} = streamViewData(stream);
-
-  const {formatter, meta} = useToken(tokenAccountId);
-
-  const streamed = Number(formatter.toHumanReadableValue(progress.streamed));
-  const withdrawn = Number(formatter.toHumanReadableValue(progress.withdrawn));
-  const total = Number(formatter.toHumanReadableValue(progress.full));
 
   const isIncomingStream = useGetStreamDirection(stream) === STREAM_DIRECTION.IN;
 
@@ -49,13 +37,7 @@ export const StreamCard = ({stream, className}: StreamCardProps) => {
         <Name name={name} label={label}/>
       </Link>
 
-
-      <StreamStatus
-        streamed={streamed}
-        withdrawn={withdrawn}
-        total={total}
-        symbol={meta.symbol}
-      />
+      <StreamProgress stream={stream} />
 
       <Link to={streamPageLink} className='col-span-2 grow-0'>
         <p className={styles.description}>
