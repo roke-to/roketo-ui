@@ -80,15 +80,20 @@ export class FTApi {
       )
     ];
 
+    let depositSumm = new BigNumber(0);
+    const depositAmmount =  utils.format.parseNearAmount('0.00125') as string; // account creation costs 0.00125 NEAR for storage
+
     if (!isRegisteredSender) {
       actions.unshift(
         transactions.functionCall(
           "storage_deposit",
           { account_id: payload.owner_id },
           '30000000000000',
-          utils.format.parseNearAmount('0.00125') // account creation costs 0.00125 NEAR for storage
+          depositAmmount
         )
       )
+
+      depositSumm = depositSumm.plus(depositAmmount);
     }
 
     if (!isRegisteredReceiver) {
@@ -97,9 +102,11 @@ export class FTApi {
           "storage_deposit",
           { account_id: payload.receiver_id },
           '30000000000000',
-          utils.format.parseNearAmount('0.00125') // account creation costs 0.00125 NEAR for storage
+          depositAmmount
         )
       )
+
+      depositSumm = depositSumm.plus(depositAmmount);
     }
 
     if(isWNearTokenId(this.tokenAccountId)) {
@@ -109,7 +116,7 @@ export class FTApi {
           {},
           '30000000000000',
           // we should add 1 for Push purposes
-          new BigNumber(amount).plus('1').toFixed()
+          new BigNumber(amount).plus(depositSumm).toFixed()
         ),
       )
     }
