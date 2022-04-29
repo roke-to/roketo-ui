@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import classNames from 'classnames';
-import { RadioButton } from '../RadioButton';
-import { DropdownOpener } from '../DropdownOpener';
-import { DropdownMenu, DropdownMenuItem } from '../DropdownMenu';
+import {RadioButton} from '../RadioButton';
+import {DropdownOpener} from '../DropdownOpener';
+import {DropdownMenu} from '../DropdownMenu';
+
+import styles from './styles.module.scss';
 
 type FilterOptionWithCounterProps = {
   count: React.ReactNode;
   option: React.ReactNode;
 };
 
-export function FilterOptionWithCounter({ count, option }: FilterOptionWithCounterProps) {
+export function FilterOptionWithCounter({count, option}: FilterOptionWithCounterProps) {
   return (
     <span>
       {option}
@@ -20,7 +22,7 @@ export function FilterOptionWithCounter({ count, option }: FilterOptionWithCount
 }
 
 type FilterOption = {
-  label: string;
+  label?: string;
   fn: (a: any, b: any) => number;
 };
 
@@ -30,9 +32,8 @@ type FilterProps<T> = {
   renderOption: (option: T, active: boolean) => React.ReactNode;
   renderActive?: (option: T) => React.ReactNode;
   active: T;
-  minimal?: boolean;
   onChange: (option: T) => void;
-  className: string;
+  className?: string;
 };
 
 export function Filter<T extends string | FilterOption>({
@@ -41,39 +42,39 @@ export function Filter<T extends string | FilterOption>({
   renderOption,
   renderActive,
   active,
-  minimal,
   onChange,
   className,
 }: FilterProps<T>) {
   const [opened, setOpened] = useState(false);
 
   return (
-    <div className={classNames('inline-flex items-center relative', className)}>
-      <div className="text-gray mr-2">{label}</div>
-      <DropdownOpener minimal={minimal} rounded onChange={setOpened}>
-        {renderActive ? renderActive(active) : active}
-      </DropdownOpener>
+    <div className={classNames(styles.root, className)}>
+      {label &&
+        <div className="text-gray mr-2">{label}</div>
+      }
 
-      <DropdownMenu
-        opened={opened}
-        className="right-0"
-        onClose={() => {
-          setOpened(false);
-        }}
-      >
-        {options.map((option) => (
-          <DropdownMenuItem key={typeof option === 'string' ? option : option.label}>
+      <div className={styles.dropdownWrapper}>
+        <DropdownOpener opened={opened} onChange={setOpened}>
+          {renderActive ? renderActive(active) : active}
+        </DropdownOpener>
+
+        <DropdownMenu
+          opened={opened}
+          className={styles.dropdownMenu}
+          onClose={() => {
+            setOpened(false);
+          }}
+        >
+          {options.map((option) => (
             <RadioButton
-              label={
-                renderOption ? renderOption(option, active === option) : option
-              }
+              label={renderOption ? renderOption(option, active === option) : option}
               active={active === option}
               value={option}
               onChange={onChange}
             />
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenu>
+          ))}
+        </DropdownMenu>
+      </div>
     </div>
   );
 }

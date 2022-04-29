@@ -29,7 +29,7 @@ type SpecificLinkProps = {
 type SpecificButtonProps = {
   link?: false;
   type: 'submit' | 'button';
-  onClick?: () => void;
+  onClick?: (e: React.SyntheticEvent) => void;
 };
 
 type ButtonProps = CommonButtonProps & (SpecificLinkProps | SpecificButtonProps);

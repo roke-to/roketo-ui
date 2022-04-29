@@ -1,0 +1,32 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  display: flex;
+
+  align-items: center;
+
+  width: max-content;
+
+  & > :not(:last-child) {
+    margin-right: 10px;
+  }
+}
+
+.radio {
+  width: 20px;
+  height: 20px;
+
+  border-radius: 50%;
+
+  border: 1px solid $blue;
+
+  &Active {
+    border: 6px solid $blue;
+  }
+}
+
+.text {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+}

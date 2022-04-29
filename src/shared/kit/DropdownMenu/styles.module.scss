@@ -1,0 +1,17 @@
+@import 'src/shared/ui/palette';
+
+.menu {
+  background-color: $white;
+  filter: drop-shadow(2px 2px 17px rgba(138, 150, 168, 0.12)) drop-shadow(-2px -3px 21px rgba(138, 150, 168, 0.12));
+
+  border-radius: 16px;
+  padding: 16px;
+
+  & > :not(:last-child) {
+    margin-bottom: 12px;
+  }
+}
+
+.menuDivider {
+  border: 1px solid #EEEEEE;
+}
