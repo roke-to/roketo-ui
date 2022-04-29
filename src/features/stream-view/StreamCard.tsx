@@ -70,7 +70,7 @@ export function StreamCard({ stream, className }: StreamCardProps) {
           </div>
         </div>
         <ProgressBar className="mt-5" progresses={progresses} />
-        <div className="flex text-sm t6578mt-3 mr-3">
+        <div className="flex text-sm mt-3 mr-3">
           <StreamProgressPercentage
             className="mr-4"
             label="Withdrawn"

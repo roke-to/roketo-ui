@@ -27,9 +27,7 @@ export const StreamCard = ({stream, className}: StreamCardProps) => {
     token_account_id: tokenAccountId,
   } = stream;
 
-  const {progress, ...rest} = streamViewData(stream);
-
-  console.log({stream, rest});
+  const {progress} = streamViewData(stream);
 
   const {formatter, meta} = useToken(tokenAccountId);
 
@@ -62,9 +60,6 @@ export const StreamCard = ({stream, className}: StreamCardProps) => {
       <Link to={streamPageLink} className='col-span-2 grow-0'>
         <p className={styles.description}>
           {description}
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eaque in iste libero officiis perspiciatis provident,
-          quasi repellendus tempora veritatis voluptates? Assumenda atque fuga magni officia placeat quaerat quos
-          recusandae sapiente.
         </p>
       </Link>
 

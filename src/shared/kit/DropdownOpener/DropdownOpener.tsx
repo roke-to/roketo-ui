@@ -19,10 +19,9 @@ export function DropdownOpener({
   onChange,
   ...rest
 }: DropdownOpenerProps) {
-  const arrowClassName = cn({
-    [styles.arrow]: true,
-    [styles.rotate]: opened,
-  });
+  const arrowClassName = cn(styles.arrow, {
+      [styles.rotate]: opened,
+    });
 
   return (
     <button

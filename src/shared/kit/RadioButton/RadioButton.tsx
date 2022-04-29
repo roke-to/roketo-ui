@@ -22,7 +22,7 @@ export function RadioButton<T>({
         onChange={() => onChange(value)}
       />
       <div
-        className={classNames({[styles.radio]: true, [styles.radioActive]: active})}
+        className={classNames(styles.radio, {[styles.radioActive]: active})}
       />
 
       <div className={styles.text}>

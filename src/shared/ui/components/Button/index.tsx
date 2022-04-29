@@ -34,11 +34,14 @@ export const Button = ({
   className,
   onClick
 }: Props) => {
-  const buttonClassName = cn({
-    [styles.root]: true,
-    [styles.primary]: displayMode === DisplayMode.primary,
-    [styles.action]: displayMode === DisplayMode.action,
-  }, className);
+  const buttonClassName = cn(
+    styles.root,
+    {
+      [styles.primary]: displayMode === DisplayMode.primary,
+      [styles.action]: displayMode === DisplayMode.action,
+    },
+    className
+  );
 
   const button = (
     <button
