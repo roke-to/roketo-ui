@@ -19,8 +19,9 @@ export const Authorization = () => {
 
   if (!signedIn) {
     return (
-      <button type='button' onClick={login}>
-        Sign in with NEAR Wallet <LogoutIcon />
+      <button type='button' onClick={login} className={styles.root}>
+        <span className={styles.name}>Sign in with NEAR Wallet</span>
+        <LogoutIcon />
       </button>
     )
   }

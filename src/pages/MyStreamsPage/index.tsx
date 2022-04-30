@@ -88,9 +88,12 @@ export const MyStreamsPage = () => {
           onFilterDone={setFiltered}
         />
 
-        {filteredItems &&
-          <StreamsList streams={filteredItems} className={styles.section}/>
-        }
+        <StreamsList
+          displayingStreams={filteredItems}
+          className={styles.section}
+          onCreateStreamClick={toggleModal}
+        />
+
       </Layout>
     </div>
   );
