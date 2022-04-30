@@ -5,35 +5,33 @@ import {getBalancePerDesiredPeriod} from 'shared/helpers/speed';
 
 import {TIME_PERIOD_SIGNS, TimePeriod} from 'shared/constants';
 
-const TOKEN_FIELD_MAP: {
-  [type: string]: 'total_incoming' | 'total_outgoing',
-} = {
-  income: 'total_incoming',
-  outcome: 'total_outgoing',
-};
+export enum StreamType {
+  income = 'total_incoming',
+  outcome = 'total_outgoing',
+}
 
 type Props = {
-  type: 'income' | 'outcome',
+  type: StreamType,
   period: TimePeriod,
 
   className?: string,
 }
 
 export const TokenAmountSpeed = ({type, period, className}: Props) => {
-  const desiredField = TOKEN_FIELD_MAP[type];
+  const {roketo, priceOracle, tokens} = useRoketoContext();
 
-  const {roketo, priceOracle} = useRoketoContext();
-
-  const tokensBalanceMap = roketo.account[desiredField];
+  const tokensBalanceMap = roketo.account[type];
   const tokenAccountIds = Object.keys(tokensBalanceMap);
 
   const totalAmountInUSD = tokenAccountIds.reduce((total, tokenAccountId) => {
-    // const {formatter} = tokens[tokenAccountId];
+    const {formatter} = tokens[tokenAccountId];
 
-    const balancePerSec = Number(tokensBalanceMap[tokenAccountId]);
-    const balancePerDesiredPeriod = getBalancePerDesiredPeriod(balancePerSec, period);
+    const balancePerSec = tokensBalanceMap[tokenAccountId];
 
-    const usdAmount = priceOracle.getPriceInUsd(tokenAccountId, balancePerDesiredPeriod);
+    const balancePerDesiredPeriod = getBalancePerDesiredPeriod(balancePerSec, period).toFixed();
+    const formattedBalance = formatter.toHumanReadableValue(balancePerDesiredPeriod, 3);
+
+    const usdAmount = priceOracle.getPriceInUsd(tokenAccountId, formattedBalance);
 
     return total + Number(usdAmount);
   }, 0);

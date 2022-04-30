@@ -72,7 +72,6 @@ export class TokenFormatter {
         mantissa: decimals,
         trimMantissa: true,
         optionalMantissa: true,
-        average: true,
       });
   }
 

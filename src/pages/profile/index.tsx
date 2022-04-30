@@ -2,7 +2,6 @@ import React, { useCallback, useRef, useState } from 'react';
 import classNames from 'classnames';
 
 import { useRoketoContext } from 'app/roketo-context';
-import { Input } from 'shared/kit/Input';
 import { Button } from 'shared/kit/Button';
 import { usersApiClient, useUser } from 'shared/api/roketo-web';
 
@@ -56,7 +55,6 @@ export function ProfilePage() {
       <form className={classNames('inline-flex mb-10', busy && styles.profileFormBusy)} onSubmit={updateUser} ref={formRef}>
         <div className="mr-10">
           Name:
-          <Input>
             <input
               key={name}
               placeholder="Name"
@@ -64,11 +62,9 @@ export function ProfilePage() {
               defaultValue={name}
               disabled={busy}
             />
-          </Input>
         </div>
         <div className="mr-10">
           Email:
-          <Input>
             <input
               key={email}
               placeholder="Email"
@@ -76,7 +72,6 @@ export function ProfilePage() {
               defaultValue={email}
               disabled={busy}
             />
-          </Input>
         </div>
         <Button
           type="submit"

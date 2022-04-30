@@ -7,6 +7,7 @@ import {getAvailableToWithdraw} from 'shared/api/roketo/helpers';
 import {streamViewData} from 'features/roketo-resource';
 
 const INITIAL_VALUE = new BigNumber(0);
+const MANTISSA = 3;
 
 export const countTotalUSDWithdrawal = (
   streams: RoketoStream[],
@@ -18,7 +19,7 @@ export const countTotalUSDWithdrawal = (
     const {formatter} = tokens[tokenAccountId];
 
     const withdrawal = getAvailableToWithdraw(inputStream).toFixed();
-    const amountForDisplay = formatter.amount(withdrawal);
+    const amountForDisplay = formatter.toHumanReadableValue(withdrawal, MANTISSA);
 
     const amountInUSD = priceOracle.getPriceInUsd(tokenAccountId, amountForDisplay);
 
@@ -41,13 +42,13 @@ export const collectTotalFinancialAmountInfo = (
 
     const {progress} = streamViewData(stream);
 
-    const streamedAmountForDisplay = formatter.amount(progress.streamed);
+    const streamedAmountForDisplay = formatter.toHumanReadableValue(progress.streamed, MANTISSA);
     const streamedUSD = priceOracle.getPriceInUsd(tokenAccountId, streamedAmountForDisplay);
 
-    const fullAmountForDisplay = formatter.amount(progress.full);
+    const fullAmountForDisplay = formatter.toHumanReadableValue(progress.full, MANTISSA);
     const fullUSD = priceOracle.getPriceInUsd(tokenAccountId, fullAmountForDisplay);
 
-    const withdrawnAmountForDisplay = formatter.amount(progress.withdrawn);
+    const withdrawnAmountForDisplay = formatter.toHumanReadableValue(progress.withdrawn, MANTISSA);
     const withdrawnUSD = priceOracle.getPriceInUsd(tokenAccountId, withdrawnAmountForDisplay);
 
     return {

@@ -29,13 +29,12 @@ export function DropdownMenu({
     <div
       ref={ref}
       className={classNames(
+        styles.menu,
+        {[styles.hidden]: !opened},
         className,
-        opened ? 'flex' : 'hidden',
       )}
     >
-      <div className={classNames(styles.menu)}>
-        {children}
-      </div>
+      {children}
     </div>
   );
 }

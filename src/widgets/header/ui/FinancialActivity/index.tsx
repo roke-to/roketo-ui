@@ -6,9 +6,9 @@ import {TimePeriod} from 'shared/constants';
 import {WalletIcon} from '@ui/icons/Wallet';
 import {IncomeIcon} from '@ui/icons/Income';
 import {OutcomeIcon} from '@ui/icons/Outcome';
-import {Balance} from 'shared/components/Balance';
+import {Balance, DisplayMode} from 'shared/components/Balance';
 
-import {TokenAmountSpeed} from '../TokenAmountSpeed';
+import {StreamType, TokenAmountSpeed} from '../TokenAmountSpeed';
 
 import styles from './styles.module.scss';
 
@@ -19,7 +19,7 @@ export const FinancialActivity = () => (
         <OutcomeIcon />
         <TokenAmountSpeed
           className={styles.balance}
-          type='outcome'
+          type={StreamType.outcome}
           period={TimePeriod.Hour}
         />
       </div>
@@ -29,7 +29,7 @@ export const FinancialActivity = () => (
         <IncomeIcon />
         <TokenAmountSpeed
           className={styles.balance}
-          type='income'
+          type={StreamType.income}
           period={TimePeriod.Hour}
         />
       </div>
@@ -40,7 +40,7 @@ export const FinancialActivity = () => (
         <Balance
           className={styles.balance}
           tokenAccountId={env.WNEAR_ID}
-          mode="usd"
+          mode={DisplayMode.USD}
         />
       </div>
     </div>

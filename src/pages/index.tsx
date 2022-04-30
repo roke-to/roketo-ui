@@ -83,9 +83,14 @@ export function Routing() {
           <StreamPage />
         </Route>
 
-        <Route path={myStreams.path} exact>
+        <PrivateRoute
+          exact
+          redirect={<Redirect to={authorize.path} />}
+          allowed={auth.signedIn}
+          path={myStreams.path}
+        >
           <MyStreamsPage />
-        </Route>
+        </PrivateRoute>
 
         <PrivateRoute
           exact
@@ -95,6 +100,7 @@ export function Routing() {
         >
           <StreamsPage />
         </PrivateRoute>
+
         <PrivateRoute
           exact
           redirect={<Redirect to={authorize.path} />}

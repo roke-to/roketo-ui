@@ -1,0 +1,30 @@
+@import 'src/shared/ui/palette';
+
+.wrapper {
+  display: flex;
+  width: 100%;
+
+  & > :not(:last-child) {
+    margin-right: 20px;
+  }
+}
+
+.speedInput {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.input {
+  margin-bottom: 6px;
+}
+
+.label {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 15px;
+
+  margin-left: 5px;
+
+  color: $bluish-grey;
+}
