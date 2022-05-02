@@ -11,7 +11,7 @@ import { LinkIcon } from 'shared/icons/Link';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { useToken } from 'shared/hooks/useToken';
 import { useGetStreamDirection, STREAM_DIRECTION } from 'shared/hooks/useGetStreamDirection';
-import { StreamControls } from 'features/stream-control/StreamControls';
+import { StreamControlsLegacy } from 'features/stream-control/StreamControlsLegacy';
 import {streamViewData} from 'features/roketo-resource';
 
 import { StreamingSpeed } from './StreamingSpeed';
@@ -101,7 +101,7 @@ export function StreamCard({ stream, className }: StreamCardProps) {
         )}
         <div className="w-24">
           <div className="text-gray">Status:</div>
-          <StreamControls className="w-full" minimal stream={stream} />
+          <StreamControlsLegacy className="w-full" minimal stream={stream} />
         </div>
         <div className="flex items-start justify-end w-52">
           <Button
