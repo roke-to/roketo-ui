@@ -46,7 +46,7 @@ type DropdownMenuItemProps = {
 
 export function DropdownMenuItem({ children, className, ...rest }: DropdownMenuItemProps) {
   return (
-    <div className={className}{...rest}>
+    <div className={className} {...rest}>
       {children}
     </div>
   );

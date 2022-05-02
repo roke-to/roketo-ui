@@ -5,19 +5,15 @@ import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 const bindings = {
   [STREAM_STATUS.Initialized]: {
-    colorClass: 'text-special-active',
     label: 'Initialized',
   },
   [STREAM_STATUS.Active]: {
-    colorClass: 'text-special-active',
     label: 'Active',
   },
   [STREAM_STATUS.Paused]: {
-    colorClass: 'text-special-hold',
     label: 'Paused',
   },
   [STREAM_STATUS.Finished]: {
-    colorClass: 'text-special-active',
     label: 'Finished',
   },
 } as const;
@@ -33,7 +29,7 @@ export function StreamStatus({ stream, className }: StreamStatusProps) {
     : bindings[STREAM_STATUS.Finished];
 
   return (
-    <div className={classNames(binding.colorClass, className)}>
+    <div className={classNames(className)}>
       {binding.label}
     </div>
   );

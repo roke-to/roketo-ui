@@ -5,6 +5,7 @@ import copy from 'clipboard-copy';
 import {LinkIcon} from '@ui/icons/Link';
 
 import {WithdrawButton} from 'features/stream-control/WithdrawButton';
+import { StreamControls } from 'features/stream-control/StreamControls';
 
 import {getStreamLink} from 'shared/helpers/routing';
 import {isActiveStream} from 'shared/api/roketo/helpers';
@@ -44,6 +45,8 @@ export const Controls = (props: Props) => {
       {showWithdraw &&
         <WithdrawButton stream={stream}/>
       }
+
+      <StreamControls stream={stream} />
 
       <StreamLinkButton onCLick={handleLinkClick}/>
     </div>
