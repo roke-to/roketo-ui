@@ -9,7 +9,7 @@ import { useToken } from 'shared/hooks/useToken';
 import { TokenImage } from 'shared/kit/TokenImage';
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
 
-import { StreamControls } from 'features/stream-control/StreamControls';
+import { StreamControlsLegacy } from 'features/stream-control/StreamControlsLegacy';
 import { WithdrawButton } from 'features/stream-control/WithdrawButton';
 
 import {streamViewData} from 'features/roketo-resource';
@@ -80,7 +80,7 @@ export function StreamDashboard({ stream }: { stream: RoketoStream }) {
 
       {!isDead &&
         <div className="flex relative z-10">
-          <StreamControls stream={stream} className="mr-2" />
+          <StreamControlsLegacy stream={stream} className="mr-2" />
 
           {/* render withdraw funds button */}
           {direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.Active &&

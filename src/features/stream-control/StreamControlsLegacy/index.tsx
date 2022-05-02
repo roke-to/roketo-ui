@@ -55,7 +55,7 @@ type StreamControlsProps = {
   className?: string;
 };
 
-export function StreamControls({ stream, minimal = false, className }: StreamControlsProps) {
+export function StreamControlsLegacy({ stream, minimal = false, className }: StreamControlsProps) {
   const { auth, roketo } = useRoketoContext();
   const modalControl = useBool(false);
   const [loading, setLoading] = useState(false);
