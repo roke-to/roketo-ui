@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
+import {SortIcon, OrderType} from '@ui/icons/Sort';
+
 import { Filter, FilterOptionWithCounter } from 'shared/kit/Filter';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
@@ -16,18 +18,22 @@ function compareBy(a: RoketoStream, b: RoketoStream, key: keyof RoketoStream) {
 const sorts = {
   bigBalanceFirst: {
     label: 'With big balances',
+    order: OrderType.desc,
     fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'balance'),
   },
   highSpeedFirst: {
     label: 'With high speed',
+    order: OrderType.desc,
     fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'tokens_per_sec'),
   },
   highSpeedLast: {
     label: 'With low speed',
+    order: OrderType.asc,
     fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'tokens_per_sec') * -1,
   },
   mostRecent: {
     label: 'Most recent',
+    order: OrderType.desc,
     fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'timestamp_created'),
   },
 };
@@ -92,7 +98,12 @@ export function StreamFilters({ items, onFilterDone, className }: StreamFiltersP
           active={sorting}
           onChange={setSorting}
           renderOption={(option) => <span>{option.label}</span>}
-          renderActive={(option) => <span>{option.label}</span>}
+          renderActive={(option) => (
+            <div className={styles.sortWithOrder}>
+              {option.order && <SortIcon type={option.order} />}
+              <span>{option.label}</span>
+            </div>
+          )}
         />
       </div>
     </div>

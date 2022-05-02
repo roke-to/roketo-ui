@@ -8,17 +8,19 @@ import {Button, ButtonType, DisplayMode as ButtonDisplayMode} from '@ui/componen
 import {ErrorSign} from '@ui/icons/ErrorSign';
 
 import {FormikInput} from 'shared/components/FormikInput';
-
 import {FormikTextArea} from 'shared/components/FormikTextArea';
 import {FormikCheckbox} from 'shared/components/FormikCheckbox';
 import {Balance, DisplayMode} from 'shared/components/Balance';
 
 import {env} from 'shared/config';
 
-import {INITIAL_FORM_VALUES} from '../constants';
-import {getFormValidationSchema} from '../lib';
 import {StreamSpeedCalcField} from '../StreamSpeedCalcField';
 import {TokenSelector} from '../TokenSelector';
+import {FeeDisclaimer} from '../FeeDisclaimer'
+
+import {INITIAL_FORM_VALUES} from '../constants';
+
+import {getFormValidationSchema} from '../lib';
 
 import styles from './styles.module.scss';
 
@@ -167,6 +169,10 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   component={FormikCheckbox}
                   className={styles.rowItem}
                 />
+              </Row>
+
+              <Row>
+                <FeeDisclaimer tokenAccountId={activeTokenAccountId} className={styles.feeDisclaimer} />
               </Row>
 
               <div className={styles.actionButtonsWrapper}>

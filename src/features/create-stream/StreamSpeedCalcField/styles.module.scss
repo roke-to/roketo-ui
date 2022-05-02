@@ -24,7 +24,18 @@
   font-size: 12px;
   line-height: 15px;
 
-  margin-left: 5px;
-
   color: $bluish-grey;
+}
+
+.formLabel {
+  position: relative;
+}
+
+.speed {
+  position: absolute;
+  top: 0;
+  left: 100%;
+
+  margin-left: 15px;
+  width: max-content;
 }

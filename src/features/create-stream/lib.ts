@@ -5,7 +5,9 @@ import {addMonths, differenceInDays} from 'date-fns';
 
 import {SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE} from 'shared/constants';
 
-export const getFormValidationSchema = (near: Near, accountId: string) =>  Yup.object().shape({
+import type {RichToken} from 'shared/api/ft';
+
+export const getFormValidationSchema = (near: Near, accountId: string) => Yup.object().shape({
   receiver: Yup.string()
     .required('Receiver is a required')
     .test(
@@ -46,12 +48,23 @@ export const getDurationInSeconds = (months: number, days: number, hours: number
     + hours * SECONDS_IN_HOUR;
 
   return durationInSeconds;
-}
+};
 
 export const getTokensPerSecondCount = (depositInYocto: string, durationInSeconds: number) => {
   const value = new BigNumber(depositInYocto)
     .dividedToIntegerBy(durationInSeconds)
     .toFixed();
 
-  return value !== 'Infinity' ? value : '0';
+  return value !== 'Infinity' && value !== 'NaN' ? value : '0';
+};
+
+export const getStreamingSpeed = (speedInSeconds: number, token: RichToken): string => {
+  if (speedInSeconds <= 0) {
+    return 'none';
+  }
+
+  const {formatter, meta} = token;
+  const {formattedValue, unit} = formatter.tokensPerMeaningfulPeriod(speedInSeconds);
+
+  return `${formattedValue} ${meta.symbol} / ${unit}`;
 };
