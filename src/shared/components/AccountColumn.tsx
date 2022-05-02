@@ -49,7 +49,7 @@ export function AccountColumn({
         <span className="ml-2">
           {showPeriod ? (
             <div className="inline-flex items-center relative">
-              <DropdownOpener minimal rounded onChange={setOpened}>
+              <DropdownOpener onChange={setOpened}>
                 {periodsOptions.options[selectedPeriod]}
               </DropdownOpener>
               <DropdownMenu

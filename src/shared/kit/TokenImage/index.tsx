@@ -16,7 +16,7 @@ export function TokenImage({
   return (
     <div
       className={classNames(
-        'p-1 flex-shrink-0 rounded-lg bg-card2 inline-flex items-center justify-center',
+        'p-1 flex-shrink-0 rounded-full bg-black inline-flex items-center justify-center',
         `w-${size} h-${size}`,
         className,
       )}

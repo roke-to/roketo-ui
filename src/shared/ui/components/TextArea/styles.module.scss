@@ -1,0 +1,37 @@
+@import 'src/shared/ui/palette';
+
+.textarea {
+  position: relative;
+  width: 100%;
+  min-height: 100px;
+
+  outline: 1px solid transparent;
+
+  border: 1px solid $grey;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: $white;
+
+  color: $light-black;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+
+  &::after {
+    content: attr(data-current-character-count number);
+
+    position: absolute;
+    top: 100%;
+    right: 0;
+
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+
+    color: $bluish-grey;
+  }
+}
+
+.error {
+  border-color: $danger;
+}

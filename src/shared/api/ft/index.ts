@@ -6,14 +6,16 @@ import { TokenMetadata } from './types';
 import { TokenFormatter } from './token-formatter';
 import { FTApi } from './ft-api';
 
+export type RichToken = {
+  api: FTApi;
+  roketoMeta: RoketoTokenMeta;
+  formatter: TokenFormatter;
+  meta: TokenMetadata;
+  balance: string;
+};
+
 export type RichTokens = {
-  [tokenAccountId: string]: {
-    api: FTApi;
-    roketoMeta: RoketoTokenMeta;
-    formatter: TokenFormatter;
-    meta: TokenMetadata;
-    balance: string;
-  }
+  [tokenAccountId: string]: RichToken,
 }
 
 type InitFRProps = {

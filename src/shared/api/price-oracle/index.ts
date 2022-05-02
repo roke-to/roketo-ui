@@ -8,7 +8,7 @@ import {PriceOracleContract} from './interfaces/contract';
 import {CONTRACT_CHANGE_METHODS_LIST, CONTRACT_VIEW_METHODS_LIST, TOKEN_MULTIPLIER_MAP,} from './constants';
 
 export interface PriceOracle {
-  getPriceInUsd: (tokenId: TokenAccountId, amount: number | string) => string,
+  getPriceInUsd: (tokenId: TokenAccountId, amount: number | string, shownDecimals?: number) => string,
 }
 
 const convertRawPriceToTokenMap = (
@@ -46,8 +46,13 @@ const convertRawPriceToTokenMap = (
  * more: https://github.com/NearDeFi/price-oracle/blob/c2a10765a629dd013eeaa0f49d5631cbc0470b76/src/utils.rs#L18
  */
 const convertTokenToUsdFactory = (
-  priceTokenMap: TokenPriceCollection, tokenToMultiplierMap: TokenMultiplierMap
-) => (tokenAccountId: TokenAccountId, amount: number | string) => {
+  priceTokenMap: TokenPriceCollection,
+  tokenToMultiplierMap: TokenMultiplierMap,
+) => (
+  tokenAccountId: TokenAccountId,
+  amount: number | string,
+  shownDecimals: number = 3
+) => {
   const tokenPrice = priceTokenMap[tokenAccountId];
   const tokenMultiplier = tokenToMultiplierMap[tokenAccountId];
 
@@ -62,7 +67,7 @@ const convertTokenToUsdFactory = (
     .multiply(Number(multiplier))
     .divide(10 ** decimals)
     .format({
-      mantissa: 3,
+      mantissa: shownDecimals,
       trimMantissa: true,
     });
 };

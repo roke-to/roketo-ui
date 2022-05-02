@@ -12,17 +12,9 @@ export const ROUTES_MAP = {
     path: '/account',
     title: 'Account',
   },
-  streams: {
-    path: '/streams',
-    title: 'Streams [OLD]'
-  },
   myStreams: {
     path: '/myStreams',
     title: 'Streams',
-  },
-  send: {
-    path: '/',
-    title: 'Create Stream',
   },
   stream: {
     path: '/streams/:id',

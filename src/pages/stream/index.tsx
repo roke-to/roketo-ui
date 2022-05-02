@@ -59,7 +59,7 @@ export function StreamPage() {
   return (
     <div className="container mx-auto p-12">
       <div className="mb-10">
-        <BackButton to={ROUTES_MAP.streams.path} />
+        <BackButton to={ROUTES_MAP.myStreams.path} />
       </div>
       {pageError &&
         <PageError

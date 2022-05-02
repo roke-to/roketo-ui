@@ -1,0 +1,19 @@
+@import 'src/shared/ui/palette';
+
+.filtersWrapper {
+  display: flex;
+  align-items: center;
+
+  & > :not(:last-child) {
+    margin-right: 20px;
+  }
+}
+
+.sortWithOrder {
+  display: flex;
+  align-items: center;
+
+  & > :not(:last-child) {
+    margin-right: 6px;
+  }
+}

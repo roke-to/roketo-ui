@@ -1,0 +1,86 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  display: flex;
+
+  min-width: 1000px;
+
+  flex-direction: column;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 28px;
+
+  margin-bottom: 16px;
+}
+
+.description {
+  font-size: 16px;
+  line-height: 24px;
+
+  margin-bottom: 25px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+
+  & > :not(:last-child) {
+    margin-bottom: 32px;
+  }
+}
+
+.row {
+  display: flex;
+
+  justify-content: space-around;
+
+  &Item {
+    flex: 1;
+  }
+
+  & > :not(:last-child) {
+    margin-right: 25px;
+  }
+}
+
+.submitError {
+  display: flex;
+
+  align-items: center;
+
+  span {
+    color: $danger;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+
+    margin-left: 8px;
+  }
+}
+
+.actionButtonsWrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  & > :not(:last-child) {
+    margin-right: 20px;
+  }
+}
+
+.feeDisclaimer {
+  color: $bluish-grey;
+
+  text-align: left;
+
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+
+  &Row {
+    justify-content: flex-start;
+  }
+}

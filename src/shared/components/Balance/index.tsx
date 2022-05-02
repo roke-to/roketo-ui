@@ -2,17 +2,20 @@ import { useRoketoContext } from 'app/roketo-context';
 import { isWNearTokenId } from 'shared/helpers/isWNearTokenId';
 import { useToken } from 'shared/hooks/useToken';
 
-const USD_MODE = 'usd';
-const CRYPTO_MODE = 'crypto'
+export enum DisplayMode {
+  USD = 'USD',
+  CRYPTO = 'CRYPTO',
+  BOTH = 'BOTH',
+}
 
 type BalanceProps = {
   tokenAccountId: string,
   className?: string,
   // Display balance in USD or in Crypto currency
-  mode?: 'usd' | 'crypto',
+  mode?: DisplayMode,
 }
 
-export function Balance({ tokenAccountId, className, mode = CRYPTO_MODE }: BalanceProps) {
+export function Balance({ tokenAccountId, className, mode = DisplayMode.CRYPTO }: BalanceProps) {
   const { auth, priceOracle } = useRoketoContext()
   const { balance, formatter, meta } = useToken(tokenAccountId);
 
@@ -21,7 +24,7 @@ export function Balance({ tokenAccountId, className, mode = CRYPTO_MODE }: Balan
     : balance;
   const displayedCryptoAmount = formatter.amount(actualCryptoBalance);
 
-  const showInUSD = mode === USD_MODE;
+  const showInUSD = mode === DisplayMode.USD;
 
   const amount = showInUSD
     ? priceOracle.getPriceInUsd(tokenAccountId, displayedCryptoAmount)
@@ -30,7 +33,7 @@ export function Balance({ tokenAccountId, className, mode = CRYPTO_MODE }: Balan
 
   return (
     <span className={className}>
-      {`Balance: ${currencySymbol} ${amount} `}
+      {`Balance: ${amount} ${currencySymbol}`}
     </span>
   );
 }

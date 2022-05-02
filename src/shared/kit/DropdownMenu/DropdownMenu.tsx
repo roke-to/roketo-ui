@@ -2,6 +2,8 @@ import React from 'react';
 import classNames from 'classnames';
 import { useOutsideClick } from 'shared/hooks/useOutsideClick';
 
+import styles from './styles.module.scss';
+
 type DropdownMenuProps = {
   opened: boolean;
   children: React.ReactNode;
@@ -27,37 +29,29 @@ export function DropdownMenu({
     <div
       ref={ref}
       className={classNames(
-        className,
-        'absolute top-full pt-2',
-        opened ? 'flex' : 'hidden',
-      )}
-    >
-      <div className={classNames('w-full bg-hover rounded-2xl py-2')}>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-type DropdownMenuItemProps = {
-  children: React.ReactNode;
-  className?: String;
-};
-
-export function DropdownMenuItem({ children, className, ...rest }: DropdownMenuItemProps) {
-  return (
-    <div
-      className={classNames(
-        'px-5 py-1 font-semibold text-sm hover:font-bold',
+        styles.menu,
+        {[styles.hidden]: !opened},
         className,
       )}
-      {...rest}
     >
       {children}
     </div>
   );
 }
 
+type DropdownMenuItemProps = {
+  children: React.ReactNode;
+  className?: string;
+};
+
+export function DropdownMenuItem({ children, className, ...rest }: DropdownMenuItemProps) {
+  return (
+    <div className={className}{...rest}>
+      {children}
+    </div>
+  );
+}
+
 export function DropdownMenuDivider() {
-  return <div className="border-dark border-t w-full my-2" />;
+  return <div className={styles.menuDivider} />;
 }

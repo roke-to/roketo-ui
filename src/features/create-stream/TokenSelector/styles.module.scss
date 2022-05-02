@@ -1,0 +1,46 @@
+@import 'src/shared/ui/palette';
+
+.dropdownWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.dropdownOpener {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background-color: $white;
+  border: 1px solid $grey;
+
+  border-radius: 8px;
+}
+
+.tokenOption {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+
+  & > :not(:last-child) {
+    margin-right: 6px;
+  }
+}
+
+.withHover {
+  &:hover {
+    background-color: #FBFCFF;
+  }
+}
+
+.dropdownMenu {
+  margin-top: 10px;
+  position: absolute;
+
+  right: 50%;
+  transform: translateX(50%);
+}
