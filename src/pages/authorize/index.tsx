@@ -1,5 +1,6 @@
 import React from 'react';
-import { NearAuthButton } from 'features/near-auth/NearAuthButton';
+
+import {Authorization} from 'features/authorization';
 
 export function AuthorizePage() {
   return (
@@ -17,10 +18,7 @@ export function AuthorizePage() {
           <p className="text-gray">
             Click button below to login or create new account
           </p>
-          <NearAuthButton
-            variant="main"
-            className="mt-10 rounded-lg py-4 px-8"
-          />
+          <Authorization />
         </div>
       </div>
     </div>

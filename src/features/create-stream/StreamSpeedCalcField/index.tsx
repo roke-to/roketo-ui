@@ -1,5 +1,5 @@
 import React, {ChangeEvent, Dispatch, SetStateAction, useEffect, useState} from 'react';
-import classNames from 'classnames';
+import cn from 'classnames';
 import {FieldInputProps, FormikState} from 'formik';
 
 import {useRoketoContext} from 'app/roketo-context';
@@ -10,7 +10,7 @@ import {Input} from '@ui/components/Input';
 import {usePrev} from 'shared/hooks/usePrev';
 import {isLikeNumber} from 'shared/helpers/validation';
 
-import {getTokensPerSecondCount, getDurationInSeconds} from '../lib';
+import {getTokensPerSecondCount, getDurationInSeconds, getStreamingSpeed} from '../lib';
 
 import styles from './styles.module.scss';
 
@@ -24,7 +24,7 @@ type SpeedInputProps = {
 };
 
 const SpeedInput = ({className, value, onChange, label}: SpeedInputProps) => (
-  <div className={classNames(styles.speedInput, className)}>
+  <div className={cn(styles.speedInput, className)}>
     <Input
       placeholder="0"
       value={value}
@@ -68,6 +68,7 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
   const {formatter} = token;
 
   const error = form.errors[field.name];
+  const {value: currentStreamingSpeed} = field;
 
   const [months, setMonths] = useState(0);
   const [days, setDays] = useState(0);
@@ -97,12 +98,22 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
     }
   };
 
+  const meaningfulSpeed = getStreamingSpeed(currentStreamingSpeed, token);
+  const labelWithStreamingSpeed = (
+    <div className={styles.formLabel}>
+      {label}
+      <span className={cn(styles.speed, styles.label)}>
+        {`Streaming speed: ${meaningfulSpeed}`}
+      </span>
+    </div>
+  );
+
   return (
     <FormField
       isRequired={isRequired}
       className={className}
       description={description}
-      label={label}
+      label={labelWithStreamingSpeed}
       error={error}
     >
       <div className={styles.wrapper}>

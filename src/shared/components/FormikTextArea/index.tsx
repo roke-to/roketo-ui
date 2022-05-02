@@ -1,9 +1,12 @@
 import React from 'react';
+import cn from 'classnames';
 
 import {FieldInputProps, FormikState} from 'formik';
 
 import {FormField} from '@ui/components/FormField';
 import {TextArea} from '@ui/components/TextArea';
+
+import styles from './styles.module.scss';
 
 type TextAreaProps = {
   placeholder: string,
@@ -14,6 +17,7 @@ type TextAreaProps = {
   label?: React.ReactNode,
   description?: React.ReactNode,
 
+  maxLength?: number,
   isRequired?: boolean,
   className?: string;
   error?: never;
@@ -25,9 +29,10 @@ export const FormikTextArea = (props: TextAreaProps) => {
     description,
     isRequired,
     className,
+    maxLength,
     field,
-    form,
     label,
+    form,
     ...rest
   } = props;
 
@@ -36,7 +41,7 @@ export const FormikTextArea = (props: TextAreaProps) => {
   return (
     <FormField
       isRequired={isRequired}
-      className={className}
+      className={cn(styles.formfield, className)}
       description={description}
       label={label}
       error={error}
@@ -45,9 +50,14 @@ export const FormikTextArea = (props: TextAreaProps) => {
         required={isRequired}
         hasError={Boolean(error)}
         placeholder={placeholder}
+        maxLength={maxLength}
         {...field}
         {...rest}
       />
+
+      {maxLength &&
+        <span className={styles.textLimitCounter}>{`${field?.value?.length || 0}/${maxLength}`}</span>
+      }
     </FormField>
   );
 };
