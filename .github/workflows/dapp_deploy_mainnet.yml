@@ -26,7 +26,6 @@ jobs:
         working-directory: .
         run: |
           yarn
-          mv .env.mainnet .env.production.local
           yarn build
 
       - name: Deploy 🚀

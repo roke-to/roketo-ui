@@ -115,7 +115,6 @@ export class FTApi {
           "near_deposit",
           {},
           '30000000000000',
-          // we should add 1 for Push purposes
           new BigNumber(amount).plus(depositSumm).toFixed()
         ),
       )

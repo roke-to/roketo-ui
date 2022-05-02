@@ -31,12 +31,10 @@ export class RoketoContractApi implements RoketoApi {
       return getEmptyAccount();
     }
 
-    let account;
-
     try {
-      account = await this.contract.get_account({ account_id: this.account.accountId });
+      const account = await this.contract.get_account({ account_id: this.account.accountId });
   
-      return account.Ok || account;
+      return account;
     } catch {
       return getEmptyAccount();
     }
@@ -46,7 +44,7 @@ export class RoketoContractApi implements RoketoApi {
     try {
       const res = await this.contract.get_account_incoming_streams({ account_id: this.account.accountId, from, limit });
 
-      return res.Ok || res;
+      return res;
     } catch {
       return [];
     }
@@ -55,8 +53,8 @@ export class RoketoContractApi implements RoketoApi {
   async getAccountOutgoingStreams({ from, limit }: StreamsProps): Promise<RoketoStream[]> {
     try {
       const res = await this.contract.get_account_outgoing_streams({ account_id: this.account.accountId, from, limit });
-
-      return res.Ok || res;
+      
+      return res;
     } catch {
       return [];
     }
@@ -66,12 +64,14 @@ export class RoketoContractApi implements RoketoApi {
     const res = await this.contract.get_stream({
       stream_id: streamId,
     });
+    console.log('res', res)
 
-    return res.Ok || res;
+    return res;
   }
 
   async getDao() {
     const res = await this.contract.get_dao();
+    console.log('res', res)
 
     return res;
   }

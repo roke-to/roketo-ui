@@ -23,7 +23,7 @@ jobs:
         working-directory: .
         run: |
           yarn
-          mv .env.testnet .env.production.local
+          mv .env.development .env.production.local
           yarn build
 
       - name: Deploy 🚀
