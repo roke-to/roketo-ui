@@ -15,10 +15,11 @@ type ContractChangeFunctionArgs<P> = {
   callbackUrl?: string;
 };
 
-type ContractResponse<R> = {
+// in testnet with error, in mainet just response
+type ContractResponse<R> = R & {
   Err: never;
   Ok: R;
-}
+};
 
 type ContractViewFunction<P, R> = (json?: P) => Promise<R>;
 type ContractChangeFunction<P> = (

@@ -31,37 +31,47 @@ export class RoketoContractApi implements RoketoApi {
       return getEmptyAccount();
     }
 
-    const newAccount = await this.contract.get_account({ account_id: this.account.accountId });
-
-    if (newAccount.Err) {
+    try {
+      const account = await this.contract.get_account({ account_id: this.account.accountId });
+  
+      return account;
+    } catch {
       return getEmptyAccount();
     }
-
-    return newAccount.Ok;
   }
 
   async getAccountIncomingStreams({ from, limit }: StreamsProps): Promise<RoketoStream[]> {
-    const res = await this.contract.get_account_incoming_streams({ account_id: this.account.accountId, from, limit });
-    
-    return res.Ok;
+    try {
+      const res = await this.contract.get_account_incoming_streams({ account_id: this.account.accountId, from, limit });
+
+      return res;
+    } catch {
+      return [];
+    }
   }
 
   async getAccountOutgoingStreams({ from, limit }: StreamsProps): Promise<RoketoStream[]> {
-    const res = await this.contract.get_account_outgoing_streams({ account_id: this.account.accountId, from, limit });
-
-    return res.Ok;
+    try {
+      const res = await this.contract.get_account_outgoing_streams({ account_id: this.account.accountId, from, limit });
+      
+      return res;
+    } catch {
+      return [];
+    }
   }
 
   async getStream({ streamId }: { streamId: string }) {
     const res = await this.contract.get_stream({
       stream_id: streamId,
     });
+    console.log('res', res)
 
-    return res.Ok;
+    return res;
   }
 
   async getDao() {
     const res = await this.contract.get_dao();
+    console.log('res', res)
 
     return res;
   }
