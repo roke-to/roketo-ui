@@ -21,12 +21,12 @@ export class TokenFormatter {
   }
 
   static formatSmartly(value: number) {
-    if (value !== 0 && value < 0.001) {
-      return '<0.001';
-    }
-
     if (value === 0) {
       return '0';
+    }
+
+    if (value < 0.001) {
+      return '<0.001';
     }
 
     return numbro(value).format({
