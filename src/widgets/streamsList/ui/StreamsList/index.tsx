@@ -69,7 +69,8 @@ export const StreamsList = (props: Props) => {
         <StreamCard
           stream={stream}
           key={stream.id}
-          className={cn(styles.withPaddings, 'grid grid-cols-6 gap-x-10')}/>
+          className={cn(styles.withPaddings, 'grid grid-cols-6 gap-x-10')}
+        />
       ))}
     </section>
   );

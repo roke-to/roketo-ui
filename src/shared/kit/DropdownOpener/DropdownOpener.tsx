@@ -10,6 +10,7 @@ type DropdownOpenerProps = {
   className?: string;
   children: React.ReactNode;
   onChange: (state: boolean) => void;
+  testId?: string;
 };
 
 export function DropdownOpener({
@@ -17,6 +18,7 @@ export function DropdownOpener({
   className,
   children,
   onChange,
+  testId,
   ...rest
 }: DropdownOpenerProps) {
   const arrowClassName = cn(styles.arrow, {
@@ -28,6 +30,7 @@ export function DropdownOpener({
       type="button"
       onClick={() => onChange(!opened)}
       className={cn(styles.root, className)}
+      data-testid={testId}
       {...rest}
     >
       {children}

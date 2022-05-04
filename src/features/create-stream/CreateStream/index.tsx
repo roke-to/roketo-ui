@@ -11,6 +11,7 @@ import {FormikInput} from 'shared/components/FormikInput';
 import {FormikTextArea} from 'shared/components/FormikTextArea';
 import {FormikCheckbox} from 'shared/components/FormikCheckbox';
 import {Balance, DisplayMode} from 'shared/components/Balance';
+import { testIds } from 'shared/constants';
 
 import {env} from 'shared/config';
 
@@ -106,6 +107,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   component={FormikInput}
                   placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
                   className={styles.rowItem}
+                  data-testid={testIds.createStreamReceiverInput}
                 />
               </Row>
 
@@ -118,6 +120,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   placeholder='Amount to stream'
                   className={styles.rowItem}
                   description={(<Balance tokenAccountId={activeTokenAccountId} mode={DisplayMode.CRYPTO} />)}
+                  data-testid={testIds.createStreamAmountInput}
                 />
 
                 <Field
@@ -158,6 +161,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   placeholder="Enter comment"
                   component={FormikTextArea}
                   className={styles.rowItem}
+                  data-testid={testIds.createStreamCommentInput}
                 />
               </Row>
 
@@ -168,6 +172,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   type="checkbox"
                   component={FormikCheckbox}
                   className={styles.rowItem}
+                  data-testid={testIds.createStreamAutostartCheckbox}
                 />
               </Row>
 
@@ -183,6 +188,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                 <Button
                   displayMode={ButtonDisplayMode.simple}
                   onClick={onFormCancel}
+                  data-testid={testIds.createStreamCancelButton}
                 >
                   Cancel
                 </Button>
@@ -190,6 +196,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                 <Button
                   type={ButtonType.submit}
                   displayMode={ButtonDisplayMode.action}
+                  data-testid={testIds.createStreamSubmitButton}
                 >
                   Create
                 </Button>

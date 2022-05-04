@@ -10,6 +10,8 @@ import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { isDead } from 'shared/api/roketo/helpers';
 
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
+import { testIds } from 'shared/constants';
+
 import { StreamStatus } from '../StreamStatus';
 
 import styles from './styles.module.scss';
@@ -171,6 +173,7 @@ export function StreamControls({ stream, className }: StreamControlsProps) {
         opened={opened}
         onChange={setMenuOpened}
         className={styles.dropdownOpener}
+        testId={testIds.streamControlsDropdown}
       >
         {loading ? 'Loading...' : <StreamStatus stream={stream} className={styles.statusPadded} />}
       </DropdownOpener>
@@ -186,6 +189,7 @@ export function StreamControls({ stream, className }: StreamControlsProps) {
               type="button"
               onClick={handleStart}
               className={classNames(styles.controlButton, styles.start)}
+              data-testid={testIds.streamStartButton}
             >
               <StartIcon />
               <span>Start</span>
@@ -200,6 +204,7 @@ export function StreamControls({ stream, className }: StreamControlsProps) {
               type="button"
               onClick={onClickPause}
               className={classNames(styles.controlButton, styles.pause)}
+              data-testid={testIds.streamPauseButton}
             >
               <PauseIcon />
               <span>Pause</span>
@@ -215,6 +220,7 @@ export function StreamControls({ stream, className }: StreamControlsProps) {
             type="button"
             onClick={onClickStop}
             className={classNames(styles.controlButton, styles.stop)}
+            data-testid={testIds.streamStopButton}
           >
             <StopIcon />
             <span>Stop</span>

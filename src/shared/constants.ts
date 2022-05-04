@@ -19,3 +19,31 @@ export const TIME_PERIOD_SIGNS = {
   [TimePeriod.Minute]: '/m',
   [TimePeriod.Second]: '/s',
 }
+
+export const testIds = {
+  availableForWithdrawalCaption: 'availableForWithdrawalCaption',
+  withdrawAllButton: 'withdrawAllButton',
+  createStreamButton: 'createStreamButton',
+  withdrawButton: 'withdrawButton',
+  streamControlsDropdown: 'streamControlsDropdown',
+  streamStartButton: 'streamStartButton',
+  streamPauseButton: 'streamPauseButton',
+  streamStopButton: 'streamStopButton',
+  createStreamReceiverInput: 'createStreamReceiverInput',
+  createStreamAmountInput: 'createStreamAmountInput',
+  createStreamMonthsInput: 'createStreamMonthsInput',
+  createStreamDaysInput: 'createStreamDaysInput',
+  createStreamHoursInput: 'createStreamHoursInput',
+  createStreamMinutesInput: 'createStreamMinutesInput',
+  createStreamCommentInput: 'createStreamCommentInput',
+  createStreamAutostartCheckbox: 'createStreamAutostartCheckbox',
+  createStreamCancelButton: 'createStreamCancelButton',
+  createStreamSubmitButton: 'createStreamSubmitButton',
+} as const;
+
+const testIdsKeys = Object.keys(testIds) as Array<keyof typeof testIds>;
+
+export const testSelectors = testIdsKeys.reduce(
+  (selectors, key) => ({ ...selectors, [key]: `[data-testid="${testIds[key]}"]` }),
+  {} as Record<keyof typeof testIds, string>
+);

@@ -25,8 +25,7 @@ type Props = {
   className?: string,
 }
 
-export const Controls = (props: Props) => {
-  const {className, stream} = props;
+export const Controls = ({className, stream}: Props) => {
   const {id: streamId} = stream;
 
   const handleLinkClick = useCallback((event: React.SyntheticEvent) => {
@@ -43,7 +42,7 @@ export const Controls = (props: Props) => {
   return (
     <div className={cn(styles.root, className)}>
       {showWithdraw &&
-        <WithdrawButton stream={stream}/>
+        <WithdrawButton stream={stream} />
       }
 
       <StreamControls stream={stream} />

@@ -15,7 +15,7 @@ export const Checkbox: FC<CheckboxProps> = ({
   hasError = false,
   ...rest
 }) => (
-  <div className={cn(styles.root, className)}>
+  <label className={cn(styles.root, className)}>
     <input
       type="checkbox"
       className={cn(styles.checkbox, {[styles.error]: hasError})}
@@ -24,5 +24,5 @@ export const Checkbox: FC<CheckboxProps> = ({
     {description &&
       <span className={styles.description}>{description}</span>
     }
-  </div>
+  </label>
 );

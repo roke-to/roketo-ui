@@ -7,6 +7,7 @@ import { Tooltip } from 'shared/kit/Tooltip';
 import { useRoketoContext } from 'app/roketo-context';
 import { useStreams } from 'features/roketo-resource';
 import { TokenImage } from 'shared/kit/TokenImage';
+import { testIds } from 'shared/constants';
 
 import { getAvailableToWithdraw, isActiveStream } from 'shared/api/roketo/helpers';
 
@@ -103,6 +104,7 @@ export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
     >
       <Button
         onClick={handleWithdraw}
+        testId={testIds.withdrawAllButton}
       >
         {children}
       </Button>
