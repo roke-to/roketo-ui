@@ -7,6 +7,7 @@ import { Button } from '@ui/components/Button';
 import {LogoutIcon} from '@ui/icons/LogOut';
 
 import {env} from 'shared/config';
+import { testIds } from 'shared/constants';
 
 import styles from './index.module.scss';
 
@@ -20,7 +21,7 @@ export const Authorization = () => {
 
   if (!signedIn) {
     return (
-      <Button onClick={login} className={styles.root}>
+      <Button onClick={login} className={styles.root} testId={testIds.signInButton}>
         <span className={styles.name}>Sign in with NEAR Wallet</span>
         <LogoutIcon />
       </Button>

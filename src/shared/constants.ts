@@ -21,6 +21,7 @@ export const TIME_PERIOD_SIGNS = {
 }
 
 export const testIds = {
+  signInButton: 'signInButton',
   availableForWithdrawalCaption: 'availableForWithdrawalCaption',
   withdrawAllButton: 'withdrawAllButton',
   createStreamButton: 'createStreamButton',
