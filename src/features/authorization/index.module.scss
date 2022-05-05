@@ -1,16 +1,22 @@
 .root {
   display: flex;
   align-items: center;
+}
 
-  & > :not(:last-child) {
-    margin-right: 12px;
-  }
+.profile {
+  position: relative;
+}
+
+.dropdownOpener {
+  background-color: unset;
+  padding: 0 10px;
 }
 
 .name {
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
+  margin-right: 12px;
 }
 
 .avatar {
@@ -18,4 +24,16 @@
   height: 40px;
 
   border-radius: 50%;
+}
+
+.dropdownMenu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  padding: 0;
+}
+
+.logoutButton {
+  padding: 10px;
+  margin-left: 12px;
 }

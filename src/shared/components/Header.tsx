@@ -8,7 +8,6 @@ import { NavLink } from 'shared/kit/NavLink';
 import { ROUTES_MAP } from 'shared/helpers/routing';
 import {DarkLogo} from '@ui/icons/Logo';
 import { useBool } from 'shared/hooks/useBool';
-import { ProfileIcon } from 'shared/icons/Profile';
 import { BellIcon } from 'shared/icons/Bell';
 
 import {Authorization} from 'features/authorization/ui'
@@ -40,16 +39,6 @@ function FullHeader() {
           icon={<StreamsIcon />}
         >
           {ROUTES_MAP.streams.title}
-        </NavLink>
-      </li>
-
-      <li className="mb-2 lg:mr-2 lg:mb-0">
-        <NavLink
-          onClick={menuControl.turnOff}
-          to={ROUTES_MAP.profile.path}
-          icon={<ProfileIcon />}
-        >
-          {ROUTES_MAP.profile.title}
         </NavLink>
       </li>
       <li className="mb-2 lg:mr-2 lg:mb-0">

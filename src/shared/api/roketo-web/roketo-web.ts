@@ -123,6 +123,8 @@ export function useUser(): SWRResponse<client.User> {
   return swr;
 }
 
+export const { User } = client;
+
 export const notificationsApiClient = new client.NotificationsApi(apiConfig);
 
 export function useNotifications(): SWRResponse<client.Notification[]> {

@@ -1,0 +1,44 @@
+@import 'src/shared/ui/palette';
+
+.profileForm {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  color: $light-black;
+
+  & > :not(:last-child) {
+    margin-bottom: 24px;
+  }
+}
+
+.busy {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(loader.gif);
+    background-size: 33%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: black;
+    opacity: 0.6;
+    border-radius: 16px;
+    cursor: progress;
+  }
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputName {
+  font-size: 12px;
+  margin-bottom: 6px;
+}

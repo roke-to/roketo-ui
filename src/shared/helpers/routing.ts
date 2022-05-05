@@ -19,10 +19,6 @@ export const ROUTES_MAP = {
     path: '/streams/:id',
     title: 'Stream'
   },
-  profile: {
-    path: '/profile',
-    title: 'Profile',
-  },
   notifications: {
     path: '/notifications',
     title: 'Notifications',
