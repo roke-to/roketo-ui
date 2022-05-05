@@ -7,7 +7,7 @@ import { StreamsIcon } from 'shared/icons/Streams';
 import { NavLink } from 'shared/kit/NavLink';
 
 import { ROUTES_MAP } from 'shared/helpers/routing';
-import LogoText from 'shared/images/logo_stream_with_text.svg';
+import {DarkLogo} from '@ui/icons/Logo';
 import { useBool } from 'shared/hooks/useBool';
 import { ProfileIcon } from 'shared/icons/Profile';
 import { BellIcon } from 'shared/icons/Bell';
@@ -16,11 +16,6 @@ import {Authorization} from 'features/authorization/ui'
 import RedesignedHeader from 'widgets/header/Header';
 
 function MinifiedHeader() {
-  const logo = (
-    <div className="flex justify-start items-center">
-      <img src={LogoText} alt="roketo logo" />
-    </div>
-  );
   return (
     <div
       className={classNames(
@@ -29,7 +24,7 @@ function MinifiedHeader() {
         'flex justify-center',
       )}
     >
-      {logo}
+      <DarkLogo />
     </div>
   );
 }
@@ -80,18 +75,12 @@ function FullHeader() {
     </ul>
   );
 
-  const logo = (
-    <div className="flex justify-start items-center">
-      <img src={LogoText} alt="roketo logo" />
-    </div>
-  );
-
   return (
     <div className="py-4 px-6 w-full pt-8">
       <div
         className={classNames('hidden lg:grid items-center grid-cols-3 gap-3 ')}
       >
-        {logo}
+        <DarkLogo />
         {navigation}
 
         <div className="flex justify-end">
@@ -101,7 +90,7 @@ function FullHeader() {
 
       <div className={classNames('lg:hidden')}>
         <div className="flex justify-between">
-          {logo}
+          <DarkLogo />
 
           <button
             className="p-1"

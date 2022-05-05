@@ -3,6 +3,7 @@ import React from 'react';
 import {useRoketoContext} from 'app/roketo-context';
 import {useUser} from 'shared/api/roketo-web';
 
+import { Button } from '@ui/components/Button';
 import {LogoutIcon} from '@ui/icons/LogOut';
 
 import {env} from 'shared/config';
@@ -19,10 +20,10 @@ export const Authorization = () => {
 
   if (!signedIn) {
     return (
-      <button type='button' onClick={login} className={styles.root}>
+      <Button onClick={login} className={styles.root}>
         <span className={styles.name}>Sign in with NEAR Wallet</span>
         <LogoutIcon />
-      </button>
+      </Button>
     )
   }
 
@@ -35,7 +36,7 @@ export const Authorization = () => {
       <img
         className={styles.avatar}
         src={`${env.WEB_API_URL}/users/${accountId}/avatar?email=${email}`}
-        alt="user avatar"
+        alt=""
       />
 
       <button type='button' onClick={logout}>
