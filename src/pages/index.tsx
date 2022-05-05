@@ -21,16 +21,20 @@ import { StreamPage } from './stream';
 import { ProfilePage } from './profile';
 import { NotificationsPage } from './notifications';
 
+const TRASH_QUERY_PARAMS = ['transactionHashes', 'errorCode', 'errorMessage'];
+
 export function Routing() {
   useEffect(() => {
     // Remove unused search params
     const url = new URL(window.location.href);
-    const TRANSACTION_HASHES = 'transactionHashes';
 
-    if (url.searchParams.has(TRANSACTION_HASHES)) {
-      url.searchParams.delete(TRANSACTION_HASHES);
-      window.history.replaceState(null, '', url);
-    }
+    TRASH_QUERY_PARAMS.forEach((param) => {
+      if (url.searchParams.has(param)) {
+        url.searchParams.delete(param);
+      }
+    });
+
+    window.history.replaceState(null, '', url);
   });
 
   const { auth } = useRoketoContext();
