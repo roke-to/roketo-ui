@@ -4,6 +4,9 @@ export type Route = {
 }
 
 export const ROUTES_MAP = {
+  root: {
+    path: '/',
+  },
   authorize: {
     path: '/authorize',
     title: 'Authorize',
@@ -12,8 +15,8 @@ export const ROUTES_MAP = {
     path: '/account',
     title: 'Account',
   },
-  myStreams: {
-    path: '/myStreams',
+  streams: {
+    path: '/streams',
     title: 'Streams',
   },
   stream: {

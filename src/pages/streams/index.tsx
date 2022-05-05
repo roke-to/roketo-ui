@@ -20,10 +20,10 @@ import {ROUTES_MAP} from 'shared/helpers/routing';
 
 import styles from './styles.module.scss';
 
-const redirectUrl = generatePath(ROUTES_MAP.myStreams.path);
-const returnPath = `${window.location.origin}/#/${redirectUrl}`;
+const redirectUrl = generatePath(ROUTES_MAP.streams.path);
+const returnPath = `${window.location.origin}/#${redirectUrl}`;
 
-export const MyStreamsPage = () => {
+export const StreamsPage = () => {
   const {roketo, tokens} = useRoketoContext();
 
   const {data: streams} = useStreams();
@@ -99,5 +99,5 @@ export const MyStreamsPage = () => {
   );
 };
 
-export default MyStreamsPage;
+export default StreamsPage;
 

@@ -52,10 +52,10 @@ function FullHeader() {
       <li className="mb-2 lg:mr-2 lg:mb-0">
         <NavLink
           onClick={menuControl.turnOff}
-          to={ROUTES_MAP.myStreams.path}
+          to={ROUTES_MAP.streams.path}
           icon={<StreamsIcon />}
         >
-          {ROUTES_MAP.myStreams.title}
+          {ROUTES_MAP.streams.title}
         </NavLink>
       </li>
 
@@ -133,7 +133,7 @@ function FullHeader() {
 }
 export function Header() {
   const match = useRouteMatch(ROUTES_MAP.authorize.path);
-  const isRedesignedPage = useRouteMatch(ROUTES_MAP.myStreams.path);
+  const isRedesignedPage = useRouteMatch(ROUTES_MAP.streams.path);
 
   if (isRedesignedPage) {
     return <RedesignedHeader />;
