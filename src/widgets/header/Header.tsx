@@ -11,7 +11,7 @@ import {FinancialActivity} from './ui/FinancialActivity';
 
 import styles from './styles.module.scss';
 
-const ROUTES_TO_DISPLAY = [ROUTES_MAP.streams, ROUTES_MAP.account];
+const ROUTES_TO_DISPLAY = [ROUTES_MAP.streams];
 
 export const Header = () => (
     <div className={styles.wrapper}>

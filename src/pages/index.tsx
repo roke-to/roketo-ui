@@ -15,7 +15,6 @@ import { env } from 'shared/config';
 import { ROUTES_MAP } from 'shared/helpers/routing';
 
 import { StreamsPage } from './streams';
-import { AccountPage } from './account';
 import { AuthorizePage } from './authorize';
 import { StreamPage } from './stream';
 import { ProfilePage } from './profile';
@@ -42,7 +41,6 @@ export function Routing() {
   const {
     root,
     stream,
-    account,
     profile,
     streams,
     authorize,
@@ -70,15 +68,6 @@ export function Routing() {
           path={authorize.path}
         >
           <AuthorizePage />
-        </PrivateRoute>
-
-        <PrivateRoute
-          exact
-          redirect={<Redirect to={authorize.path} />}
-          allowed={auth.signedIn}
-          path={account.path}
-        >
-          <AccountPage />
         </PrivateRoute>
 
         <Route exact path={stream.path}>
