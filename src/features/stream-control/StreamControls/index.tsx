@@ -153,7 +153,7 @@ export function StreamControls({ stream, className }: StreamControlsProps) {
   const opened = menuOpened && !loading;
 
   const shouldShowStartButton = stream.status !== STREAM_STATUS.Active && isOutgoing;
-  const shouldShowPauseButton = stream.status !== STREAM_STATUS.Paused;
+  const shouldShowPauseButton = stream.status === STREAM_STATUS.Active;
 
   return (
     <div className={classNames(styles.relative, className)}>
