@@ -11,10 +11,6 @@ export const ROUTES_MAP = {
     path: '/authorize',
     title: 'Authorize',
   },
-  account: {
-    path: '/account',
-    title: 'Account',
-  },
   streams: {
     path: '/streams',
     title: 'Streams',

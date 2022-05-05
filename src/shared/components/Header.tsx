@@ -2,7 +2,6 @@ import React from 'react';
 import classNames from 'classnames';
 import { useRouteMatch } from 'react-router-dom';
 
-import { AccountIcon } from 'shared/icons/Account';
 import { StreamsIcon } from 'shared/icons/Streams';
 import { NavLink } from 'shared/kit/NavLink';
 
@@ -34,16 +33,6 @@ function FullHeader() {
 
   const navigation = (
     <ul className="flex-col lg:flex-row flex justify-center ">
-      <li className="mb-2 lg:mr-2 lg:mb-0">
-        <NavLink
-          onClick={menuControl.turnOff}
-          to={ROUTES_MAP.account.path}
-          icon={<AccountIcon />}
-        >
-          {ROUTES_MAP.account.title}
-        </NavLink>
-      </li>
-
       <li className="mb-2 lg:mr-2 lg:mb-0">
         <NavLink
           onClick={menuControl.turnOff}
