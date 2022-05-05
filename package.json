@@ -5,7 +5,7 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.3",
-    "@roketo/api-client": "roke-to/roketo-api-client#v0.0.17",
+    "@roketo/api-client": "roke-to/roketo-api-client#v0.0.18",
     "@types/json-bigint": "^1.0.1",
     "@types/node": "^17.0.21",
     "@types/rc-tooltip": "^3.7.6",

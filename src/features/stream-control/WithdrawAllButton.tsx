@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import {Button} from 'shared/ui/components/Button';
+import {Button} from '@ui/components/Button';
 
 import { Tooltip } from 'shared/kit/Tooltip';
 import { useRoketoContext } from 'app/roketo-context';

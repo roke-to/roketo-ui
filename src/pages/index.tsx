@@ -17,7 +17,6 @@ import { ROUTES_MAP } from 'shared/helpers/routing';
 import { StreamsPage } from './streams';
 import { AuthorizePage } from './authorize';
 import { StreamPage } from './stream';
-import { ProfilePage } from './profile';
 import { NotificationsPage } from './notifications';
 
 const TRASH_QUERY_PARAMS = ['transactionHashes', 'errorCode', 'errorMessage'];
@@ -41,7 +40,6 @@ export function Routing() {
   const {
     root,
     stream,
-    profile,
     streams,
     authorize,
     notifications,
@@ -83,14 +81,6 @@ export function Routing() {
           <StreamsPage />
         </PrivateRoute>
 
-        <PrivateRoute
-          exact
-          redirect={<Redirect to={authorize.path} />}
-          allowed={auth.signedIn}
-          path={profile.path}
-        >
-          <ProfilePage />
-        </PrivateRoute>
         <PrivateRoute
           exact
           redirect={<Redirect to={authorize.path} />}
