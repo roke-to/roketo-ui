@@ -4,6 +4,9 @@ export type Route = {
 }
 
 export const ROUTES_MAP = {
+  root: {
+    path: '/',
+  },
   authorize: {
     path: '/authorize',
     title: 'Authorize',

@@ -40,6 +40,7 @@ export function Routing() {
   const { auth } = useRoketoContext();
 
   const {
+    root,
     stream,
     account,
     profile,
@@ -53,6 +54,15 @@ export function Routing() {
       <Header />
 
       <Switch>
+        <PrivateRoute
+          exact
+          redirect={<Redirect to={streams.path} />}
+          allowed={!auth.signedIn}
+          path={root.path}
+        >
+          <Redirect to={authorize.path} />
+        </PrivateRoute>
+
         <PrivateRoute
           exact
           redirect={<Redirect to={streams.path} />}
