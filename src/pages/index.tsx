@@ -14,7 +14,7 @@ import { useRoketoContext } from 'app/roketo-context';
 import { env } from 'shared/config';
 import { ROUTES_MAP } from 'shared/helpers/routing';
 
-import { MyStreamsPage } from './MyStreamsPage';
+import { StreamsPage } from './streams';
 import { AccountPage } from './account';
 import { AuthorizePage } from './authorize';
 import { StreamPage } from './stream';
@@ -43,7 +43,7 @@ export function Routing() {
     stream,
     account,
     profile,
-    myStreams,
+    streams,
     authorize,
     notifications,
   } = ROUTES_MAP;
@@ -55,7 +55,7 @@ export function Routing() {
       <Switch>
         <PrivateRoute
           exact
-          redirect={<Redirect to={myStreams.path} />}
+          redirect={<Redirect to={streams.path} />}
           allowed={!auth.signedIn}
           path={authorize.path}
         >
@@ -79,9 +79,9 @@ export function Routing() {
           exact
           redirect={<Redirect to={authorize.path} />}
           allowed={auth.signedIn}
-          path={myStreams.path}
+          path={streams.path}
         >
-          <MyStreamsPage />
+          <StreamsPage />
         </PrivateRoute>
 
         <PrivateRoute

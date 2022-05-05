@@ -12,8 +12,8 @@ export const ROUTES_MAP = {
     path: '/account',
     title: 'Account',
   },
-  myStreams: {
-    path: '/myStreams',
+  streams: {
+    path: '/streams',
     title: 'Streams',
   },
   stream: {
