@@ -188,7 +188,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                 <Button
                   displayMode={ButtonDisplayMode.simple}
                   onClick={onFormCancel}
-                  data-testid={testIds.createStreamCancelButton}
+                  testId={testIds.createStreamCancelButton}
                 >
                   Cancel
                 </Button>
@@ -196,7 +196,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                 <Button
                   type={ButtonType.submit}
                   displayMode={ButtonDisplayMode.action}
-                  data-testid={testIds.createStreamSubmitButton}
+                  testId={testIds.createStreamSubmitButton}
                 >
                   Create
                 </Button>
