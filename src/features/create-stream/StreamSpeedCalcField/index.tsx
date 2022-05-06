@@ -9,6 +9,7 @@ import {Input} from '@ui/components/Input';
 
 import {usePrev} from 'shared/hooks/usePrev';
 import {isLikeNumber} from 'shared/helpers/validation';
+import { testIds } from 'shared/constants';
 
 import {getTokensPerSecondCount, getDurationInSeconds, getStreamingSpeed} from '../lib';
 
@@ -17,19 +18,19 @@ import styles from './styles.module.scss';
 type SpeedInputProps = {
   label: string;
   value: number;
-
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-
   className?: string;
+  testId: string;
 };
 
-const SpeedInput = ({className, value, onChange, label}: SpeedInputProps) => (
+const SpeedInput = ({className, value, onChange, label, testId}: SpeedInputProps) => (
   <div className={cn(styles.speedInput, className)}>
     <Input
       placeholder="0"
       value={value}
       onChange={onChange}
       className={styles.input}
+      data-testid={testId}
     />
     <label className={styles.label}>{label}</label>
   </div>
@@ -121,21 +122,25 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
           value={months}
           onChange={handleInputChangeFactory(setMonths)}
           label="Months"
+          testId={testIds.createStreamMonthsInput}
         />
         <SpeedInput
           value={days}
           onChange={handleInputChangeFactory(setDays)}
           label="Days"
+          testId={testIds.createStreamDaysInput}
         />
         <SpeedInput
           value={hours}
           onChange={handleInputChangeFactory(setHours)}
           label="Hours"
+          testId={testIds.createStreamHoursInput}
         />
         <SpeedInput
           value={minutes}
           onChange={handleInputChangeFactory(setMinutes)}
           label="Minutes"
+          testId={testIds.createStreamMinutesInput}
         />
       </div>
     </FormField>

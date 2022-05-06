@@ -24,6 +24,7 @@ type Props = {
   className?: string,
   children?: React.ReactNode;
   onClick?: (event: any) => void;
+  testId?: string;
 }
 
 export const Button = ({
@@ -33,7 +34,9 @@ export const Button = ({
   link,
   children,
   className,
-  onClick
+  onClick,
+  testId,
+  ...restTooltipProps
 }: Props) => {
   const buttonClassName = cn(
     styles.root,
@@ -52,6 +55,8 @@ export const Button = ({
       className={buttonClassName}
       onClick={onClick}
       disabled={disabled}
+      {...restTooltipProps}
+      data-testid={testId}
     >
       {children}
     </button>

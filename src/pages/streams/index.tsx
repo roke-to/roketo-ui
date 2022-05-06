@@ -17,6 +17,7 @@ import {StreamsList} from 'widgets/streamsList';
 
 import {RoketoStream} from 'shared/api/roketo/interfaces/entities';
 import {ROUTES_MAP} from 'shared/helpers/routing';
+import { testIds } from 'shared/constants';
 
 import styles from './styles.module.scss';
 
@@ -74,7 +75,12 @@ export const StreamsPage = () => {
           <div className={cn(styles.flex, styles.buttonsWrapper)}>
             <WithdrawAllButton>Withdraw tokens</WithdrawAllButton>
 
-            <Button onClick={toggleModal}>Create stream</Button>
+            <Button
+              onClick={toggleModal}
+              testId={testIds.createStreamButton}
+            >
+              Create stream
+            </Button>
             <Modal isOpen={isModalOpened} onCloseModal={toggleModal}>
               <CreateStream onFormCancel={toggleModal} onFormSubmit={handleCreateStream}/>
             </Modal>

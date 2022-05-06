@@ -5,8 +5,13 @@ import {useRoketoContext} from 'app/roketo-context';
 import {RoketoStream} from 'shared/api/roketo/interfaces/entities';
 
 import {getAvailableToWithdraw} from 'shared/api/roketo/helpers';
+import { testIds } from 'shared/constants';
 
-export function WithdrawButton({ stream }: { stream: RoketoStream}) {
+type WithdrawButtonProps = {
+  stream: RoketoStream;
+};
+
+export function WithdrawButton({ stream }: WithdrawButtonProps) {
   const { tokens, roketo } = useRoketoContext();
   const available = getAvailableToWithdraw(stream);
   const tokenAccountId = stream.token_account_id;
@@ -25,6 +30,7 @@ export function WithdrawButton({ stream }: { stream: RoketoStream}) {
       type={ButtonType.button}
       displayMode={DisplayMode.primary}
       onClick={handleWithdraw}
+      testId={testIds.withdrawButton}
     >
       Withdraw
     </Button>

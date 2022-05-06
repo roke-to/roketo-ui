@@ -4,6 +4,7 @@ import cn from 'classnames';
 import {useRoketoContext} from 'app/roketo-context';
 import {useStreams} from 'features/roketo-resource';
 import {isActiveStream} from 'shared/api/roketo/helpers';
+import { testIds } from 'shared/constants';
 
 import {FinancialInfo} from '../FinancialInfo';
 
@@ -60,6 +61,7 @@ export const FinancialStatus = ({className}: FinancialStatusProps) => {
         title="Available for withdrawal"
         total={availableForWithdrawal}
         withProgressBar={false}
+        testId={testIds.availableForWithdrawalCaption}
       />
     </section>
   );
