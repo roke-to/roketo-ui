@@ -47,20 +47,3 @@ export const getEmptyAccount = (): RoketoAccount => ({
   total_outgoing: {},
   total_received: {}
 });
-
-export const getEmptyStream = (id: string = 'any'): RoketoStream => ({
-  balance: "1249999999999999990000",
-  creator_id: "dcversus.testnet",
-  description: "lol",
-  id,
-  is_expirable: true,
-  is_locked: false,
-  last_action: 1648397477757220400,
-  owner_id: "dcversus.testnet",
-  receiver_id: "dcversus2.testnet",
-  status: "Active",
-  timestamp_created: 1648397477757220400,
-  token_account_id: "wrap.testnet",
-  tokens_per_sec: "1111111111111",
-  tokens_total_withdrawn: "0",
-})
