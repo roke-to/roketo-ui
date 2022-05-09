@@ -149,20 +149,16 @@ function StreamData({ stream }: { stream: RoketoStream }) {
       <div className={styles.bigHeader}>
         Stream info
       </div>
-      {direction !== STREAM_DIRECTION.IN &&
-        <InfoRow title="Receiver">
-          <span className={styles.font16}>
-            {stream.receiver_id}
-          </span>
-        </InfoRow>
-      }
-      {direction !== STREAM_DIRECTION.OUT &&
-        <InfoRow title="Sender">
-          <span className={styles.font16}>
-            {stream.owner_id}
-          </span>
-        </InfoRow>
-      }
+      <InfoRow title="Sender">
+        <span className={styles.font16}>
+          {direction === STREAM_DIRECTION.OUT ? 'You' : stream.owner_id}
+        </span>
+      </InfoRow>
+      <InfoRow title="Receiver">
+        <span className={styles.font16}>
+          {direction === STREAM_DIRECTION.IN ? 'You' : stream.receiver_id}
+        </span>
+      </InfoRow>
       <div className={styles.divider} />
       <InfoRow title="Total">
           <span className={styles.font14}>

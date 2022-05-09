@@ -8,11 +8,16 @@ export const STREAM_DIRECTION = {
 
 type StreamDirectionKeyType = keyof typeof STREAM_DIRECTION;
 
-export function useGetStreamDirection(stream: RoketoStream): typeof STREAM_DIRECTION[StreamDirectionKeyType] {
+export function useGetStreamDirection(stream: RoketoStream): typeof STREAM_DIRECTION[StreamDirectionKeyType] | null {
   const { auth } = useRoketoContext();
 
-  // todo: case with 3rd person view
-  return stream.receiver_id === auth.accountId
-    ? STREAM_DIRECTION.IN
-    : STREAM_DIRECTION.OUT;
+  if (stream.receiver_id === auth.accountId) {
+    return STREAM_DIRECTION.IN;
+  }
+
+  if (stream.owner_id === auth.accountId) {
+    return STREAM_DIRECTION.OUT;
+  }
+
+  return null;
 }
