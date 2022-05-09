@@ -28,6 +28,4 @@ export const Header = () => (
         </div>
       </Layout>
     </div>
-  )
-
-export default Header;
+  );
