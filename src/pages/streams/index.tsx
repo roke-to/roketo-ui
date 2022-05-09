@@ -104,6 +104,3 @@ export const StreamsPage = () => {
     </div>
   );
 };
-
-export default StreamsPage;
-

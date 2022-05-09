@@ -11,7 +11,7 @@ import { useBool } from 'shared/hooks/useBool';
 import { BellIcon } from 'shared/icons/Bell';
 
 import {Authorization} from 'features/authorization/ui'
-import RedesignedHeader from 'widgets/header/Header';
+import { Header as RedesignedHeader } from 'widgets/header/Header';
 
 function MinifiedHeader() {
   return (

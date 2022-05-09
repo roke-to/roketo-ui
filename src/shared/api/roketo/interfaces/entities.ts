@@ -30,7 +30,7 @@ export type RoketoStream = {
   tokens_total_withdrawn: StringInt;
 };
 
-export type TokenAmount = {
+type TokenAmount = {
   [tokenAccountId: string]: StringInt;
 }
 
