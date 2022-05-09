@@ -18,9 +18,10 @@ const TOOLTIP_ALIGN = {
 
 type StreamStatusProps = {
   stream: RoketoStream;
+  className?: string;
 };
 
-export const StreamProgress = ({ stream }: StreamStatusProps) => {
+export const StreamProgress = ({ stream,className }: StreamStatusProps) => {
   const { token_account_id: tokenId, tokens_per_sec: tokensPerSec } = stream;
 
   const { progress, timeLeft } = streamViewData(stream);
@@ -77,7 +78,7 @@ export const StreamProgress = ({ stream }: StreamStatusProps) => {
         </div>
       }
     >
-      <div className={classNames(styles.root, styles.text)}>
+      <div className={classNames(styles.root, styles.text, className)}>
         <div className={styles.status}>
           {progressText}
           <span className={styles.grey}>{symbol}</span>

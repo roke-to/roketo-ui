@@ -37,7 +37,7 @@ export const StreamCard = ({stream, className}: StreamCardProps) => {
         <Name name={name} label={label}/>
       </Link>
 
-      <StreamProgress stream={stream} />
+      <StreamProgress stream={stream} className={styles.withMarginRight} />
 
       <Link to={streamPageLink} className='col-span-2 grow-0'>
         <p className={styles.description}>
