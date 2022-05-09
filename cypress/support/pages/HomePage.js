@@ -1,5 +1,5 @@
 import SignInPage from './Login';
-
+import { testSelectors } from '../../../src/shared/constants';
 class HomePage {
   
   visit() {
@@ -10,7 +10,7 @@ class HomePage {
        cy.url().should('contains', 'https://test.app-v2.roke.to/');
   }
   goToSignIn() {
-    cy.get('.inline-flex').click();
+    cy.get(testSelectors.signInButton).click();
 
     const signPage = new SignInPage(); 
     return signPage;

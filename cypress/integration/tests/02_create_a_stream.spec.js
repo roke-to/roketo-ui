@@ -4,10 +4,12 @@ import MyStreams from '../../support/pages/MyStreams';
 import { login } from '../../support/login';
 
 it('Create a stream without Autostart', () => {
+    cy.viewport(1536, 960) ;
     cy.wait(10000);
     login();
     cy.wait(3000);
     const stream = new CreateStream();
+    stream.createStream();
     stream.inputReciever('delusion.testnet');
     stream.inputDeposit('1');
     stream.inputPeriod('1000', '10', '10', '10');
@@ -22,10 +24,12 @@ it('Create a stream without Autostart', () => {
 })
 
 it('Create a stream with Autostart', () => {
+    cy.viewport(1536, 960) ;
     cy.wait(10000);
     login();
     cy.wait(3000);
     const stream = new CreateStream();
+    stream.createStream();
     stream.inputReciever('delusion.testnet');
     stream.inputDeposit('1');
     stream.inputPeriod('1000', '10', '10', '10');
