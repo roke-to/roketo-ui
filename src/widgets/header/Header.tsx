@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import {DarkLogo} from '@ui/icons/Logo';
 import {Layout} from '@ui/components/Layout';
@@ -22,8 +23,10 @@ export const Header = () => {
       <Layout className={styles.root}>
 
         <div className={styles.left}>
-          <DarkLogo className={styles.logo}/>
-          <PageList pageRoutes={ROUTES_TO_DISPLAY}/>
+          <Link to="/">
+            <DarkLogo className={styles.logo}/>
+          </Link>
+          {auth.signedIn && <PageList pageRoutes={ROUTES_TO_DISPLAY} />}
         </div>
 
         <div className={styles.right}>

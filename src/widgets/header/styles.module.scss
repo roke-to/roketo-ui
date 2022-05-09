@@ -1,13 +1,13 @@
 @import 'src/shared/ui/palette';
+@import 'src/shared/ui/components/Layout/styles.module';
 
 .wrapper {
   border-bottom: 1px solid $light-grey;
-
   background-color: $white;
 }
 
 .root {
-  padding: 20px 0;
+  height: calc($header-height - 1px);
 
   display: flex;
   align-items: center;
