@@ -3,8 +3,9 @@ import {generatePath} from 'react-router-dom';
 import cn from 'classnames';
 
 import {Layout} from '@ui/components/Layout';
-import {Modal} from '@ui/components/Modal';
 import {Button} from '@ui/components/Button';
+
+import {Modal} from 'shared/components/Modal';
 
 import {useRoketoContext} from 'app/roketo-context';
 
