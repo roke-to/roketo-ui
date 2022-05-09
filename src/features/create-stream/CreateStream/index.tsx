@@ -8,7 +8,6 @@ import {Button, ButtonType, DisplayMode as ButtonDisplayMode} from '@ui/componen
 import {ErrorSign} from '@ui/icons/ErrorSign';
 
 import {FormikInput} from 'shared/components/FormikInput';
-import {FormikTextArea} from 'shared/components/FormikTextArea';
 import {FormikCheckbox} from 'shared/components/FormikCheckbox';
 import {Balance, DisplayMode} from 'shared/components/Balance';
 import { testIds } from 'shared/constants';
@@ -93,14 +92,6 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
 
               <Row>
                 <Field
-                  name="streamName"
-                  label="Stream name:"
-                  component={FormikInput}
-                  placeholder='Stream name'
-                  className={styles.rowItem}
-                />
-
-                <Field
                   isRequired
                   name="receiver"
                   label="Receiver:"
@@ -150,18 +141,6 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                     setFieldTouched('speed', true, false);
                   }}
                   className={styles.rowItem}
-                />
-              </Row>
-
-              <Row>
-                <Field
-                  maxLength={255}
-                  name="comment"
-                  label="Comment:"
-                  placeholder="Enter comment"
-                  component={FormikTextArea}
-                  className={styles.rowItem}
-                  data-testid={testIds.createStreamCommentInput}
                 />
               </Row>
 
