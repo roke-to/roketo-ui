@@ -3,11 +3,11 @@ import { testSelectors } from '../../../src/shared/constants';
 class HomePage {
   
   visit() {
-    cy.visit('https://test.app-v2.roke.to/#/authorize');
+    cy.visit('https://app2.test.roke.to/#/authorize');
   }
   
   checkPage(){
-       cy.url().should('contains', 'https://test.app-v2.roke.to/');
+       cy.url().should('contains', 'https://app2.test.roke.to/');
   }
   goToSignIn() {
     cy.get(testSelectors.signInButton).click();
