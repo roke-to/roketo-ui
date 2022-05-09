@@ -10,7 +10,11 @@ export function login(testParams) {
     const signPage = new SignInPage(); 
     signPage.importExistingAccount();
     signPage.recoverAccount();
-    signPage.inputPassphrase('accuse night project february offer fresh belt orbit rather battle zoo amused');
+    if(testParams==="receiver"){
+        signPage.inputPassphrase('defense plunge barrel space suspect safe yard minimum shrimp broccoli scrub assume');
+    }else{
+        signPage.inputPassphrase('accuse night project february offer fresh belt orbit rather battle zoo amused');
+    }
     cy.wait(20000);
     signPage.pressNext();
     cy.wait(6000);
