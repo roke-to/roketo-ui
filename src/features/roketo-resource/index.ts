@@ -81,10 +81,10 @@ export function useSingleStream(streamId: string) {
   return swr;
 }
 
-export function streamViewData(stream: RoketoStream) {
+export function streamViewData(stream: RoketoStream, withExtrapolation: boolean = true) {
   const MAX_SEC = SECONDS_IN_YEAR * 1000;
 
-  const availableToWithdraw = getAvailableToWithdraw(stream);
+  const availableToWithdraw = withExtrapolation ? getAvailableToWithdraw(stream) : new BigNumber(0);
 
   const secondsLeft = BigNumber.minimum(
     MAX_SEC,
@@ -93,7 +93,6 @@ export function streamViewData(stream: RoketoStream) {
       .dividedBy(stream.tokens_per_sec)
       .toFixed()
   ).toNumber();
-
 
   const duration = intervalToDuration({ start: 0, end: secondsLeft * 1000 });
 

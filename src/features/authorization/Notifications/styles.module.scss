@@ -1,0 +1,105 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  position: relative;
+}
+
+.dropdownOpener {
+  background-color: unset;
+  padding: 10px;
+}
+
+.dropdownMenu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  padding: 0;
+  width: 550px;
+  border: 1px solid $tertiary;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: calc(100vh - 80px);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.header {
+  padding: 16px;
+  color: $light-black;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+  background-color: $background-secondary;
+  border-bottom: 1px solid $tertiary;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.date {
+  color: $bluish-grey;
+  margin: 16px;
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 500;
+}
+
+.divider {
+  margin: 0 16px 24px;
+  width: 100%;
+  border-bottom: 1px solid #eee;
+}
+
+.notification {
+  padding: 0 13px 16px 32px;
+  position: relative;
+  display: flex;
+}
+
+.unread::before {
+  content: '';
+  background-color: $danger;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: block;
+  position: absolute;
+  left: 16px;
+  top: 7px;
+}
+
+.icon {
+  margin-right: 16px;
+  flex: 0 0 44px;
+}
+
+.notificationBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.mainText {
+  font-size: 16px;
+  line-height: 22px;
+  margin-bottom: 8px;
+}
+
+.secondaryText {
+  font-size: 14px;
+  line-height: 20px;
+  color: $bluish-grey;
+}
+
+.time {
+  color: $bluish-grey;
+  font-size: 14px;
+  line-height: 22px;
+}

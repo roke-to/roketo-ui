@@ -17,7 +17,6 @@ import { ROUTES_MAP } from 'shared/helpers/routing';
 import { StreamsPage } from './streams';
 import { AuthorizePage } from './authorize';
 import { StreamPage } from './stream';
-import { NotificationsPage } from './notifications';
 import { NotFoundPage } from './not-found';
 
 const TRASH_QUERY_PARAMS = ['transactionHashes', 'errorCode', 'errorMessage'];
@@ -43,7 +42,6 @@ export function Routing() {
     stream,
     streams,
     authorize,
-    notifications,
   } = ROUTES_MAP;
 
   return (
@@ -80,15 +78,6 @@ export function Routing() {
           path={streams.path}
         >
           <StreamsPage />
-        </PrivateRoute>
-
-        <PrivateRoute
-          exact
-          redirect={<Redirect to={authorize.path} />}
-          allowed={auth.signedIn}
-          path={notifications.path}
-        >
-          <NotificationsPage />
         </PrivateRoute>
 
         <Route render={NotFoundPage} />

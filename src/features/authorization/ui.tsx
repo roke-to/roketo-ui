@@ -13,6 +13,7 @@ import {env} from 'shared/config';
 import { testIds } from 'shared/constants';
 
 import styles from './index.module.scss';
+import { Notifications } from './Notifications';
 
 export const Authorization = () => {
   const [isDropdownOpened, setIsDropdownOpened] = useState(false);
@@ -59,6 +60,8 @@ export const Authorization = () => {
           <ProfileForm />
         </DropdownMenu>
       </div>
+
+      <Notifications />
 
       <button type='button' onClick={logout} className={styles.logoutButton}>
         <LogoutIcon />

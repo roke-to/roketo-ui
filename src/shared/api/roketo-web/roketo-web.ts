@@ -138,3 +138,7 @@ export function useNotifications(): SWRResponse<client.Notification[]> {
 
   return swr;
 }
+
+export type NotificationType = client.NotificationTypeEnum;
+
+export type Notification = client.Notification;
