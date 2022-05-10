@@ -108,9 +108,8 @@ export function Notifications() {
       async (notifications) => {
         await notificationsApiClient.markAllRead();
 
-        return notifications;
-      },
-      { revalidate: false }
+        return notifications?.map((notification) => notification.isRead ? notification : { ...notification, isRead: true });
+      }
     );
   }, [notificationsSWR]);
 
@@ -149,14 +148,14 @@ export function Notifications() {
 
           {notificationsSWR.data?.map((notification, index, notifications) => (
             <>
-              {index !== 0 && <div className={styles.divider} />}
-              {(index === 0 || differenceInDays(new Date(notifications[index - 1].createdAt), new Date(notification.createdAt))) > 0 &&
-                <div className={styles.date}>
-                  {isToday(new Date(notification.createdAt))
+              {index !== 0 && <div className={styles.divider} key={`${notification.id}-divider`} />}
+              {(index === 0 || differenceInDays(notifications[index - 1].createdAt, notification.createdAt)) > 0 &&
+                <div className={styles.date} key={String(notification.createdAt)}>
+                  {isToday(notification.createdAt)
                     ? 'Today'
-                    : isYesterday(new Date(notification.createdAt))
+                    : isYesterday(notification.createdAt)
                       ? 'Yesterday'
-                      : format(new Date(notification.createdAt), 'PP')
+                      : format(notification.createdAt, 'PP')
                   }
                 </div>
               }

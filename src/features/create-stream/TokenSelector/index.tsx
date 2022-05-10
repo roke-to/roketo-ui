@@ -32,14 +32,32 @@ const TokenOption = ({
   token,
   onClick,
   className,
-}: {token: RichToken, className?: string, onClick?: () => void}) => (
-  <button type='button' className={cn(styles.tokenOption, className)} onClick={onClick}>
-    <TokenImage
-      tokenAccountId={token.roketoMeta.account_id}
-    />
-    <span>{`${token.meta.name}, ${token.meta.symbol}`}</span>
-  </button>
-);
+}: {token: RichToken, className?: string, onClick?: () => void}) => {
+  const classNames = cn(styles.tokenOption, className);
+
+  const content = (
+    <>
+      <TokenImage
+        tokenAccountId={token.roketoMeta.account_id}
+      />
+      <span>{`${token.meta.name}, ${token.meta.symbol}`}</span>
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button type='button' className={classNames} onClick={onClick}>
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className={classNames}>
+      {content}
+    </div>
+  );
+};
 
 export const TokenSelector = (props: TokenSelectorProps) => {
   const {

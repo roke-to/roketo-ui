@@ -9,7 +9,6 @@ import { LinkIcon } from '@ui/icons/Link';
 import { getStreamLink, ROUTES_MAP } from 'shared/helpers/routing';
 import { PageError } from 'shared/components/PageError';
 import { Layout } from '@ui/components/Layout';
-import { Button, DisplayMode as ButtonDisplayMode } from '@ui/components/Button';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { getStreamingSpeed } from 'features/create-stream/lib';
 import { useRoketoContext } from 'app/roketo-context';
@@ -248,14 +247,6 @@ export function StreamPage() {
           </Link>
           <BreadcrumbIcon className={styles.breadbrumb} />
           {id}
-        </div>
-        <div className={styles.backButton}>
-          <Button
-            displayMode={ButtonDisplayMode.simple}
-            onClick={() => window.history.back()}
-          >
-            Back
-          </Button>
         </div>
         {pageError &&
           <PageError
