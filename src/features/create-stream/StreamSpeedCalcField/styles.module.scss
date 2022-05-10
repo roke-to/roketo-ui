@@ -4,9 +4,7 @@
   display: flex;
   width: 100%;
 
-  & > :not(:last-child) {
-    margin-right: 20px;
-  }
+  gap: 20px;
 }
 
 .speedInput {
@@ -38,4 +36,11 @@
 
   margin-left: 15px;
   width: max-content;
+}
+
+/* Extra small - xs */
+@media (max-width: 767px) {
+  .wrapper {
+    gap: 5px;
+  }
 }

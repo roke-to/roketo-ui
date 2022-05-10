@@ -23,6 +23,10 @@
   position: relative;
   min-width: 500px;
 
+  max-width: 95%;
+  max-height: 90%;
+  overflow: auto;
+
   padding: 32px;
   border-radius: 12px;
 
@@ -76,5 +80,12 @@
     &:after, &:before {
       background-color: $light-black;
     }
+  }
+}
+
+/* Extra small - xs */
+@media (max-width: 767px) {
+  .content {
+    min-width: auto;
   }
 }

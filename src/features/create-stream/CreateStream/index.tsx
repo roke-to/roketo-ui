@@ -102,7 +102,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                 />
               </Row>
 
-              <Row>
+              <Row className={styles.amount}>
                 <Field
                   isRequired
                   name="deposit"
