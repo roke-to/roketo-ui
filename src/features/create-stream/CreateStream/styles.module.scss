@@ -37,12 +37,10 @@
 
   justify-content: space-around;
 
+  gap: 25px;
+
   &Item {
     flex: 1;
-  }
-
-  & > :not(:last-child) {
-    margin-right: 25px;
   }
 }
 
@@ -66,9 +64,7 @@
   justify-content: flex-end;
   align-items: center;
 
-  & > :not(:last-child) {
-    margin-right: 20px;
-  }
+  gap: 20px;
 }
 
 .feeDisclaimer {
@@ -83,4 +79,29 @@
   &Row {
     justify-content: flex-start;
   }
+}
+
+/* Medium size */
+@media (max-width: 1199px) {
+  .root {
+    min-width: auto;
+  }
+}
+
+/* Small - sm */
+@media (max-width: 991px) {
+  .amount {
+    flex-direction: column;
+
+    gap: 15px;
+  }
+
+  .actionButtonsWrapper {
+    justify-content: center;
+  }
+}
+
+/* Extra small - xs */
+@media (max-width: 767px) {
+
 }
