@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import classNames from 'classnames';
 import { isToday, isYesterday, differenceInDays, format } from 'date-fns';
 import { generatePath, Link } from 'react-router-dom';
@@ -97,8 +97,10 @@ export function Notifications() {
   const [isDropdownOpened, setIsDropdownOpened] = useState(false);
   const notificationsSWR = useNotifications();
 
-  useEffect(() => {
-    if (!isDropdownOpened || !notificationsSWR.data) {
+  const closeDropdown = useCallback(() => {
+    setIsDropdownOpened(false);
+
+    if (!notificationsSWR.data) {
       return;
     }
 
@@ -110,7 +112,7 @@ export function Notifications() {
       },
       { revalidate: false }
     );
-  }, [isDropdownOpened, notificationsSWR]);
+  }, [notificationsSWR]);
 
   const hasUnreadNotifications = notificationsSWR.data?.some(({ isRead }) => !isRead) ?? false;
 
@@ -126,7 +128,7 @@ export function Notifications() {
 
       <DropdownMenu
         opened={isDropdownOpened}
-        onClose={() => setIsDropdownOpened(false)}
+        onClose={closeDropdown}
         className={styles.dropdownMenu}
       >
         <div className={styles.container}>
@@ -165,7 +167,7 @@ export function Notifications() {
                   styles.notification,
                   !notification.isRead && styles.unread
                 )}
-                onClick={() => setIsDropdownOpened(false)}
+                onClick={closeDropdown}
               >
                 <NotificationIcon type={notification.type} />
                 <NotificationBody notification={notification} />
