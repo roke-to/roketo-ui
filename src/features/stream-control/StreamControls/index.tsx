@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuDivider, DropdownMenuItem } from 'shared/kit/
 import { useBool, BooleanControl } from 'shared/hooks/useBool';
 import { useRoketoContext } from 'app/roketo-context';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
-import { isDead } from 'shared/api/roketo/helpers';
+import {isActiveStream, isDead, isPausedStream} from 'shared/api/roketo/helpers';
 
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import { testIds } from 'shared/constants';
@@ -157,6 +157,12 @@ export function StreamControls({ stream, className }: StreamControlsProps) {
   const shouldShowStartButton = stream.status !== STREAM_STATUS.Active && isOutgoing;
   const shouldShowPauseButton = stream.status === STREAM_STATUS.Active;
 
+  const statusClassName = {
+    [styles.active]: isActiveStream(stream),
+    [styles.pause]: isPausedStream(stream),
+    [styles.stop]: isDead(stream),
+  };
+
   return (
     <div className={classNames(styles.relative, className)}>
       <PauseConfirmModal
@@ -172,7 +178,7 @@ export function StreamControls({ stream, className }: StreamControlsProps) {
       <DropdownOpener
         opened={opened}
         onChange={setMenuOpened}
-        className={styles.dropdownOpener}
+        className={classNames(styles.dropdownOpener, statusClassName)}
         testId={testIds.streamControlsDropdown}
       >
         {loading ? 'Loading...' : <StreamStatus stream={stream} className={styles.statusPadded} />}
