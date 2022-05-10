@@ -11,6 +11,7 @@ import { STREAM_DIRECTION, useGetStreamDirection } from 'shared/hooks/useGetStre
 import { useRoketoContext } from 'app/roketo-context';
 import { streamViewData } from 'features/roketo-resource';
 import { useMediaQuery } from 'shared/hooks/useMatchQuery';
+import { testIds } from 'shared/constants';
 
 import styles from './styles.module.scss';
 
@@ -37,6 +38,18 @@ function NotificationIcon({ type }: { type: NotificationType }) {
 
 const WITHOUT_EXTRAPOLATION = false;
 
+function PrimaryText({ children }: { children: React.ReactNode }) {
+  return (
+    <div className={styles.primaryText} data-testid={testIds.notificationPrimaryCaption}>{children}</div>
+  );
+}
+
+function SecondaryText({ children }: { children: React.ReactNode }) {
+  return (
+    <div className={styles.secondaryText} data-testid={testIds.notificationSecondaryCaption}>{children}</div>
+  );
+}
+
 function NotificationBody({ notification: { type, payload: stream } }: { notification: Notification }) {
   const { tokens } = useRoketoContext();
   const direction = useGetStreamDirection(stream);
@@ -47,48 +60,48 @@ function NotificationBody({ notification: { type, payload: stream } }: { notific
   switch (type) {
     case 'StreamStarted': return (
       <div className={styles.notificationBody}>
-        <div className={styles.mainText}>
+        <PrimaryText>
           {
             direction === STREAM_DIRECTION.IN
               ? <>{stream.owner_id} <strong>started</strong> a stream for you to receive.</>
               : <>You’ve successfully <strong>started</strong> a stream to {stream.receiver_id}.</>
           }
-        </div>
-        <div className={styles.secondaryText}>Total streaming amount: <strong>{formatter.amount(full)}&nbsp;{symbol}</strong></div>
-        <div className={styles.secondaryText}>Stream duration: <strong>{timeLeft}</strong></div>
+        </PrimaryText>
+        <SecondaryText>Total streaming amount: <strong>{formatter.amount(full)}&nbsp;{symbol}</strong></SecondaryText>
+        <SecondaryText>Stream duration: <strong>{timeLeft}</strong></SecondaryText>
       </div>
     );
     case 'StreamPaused': return (
       <div className={styles.notificationBody}>
-        <div className={styles.mainText}>The stream {direction === STREAM_DIRECTION.IN ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`} is <strong>paused</strong>.</div>
+        <PrimaryText>The stream {direction === STREAM_DIRECTION.IN ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`} is <strong>paused</strong>.</PrimaryText>
 
-        <div className={styles.secondaryText}>Already streamed: <strong>{formatter.amount(streamed)}&nbsp;{symbol}</strong></div>
-        <div className={styles.secondaryText}>Amount left: <strong>{formatter.amount(left)}&nbsp;{symbol}</strong></div>
+        <SecondaryText>Already streamed: <strong>{formatter.amount(streamed)}&nbsp;{symbol}</strong></SecondaryText>
+        <SecondaryText>Amount left: <strong>{formatter.amount(left)}&nbsp;{symbol}</strong></SecondaryText>
       </div>
     );
     case 'StreamFinished': return (
       <div className={styles.notificationBody}>
-        <div className={styles.mainText}>The stream {direction === STREAM_DIRECTION.IN ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`} has <strong>ended</strong>.</div>
-        <div className={styles.secondaryText}>Total amount streamed: <strong>{formatter.amount(full)}&nbsp;{symbol}</strong></div>
+        <PrimaryText>The stream {direction === STREAM_DIRECTION.IN ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`} has <strong>ended</strong>.</PrimaryText>
+        <SecondaryText>Total amount streamed: <strong>{formatter.amount(full)}&nbsp;{symbol}</strong></SecondaryText>
       </div>
     );
     case 'StreamIsDue': return (
       <div className={styles.notificationBody}>
-        <div className={styles.mainText}>The stream from {stream.owner_id} is <strong>due</strong>.</div>
-        <div className={styles.secondaryText}>Available for withdrawal: <strong>{formatter.amount(left)}&nbsp;{symbol}</strong></div>
+        <PrimaryText>The stream from {stream.owner_id} is <strong>due</strong>.</PrimaryText>
+        <SecondaryText>Available for withdrawal: <strong>{formatter.amount(left)}&nbsp;{symbol}</strong></SecondaryText>
       </div>
     );
     case 'StreamContinued': return (
       <div className={styles.notificationBody}>
-        <div className={styles.mainText}>
+        <PrimaryText>
           {
             direction === STREAM_DIRECTION.IN
               ? <>{stream.owner_id} has <strong>continued</strong> the stream.</>
               : <>The stream to {stream.receiver_id} was <strong>continued</strong>.</>
           }
-        </div>
-        <div className={styles.secondaryText}>Amount left: <strong>{formatter.amount(left)}&nbsp;{symbol}</strong></div>
-        <div className={styles.secondaryText}>Time left: <strong>{timeLeft}</strong></div>
+        </PrimaryText>
+        <SecondaryText>Amount left: <strong>{formatter.amount(left)}&nbsp;{symbol}</strong></SecondaryText>
+        <SecondaryText>Time left: <strong>{timeLeft}</strong></SecondaryText>
       </div>
     );
     default: throw new Error('This should never happen');
@@ -125,6 +138,7 @@ export function Notifications() {
         onChange={setIsDropdownOpened}
         className={styles.dropdownOpener}
         opened={isDropdownOpened}
+        testId={testIds.openNotificationsButton}
       >
         <BellIcon withBadge={hasUnreadNotifications} />
       </DropdownOpener>
@@ -170,6 +184,7 @@ export function Notifications() {
                   !notification.isRead && styles.unread
                 )}
                 onClick={closeDropdown}
+                data-testid={testIds.notificationElement}
               >
                 <NotificationIcon type={notification.type} />
                 <NotificationBody notification={notification} />

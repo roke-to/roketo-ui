@@ -40,6 +40,10 @@ export const testIds = {
   createStreamAutostartCheckbox: 'createStreamAutostartCheckbox',
   createStreamCancelButton: 'createStreamCancelButton',
   createStreamSubmitButton: 'createStreamSubmitButton',
+  openNotificationsButton: 'openNotificationsButton',
+  notificationElement: 'notificationElement',
+  notificationPrimaryCaption: 'notificationPrimaryCaption',
+  notificationSecondaryCaption: 'notificationSecondaryCaption',
 } as const;
 
 const testIdsKeys = Object.keys(testIds) as Array<keyof typeof testIds>;
