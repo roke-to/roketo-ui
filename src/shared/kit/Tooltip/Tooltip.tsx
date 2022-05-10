@@ -1,5 +1,6 @@
 import React from 'react';
 import RCTooltip from 'rc-tooltip';
+import cn from 'classnames';
 import type { TooltipProps as RCTooltipProps } from 'rc-tooltip/lib/Tooltip';
 import 'rc-tooltip/assets/bootstrap_white.css';
 
@@ -25,7 +26,7 @@ export function Tooltip({
       align={align}
       placement={placement}
       overlay={overlay}
-      overlayClassName={overlayClassName || styles.defaultOverlay}
+      overlayClassName={cn(styles.defaultOverlay, overlayClassName)}
     >
       {children || <span className={styles.defaultIcon}>?</span>}
     </RCTooltip>

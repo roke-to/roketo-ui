@@ -84,6 +84,7 @@
 }
 
 .controlsMenu {
+  padding: 8px 14px;
   min-width: unset;
   position: absolute;
   border-radius: 12px;
@@ -95,11 +96,13 @@
 .dropdownOpener {
   height: 32px;
   border-radius: 6px;
-  padding: 0 14px 0 25px;
+  padding: 8px 14px;
   font-size: 12px;
+  font-weight: 500;
+  line-height: 15px;
 }
 
-.start {
+.start, .active {
   background-color: #EEFFF4;
   color: #1EBA52;
 }
