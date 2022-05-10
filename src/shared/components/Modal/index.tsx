@@ -27,6 +27,7 @@ export const Modal = (props: Props) => {
       onRequestClose={onCloseModal}
       className={styles.content}
       overlayClassName={styles.overlay}
+      bodyOpenClassName={styles.bodyOverflowHidden}
     >
       <div>
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
