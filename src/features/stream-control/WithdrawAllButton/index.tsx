@@ -11,6 +11,8 @@ import { testIds } from 'shared/constants';
 
 import { getAvailableToWithdraw, isActiveStream } from 'shared/api/roketo/helpers';
 
+import styles from './styles.module.scss';
+
 export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
   const { tokens, roketo } = useRoketoContext();
   const streamsSWR = useStreams();
@@ -73,28 +75,28 @@ export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
       placement="bottom"
       align={{ offset: [0, 20] }}
       overlay={(
-        <div className="text-left">
-          <p className="mb-4 text-gray">
+        <div className={styles.root}>
+          <p className={styles.description}>
             Move all received tokens to your wallet.
           </p>
-          <div className="text-left">
+
+          <div className={styles.preparedTokensWrapper}>
             {preparedTokenData.length !== 0 && preparedTokenData.map((data) => 
               <div
                 key={data.tokenAccountId}
-                className="inline-flex items-center p-2 rounded-lg bg-card2 w-full mb-2"
+                className={styles.preparedToken}
               >
-                <TokenImage tokenAccountId={data.tokenAccountId} className="mr-2" />
-                {' '}
-                <div>
-                  <span className="font-semibold">{data.amount}</span>
-                  {' '}
-                  <span className="text-gray">{data.symbol}</span>
+                <TokenImage tokenAccountId={data.tokenAccountId} />
+
+                <div className={styles.info}>
+                  <span className={styles.amount}>{data.amount}</span>
+                  <span className={styles.symbol}>{data.symbol}</span>
                 </div>
               </div>
             )}
 
             {preparedTokenData.length === 0 &&
-              <p className="font-semibold text-center">
+              <p className={styles.description}>
                 You have nothing to withdraw
               </p>
             }
