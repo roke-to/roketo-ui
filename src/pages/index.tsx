@@ -18,6 +18,7 @@ import { StreamsPage } from './streams';
 import { AuthorizePage } from './authorize';
 import { StreamPage } from './stream';
 import { NotificationsPage } from './notifications';
+import { NotFoundPage } from './not-found';
 
 const TRASH_QUERY_PARAMS = ['transactionHashes', 'errorCode', 'errorMessage'];
 
@@ -89,6 +90,8 @@ export function Routing() {
         >
           <NotificationsPage />
         </PrivateRoute>
+
+        <Route render={NotFoundPage} />
       </Switch>
     </Router>
   );
