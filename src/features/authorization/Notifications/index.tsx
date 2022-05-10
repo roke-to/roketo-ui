@@ -148,9 +148,9 @@ export function Notifications() {
 
           {notificationsSWR.data?.map((notification, index, notifications) => (
             <>
-              {index !== 0 && <div className={styles.divider} />}
+              {index !== 0 && <div className={styles.divider} key={`${notification.id}-divider`} />}
               {(index === 0 || differenceInDays(new Date(notifications[index - 1].createdAt), new Date(notification.createdAt))) > 0 &&
-                <div className={styles.date}>
+                <div className={styles.date} key={String(notification.createdAt)}>
                   {isToday(new Date(notification.createdAt))
                     ? 'Today'
                     : isYesterday(new Date(notification.createdAt))
