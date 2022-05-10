@@ -16,6 +16,7 @@ const STREAM_TYPE_FILTER = {
 
 const STREAM_STATUS_FILTER = {
   ALL: 'All',
+  [STREAM_STATUS.Initialized]: 'Initialized',
   [STREAM_STATUS.Active]: 'Active',
   [STREAM_STATUS.Paused]: 'Paused',
   [STREAM_STATUS.Finished]: 'Finished',
@@ -27,6 +28,7 @@ export function useStreamFilters(streams: RoketoStream[] | undefined) {
   const statusOptions = useMemo(
     () => ({
       [STREAM_STATUS_FILTER.ALL]: () => true,
+      [STREAM_STATUS_FILTER[STREAM_STATUS.Initialized]]: (stream: RoketoStream) => stream.status === STREAM_STATUS.Initialized,
       [STREAM_STATUS_FILTER[STREAM_STATUS.Active]]: (stream: RoketoStream) => stream.status === STREAM_STATUS.Active,
       [STREAM_STATUS_FILTER[STREAM_STATUS.Paused]]: (stream: RoketoStream) => stream.status === STREAM_STATUS.Paused,
       [STREAM_STATUS_FILTER[STREAM_STATUS.Finished]]: isDead,
