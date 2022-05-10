@@ -1,11 +1,17 @@
 @import 'src/shared/ui/palette';
 
+.flexCenter {
+  display: flex;
+  align-items: center;
+}
+
 .name {
   font-weight: 600;
   font-size: 14px;
   line-height: 20px;
-
   margin-right: 6px;
+  text-overflow: ellipsis;
+  overflow: hidden;
 
   &Label {
     color: $blue;
