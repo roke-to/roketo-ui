@@ -108,9 +108,8 @@ export function Notifications() {
       async (notifications) => {
         await notificationsApiClient.markAllRead();
 
-        return notifications;
-      },
-      { revalidate: false }
+        return notifications?.map((notification) => notification.isRead ? notification : { ...notification, isRead: true });
+      }
     );
   }, [notificationsSWR]);
 
