@@ -1539,9 +1539,9 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.5.tgz#db5a11bf66bdab39569719555b0f76e138d7bd64"
   integrity sha512-9X2obfABZuDVLCgPK9aX0a/x4jaOEweTTWE2+9sr0Qqqevj2Uv5XorvusThmc9XGYpS9yI+fhh8RTafBtGposw==
 
-"@roketo/api-client@roke-to/roketo-api-client#v0.0.18":
-  version "0.0.18"
-  resolved "https://codeload.github.com/roke-to/roketo-api-client/tar.gz/86968c694470e5100dee9f422149370e9fa606a9"
+"@roketo/api-client@roke-to/roketo-api-client#v0.0.20":
+  version "0.0.20"
+  resolved "https://codeload.github.com/roke-to/roketo-api-client/tar.gz/b6cb76424154f8a6bc18901a7493a0a14691d827"
   dependencies:
     es6-promise "^4.2.4"
     url-parse "^1.4.3"

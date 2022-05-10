@@ -19,10 +19,6 @@ export const ROUTES_MAP = {
     path: '/streams/:id',
     title: 'Stream'
   },
-  notifications: {
-    path: '/notifications',
-    title: 'Notifications',
-  },
 };
 
 export function getStreamLink(streamId: string | undefined) {
