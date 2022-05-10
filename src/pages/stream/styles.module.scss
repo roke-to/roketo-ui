@@ -168,12 +168,16 @@
 .infoRow {
   @extend .centeredFlex;
   justify-content: space-between;
+
+  gap: 20px;
 }
 
 .infoTitle {
   color: $bluish-grey;
   font-size: 14px;
   line-height: 16px;
+
+  flex-shrink: 0;
 }
 
 .font16 {
@@ -192,6 +196,14 @@
   font-size: 12px;
   line-height: 16px;
   font-weight: 600;
+}
+
+.streamID {
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  text-overflow: ellipsis;
 }
 
 .grey {

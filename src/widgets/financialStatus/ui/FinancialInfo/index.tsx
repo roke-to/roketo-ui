@@ -14,7 +14,7 @@ type FinancialInfoProps = {
 };
 
 export const FinancialInfo = ({title, total, streamed , withdrawn, withProgressBar = true, testId}: FinancialInfoProps) => {
-  const financialContent = streamed ? `$ ${streamed} of ${total}` : `${total} $`;
+  const financialContent = streamed ? `$ ${streamed} of ${total}` : `$ ${total}`;
 
   return (
     <div className={styles.card}>
