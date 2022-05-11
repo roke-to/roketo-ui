@@ -10,7 +10,7 @@
   color: $light-black;
 
   flex-grow: 1;
-  padding: 28px 0;
+  padding: 28px 16px;
 
   & > :not(:last-child) {
     margin-right: 15px;
@@ -20,6 +20,7 @@
 .centeredFlex {
   display: flex;
   align-items: center;
+  overflow: hidden;
 }
 
 .breadbrumbs {
@@ -33,6 +34,12 @@
 
 .breadbrumb {
   margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.id {
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .stream {
@@ -42,11 +49,15 @@
 
 .left {
   margin-right: 20px;
-  flex-grow: 668;
+  max-width: calc(100vw - 32px);
+  flex: 668 668;
+  min-width: 0;
 }
 
 .right {
-  flex-grow: 472;
+  max-width: calc(100vw - 32px);
+  flex: 472 472;
+  min-width: 0;
 
   & > :not(:last-child) {
     margin-bottom: 20px;
@@ -89,7 +100,6 @@
   @extend .centeredFlex;
   margin-bottom: 6px;
   font-size: 28px;
-  height: 36px;
   font-weight: 600;
 }
 
@@ -155,6 +165,8 @@
 .link {
   user-select: all;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .infoTile {
@@ -174,8 +186,6 @@
 .infoRow {
   @extend .centeredFlex;
   justify-content: space-between;
-
-  gap: 20px;
 }
 
 .infoTitle {
@@ -184,21 +194,25 @@
   line-height: 16px;
 
   flex-shrink: 0;
+  padding-right: 10px;
 }
 
 .font16 {
+  text-align: right;
   font-size: 16px;
   line-height: 24px;
   font-weight: 600;
 }
 
 .font14 {
+  text-align: right;
   font-size: 14px;
   line-height: 20px;
   font-weight: 600;
 }
 
 .font12 {
+  text-align: right;
   font-size: 12px;
   line-height: 16px;
   font-weight: 600;
@@ -214,4 +228,18 @@
 
 .grey {
   color: $grey;
+}
+
+@media (max-width: 1024px) {
+  .stream {
+    flex-direction: column;
+  }
+
+  .left {
+    margin-right: 0;
+  }
+
+  .right {
+    margin-top: 16px;
+  }
 }

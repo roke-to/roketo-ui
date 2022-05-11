@@ -160,34 +160,34 @@ function StreamData({ stream }: { stream: RoketoStream }) {
       </InfoRow>
       <div className={styles.divider} />
       <InfoRow title="Total">
-          <span className={styles.font14}>
-            {formatter.amount(full)}
-            <span className={styles.font12}> {meta.symbol}</span>
-          </span>
+        <span className={styles.font14}>
+          {formatter.amount(full)}&nbsp;
+          <span className={styles.font12}>{meta.symbol}</span>
+        </span>
       </InfoRow>
       <InfoRow title="Token">
-          <span className={styles.font14}>
-            {meta.name},
-            <span className={styles.font12}> {meta.symbol}</span>
-          </span>
+        <span className={styles.font14}>
+          {meta.name},&nbsp;
+          <span className={styles.font12}>{meta.symbol}</span>
+        </span>
       </InfoRow>
       <InfoRow title="Tokens Transferred">
-          <span className={styles.font14}>
-            {formatter.amount(streamed)}
-            <span className={styles.font12}> {meta.symbol} <span className={styles.grey}>({streamedToTotalPercentageRatio}%)</span></span>
-          </span>
+        <span className={styles.font14}>
+          {formatter.amount(streamed)}&nbsp;
+          <span className={styles.font12}>{meta.symbol} <span className={styles.grey}>({streamedToTotalPercentageRatio}%)</span></span>
+        </span>
       </InfoRow>
       <InfoRow title="Tokens Left">
-          <span className={styles.font14}>
-            {formatter.amount(left)}
-            <span className={styles.font12}> {meta.symbol} <span className={styles.grey}>({leftToTotalPercentageRatio}%)</span></span>
-          </span>
+        <span className={styles.font14}>
+          {formatter.amount(left)}&nbsp;
+          <span className={styles.font12}>{meta.symbol} <span className={styles.grey}>({leftToTotalPercentageRatio}%)</span></span>
+        </span>
       </InfoRow>
       <InfoRow title="Tokens Available">
-          <span className={styles.font14}>
-            {formatter.amount(available)}
-            <span className={styles.font12}> {meta.symbol}</span>
-          </span>
+        <span className={styles.font14}>
+          {formatter.amount(available)}&nbsp;
+          <span className={styles.font12}>{meta.symbol}</span>
+        </span>
       </InfoRow>
     </div>
   );
@@ -249,7 +249,7 @@ export function StreamPage() {
             Streams
           </Link>
           <BreadcrumbIcon className={styles.breadbrumb} />
-          {id}
+          <span className={styles.id}>{id}</span>
         </div>
         {pageError &&
           <PageError
