@@ -1,9 +1,15 @@
 @import 'src/shared/ui/palette';
 
+.wrapper {
+  border-bottom: 1px solid $light-grey;
+  background-color: $white;
+  padding: 0 16px;
+}
+
 .root {
   color: $light-black;
 
-  min-height: 100vh;
+  flex-grow: 1;
   padding: 28px 0;
 
   & > :not(:last-child) {

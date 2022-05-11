@@ -10,6 +10,7 @@ import { DropdownMenu } from 'shared/kit/DropdownMenu';
 import { STREAM_DIRECTION, useGetStreamDirection } from 'shared/hooks/useGetStreamDirection';
 import { useRoketoContext } from 'app/roketo-context';
 import { streamViewData } from 'features/roketo-resource';
+import { useMediaQuery } from 'shared/hooks/useMatchQuery';
 
 import styles from './styles.module.scss';
 
@@ -17,6 +18,7 @@ import { BellIcon } from './BellIcon';
 import { FinishIcon } from './FinishIcon';
 import { StartIcon } from './StartIcon';
 import { PauseIcon } from './PauseIcon';
+import { BangIcon } from './BangIcon';
 
 function NotificationIcon({ type }: { type: NotificationType }) {
   const IconComponent = (() => {
@@ -24,7 +26,7 @@ function NotificationIcon({ type }: { type: NotificationType }) {
       case 'StreamStarted': return StartIcon;
       case 'StreamPaused': return PauseIcon;
       case 'StreamFinished': return FinishIcon;
-      case 'StreamIsDue': return FinishIcon;
+      case 'StreamIsDue': return BangIcon;
       case 'StreamContinued': return StartIcon;
       default: throw new Error('This should never happen');
     }
@@ -52,7 +54,7 @@ function NotificationBody({ notification: { type, payload: stream } }: { notific
               : <>You’ve successfully <strong>started</strong> a stream to {stream.receiver_id}.</>
           }
         </div>
-        <div className={styles.secondaryText}>Total streaming amount: <strong>{formatter.amount(full)} {symbol}</strong></div>
+        <div className={styles.secondaryText}>Total streaming amount: <strong>{formatter.amount(full)}&nbsp;{symbol}</strong></div>
         <div className={styles.secondaryText}>Stream duration: <strong>{timeLeft}</strong></div>
       </div>
     );
@@ -60,20 +62,20 @@ function NotificationBody({ notification: { type, payload: stream } }: { notific
       <div className={styles.notificationBody}>
         <div className={styles.mainText}>The stream {direction === STREAM_DIRECTION.IN ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`} is <strong>paused</strong>.</div>
 
-        <div className={styles.secondaryText}>Already streamed: <strong>{formatter.amount(streamed)} {symbol}</strong></div>
-        <div className={styles.secondaryText}>Amount left: <strong>{formatter.amount(left)} {symbol}</strong></div>
+        <div className={styles.secondaryText}>Already streamed: <strong>{formatter.amount(streamed)}&nbsp;{symbol}</strong></div>
+        <div className={styles.secondaryText}>Amount left: <strong>{formatter.amount(left)}&nbsp;{symbol}</strong></div>
       </div>
     );
     case 'StreamFinished': return (
       <div className={styles.notificationBody}>
         <div className={styles.mainText}>The stream {direction === STREAM_DIRECTION.IN ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`} has <strong>ended</strong>.</div>
-        <div className={styles.secondaryText}>Total amount streamed: <strong>{formatter.amount(full)} {symbol}</strong></div>
+        <div className={styles.secondaryText}>Total amount streamed: <strong>{formatter.amount(full)}&nbsp;{symbol}</strong></div>
       </div>
     );
     case 'StreamIsDue': return (
       <div className={styles.notificationBody}>
         <div className={styles.mainText}>The stream from {stream.owner_id} is <strong>due</strong>.</div>
-        <div className={styles.secondaryText}>Available for withdrawal: <strong>{formatter.amount(left)} {symbol}</strong></div>
+        <div className={styles.secondaryText}>Available for withdrawal: <strong>{formatter.amount(left)}&nbsp;{symbol}</strong></div>
       </div>
     );
     case 'StreamContinued': return (
@@ -85,7 +87,7 @@ function NotificationBody({ notification: { type, payload: stream } }: { notific
               : <>The stream to {stream.receiver_id} was <strong>continued</strong>.</>
           }
         </div>
-        <div className={styles.secondaryText}>Amount left: <strong>{formatter.amount(left)} {symbol}</strong></div>
+        <div className={styles.secondaryText}>Amount left: <strong>{formatter.amount(left)}&nbsp;{symbol}</strong></div>
         <div className={styles.secondaryText}>Time left: <strong>{timeLeft}</strong></div>
       </div>
     );
@@ -94,6 +96,8 @@ function NotificationBody({ notification: { type, payload: stream } }: { notific
 }
 
 export function Notifications() {
+  const compact = useMediaQuery('(max-width: 645px)');
+
   const [isDropdownOpened, setIsDropdownOpened] = useState(false);
   const notificationsSWR = useNotifications();
 
@@ -128,7 +132,7 @@ export function Notifications() {
       <DropdownMenu
         opened={isDropdownOpened}
         onClose={closeDropdown}
-        className={styles.dropdownMenu}
+        className={classNames(styles.dropdownMenu, compact && styles.compact)}
       >
         <div className={styles.container}>
           <header className={styles.header} >
@@ -147,10 +151,10 @@ export function Notifications() {
           }
 
           {notificationsSWR.data?.map((notification, index, notifications) => (
-            <>
-              {index !== 0 && <div className={styles.divider} key={`${notification.id}-divider`} />}
+            <React.Fragment key={notification.id}>
+              {index !== 0 && <div className={styles.divider} />}
               {(index === 0 || differenceInDays(notifications[index - 1].createdAt, notification.createdAt)) > 0 &&
-                <div className={styles.date} key={String(notification.createdAt)}>
+                <div className={styles.date}>
                   {isToday(notification.createdAt)
                     ? 'Today'
                     : isYesterday(notification.createdAt)
@@ -161,7 +165,6 @@ export function Notifications() {
               }
               <Link
                 to={generatePath(ROUTES_MAP.stream.path, { id: notification.payload.id })}
-                key={notification.id}
                 className={classNames(
                   styles.notification,
                   !notification.isRead && styles.unread
@@ -172,7 +175,7 @@ export function Notifications() {
                 <NotificationBody notification={notification} />
                 <div className={styles.time}>{format(new Date(notification.createdAt), 'HH:mm')}</div>
               </Link>
-            </>
+            </React.Fragment>
           ))}
         </div>
       </DropdownMenu>

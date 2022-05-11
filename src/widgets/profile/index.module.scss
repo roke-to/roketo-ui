@@ -1,10 +1,13 @@
 .profile {
   position: relative;
+  min-width: 0;
+  display: flex;
 }
 
 .dropdownOpener {
   background-color: unset;
   padding: 0 10px;
+  min-width: 0;
 }
 
 .name {

@@ -1,18 +1,17 @@
 import React from 'react';
 
 import {useRoketoContext} from 'app/roketo-context';
-import { Profile } from 'widgets/profile';
 
 import { Button } from '@ui/components/Button';
 import {LogoutIcon} from '@ui/icons/LogOut';
 
 import { testIds } from 'shared/constants';
-import { Notifications } from 'widgets/notifications';
 
 import styles from './index.module.scss';
 
 export const Authorization = () => {
   const {auth} = useRoketoContext();
+
   const {login, logout, signedIn} = auth;
 
   if (!signedIn) {
@@ -25,15 +24,9 @@ export const Authorization = () => {
   }
 
   return (
-    <div className={styles.root}>
-      <Profile />
-
-      <Notifications />
-
-      <button type='button' onClick={logout} className={styles.logoutButton}>
-        <LogoutIcon />
-      </button>
-    </div>
+    <button type='button' onClick={logout} className={styles.logoutButton}>
+      <LogoutIcon />
+    </button>
   );
 };
 

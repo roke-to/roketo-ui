@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import {env} from 'shared/config';
 import {TimePeriod} from 'shared/constants';
@@ -12,8 +13,8 @@ import {StreamType, TokenAmountSpeed} from '../TokenAmountSpeed';
 
 import styles from './styles.module.scss';
 
-export const FinancialActivity = () => (
-    <div className={styles.root}>
+export const FinancialActivity = ({ className }: { className: string }) => (
+    <div className={classNames(styles.root, className)}>
       {/* Total Outcome Speed */}
       <div className={styles.wrapper}>
         <OutcomeIcon />
