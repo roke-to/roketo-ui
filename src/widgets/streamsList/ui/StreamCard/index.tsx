@@ -31,9 +31,8 @@ export const StreamCard = ({stream, className}: StreamCardProps) => {
   const streamPageLink = generatePath(ROUTES_MAP.stream.path, {id});
 
   return (
-    <div className={cn(styles.root, styles.flexCenter, className)}>
-
-      <Link to={streamPageLink}>
+    <div className={cn(styles.root, className)}>
+      <Link to={streamPageLink} className={styles.name}>
         <Name name={name} label={label}/>
       </Link>
 

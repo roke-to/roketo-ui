@@ -1,12 +1,31 @@
 @import 'src/shared/ui/palette';
 
+.container {
+  width: 100%;
+  overflow-x: auto;
+}
+
 .flexColumn {
+  min-width: 1280px;
   display: flex;
   flex-direction: column;
 }
 
 .withPaddings {
-  padding: 16px 22px;
+  padding-right: 22px;
+
+  & > * {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  & > :first-child {
+    background-color: $white;
+    padding-left: 22px;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+  }
 }
 
 .title {
@@ -24,9 +43,6 @@
   align-items: center;
   align-content: center;
   justify-content: center;
-
-  border-top: 1px solid $light-grey;
-
   padding-top: 100px;
 
   font-weight: 500;

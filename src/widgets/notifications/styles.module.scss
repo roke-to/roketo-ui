@@ -1,4 +1,4 @@
-@import 'src/shared/ui/palette';
+@import 'src/shared/ui/palette/index';
 
 .root {
   position: relative;
@@ -16,13 +16,14 @@
   padding: 0;
   width: 550px;
   border: 1px solid $tertiary;
+  flex-direction: row;
 }
 
 .container {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-height: calc(100vh - 80px);
+  max-height: calc(100vh - 150px);
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -90,6 +91,7 @@
   font-size: 16px;
   line-height: 22px;
   margin-bottom: 8px;
+  word-break: break-word;
 }
 
 .secondaryText {
@@ -102,4 +104,45 @@
   color: $bluish-grey;
   font-size: 14px;
   line-height: 22px;
+  padding-left: 10px;
+}
+
+.compact {
+  max-width: calc(100vw - 32px);
+  right: -28px;
+
+  .header {
+    font-size: 14px;
+    line-height: 17px;
+  }
+
+  .date {
+    font-size: 12px;
+    margin: 12px 16px;
+  }
+
+  .notification {
+    padding: 0 13px 12px 28px;
+  }
+
+  .icon {
+    flex-basis: 36px;
+  }
+
+  .mainText {
+    font-size: 14px;
+  }
+
+  .secondaryText {
+    font-size: 12px;
+    line-height: 15px;
+  }
+
+  .time {
+    font-size: 12px;
+  }
+
+  .divider {
+    margin-bottom: 12px;
+  }
 }

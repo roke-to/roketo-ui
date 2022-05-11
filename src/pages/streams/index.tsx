@@ -70,7 +70,7 @@ export const StreamsPage = () => {
   return (
     <div className={styles.root}>
       <Layout>
-        <section className={cn(styles.flex, styles.spaceBetween)}>
+        <section className={cn(styles.flex, styles.header)}>
           <h1 className={styles.title}>Streams</h1>
 
           <div className={cn(styles.flex, styles.buttonsWrapper)}>
@@ -88,7 +88,7 @@ export const StreamsPage = () => {
           </div>
         </section>
 
-        <FinancialStatus className={styles.section}/>
+        <FinancialStatus />
 
         <StreamFilters
           items={allStreams}

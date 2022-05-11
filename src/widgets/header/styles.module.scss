@@ -1,17 +1,21 @@
 @import 'src/shared/ui/palette';
-@import 'src/shared/ui/components/Layout/styles.module';
 
 .wrapper {
   border-bottom: 1px solid $light-grey;
   background-color: $white;
+  padding: 0 16px;
+  height: 80px;
 }
 
 .root {
-  height: calc($header-height - 1px);
-
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.unshrinkable {
+  flex-shrink: 0;
 }
 
 .logo {
@@ -21,14 +25,27 @@
 .left {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .right {
   display: flex;
   align-items: center;
-
-  & > :not(:last-child) {
-    margin-right: 32px;
-  }
+  min-width: 0;
+  margin-left: auto;
 }
 
+.marginRight {
+  margin-right: 32px;
+  padding: 10px 0;
+}
+
+.secondWrapper {
+  @extend .wrapper;
+  height: unset;
+}
+
+.secondRoot {
+  @extend .root;
+  flex-wrap: wrap-reverse;
+}

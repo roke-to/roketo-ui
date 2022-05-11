@@ -3,15 +3,6 @@
   align-items: center;
 }
 
-.profile {
-  position: relative;
-}
-
-.dropdownOpener {
-  background-color: unset;
-  padding: 0 10px;
-}
-
 .name {
   max-width: 200px;
 
@@ -26,22 +17,7 @@
   text-overflow: ellipsis;
 }
 
-.avatar {
-  width: 40px;
-  height: 40px;
-
-  border-radius: 50%;
-}
-
-.dropdownMenu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 10px);
-  padding: 0;
-}
-
 .logoutButton {
   padding: 10px;
-  margin-left: 12px;
   margin-right: -10px;
 }
