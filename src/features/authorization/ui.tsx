@@ -7,9 +7,9 @@ import { Button } from '@ui/components/Button';
 import {LogoutIcon} from '@ui/icons/LogOut';
 
 import { testIds } from 'shared/constants';
+import { Notifications } from 'widgets/notifications';
 
 import styles from './index.module.scss';
-import { Notifications } from './Notifications';
 
 export const Authorization = () => {
   const {auth} = useRoketoContext();
