@@ -17,7 +17,7 @@ function compareBy(a: RoketoStream, b: RoketoStream, key: keyof RoketoStream) {
 
 const sorts = {
   bigBalanceFirst: {
-    label: 'With big balances',
+    label: 'With high amount',
     order: OrderType.desc,
     fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'balance'),
   },

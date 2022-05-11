@@ -198,20 +198,23 @@ function OtherInfo({ stream }: { stream: RoketoStream }) {
 
   return (
     <div className={classNames(styles.tile, styles.infoTile)}>
-      <div className={styles.bigHeader}>
+      <h3 className={styles.bigHeader}>
         Other info
-      </div>
+      </h3>
+
       <InfoRow title="Stream ID">
-        <span className={classNames(styles.font14, styles.centeredFlex)}>
-          {stream.id}
+        <div className={styles.centeredFlex}>
+          <span className={classNames(styles.font14, styles.streamID)}>{stream.id}</span>
           <CopyButton stringToCopy={stream.id} />
-        </span>
+        </div>
       </InfoRow>
+
       <InfoRow title="Stream Created">
         <span className={styles.font14}>
           {format(new Date(Number(stream.timestamp_created) / 1000000), 'PP \'at\' p')}
         </span>
       </InfoRow>
+
       <InfoRow title="Remaining">
         <span className={styles.font14}>
           {timeLeft || 'Finished'}

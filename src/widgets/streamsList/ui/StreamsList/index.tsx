@@ -52,7 +52,7 @@ export const StreamsList = (props: Props) => {
       {streams && allStreamsLength === 0 &&
         <EmptyState>
           <div>
-            You dont have any streams yet.
+            You don't have any streams yet.
           </div>
           <Button onClick={onCreateStreamClick}>Create First Stream</Button>
         </EmptyState>
