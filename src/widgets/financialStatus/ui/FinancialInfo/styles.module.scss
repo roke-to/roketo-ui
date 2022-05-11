@@ -5,10 +5,7 @@
   flex-direction: column;
   
   min-width: 200px;
-
-  & > :not(:last-child) {
-    margin-bottom: 6px;
-  }
+  margin-bottom: 28px;
 }
 
 .title {

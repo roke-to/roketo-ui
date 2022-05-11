@@ -4,11 +4,11 @@
   color: $light-black;
 
   flex-grow: 1;
-  padding: 28px 0;
+  padding: 0 16px 28px;
 }
 
 .section {
-  margin: 28px 0;
+  margin-bottom: 28px;
 }
 
 .flex {
@@ -16,11 +16,14 @@
   align-items: center;
 }
 
-.spaceBetween {
+.header {
   justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
 }
 
 .buttonsWrapper {
+  padding-top: 28px;
   & > :not(:last-child) {
     margin-right: 16px;
   }
@@ -30,5 +33,7 @@
   font-weight: 600;
   font-size: 32px;
   line-height: 40px;
+  padding-top: 28px;
+  padding-right: 16px;
 }
 

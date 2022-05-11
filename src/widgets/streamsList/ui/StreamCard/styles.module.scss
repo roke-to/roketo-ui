@@ -2,19 +2,22 @@
 
 .root {
   border-top: 1px solid $light-grey;
+  align-items: center;
 
   &:hover {
-    background-color: #FBFCFF;
-
     .controls {
       visibility: visible;
     }
   }
 }
 
-.flexCenter {
+.name {
+  align-self: stretch;
   display: flex;
-  align-items: center;
+  overflow: hidden;
+  &:hover {
+    background-color: #FBFCFF;
+  }
 }
 
 .description {

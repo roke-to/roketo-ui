@@ -66,15 +66,12 @@ export function StreamFilters({ items, onFilterDone, className }: StreamFiltersP
   }, [filteredItems, onFilterDone, sorting.fn]);
 
   return (
-    <div className={classNames('md:flex', className)}>
+    <div className={classNames(styles.root, className)}>
       <DirectionSorts
         directions={filter.directionFilter.optionsArray}
         activeDirection={filter.directionFilter.option}
         onDirectionClick={filter.directionFilter.selectOption}
       />
-
-      <div className="flex-grow" />
-
       <div className={styles.filtersWrapper}>
         <Filter
           options={filter.statusFilter.optionsArray}
