@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { useRouteMatch } from 'react-router-dom';
 
 import { ROUTES_MAP } from 'shared/helpers/routing';
-import {DarkLogo} from '@ui/icons/Logo';
+import {Logo} from '@ui/icons/Logo';
 import { Header as FullHeader } from 'widgets/header/Header';
 
 function MinifiedHeader() {
@@ -15,7 +15,7 @@ function MinifiedHeader() {
         'flex justify-center',
       )}
     >
-      <DarkLogo />
+      <Logo />
     </div>
   );
 }

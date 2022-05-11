@@ -1,0 +1,94 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  padding: 75px 0;
+
+  box-shadow: inset 0px 1px 0px #E9EBF0;
+  background-color: white;
+}
+
+.layout {
+  display: flex;
+  align-items: stretch;
+  flex-direction: column;
+
+  gap: 50px;
+
+  // Divider
+  &::before {
+    content: '';
+    border-top: 1px solid #E9EBF0;
+    border-radius: 3px;
+  }
+}
+
+.section {
+  flex: 1;
+
+  display: flex;
+  justify-content: space-between;
+
+  font-size: 14px;
+  line-height: 22px;
+
+  color: $grey;
+
+  // To make divider appear between two sections
+  &:first-child {
+    order: -1;
+  }
+}
+
+.logo {
+  max-width: 55px;
+
+  color: $light-black;
+  fill: currentColor;
+}
+
+.links {
+  display: flex;
+
+  gap: 35px;
+
+  & > * {
+    font-weight: 500;
+
+    &:hover {
+      color: $bluish-grey;
+    }
+  }
+}
+
+.legal {
+  display: flex;
+  gap: 25px;
+
+  & > * {
+    font-weight: 400;
+    font-size: 12px;
+
+    &:hover {
+      color: $bluish-grey;
+    }
+  }
+}
+
+.socials {
+  display: flex;
+  gap: 25px;
+
+  & > * {
+    max-width: 24px;
+
+    color: $light-black;
+  }
+}
+
+.jurInfo {
+  text-align: center;
+  font-weight: 400;
+  font-size: 12px;
+
+  color: $grey;
+}
