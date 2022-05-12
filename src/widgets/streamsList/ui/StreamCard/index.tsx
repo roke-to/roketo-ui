@@ -23,6 +23,15 @@ export const StreamCard = ({stream, className}: StreamCardProps) => {
     description,
   } = stream;
 
+  let comment = '';
+
+  try {
+    const parsedDescription = JSON.parse(description);
+    comment = parsedDescription.comment;
+  } catch {
+    comment = description;
+  }
+
   const isIncomingStream = useGetStreamDirection(stream) === STREAM_DIRECTION.IN;
 
   const name = isIncomingStream ? stream.owner_id : stream.receiver_id;
@@ -39,8 +48,8 @@ export const StreamCard = ({stream, className}: StreamCardProps) => {
       <StreamProgress stream={stream} className={styles.withMarginRight} />
 
       <Link to={streamPageLink} className='col-span-2 grow-0'>
-        <p className={styles.description}>
-          {description}
+        <p className={styles.comment}>
+          {comment}
         </p>
       </Link>
 

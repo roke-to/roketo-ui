@@ -56,7 +56,7 @@ export const StreamsPage = () => {
 
     await roketo.api.createStream({
       deposit: formatter.toYocto(deposit),
-      description: comment,
+      comment,
       receiverId: receiver,
       tokenAccountId: token,
       commissionOnCreate: roketoMeta.commission_on_create,
