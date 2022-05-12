@@ -6,6 +6,7 @@ import { usersApiClient, useUser, User } from 'shared/api/roketo-web';
 
 import { Button, ButtonType } from '@ui/components/Button';
 import { Input } from '@ui/components/Input';
+import {FormField} from '@ui/components/FormField';
 
 import styles from './index.module.scss';
 
@@ -71,8 +72,9 @@ export function ProfileForm() {
       onSubmit={updateUser}
       ref={formRef}
     >
-      <label className={styles.label}>
-        <span className={styles.inputName}>Name</span>
+      <FormField
+        label='User name'
+      >
         <Input
           placeholder="Name"
           name={NAME_INPUT}
@@ -80,9 +82,12 @@ export function ProfileForm() {
           onChange={(e) => setName(e.target.value)}
           disabled={busy}
         />
-      </label>
-      <label className={styles.label}>
-        <span className={styles.inputName}>Email</span>
+      </FormField>
+
+      <FormField
+        label='Email'
+        description='Email address is used for notifications'
+      >
         <Input
           placeholder="Email"
           name={EMAIL_INPUT}
@@ -90,7 +95,8 @@ export function ProfileForm() {
           onChange={(e) => setEmail(e.target.value)}
           disabled={busy}
         />
-      </label>
+      </FormField>
+
       <Button
         type={ButtonType.submit}
         disabled={busy}
