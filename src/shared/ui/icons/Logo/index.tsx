@@ -1,7 +1,7 @@
 import React from 'react';
 
-import {ReactComponent as ColoredLogo} from './colored-logo.svg';
-import {ReactComponent as BlackLogo} from './black-logo.svg';
+import { ColoredLogo } from './ColoredLogo';
+import { BlackLogo } from './BlackLogo';
 
 export enum DisplayType {
   COLORED = 'colored',
@@ -27,8 +27,6 @@ export const Logo = (props: Props) => {
   const ChosenLogo = DISPLAY_TYPE_TO_LOGO_MAP[type];
 
   return (
-    <div className={className}>
-      <ChosenLogo />
-    </div>
+    <ChosenLogo className={className} />
   );
 };

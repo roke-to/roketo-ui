@@ -6,6 +6,8 @@ import { ROUTES_MAP } from 'shared/helpers/routing';
 import {Logo} from '@ui/icons/Logo';
 import { Header as FullHeader } from 'widgets/header/Header';
 
+import styles from './styles.module.scss';
+
 function MinifiedHeader() {
   return (
     <div
@@ -15,7 +17,7 @@ function MinifiedHeader() {
         'flex justify-center',
       )}
     >
-      <Logo />
+      <Logo className={styles.logo} />
     </div>
   );
 }
