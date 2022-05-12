@@ -65,6 +65,13 @@ export const Footer = () => (
           >
             Privacy Policy
           </a>
+
+          <a
+            href="https://uploads-ssl.webflow.com/6136222580031d054842f5d6/617993de0d09ef005611beac_Cookie_Policy_of_Roketo.pdf"
+            target="_blank" rel="noreferrer"
+          >
+            Cookie Policy
+          </a>
         </div>
 
         <div className={styles.socials}>
