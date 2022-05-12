@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import {DarkLogo} from '@ui/icons/Logo';
+import {Logo} from '@ui/icons/Logo';
 import {Layout} from '@ui/components/Layout';
 import {Authorization} from 'features/authorization';
 import { useRoketoContext } from 'app/roketo-context';
@@ -30,7 +30,7 @@ export const Header = () => {
 
           <div className={styles.left}>
             <Link to="/" className={styles.unshrinkable}>
-              <DarkLogo className={styles.logo}/>
+              <Logo className={styles.logo}/>
             </Link>
             {auth.signedIn && <PageList pageRoutes={ROUTES_TO_DISPLAY} />}
           </div>
