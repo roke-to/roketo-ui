@@ -33,7 +33,7 @@ export function Balance({ tokenAccountId, className, mode = DisplayMode.CRYPTO }
 
   return (
     <span className={className}>
-      {`Balance: ${amount} ${currencySymbol}`}
+      {`Balance: ${currencySymbol} ${amount}`}
     </span>
   );
 }
