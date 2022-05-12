@@ -7,7 +7,7 @@ import {
 } from './entities';
 
 export type CreateStreamApiProps = {
-  description: string;
+  comment: string;
   deposit: string;
   commissionOnCreate: string,
   receiverId: string;

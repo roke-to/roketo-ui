@@ -77,7 +77,7 @@ export class RoketoContractApi implements RoketoApi {
   }
 
   async createStream({
-    description,
+    comment,
     deposit,
     receiverId,
     tokenAccountId,
@@ -92,7 +92,7 @@ export class RoketoContractApi implements RoketoApi {
   }: CreateStreamApiProps) {
     const totalAmount = new BigNumber(deposit).plus(commissionOnCreate).toFixed();
     const transferPayload = {
-      description,
+      description: JSON.stringify({ comment }),
       balance: deposit,
       owner_id: this.account.accountId,
       receiver_id: receiverId,
