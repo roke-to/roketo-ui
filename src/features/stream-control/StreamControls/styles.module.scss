@@ -39,7 +39,9 @@
   position: fixed;
   display: flex;
   align-items: center;
-  justify-content: center;
+  overflow: auto;
+  padding: 5vh 0;
+  flex-direction: column;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.4);
   color: white;

@@ -13,10 +13,14 @@
   background-color: rgba(0, 0, 0, 0.4);
 
   z-index: 1000;
+  pointer-events: auto;
+  user-select: text;
 }
 
 .bodyOverflowHidden {
   overflow: hidden;
+  pointer-events: none;
+  user-select: none;
 }
 
 .content {
@@ -24,8 +28,6 @@
   min-width: 500px;
 
   max-width: 95%;
-  max-height: 90%;
-  overflow: auto;
 
   padding: 32px;
   border-radius: 12px;
