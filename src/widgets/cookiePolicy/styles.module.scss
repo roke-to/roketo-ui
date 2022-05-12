@@ -1,0 +1,80 @@
+@import 'src/shared/ui/palette/index';
+
+.root {
+  position: fixed;
+
+  left: 0;
+  bottom: 0;
+
+  width: 100%;
+  padding: 30px 0;
+
+  background-color: white;
+
+  box-shadow: 0 0 20px rgb(138 150 168 / 24%);
+
+  z-index: 10;
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+}
+
+.disclaimer {
+  font-size: 14px;
+  line-height: 20px;
+
+  font-weight: 500;
+
+  text-align: center;
+
+  flex-basis: 60%;
+}
+
+.logo {
+  flex-shrink: 0;
+
+  width: 85px;
+}
+
+.link {
+  color: $blue;
+
+  margin: 0 5px;
+}
+
+.buttons {
+  flex-grow: 1;
+  flex-shrink: 0;
+
+  display: flex;
+  gap: 20px;
+
+  align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .wrapper {
+    gap: 20px;
+  }
+
+  .buttons {
+    gap: 10px;
+  }
+}
+
+/* Extra small - xs */
+@media (max-width: 767px) {
+  .wrapper {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .buttons {
+    justify-content: center;
+  }
+}

@@ -11,6 +11,7 @@ import { Header } from 'shared/components/Header';
 import { PrivateRoute } from 'shared/components/PrivateRoute';
 import { useRoketoContext } from 'app/roketo-context';
 import {Footer} from 'widgets/footer';
+import {CookiePolicy} from 'widgets/cookiePolicy';
 
 import { env } from 'shared/config';
 import { ROUTES_MAP } from 'shared/helpers/routing';
@@ -85,6 +86,8 @@ export function Routing() {
       </Switch>
 
       <Footer />
+      
+      <CookiePolicy />
     </Router>
   );
 }
