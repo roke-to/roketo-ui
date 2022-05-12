@@ -1,0 +1,49 @@
+@import 'src/shared/ui/palette/index';
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  position: relative;
+
+  width: 25px;
+  height: 25px;
+
+  border-radius: 50%;
+  border: 3px solid $blue;
+  border-top-color: transparent;
+
+  animation: spin 0.7s linear infinite;
+
+  z-index: 10;
+
+  &::before {
+    top: 0;
+    left: 0;
+  }
+
+  &::after {
+    top: 0;
+    right: 0;
+  }
+
+  &::before, &::after {
+    position: absolute;
+
+    content: '';
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+
+    background-color: $blue;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

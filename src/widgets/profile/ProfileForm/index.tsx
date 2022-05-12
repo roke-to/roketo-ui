@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import classNames from 'classnames';
 
 import { useRoketoContext } from 'app/roketo-context';
 import { usersApiClient, useUser, User } from 'shared/api/roketo-web';
@@ -7,6 +6,7 @@ import { usersApiClient, useUser, User } from 'shared/api/roketo-web';
 import { Button, ButtonType } from '@ui/components/Button';
 import { Input } from '@ui/components/Input';
 import {FormField} from '@ui/components/FormField';
+import {Spinner} from '@ui/components/Spinner';
 
 import styles from './index.module.scss';
 
@@ -68,10 +68,14 @@ export function ProfileForm() {
 
   return (
     <form
-      className={classNames(styles.profileForm, busy && styles.busy)}
+      className={styles.profileForm}
       onSubmit={updateUser}
       ref={formRef}
     >
+      {busy &&
+        <Spinner wrapperClassName={styles.loaderWrapper} />
+      }
+
       <FormField
         label='User name'
       >

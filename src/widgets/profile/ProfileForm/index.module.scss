@@ -1,6 +1,7 @@
 @import 'src/shared/ui/palette/index';
 
 .profileForm {
+  position: relative;
   padding: 25px;
   display: flex;
   flex-direction: column;
@@ -12,25 +13,22 @@
   }
 }
 
-.busy {
-  position: relative;
+.loaderWrapper {
+  content: '';
+  z-index: 1;
 
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url(loader.gif);
-    background-size: 33%;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-color: black;
-    opacity: 0.6;
-    border-radius: 16px;
-    cursor: progress;
-  }
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 16px;
+
+  cursor: progress;
 }
 
 .label {

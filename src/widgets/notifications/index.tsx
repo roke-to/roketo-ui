@@ -3,6 +3,8 @@ import classNames from 'classnames';
 import { isToday, isYesterday, differenceInDays, format } from 'date-fns';
 import { generatePath, Link } from 'react-router-dom';
 
+import {Spinner} from '@ui/components/Spinner';
+
 import { ROUTES_MAP } from 'shared/helpers/routing';
 import { notificationsApiClient, useNotifications, NotificationType, Notification } from 'shared/api/roketo-web';
 import { DropdownOpener } from 'shared/kit/DropdownOpener';
@@ -153,9 +155,7 @@ export function Notifications() {
             Notifications
           </header>
           {!notificationsSWR.data &&
-            <h3 className="text-3xl text-center my-12 mx-auto">
-              Loading...
-            </h3>
+            <Spinner wrapperClassName={styles.loader} />
           }
 
           {notificationsSWR.data?.length === 0 &&

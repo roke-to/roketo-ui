@@ -28,6 +28,11 @@
   overflow-y: auto;
 }
 
+.loader {
+  width: 100%;
+  min-height: 100px;
+}
+
 .header {
   padding: 16px;
   color: $light-black;
