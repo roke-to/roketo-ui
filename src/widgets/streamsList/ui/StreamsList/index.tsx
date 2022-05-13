@@ -4,6 +4,7 @@ import cn from 'classnames';
 import {RoketoStream} from 'shared/api/roketo/interfaces/entities';
 
 import {Button} from '@ui/components/Button';
+import {Spinner} from '@ui/components/Spinner';
 
 import {useStreams} from 'features/roketo-resource';
 
@@ -38,7 +39,7 @@ export const StreamsList = (props: Props) => {
   if (!streams) {
     return (
       <EmptyState>
-        <div>Loading...</div>
+        <Spinner wrapperClassName={styles.loader} />
       </EmptyState>
     );
   }
@@ -66,10 +67,11 @@ export const StreamsList = (props: Props) => {
     <div className={cn(styles.container, className)}>
       <section className={styles.flexColumn}>
         <div className={cn(styles.withPaddings, 'grid grid-cols-6 gap-x-10')}>
-          <h3 className={styles.title}>Name</h3>
+          <h3 className={styles.title}>Wallet address</h3>
           <h3 className={styles.title}>Amount to stream</h3>
           <h3 className={styles.title}>Comment</h3>
         </div>
+
         {displayingStreams?.map(stream => (
           <StreamCard
             stream={stream}

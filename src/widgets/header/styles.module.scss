@@ -4,6 +4,11 @@
   border-bottom: 1px solid $light-grey;
   background-color: $white;
   height: 80px;
+
+  z-index: 10;
+
+  position: sticky;
+  top: 0;
 }
 
 .root {
@@ -42,6 +47,7 @@
 
 .secondWrapper {
   @extend .wrapper;
+  top: 80px;
   height: unset;
 }
 
