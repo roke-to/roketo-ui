@@ -12,9 +12,6 @@ export const STREAM_TYPE_FILTER = {
   OUTGOING: 'Outgoing',
 } as const;
 
-type StreamTypeFilterKey = keyof typeof STREAM_TYPE_FILTER;
-export type StreamTypeFilterValue = typeof STREAM_TYPE_FILTER[StreamTypeFilterKey];
-
 const STREAM_STATUS_FILTER = {
   ALL: 'All',
   [STREAM_STATUS.Initialized]: 'Initialized',
