@@ -88,13 +88,14 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
   }, [tokensPerSec, onSpeedChange, prevSpeed]);
 
   const handleInputChangeFactory = (
-    setValue: Dispatch<SetStateAction<number>>
+    setValue: Dispatch<SetStateAction<number>>,
+    valueLimit: number,
   ) => (event: ChangeEvent<HTMLInputElement>) => {
     const {value} = event.target;
 
     const safeValue = value || '0';
 
-    if (isLikeNumber(safeValue)) {
+    if (isLikeNumber(safeValue) && Number(safeValue) <= valueLimit) {
       setValue(Number(safeValue));
     }
   };
@@ -120,26 +121,26 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
       <div className={styles.wrapper}>
         <SpeedInput
           value={months}
-          onChange={handleInputChangeFactory(setMonths)}
-          label="Months"
+          onChange={handleInputChangeFactory(setMonths, 12)}
+          label="Months, max: 12"
           testId={testIds.createStreamMonthsInput}
         />
         <SpeedInput
           value={days}
-          onChange={handleInputChangeFactory(setDays)}
-          label="Days"
+          onChange={handleInputChangeFactory(setDays, 31)}
+          label="Days, max: 31"
           testId={testIds.createStreamDaysInput}
         />
         <SpeedInput
           value={hours}
-          onChange={handleInputChangeFactory(setHours)}
-          label="Hours"
+          onChange={handleInputChangeFactory(setHours, 24)}
+          label="Hours, max: 24"
           testId={testIds.createStreamHoursInput}
         />
         <SpeedInput
           value={minutes}
-          onChange={handleInputChangeFactory(setMinutes)}
-          label="Minutes"
+          onChange={handleInputChangeFactory(setMinutes, 60)}
+          label="Minutes, max: 60"
           testId={testIds.createStreamMinutesInput}
         />
       </div>
