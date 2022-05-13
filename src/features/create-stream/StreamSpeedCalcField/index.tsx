@@ -112,7 +112,7 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
   return (
     <FormField
       isRequired={isRequired}
-      className={className}
+      className={cn(styles.formField, className)}
       description={description}
       label={labelWithStreamingSpeed}
       error={error}

@@ -6,11 +6,14 @@ import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 
 import { useFilter, useFilters } from './lib';
 
-const STREAM_TYPE_FILTER = {
+export const STREAM_TYPE_FILTER = {
   ALL: 'All',
   INCOMING: 'Incoming',
   OUTGOING: 'Outgoing',
-};
+} as const;
+
+type StreamTypeFilterKey = keyof typeof STREAM_TYPE_FILTER;
+export type StreamTypeFilterValue = typeof STREAM_TYPE_FILTER[StreamTypeFilterKey];
 
 const STREAM_STATUS_FILTER = {
   ALL: 'All',

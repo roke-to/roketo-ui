@@ -18,7 +18,7 @@ export const FeeDisclaimer = ({tokenAccountId, className}: Props) => {
     <div className={className}>
       {`You will be charged 
         ${formatter.amount(roketoMeta.commission_on_create)} 
-        ${tokenMeta.symbol} fee for that stream`
+        ${tokenMeta.symbol} fee for the stream`
       }
     </div>
   );

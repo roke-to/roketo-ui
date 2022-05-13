@@ -29,12 +29,19 @@
   position: relative;
 }
 
+.formField {
+  & >:first-child {
+    width: 100%;
+  }
+}
+
 .speed {
   position: absolute;
   top: 0;
-  left: 100%;
+  left: 50%;
 
-  margin-left: 15px;
+  transform: translateX(-50%);
+
   width: max-content;
 }
 

@@ -9,16 +9,18 @@ import {ErrorSign} from '@ui/icons/ErrorSign';
 
 import {FormikInput} from 'shared/components/FormikInput';
 import {FormikCheckbox} from 'shared/components/FormikCheckbox';
+import {FormikTextArea} from 'shared/components/FormikTextArea';
 import {Balance, DisplayMode} from 'shared/components/Balance';
+
 import { testIds } from 'shared/constants';
 
 import {env} from 'shared/config';
-
 import {StreamSpeedCalcField} from '../StreamSpeedCalcField';
 import {TokenSelector} from '../TokenSelector';
+
 import {FeeDisclaimer} from '../FeeDisclaimer'
 
-import {INITIAL_FORM_VALUES} from '../constants';
+import {INITIAL_FORM_VALUES, COMMENT_TEXT_LIMIT} from '../constants';
 
 import {getFormValidationSchema} from '../lib';
 
@@ -68,14 +70,14 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
   return (
     <div className={styles.root}>
       <h2 className={styles.title}>Create Stream</h2>
-      <p className={styles.description}>Stream your tokens to the receiver directly</p>
 
       <Formik
         initialValues={INITIAL_FORM_VALUES}
         onSubmit={handleFormSubmit}
 
+        validateOnBlur
+
         validationSchema={validationSchema}
-        validateOnBlur={false}
         validateOnChange={false}
         validateOnMount={false}
       >
@@ -141,6 +143,18 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                     setFieldTouched('speed', true, false);
                   }}
                   className={styles.rowItem}
+                />
+              </Row>
+
+              <Row>
+                <Field
+                  maxLength={COMMENT_TEXT_LIMIT}
+                  name="comment"
+                  label="Comment:"
+                  placeholder="Enter comment"
+                  component={FormikTextArea}
+                  className={styles.rowItem}
+                  data-testid={testIds.createStreamCommentInput}
                 />
               </Row>
 

@@ -7,12 +7,14 @@ import {SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE} from 'shared/constan
 
 import type {RichToken} from 'shared/api/ft';
 
+import {COMMENT_TEXT_LIMIT} from './constants';
+
 export const getFormValidationSchema = (near: Near, accountId: string) => Yup.object().shape({
   receiver: Yup.string()
-    .required('Receiver is a required')
+    .required('Receiver is required')
     .test(
       'receiver-not-equal-owner',
-      'Receiver can not be the same as owner',
+      'Receiver can not be the same as the owner',
       (value) => value !== accountId,
     )
     .test(
@@ -33,11 +35,11 @@ export const getFormValidationSchema = (near: Near, accountId: string) => Yup.ob
   streamName: Yup.string().max(100, 'Stream name must be less or equal 100 symbols'),
   token: Yup.string().required(),
   deposit: Yup.number()
-    .required()
+    .required('Deposit is required')
     .moreThan(0, 'Deposit should be more than 0'),
-  speed: Yup.number().required().moreThan(0, 'Choose stream duration'),
+  speed: Yup.number().required('Speed duration is required').moreThan(0, 'Choose stream duration'),
   autoStart: Yup.boolean(),
-  comment: Yup.string().max(80),
+  comment: Yup.string().max(COMMENT_TEXT_LIMIT),
 });
 
 export const getDurationInSeconds = (months: number, days: number, hours: number, minutes: number) => {

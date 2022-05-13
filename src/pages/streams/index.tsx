@@ -80,7 +80,7 @@ export const StreamsPage = () => {
               onClick={toggleModal}
               testId={testIds.createStreamButton}
             >
-              Create stream
+              Create a stream
             </Button>
             <Modal isOpen={isModalOpened} onCloseModal={toggleModal}>
               <CreateStream onFormCancel={toggleModal} onFormSubmit={handleCreateStream}/>
@@ -93,6 +93,7 @@ export const StreamsPage = () => {
         <StreamFilters
           items={allStreams}
           onFilterDone={setFiltered}
+          className={styles.streamFilters}
         />
 
         <StreamsList
