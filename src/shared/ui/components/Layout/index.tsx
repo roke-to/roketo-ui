@@ -8,21 +8,8 @@ type LayoutProps = {
   className?: string,
 }
 
-export const Layout = (props: LayoutProps) => {
-  const {
-    children,
-    className,
-  } = props;
-
-  const classNames = cn(
-    "container mx-auto",
-    styles.layout,
-    className
-  );
-
-  return (
-    <div className={classNames}>
-      {children}
-    </div>
-  );
-};
+export const Layout = ({ children, className }: LayoutProps) => (
+  <div className={cn(styles.layout, className)}>
+    {children}
+  </div>
+);

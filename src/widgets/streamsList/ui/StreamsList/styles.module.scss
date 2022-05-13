@@ -1,14 +1,42 @@
 @import 'src/shared/ui/palette';
 
 .container {
-  width: 100%;
+  width: calc(100% + 60px);
   overflow-x: auto;
+  margin-bottom: -122px;
+  margin-right: -60px;
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
 }
 
 .flexColumn {
   min-width: 1280px;
   display: flex;
   flex-direction: column;
+  padding-right: 60px;
+
+  &:after {
+    content: '';
+    width: 100%;
+    height: 150px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .container {
+    width: calc(100% + 16px);
+    margin-right: -16px;
+  }
+
+  .flexColumn {
+    padding-right: 16px;
+  }
 }
 
 .withPaddings {

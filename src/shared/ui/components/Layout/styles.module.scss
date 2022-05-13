@@ -2,6 +2,13 @@
 
 .layout {
   color: $light-black;
+  padding-left: 60px;
+  padding-right: 60px;
 }
 
-$header-height: 80px;
+@media (max-width: 1024px) {
+  .layout {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
