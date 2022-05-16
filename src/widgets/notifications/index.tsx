@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import classNames from 'classnames';
-import { isToday, isYesterday, differenceInDays, format } from 'date-fns';
+import { isToday, isYesterday, isSameDay, format } from 'date-fns';
 import { generatePath, Link } from 'react-router-dom';
 
 import {Spinner} from '@ui/components/Spinner';
@@ -167,7 +167,7 @@ export function Notifications() {
           {notificationsSWR.data?.map((notification, index, notifications) => (
             <React.Fragment key={notification.id}>
               {index !== 0 && <div className={styles.divider} />}
-              {(index === 0 || differenceInDays(notifications[index - 1].createdAt, notification.createdAt)) > 0 &&
+              {(index === 0 || !isSameDay(notifications[index - 1].createdAt, notification.createdAt)) &&
                 <div className={styles.date}>
                   {isToday(notification.createdAt)
                     ? 'Today'
