@@ -8,8 +8,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           has-tests-label: true
+          wait-on-timeout: 120
           record: false
           parallel: false
-          group: 'Ideal'
+          start : yarn start 
+          wait-on : ' http://localhost:8080 '
+           env : stage= 
       - name: Cypress run
         uses: cypress-io/github-action@v2
