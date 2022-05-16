@@ -25,7 +25,7 @@ class MyStreams{
 
     }
     getPage(){
-        cy.visit('https://app2.test.roke.to/#/streams');
+        cy.visit('http://localhost:3000/#/streams');
     }
 
     withdraw(){

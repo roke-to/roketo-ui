@@ -3,7 +3,7 @@ import HomePage from '../../support/pages/HomePage';
 
 context('Viewport', () => {
     beforeEach(() => {
-        cy.visit('https://app2.test.roke.to/#/authorize')
+        cy.visit('http://localhost:3000/#/authorize')
       }
 )
 it('login with Pass phrase', () => {

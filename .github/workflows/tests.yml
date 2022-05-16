@@ -8,5 +8,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           has-tests-label: true
+          record: false
+          parallel: false
+          group: 'Ideal'
       - name: Cypress run
         uses: cypress-io/github-action@v2
