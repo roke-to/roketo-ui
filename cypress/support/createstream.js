@@ -12,7 +12,7 @@ export function createstream(testParams) {
       stream.inputPeriod('0', '0', '0', '1');
     } else {
       stream.inputPeriod('1000', '10', '10', '10');
-      stream.inputComments('comment-comment');
+     // stream.inputComments('comment-comment');
       stream.uncheckAutostart();
     }  
     stream.submit();
