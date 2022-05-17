@@ -176,10 +176,22 @@
   }
 }
 
-.bigHeader {
+.blockHeader {
   font-size: 22px;
   font-weight: 600;
   line-height: 28px;
+}
+
+.sectionHeader {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.dropdownOpener {
+  background-color: unset;
+  padding: 0 0;
+  min-width: 0;
 }
 
 .infoRow {
