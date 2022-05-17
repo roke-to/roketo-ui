@@ -13,5 +13,5 @@ jobs:
           wait-on-timeout: 120
           record: false
           parallel: false
-          start: PORT=8080 yarn start 
-          wait-on: 'http://localhost:8080'
+          start: yarn start 
+          wait-on: 'http://localhost:3000'
