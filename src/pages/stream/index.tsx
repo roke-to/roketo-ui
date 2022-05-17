@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useParams, Link } from 'react-router-dom';
 import copy from 'clipboard-copy';
 import classNames from 'classnames';
@@ -8,6 +8,7 @@ import { streamViewData, useSingleStream } from 'features/roketo-resource';
 import { LinkIcon } from '@ui/icons/Link';
 import { getStreamLink, ROUTES_MAP } from 'shared/helpers/routing';
 import { PageError } from 'shared/components/PageError';
+import {DropdownOpener} from 'shared/kit/DropdownOpener';
 import { Layout } from '@ui/components/Layout';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { getStreamingSpeed } from 'features/create-stream/lib';
@@ -48,8 +49,8 @@ function StreamProgress({ stream }: { stream: RoketoStream }) {
   );
 }
 
-function StreamButtons({ stream }: { stream: RoketoStream }) {
-  const { isDead } = streamViewData(stream);
+function StreamButtons({stream}: {stream: RoketoStream}) {
+  const {isDead} = streamViewData(stream);
   const direction = useGetStreamDirection(stream);
 
   if (isDead) {
@@ -67,8 +68,8 @@ function StreamButtons({ stream }: { stream: RoketoStream }) {
   );
 }
 
-function StreamSpeed({ stream }: { stream: RoketoStream }) {
-  const { tokens } = useRoketoContext();
+function StreamSpeed({stream}: {stream: RoketoStream}) {
+  const {tokens} = useRoketoContext();
 
   return (
     <div>
@@ -80,7 +81,7 @@ function StreamSpeed({ stream }: { stream: RoketoStream }) {
   );
 }
 
-function StreamComment({ stream }: { stream: RoketoStream }) {
+function StreamComment({stream}: {stream: RoketoStream}) {
   let comment = '';
 
   try {
@@ -104,7 +105,7 @@ function StreamComment({ stream }: { stream: RoketoStream }) {
   );
 }
 
-function CopyButton({ stringToCopy }: { stringToCopy: string }) {
+function CopyButton({stringToCopy}: {stringToCopy: string}) {
   return (
     <button
       type="button"
@@ -116,7 +117,7 @@ function CopyButton({ stringToCopy }: { stringToCopy: string }) {
   );
 }
 
-function StreamCopyUrlBlock({ stream }: { stream: RoketoStream }) {
+function StreamCopyUrlBlock({stream}: {stream: RoketoStream}) {
   const link = getStreamLink(stream.id);
 
   return (
@@ -139,24 +140,26 @@ function InfoRow({ title, children }: { title: string, children: React.ReactNode
   );
 }
 
-
-
-function StreamData({ stream }: { stream: RoketoStream }) {
+function StreamData({stream}: {stream: RoketoStream}) {
   const direction = useGetStreamDirection(stream);
-  const { tokens } = useRoketoContext();
-  const { progress: { streamed, left, full } } = streamViewData(stream);
+  const {tokens} = useRoketoContext();
+  const {
+    secondsLeft,
+    timeLeft,
+    progress: {streamed, left, full},
+  } = streamViewData(stream);
 
   const streamedToTotalPercentageRatio = getRoundedPercentageRatio(streamed, full).toNumber();
   const leftToTotalPercentageRatio = getRoundedPercentageRatio(left, full).toNumber();
   const available = getAvailableToWithdraw(stream).toNumber();
 
-  const { meta, formatter } = tokens[stream.token_account_id];
+  const {meta, formatter} = tokens[stream.token_account_id];
+  
+  const [showOtherInfo, setShowOtherInfo] = useState(false);
 
   return (
     <div className={classNames(styles.tile, styles.infoTile)}>
-      <div className={styles.bigHeader}>
-        Stream info
-      </div>
+      <div className={styles.blockHeader}>Stream info</div>
       <InfoRow title="Sender">
         <span className={styles.font16}>
           {direction === STREAM_DIRECTION.OUT ? 'You' : stream.owner_id}
@@ -167,11 +170,28 @@ function StreamData({ stream }: { stream: RoketoStream }) {
           {direction === STREAM_DIRECTION.IN ? 'You' : stream.receiver_id}
         </span>
       </InfoRow>
-      <div className={styles.divider} />
-      <InfoRow title="Total">
+      <InfoRow title="Amount">
         <span className={styles.font14}>
           {formatter.amount(full)}&nbsp;
           <span className={styles.font12}>{meta.symbol}</span>
+        </span>
+      </InfoRow>
+      <InfoRow title="Stream Created">
+        <span className={styles.font14}>
+          {format(
+            new Date(Number(stream.timestamp_created) / 1000000),
+            "PP 'at' p",
+          )}
+        </span>
+      </InfoRow>
+      <InfoRow title="Stream Ends">
+        <span className={styles.font14}>
+          {format(
+            new Date(
+              Number(stream.timestamp_created) / 1000000 + secondsLeft * 1000,
+            ),
+            "PP 'at' p",
+          )}
         </span>
       </InfoRow>
       <InfoRow title="Token">
@@ -180,68 +200,77 @@ function StreamData({ stream }: { stream: RoketoStream }) {
           <span className={styles.font12}>{meta.symbol}</span>
         </span>
       </InfoRow>
-      <InfoRow title="Tokens Transferred">
-        <span className={styles.font14}>
-          {formatter.amount(streamed)}&nbsp;
-          <span className={styles.font12}>{meta.symbol} <span className={styles.grey}>({streamedToTotalPercentageRatio}%)</span></span>
-        </span>
-      </InfoRow>
-      <InfoRow title="Tokens Left">
-        <span className={styles.font14}>
-          {formatter.amount(left)}&nbsp;
-          <span className={styles.font12}>{meta.symbol} <span className={styles.grey}>({leftToTotalPercentageRatio}%)</span></span>
-        </span>
-      </InfoRow>
-      <InfoRow title="Tokens Available">
-        <span className={styles.font14}>
-          {formatter.amount(available)}&nbsp;
-          <span className={styles.font12}>{meta.symbol}</span>
-        </span>
-      </InfoRow>
-    </div>
-  );
-}
 
-function OtherInfo({ stream }: { stream: RoketoStream }) {
-  const { timeLeft } = streamViewData(stream);
+      <div className={styles.divider} />
+      <DropdownOpener
+        className={styles.dropdownOpener}
+        opened={showOtherInfo}
+        onChange={(update) => {
+          setShowOtherInfo(update);
+        }}
+      >
+        <h3 className={styles.sectionHeader}>Other info</h3>
+      </DropdownOpener>
 
-  return (
-    <div className={classNames(styles.tile, styles.infoTile)}>
-      <h3 className={styles.bigHeader}>
-        Other info
-      </h3>
-
-      <InfoRow title="Stream ID">
-        <div className={styles.centeredFlex}>
-          <span className={classNames(styles.font14, styles.streamID)}>{stream.id}</span>
-          <CopyButton stringToCopy={stream.id} />
-        </div>
-      </InfoRow>
-
-      <InfoRow title="Stream Created">
-        <span className={styles.font14}>
-          {format(new Date(Number(stream.timestamp_created) / 1000000), 'PP \'at\' p')}
-        </span>
-      </InfoRow>
-
-      <InfoRow title="Remaining">
-        <span className={styles.font14}>
-          {timeLeft || 'Finished'}
-        </span>
-      </InfoRow>
-      {stream.timestamp_created !== stream.last_action &&
-        <InfoRow title="Latest Withdrawal">
-        <span className={styles.font14}>
-          {format(new Date(Number(stream.last_action) / 1000000), 'PP \'at\' p')}
-        </span>
-        </InfoRow>
-      }
+      {showOtherInfo && (
+        <>
+          <InfoRow title="Stream ID">
+            <div className={styles.centeredFlex}>
+              <span className={classNames(styles.font14, styles.streamID)}>
+                {stream.id}
+              </span>
+              <CopyButton stringToCopy={stream.id} />
+            </div>
+          </InfoRow>
+          <InfoRow title="Remaining">
+            <span className={styles.font14}>{timeLeft || 'Finished'}</span>
+          </InfoRow>
+          <InfoRow title="Tokens Transferred">
+            <span className={styles.font14}>
+              {formatter.amount(streamed)}&nbsp;
+              <span className={styles.font12}>
+                {meta.symbol}{' '}
+                <span className={styles.grey}>
+                  ({streamedToTotalPercentageRatio}%)
+                </span>
+              </span>
+            </span>
+          </InfoRow>
+          {stream.timestamp_created !== stream.last_action && (
+            <InfoRow title="Latest Withdrawal">
+              <span className={styles.font14}>
+                {format(
+                  new Date(Number(stream.last_action) / 1000000),
+                  "PP 'at' p",
+                )}
+              </span>
+            </InfoRow>
+          )}
+          <InfoRow title="Tokens Left">
+            <span className={styles.font14}>
+              {formatter.amount(left)}&nbsp;
+              <span className={styles.font12}>
+                {meta.symbol}{' '}
+                <span className={styles.grey}>
+                  ({leftToTotalPercentageRatio}%)
+                </span>
+              </span>
+            </span>
+          </InfoRow>
+          <InfoRow title="Tokens Available">
+            <span className={styles.font14}>
+              {formatter.amount(available)}&nbsp;
+              <span className={styles.font12}>{meta.symbol}</span>
+            </span>
+          </InfoRow>
+        </>
+      )}
     </div>
   );
 }
 
 export function StreamPage() {
-  const { id } = useParams() as { id: string };
+  const {id} = useParams() as {id: string};
   const streamSWR = useSingleStream(id);
 
   const stream = streamSWR.data;
@@ -295,7 +324,6 @@ export function StreamPage() {
             </div>
             <div className={styles.right}>
               <StreamData stream={stream} />
-              <OtherInfo stream={stream} />
             </div>
           </main>
         }
