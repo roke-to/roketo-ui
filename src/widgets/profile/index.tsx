@@ -12,6 +12,7 @@ import styles from './index.module.scss';
 
 export const Profile = () => {
   const [isDropdownOpened, setIsDropdownOpened] = useState(false);
+  const [needFallback, setNeedFallback] = useState(false);
   const { auth } = useRoketoContext();
   const userSWR = useUser();
 
@@ -29,11 +30,16 @@ export const Profile = () => {
           {name || accountId}
         </span>
 
-        <img
-          className={styles.avatar}
-          src={`${env.WEB_API_URL}/users/${accountId}/avatar?email=${email}`}
-          alt=""
-        />
+        {needFallback ? (
+          <svg className={styles.avatar} />
+        ) : (
+          <img
+            className={styles.avatar}
+            src={`${env.WEB_API_URL}/users/${accountId}/avatar?email=${email}`}
+            alt=""
+            onError={() => setNeedFallback(true)}
+          />
+        )}
       </DropdownOpener>
 
       <DropdownMenu
