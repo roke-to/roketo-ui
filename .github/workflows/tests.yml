@@ -6,7 +6,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          has-tests-label: true
       - name: Cypress run
         uses: cypress-io/github-action@v2
+        with:
+          has-tests-label: true
+          wait-on-timeout: 120
+          record: false
+          parallel: false
+          start: yarn start 
+          wait-on: 'http://localhost:3000'

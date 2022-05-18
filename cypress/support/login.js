@@ -13,7 +13,7 @@ export function login(testParams) {
     if(testParams==="receiver"){
         signPage.inputPassphrase('defense plunge barrel space suspect safe yard minimum shrimp broccoli scrub assume');
     }else{
-        signPage.inputPassphrase('accuse night project february offer fresh belt orbit rather battle zoo amused');
+        signPage.inputPassphrase('twin rebel deliver duck leaf absorb solution permit quantum wasp habit crawl');
     }
     cy.wait(20000);
     signPage.pressNext();

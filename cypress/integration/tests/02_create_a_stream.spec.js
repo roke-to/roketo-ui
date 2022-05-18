@@ -13,7 +13,7 @@ it('Create a stream without Autostart', () => {
     stream.inputReciever('delusion.testnet');
     stream.inputDeposit('1');
     stream.inputPeriod('1000', '10', '10', '10');
-    stream.inputComments('comment-comment');
+    //stream.inputComments('comment-comment');
     stream.uncheckAutostart();
     stream.submit();
     const  transaction = new Transaction();
@@ -33,7 +33,7 @@ it('Create a stream with Autostart', () => {
     stream.inputReciever('delusion.testnet');
     stream.inputDeposit('1');
     stream.inputPeriod('1000', '10', '10', '10');
-    stream.inputComments('comment-comment');
+    //stream.inputComments('comment-comment');
     stream.submit();
     const  transaction = new Transaction();
     transaction.approve();
