@@ -18,9 +18,13 @@
   color: $grey;
   background-color: transparent;
   border: 1px solid transparent;
+
+  &[disabled] {
+    cursor: not-allowed;
+  }
 }
 
-.active {
+.active:not([disabled]) {
   background-color: $light-blue;
   color: $blue;
 }

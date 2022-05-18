@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import classNames from 'classnames';
+import cx from 'classnames';
 import {RadioButton} from '../RadioButton';
 import {DropdownOpener} from '../DropdownOpener';
 import {DropdownMenu} from '../DropdownMenu';
@@ -34,6 +34,7 @@ type FilterProps<T> = {
   active: T;
   onChange: (option: T) => void;
   className?: string;
+  isDisabled?: boolean
 };
 
 export function Filter<T extends string | FilterOption>({
@@ -44,22 +45,30 @@ export function Filter<T extends string | FilterOption>({
   active,
   onChange,
   className,
+  isDisabled
 }: FilterProps<T>) {
   const [opened, setOpened] = useState(false);
 
   return (
-    <div className={classNames(styles.root, className)}>
+    <div className={cx(styles.root, className)}>
       {label &&
         <div className="text-gray mr-2">{label}</div>
       }
 
       <div className={styles.dropdownWrapper}>
-        <DropdownOpener opened={opened} onChange={setOpened}>
+        <DropdownOpener
+          className={cx(
+            isDisabled && styles.dropdownInactive,
+            isDisabled && 'text-gray',
+          )}
+          opened={!isDisabled && opened}
+          onChange={setOpened}
+        >
           {renderActive ? renderActive(active) : active}
         </DropdownOpener>
 
         <DropdownMenu
-          opened={opened}
+          opened={!isDisabled && opened}
           className={styles.dropdownMenu}
           onClose={() => {
             setOpened(false);
