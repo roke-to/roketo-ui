@@ -16,3 +16,8 @@
   right: 50%;
   transform: translateX(50%);
 }
+
+.dropdownInactive {
+  cursor: not-allowed;
+  background-color: unset;
+}

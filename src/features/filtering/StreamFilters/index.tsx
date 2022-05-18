@@ -50,6 +50,7 @@ export function StreamFilters({ items, onFilterDone, className }: StreamFiltersP
 
   const [sorting, setSorting] = useState(sorts.mostRecent);
   const sortOptions = Object.values(sorts);
+  const isEmptyList = items ? items.length === 0 : true
 
   useEffect(() => {
     if (!filteredItems) {
@@ -71,6 +72,7 @@ export function StreamFilters({ items, onFilterDone, className }: StreamFiltersP
         directions={filter.directionFilter.optionsArray}
         activeDirection={filter.directionFilter.option}
         onDirectionClick={filter.directionFilter.selectOption}
+        isInactive={isEmptyList}
       />
       <div className={styles.filtersWrapper}>
         <Filter
@@ -78,6 +80,7 @@ export function StreamFilters({ items, onFilterDone, className }: StreamFiltersP
           label="Status:"
           active={filter.statusFilter.option}
           onChange={filter.statusFilter.selectOption}
+          isDisabled={isEmptyList}
           renderOption={(option) => {
             const counts = filter.result.filterCounts[1];
             return (
@@ -94,6 +97,7 @@ export function StreamFilters({ items, onFilterDone, className }: StreamFiltersP
           label="Show first:"
           active={sorting}
           onChange={setSorting}
+          isDisabled={isEmptyList}
           renderOption={(option) => <span>{option.label}</span>}
           renderActive={(option) => (
             <div className={styles.sortWithOrder}>
