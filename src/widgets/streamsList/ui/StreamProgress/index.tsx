@@ -84,7 +84,7 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
           </div>
 
           <div className={cn(styles.progress, styles.withdrawn)}>
-            Streamed: {withdrawnText}{' '}
+            Withdrawn: {withdrawnText}{' '}
             <span className={cn(styles.grey, styles.smaller)}>
                {`${withdrawnPercentage}%`}
             </span>
