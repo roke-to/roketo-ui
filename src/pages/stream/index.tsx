@@ -184,10 +184,10 @@ function StreamData({stream}: {stream: RoketoStream}) {
           )}
         </span>
       </InfoRow>
-      {streamEndInfo.hasEndTime && (
-        <InfoRow title={isPast(streamEndInfo.endTime) ? 'Stream Ended' : 'Stream Ends'}>
+      {streamEndInfo !== null && (
+        <InfoRow title={isPast(streamEndInfo) ? 'Stream Ended' : 'Stream Ends'}>
           <span className={styles.font14}>
-            {format(new Date(streamEndInfo.endTime), "PP 'at' p")}
+            {format(new Date(streamEndInfo), "PP 'at' p")}
           </span>
         </InfoRow>
       )}

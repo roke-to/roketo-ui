@@ -86,12 +86,7 @@ function calculateEndInfo(stream: RoketoStream, balance: BigNumber) {
    * if stream is not started yet or paused right now
    * then there is no way to calculate stream end time
    * */
-  if (isIdling(stream)) {
-    return {
-      hasEndTime: false,
-      endTime: 0,
-    }
-  }
+  if (isIdling(stream)) return null
   
   const tokensPerMs = new BigNumber(stream.tokens_per_sec).dividedBy(1000)
   const lastActionTime = stream.last_action / 1000000
@@ -102,12 +97,7 @@ function calculateEndInfo(stream: RoketoStream, balance: BigNumber) {
    * as well as in the case of "Finished" stream
    * othewise this stream is still working and this time will be in the future
    */
-  const endTime = lastActionTime + timeToCompleteEntireStream
-  return {
-    hasEndTime: true,
-    endTime,
-  }
-  
+  return lastActionTime + timeToCompleteEntireStream
 }
 
 export function streamViewData(stream: RoketoStream, withExtrapolation: boolean = true) {
