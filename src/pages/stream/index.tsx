@@ -20,7 +20,7 @@ import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import { WithdrawButton } from 'features/stream-control/WithdrawButton';
 import { TokenImage } from 'shared/kit/TokenImage';
 import { getRoundedPercentageRatio } from 'shared/helpers/math';
-import { getAvailableToWithdraw } from 'shared/api/roketo/helpers';
+import { getAvailableToWithdraw, getStreamEndTime } from 'shared/api/roketo/helpers';
 
 import styles from './styles.module.scss';
 import { BreadcrumbIcon } from './BreadcrumbIcon';
@@ -144,7 +144,6 @@ function StreamData({stream}: {stream: RoketoStream}) {
   const direction = useGetStreamDirection(stream);
   const {tokens} = useRoketoContext();
   const {
-    secondsLeft,
     timeLeft,
     progress: {streamed, left, full},
   } = streamViewData(stream);
@@ -156,6 +155,8 @@ function StreamData({stream}: {stream: RoketoStream}) {
   const {meta, formatter} = tokens[stream.token_account_id];
   
   const [showOtherInfo, setShowOtherInfo] = useState(false);
+
+  const streamEndInfo = getStreamEndTime(stream)
 
   return (
     <div className={classNames(styles.tile, styles.infoTile)}>
@@ -184,16 +185,13 @@ function StreamData({stream}: {stream: RoketoStream}) {
           )}
         </span>
       </InfoRow>
-      <InfoRow title="Stream Ends">
-        <span className={styles.font14}>
-          {format(
-            new Date(
-              Number(stream.timestamp_created) / 1000000 + secondsLeft * 1000,
-            ),
-            "PP 'at' p",
-          )}
-        </span>
-      </InfoRow>
+      {streamEndInfo.hasEndTime && (
+        <InfoRow title="Stream Ends">
+          <span className={styles.font14}>
+            {format(new Date(streamEndInfo.endTime), "PP 'at' p")}
+          </span>
+        </InfoRow>
+      )}
       <InfoRow title="Token">
         <span className={styles.font14}>
           {meta.name},&nbsp;
