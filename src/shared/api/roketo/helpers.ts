@@ -9,7 +9,7 @@ import { RoketoStream, RoketoAccount } from './interfaces/entities';
 export const isActiveStream = (stream: RoketoStream) => stream.status === STREAM_STATUS.Active;
 export const isPausedStream = (stream: RoketoStream) => stream.status === STREAM_STATUS.Paused;
 
-function isIdling(stream: RoketoStream) {
+export function isIdling(stream: RoketoStream) {
   return (
     stream.status === STREAM_STATUS.Initialized
     || stream.status === STREAM_STATUS.Paused
