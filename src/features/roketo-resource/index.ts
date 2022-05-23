@@ -81,6 +81,41 @@ export function useSingleStream(streamId: string) {
   return swr;
 }
 
+function calculateEndInfo(stream: RoketoStream, balance: BigNumber) {
+  const tokensPerMs = new BigNumber(stream.tokens_per_sec).dividedBy(1000)
+  const lastActionTime = stream.last_action / 1000000
+  const timeActive = Date.now() - lastActionTime
+  const tokensSpentSinceLastActivation = tokensPerMs.multipliedBy(timeActive)
+  /** this stream is complete (spent 100% its tokens) but still has status "Active" */
+  if (balance.isLessThan(tokensSpentSinceLastActivation)) {
+    /** this token was never paused and was started immediately */
+    if (stream.timestamp_created === stream.last_action) {
+      const timeToCompleteEntireStream = balance.dividedBy(tokensPerMs).toNumber()
+      const endTime = lastActionTime + timeToCompleteEntireStream
+      return {
+        hasEndTime: true,
+        endTime,
+      }
+    }
+  } else {
+    /** balance changes when stream status changes, for active stream actual balance is smaller */
+    const balanceLeft = balance.minus(tokensSpentSinceLastActivation)
+    const timeLeftInMs = balanceLeft.dividedBy(tokensPerMs).toNumber()
+    return {
+      hasEndTime: true,
+      endTime: Date.now() + timeLeftInMs
+    }
+  }
+  /**
+   * if stream is not started yet, paused right now or was paused in the past and already complete
+   * then there is no way to calculate stream end time based only on start time and spending speed
+   * */
+  return {
+    hasEndTime: false,
+    endTime: 0,
+  }
+}
+
 export function streamViewData(stream: RoketoStream, withExtrapolation: boolean = true) {
   const MAX_SEC = SECONDS_IN_YEAR * 1000;
 
@@ -102,8 +137,9 @@ export function streamViewData(stream: RoketoStream, withExtrapolation: boolean 
 
   const timeLeft = formatDuration(duration, { locale: shortEnLocale });
 
+  const balance = new BigNumber(stream.balance)
   // progress bar calculations
-  const full = new BigNumber(stream.balance).plus(stream.tokens_total_withdrawn);
+  const full = balance.plus(stream.tokens_total_withdrawn);
   const withdrawn = new BigNumber(stream.tokens_total_withdrawn);
   const streamed = withdrawn.plus(availableToWithdraw);
 
@@ -120,12 +156,14 @@ export function streamViewData(stream: RoketoStream, withExtrapolation: boolean 
     available: availableToWithdraw.dividedBy(full).toNumber(),
   };
 
+  
   return {
     secondsLeft,
     progresses,
     isDead: isDead(stream),
     percentages,
     timeLeft,
+    streamEndInfo: calculateEndInfo(stream, balance),
     progress: {
       full: full.toFixed(),
       withdrawn: withdrawn.toFixed(),

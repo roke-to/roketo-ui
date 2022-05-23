@@ -35,43 +35,6 @@ export function getAvailableToWithdraw(stream: RoketoStream): BigNumber {
   );
 }
 
-export function getStreamEndTime(stream: RoketoStream) {
-  if (!isActiveStream(stream)) {
-    return {
-      hasEndTime: false,
-      endTime: 0,
-    }
-  }
-  const balance = new BigNumber(stream.balance)
-  const tokensPerMs = new BigNumber(stream.tokens_per_sec).dividedBy(1000)
-  const lastActionTime = stream.last_action / 1000000
-  const timeActive = Date.now() - lastActionTime
-  const tokensSpentSinceLastActivation = tokensPerMs.multipliedBy(timeActive)
-  /** this stream is complete (spent 100% its tokens) but still has status "Active" */
-  if (balance.isLessThan(tokensSpentSinceLastActivation)) {
-    /** this token was never paused and was started immediately */
-    if (stream.timestamp_created === stream.last_action) {
-      const timeToCompleteEntireStream = balance.dividedBy(tokensPerMs).toNumber()
-      const endTime = lastActionTime + timeToCompleteEntireStream
-      return {
-        hasEndTime: true,
-        endTime,
-      }
-    }
-    return {
-      hasEndTime: false,
-      endTime: 0,
-    }
-  }
-  /** balance changes when stream status changes, for active stream actual balance is smaller */
-  const balanceLeft = balance.minus(tokensSpentSinceLastActivation)
-  const timeLeft = balanceLeft.dividedBy(tokensPerMs).toNumber()
-  return {
-    hasEndTime: true,
-    endTime: Date.now() + timeLeft
-  }
-}
-
 export const getEmptyAccount = (): RoketoAccount => ({
   active_incoming_streams: 0,
   active_outgoing_streams: 0,

@@ -20,7 +20,7 @@ import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import { WithdrawButton } from 'features/stream-control/WithdrawButton';
 import { TokenImage } from 'shared/kit/TokenImage';
 import { getRoundedPercentageRatio } from 'shared/helpers/math';
-import { getAvailableToWithdraw, getStreamEndTime } from 'shared/api/roketo/helpers';
+import { getAvailableToWithdraw } from 'shared/api/roketo/helpers';
 
 import styles from './styles.module.scss';
 import { BreadcrumbIcon } from './BreadcrumbIcon';
@@ -144,6 +144,7 @@ function StreamData({stream}: {stream: RoketoStream}) {
   const direction = useGetStreamDirection(stream);
   const {tokens} = useRoketoContext();
   const {
+    streamEndInfo,
     timeLeft,
     progress: {streamed, left, full},
   } = streamViewData(stream);
@@ -155,8 +156,6 @@ function StreamData({stream}: {stream: RoketoStream}) {
   const {meta, formatter} = tokens[stream.token_account_id];
   
   const [showOtherInfo, setShowOtherInfo] = useState(false);
-
-  const streamEndInfo = getStreamEndTime(stream)
 
   return (
     <div className={classNames(styles.tile, styles.infoTile)}>
