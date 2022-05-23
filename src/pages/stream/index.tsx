@@ -21,6 +21,7 @@ import { WithdrawButton } from 'features/stream-control/WithdrawButton';
 import { TokenImage } from 'shared/kit/TokenImage';
 import { getRoundedPercentageRatio } from 'shared/helpers/math';
 import { getAvailableToWithdraw } from 'shared/api/roketo/helpers';
+import { testIds } from 'shared/constants';
 
 import styles from './styles.module.scss';
 import { BreadcrumbIcon } from './BreadcrumbIcon';
@@ -161,17 +162,17 @@ function StreamData({stream}: {stream: RoketoStream}) {
     <div className={classNames(styles.tile, styles.infoTile)}>
       <div className={styles.blockHeader}>Stream info</div>
       <InfoRow title="Sender">
-        <span className={styles.font16}>
+        <span className={styles.font16} data-testid={testIds.streamSenderCaption}>
           {direction === STREAM_DIRECTION.OUT ? 'You' : stream.owner_id}
         </span>
       </InfoRow>
       <InfoRow title="Receiver">
-        <span className={styles.font16}>
+        <span className={styles.font16} data-testid={testIds.streamReceiverCaption}>
           {direction === STREAM_DIRECTION.IN ? 'You' : stream.receiver_id}
         </span>
       </InfoRow>
       <InfoRow title="Amount">
-        <span className={styles.font14}>
+        <span className={styles.font14} data-testid={testIds.streamTotalCaption}>
           {formatter.amount(full)}&nbsp;
           <span className={styles.font12}>{meta.symbol}</span>
         </span>
@@ -195,7 +196,7 @@ function StreamData({stream}: {stream: RoketoStream}) {
         </span>
       </InfoRow>
       <InfoRow title="Token">
-        <span className={styles.font14}>
+        <span className={styles.font14} data-testid={testIds.streamTokenCaption}>
           {meta.name},&nbsp;
           <span className={styles.font12}>{meta.symbol}</span>
         </span>

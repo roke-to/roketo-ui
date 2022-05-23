@@ -39,7 +39,7 @@ class CreateStream{
         cy.get(testSelectors.createStreamCommentInput).type(value);
     }
 
-    uncheckAutostart(){
+    checkAutostart(){
         cy.get(testSelectors.createStreamAutostartCheckbox).click();
     }
     submit(){

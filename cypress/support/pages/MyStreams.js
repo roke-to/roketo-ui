@@ -3,7 +3,9 @@ import Transaction from './TransactionPage';
 class MyStreams{
 
 
-
+    openStream(){
+      cy.get('.styles_flexCenter__B0Jt1').eq(0).click();
+    }
     checkNewStreamStatus(value){
           cy.wait(3000);
           cy.get(testSelectors.streamControlsDropdown).then(($Dropdown) => {

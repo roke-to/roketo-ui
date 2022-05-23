@@ -10,10 +10,11 @@ export function createstream(testParams) {
     stream.inputDeposit('1');
     if (testParams==="short"){
       stream.inputPeriod('0', '0', '0', '1');
+      stream.checkAutostart();
     } else {
       stream.inputPeriod('1000', '10', '10', '10');
      // stream.inputComments('comment-comment');
-      stream.uncheckAutostart();
+      
     }  
     stream.submit();
     const transaction = new Transaction();

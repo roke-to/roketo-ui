@@ -44,6 +44,10 @@ export const testIds = {
   notificationElement: 'notificationElement',
   notificationPrimaryCaption: 'notificationPrimaryCaption',
   notificationSecondaryCaption: 'notificationSecondaryCaption',
+  streamSenderCaption: 'streamSenderCaption',
+  streamReceiverCaption: 'streamReceiverCaption',
+  streamTotalCaption: 'streamTotalCaption',
+  streamTokenCaption: 'streamTokenCaption',
 } as const;
 
 const testIdsKeys = Object.keys(testIds) as Array<keyof typeof testIds>;
