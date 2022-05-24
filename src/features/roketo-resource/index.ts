@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import useSWR, { SWRResponse } from 'swr';
 import { formatDuration, intervalToDuration } from 'date-fns';
 
-import { getAvailableToWithdraw, isDead } from 'shared/api/roketo/helpers';
+import { getAvailableToWithdraw, isDead, isIdling } from 'shared/api/roketo/helpers';
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import { useRoketoContext } from 'app/roketo-context';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
@@ -81,6 +81,25 @@ export function useSingleStream(streamId: string) {
   return swr;
 }
 
+function calculateEndInfo(stream: RoketoStream, balance: BigNumber) {
+  /**
+   * if stream is not started yet or paused right now
+   * then there is no way to calculate stream end time
+   * */
+  if (isIdling(stream)) return null
+  
+  const tokensPerMs = new BigNumber(stream.tokens_per_sec).dividedBy(1000)
+  const lastActionTime = stream.last_action / 1000000
+
+  const timeToCompleteEntireStream = balance.dividedBy(tokensPerMs).toNumber()
+  /**
+   * if this stream is active but 100% complete then it will be a time in the past
+   * as well as in the case of "Finished" stream
+   * othewise this stream is still working and this time will be in the future
+   */
+  return lastActionTime + timeToCompleteEntireStream
+}
+
 export function streamViewData(stream: RoketoStream, withExtrapolation: boolean = true) {
   const MAX_SEC = SECONDS_IN_YEAR * 1000;
 
@@ -102,8 +121,9 @@ export function streamViewData(stream: RoketoStream, withExtrapolation: boolean 
 
   const timeLeft = formatDuration(duration, { locale: shortEnLocale });
 
+  const balance = new BigNumber(stream.balance)
   // progress bar calculations
-  const full = new BigNumber(stream.balance).plus(stream.tokens_total_withdrawn);
+  const full = balance.plus(stream.tokens_total_withdrawn);
   const withdrawn = new BigNumber(stream.tokens_total_withdrawn);
   const streamed = withdrawn.plus(availableToWithdraw);
 
@@ -120,12 +140,14 @@ export function streamViewData(stream: RoketoStream, withExtrapolation: boolean 
     available: availableToWithdraw.dividedBy(full).toNumber(),
   };
 
+  
   return {
     secondsLeft,
     progresses,
     isDead: isDead(stream),
     percentages,
     timeLeft,
+    streamEndInfo: calculateEndInfo(stream, balance),
     progress: {
       full: full.toFixed(),
       withdrawn: withdrawn.toFixed(),

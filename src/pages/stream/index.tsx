@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { useParams, Link } from 'react-router-dom';
 import copy from 'clipboard-copy';
 import classNames from 'classnames';
-import { format } from 'date-fns';
+import { format, isPast } from 'date-fns';
 
 import { streamViewData, useSingleStream } from 'features/roketo-resource';
 import { LinkIcon } from '@ui/icons/Link';
@@ -144,7 +144,7 @@ function StreamData({stream}: {stream: RoketoStream}) {
   const direction = useGetStreamDirection(stream);
   const {tokens} = useRoketoContext();
   const {
-    secondsLeft,
+    streamEndInfo,
     timeLeft,
     progress: {streamed, left, full},
   } = streamViewData(stream);
@@ -184,16 +184,13 @@ function StreamData({stream}: {stream: RoketoStream}) {
           )}
         </span>
       </InfoRow>
-      <InfoRow title="Stream Ends">
-        <span className={styles.font14}>
-          {format(
-            new Date(
-              Number(stream.timestamp_created) / 1000000 + secondsLeft * 1000,
-            ),
-            "PP 'at' p",
-          )}
-        </span>
-      </InfoRow>
+      {streamEndInfo !== null && (
+        <InfoRow title={isPast(streamEndInfo) ? 'Stream Ended' : 'Stream Ends'}>
+          <span className={styles.font14}>
+            {format(new Date(streamEndInfo), "PP 'at' p")}
+          </span>
+        </InfoRow>
+      )}
       <InfoRow title="Token">
         <span className={styles.font14}>
           {meta.name},&nbsp;
