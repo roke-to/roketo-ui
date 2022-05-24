@@ -1,59 +1,48 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Near, WalletConnection } from 'near-api-js';
+import React, {useEffect, useState, useContext} from 'react';
+import {useStore} from 'effector-react';
+import type {Near} from 'near-api-js';
 
-import { env } from 'shared/config';
-import { createNearInstance, getNearAuth, NearAuth } from 'shared/api/near';
-import { initRoketo, Roketo } from 'shared/api/roketo';
-import { initFT, RichTokens } from 'shared/api/ft';
-import { initPriceOracle, PriceOracle } from 'shared/api/price-oracle';
+import type {NearAuth} from 'shared/api/near';
+import type {Roketo} from 'shared/api/roketo';
+import type {RichTokens} from 'shared/api/ft';
+import type {PriceOracle} from 'shared/api/price-oracle';
+import {
+  initWallets,
+  $nearWallet,
+  $roketoWallet,
+  $priceOracle,
+} from 'services/wallet';
 
 type AppServices = {
   auth: NearAuth;
   tokens: RichTokens;
   roketo: Roketo;
-  priceOracle: PriceOracle,
+  priceOracle: PriceOracle;
   near: Near;
-  walletConnection: WalletConnection;
 };
 const AppContext = React.createContext<AppServices | null>(null);
 
-export function RoketoContextProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function RoketoContextProvider({children}: {children: React.ReactNode}) {
   const [context, setContext] = useState<AppServices | null>(null);
-
+  const nearWallet = useStore($nearWallet);
+  const roketoWallet = useStore($roketoWallet);
+  const priceOracle = useStore($priceOracle);
   useEffect(() => {
-    const init = async () => {
-      const near = await createNearInstance();
-      const walletConnection = new WalletConnection(near, env.ROKETO_CONTRACT_NAME);
-      const auth = await getNearAuth(walletConnection);
-
-      const [roketo, priceOracle] = await Promise.all([
-        initRoketo({
-          account: auth.account,
-        }),
-        initPriceOracle({account: auth.account}),
-      ]);
-
-      const tokens = await initFT({
-        account: auth.account,
-        tokens: roketo.dao.tokens,
-      });
-
+    initWallets();
+  }, []);
+  useEffect(() => {
+    if (nearWallet && roketoWallet && priceOracle) {
+      const {near, auth} = nearWallet;
+      const {roketo, tokens} = roketoWallet;
       setContext({
         auth,
         near,
         roketo,
         priceOracle,
-        walletConnection,
-        tokens, 
+        tokens,
       });
-    };
-
-    init();
-  }, []);
+    }
+  }, [nearWallet, roketoWallet, priceOracle]);
 
   return (
     <AppContext.Provider value={context}>

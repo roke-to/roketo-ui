@@ -161,7 +161,6 @@ export function streamViewData(stream: RoketoStream, withExtrapolation: boolean 
   };
   
   return {
-    secondsLeft,
     progresses,
     isDead: isDead(stream),
     percentages,
