@@ -24,7 +24,7 @@ export const Authorization = () => {
   }
 
   return (
-    <button type='button' onClick={logout} className={styles.logoutButton}>
+    <button type='button' onClick={logout} className={styles.logoutButton} data-testid={testIds.signOutButton}>
       <LogoutIcon />
     </button>
   );

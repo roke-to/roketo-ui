@@ -1,14 +1,12 @@
 import CreateStream from './pages/CreateStream';
 import Transaction from './pages/TransactionPage';
-import MyStreams from './pages/MyStreams';
 
-export function createstream(testParams) {
-  cy.wait(3000);
+export function createstream({ receiver = 'githubtest9.testnet', duration } = {}) {
   const stream = new CreateStream();
   stream.createStream();
-  stream.inputReciever('githubtest9.testnet');
+  stream.inputReceiver(receiver);
   stream.inputDeposit('1');
-  if (testParams === 'short') {
+  if (duration === 'short') {
     stream.inputPeriod('0', '0', '0', '1');
   } else {
     stream.inputPeriod('1000', '10', '10', '10');
@@ -18,5 +16,4 @@ export function createstream(testParams) {
   stream.submit();
   const transaction = new Transaction();
   transaction.approve();
-  cy.wait(20000);
 }

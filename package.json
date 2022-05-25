@@ -61,7 +61,9 @@
     "build-styleguidist": "yarn styleguidist server"
   },
   "devDependencies": {
-    "cypress": "^9.5.4"
+    "cypress": "^9.5.4",
+    "near-cli": "^3.3.0",
+    "near-seed-phrase": "^0.2.0"
   },
   "resolutions": {
     "//": "See https://github.com/facebook/create-react-app/issues/11773#issuecomment-996926736",

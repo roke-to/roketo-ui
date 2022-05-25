@@ -155,7 +155,10 @@ export function Notifications() {
             Notifications
           </header>
           {!notificationsSWR.data &&
-            <Spinner wrapperClassName={styles.loader} />
+            <Spinner
+              wrapperClassName={styles.loader}
+              testId={testIds.notificationsLoader}
+            />
           }
 
           {notificationsSWR.data?.length === 0 &&

@@ -1,12 +1,13 @@
 {
-    "chromeWebSecurity": false,
-    "videoRecording": false,
-    "defaultCommandTimeout": 10000,
-    "e2e": {
-      "defaultCommandTimeout": 20000,
-      "slowTestThreshold": 10000
-    },
-    "component": {
-      "slowTestThreshold": 300
-    }
+  "chromeWebSecurity": false,
+  "video": false,
+  "screenshotOnRunFailure": false,
+  "defaultCommandTimeout": 10000,
+  "e2e": {
+    "defaultCommandTimeout": 20000,
+    "slowTestThreshold": 10000
+  },
+  "component": {
+    "slowTestThreshold": 300
+  }
 }

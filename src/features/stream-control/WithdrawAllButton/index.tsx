@@ -81,7 +81,16 @@ export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
           </p>
 
           <div className={styles.preparedTokensWrapper}>
-            {preparedTokenData.length !== 0 && preparedTokenData.map((data) => 
+            {!streams &&
+              <p
+                className={styles.description}
+                data-testid={testIds.withdrawLoadingCaption}
+              >
+                Loading...
+              </p>
+            }
+
+            {streams && preparedTokenData.length !== 0 && preparedTokenData.map((data) =>
               <div
                 key={data.tokenAccountId}
                 className={styles.preparedToken}
@@ -95,7 +104,7 @@ export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
               </div>
             )}
 
-            {preparedTokenData.length === 0 &&
+            {streams && preparedTokenData.length === 0 &&
               <p className={styles.description}>
                 You have nothing to withdraw
               </p>

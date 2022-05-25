@@ -11,6 +11,7 @@ import {TokenFormatter} from 'shared/api/ft/token-formatter';
 import {useToken} from 'shared/hooks/useToken';
 import {streamViewData} from 'features/roketo-resource';
 import {RoketoStream} from 'shared/api/roketo/interfaces/entities';
+import { testIds } from 'shared/constants';
 
 import styles from './styles.module.scss';
 
@@ -41,7 +42,7 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
   const streamedPercentage = getRoundedPercentageRatio(streamed, total, 1);
   const withdrawnPercentage = getRoundedPercentageRatio(withdrawn, streamed, 1);
 
-  const progressText = `${streamedText} of ${total} `;
+  const progressText = `${streamedText} of ${total}`;
 
   const {formattedValue: speedFormattedValue, unit: speedUnit} = formatter.tokensPerMeaningfulPeriod(tokensPerSec);
 
@@ -54,7 +55,8 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
       overlay={
         <div className={cn(styles.tooltip, styles.text)}>
           <div className={styles.innerStatus}>
-            {progressText}
+            <span>{progressText}</span>
+            {' '}
             <span className={cn(styles.grey, styles.smaller)}>{symbol}</span>
           </div>
 
@@ -94,7 +96,8 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
     >
       <div className={cn(styles.root, styles.text, className)}>
         <div className={styles.status}>
-          {progressText}
+          <span data-testid={testIds.streamProgressCaption}>{progressText}</span>
+          {' '}
           <span className={styles.grey}>{symbol}</span>
         </div>
 

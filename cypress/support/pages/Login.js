@@ -1,6 +1,6 @@
 class SignInPage {
   checkPage() {
-    cy.url().should('contains', 'https://wallet.testnet.near.org/login/');
+    cy.url().should('contains', 'https://wallet.testnet.near.org/');
   }
 
   importExistingAccount() {
@@ -17,8 +17,9 @@ class SignInPage {
   }
 
   inputPassphrase(value) {
-    cy.get('input').click();
-    cy.get('input').type(value);
+    cy.get('input')
+      .click()
+      .type(value);
     cy.get('[data-test-id="seedPhraseRecoverySubmitButton"]').click();
   }
 

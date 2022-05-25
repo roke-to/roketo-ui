@@ -3,17 +3,22 @@ import MyStreams from '../../support/pages/MyStreams';
 import Transaction from '../../support/pages/TransactionPage';
 import { login } from '../../support/login';
 
-it('run stream', () => {
-  cy.viewport(1536, 960);
-  cy.wait(10000);
-  login();
-  createstream();
+context('Stream start', () => {
+  let account;
 
-  const mystreams = new MyStreams();
-  mystreams.changeStatus('start')
-  cy.wait(5000);
-  const transaction = new Transaction();
-  transaction.approve();
-  cy.wait(10000);
-  mystreams.checkNewStreamStatus('Active');
+  before(() => {
+    cy.task('getAccount').then((testAccount) => account = testAccount);
+  });
+
+  it('run stream', () => {
+    cy.viewport(1536, 960);
+    login(account.seedPhrase);
+    createstream();
+
+    const mystreams = new MyStreams();
+    mystreams.changeStatus('start')
+    const transaction = new Transaction();
+    transaction.approve();
+    mystreams.checkNewStreamStatus('Active');
+  });
 });

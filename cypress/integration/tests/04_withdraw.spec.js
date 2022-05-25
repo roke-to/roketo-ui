@@ -2,38 +2,45 @@ import MyStreams from '../../support/pages/MyStreams';
 import { login } from '../../support/login';
 import { createstream } from '../../support/createstream';
 
-it('withdraw all before test', () => {
-  cy.wait(10000);
-  login('receiver');
-  cy.wait(10000);
-  const mystreams = new MyStreams();
-  mystreams.getPage();
-  mystreams.withdraw();
-});
+context('Withdraw', () => {
+  let sender;
+  let receiver;
 
-it('create stream', () => {
-  cy.viewport(1536, 960);
-  cy.wait(10000);
-  login();
-  createstream('short');
-  const mystreams = new MyStreams();
-  mystreams.checkNewStreamStatus('Active');
-});
+  before(() => {
+    cy.task('getAccount').then((testAccount) => sender = testAccount);
+    cy.task('getAccount', 'anotherTestAccount').then((anotherTestAccount) => receiver = anotherTestAccount);
+  });
 
-it('not empty withdraw', () => {
-  login('receiver');
-  cy.wait(10000);
-  const mystreams = new MyStreams();
-  cy.wait(6000);
-  mystreams.getPage();
-  mystreams.checkwithdraw('full');
-  mystreams.withdrawFirst();
-});
+  it('withdraw all before test', () => {
+    login(receiver.seedPhrase);
+    const mystreams = new MyStreams();
+    mystreams.visit();
+    mystreams.withdraw();
+    const SHOULD_BE_EMPTY = true;
+    mystreams.checkwithdraw(SHOULD_BE_EMPTY);
+  });
 
-it('empty withdraw', () => {
-  login('receiver');
-  cy.wait(10000);
-  const mystreams = new MyStreams();
-  mystreams.getPage();
-  mystreams.checkwithdraw('empty');
+  it('create stream', () => {
+    cy.viewport(1536, 960);
+    login(sender.seedPhrase);
+    createstream({ duration: 'short', receiver: receiver.accountId });
+    const mystreams = new MyStreams();
+    mystreams.checkNewStreamStatus('Active');
+  });
+
+  it('not empty withdraw', () => {
+    login(receiver.seedPhrase);
+    const mystreams = new MyStreams();
+    const SHOULD_NOT_BE_EMPTY = false;
+    mystreams.checkwithdraw(SHOULD_NOT_BE_EMPTY);
+    mystreams.waitUntilDue();
+    mystreams.withdrawFirst();
+  });
+
+  it('empty withdraw', () => {
+    login(receiver.seedPhrase);
+    const mystreams = new MyStreams();
+    const SHOULD_BE_EMPTY = true;
+    mystreams.checkwithdraw(SHOULD_BE_EMPTY);
+  });
 });

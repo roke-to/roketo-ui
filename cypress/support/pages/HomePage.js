@@ -1,4 +1,3 @@
-import SignInPage from './Login';
 import { testSelectors } from '../../../src/shared/constants';
 
 class HomePage {
@@ -12,9 +11,10 @@ class HomePage {
 
   goToSignIn() {
     cy.get(testSelectors.signInButton).click();
+  }
 
-    const signPage = new SignInPage();
-    return signPage;
+  logout() {
+    cy.get(testSelectors.signOutButton).click();
   }
 }
 

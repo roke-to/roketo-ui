@@ -5,39 +5,52 @@ class CreateStream {
     cy.get(testSelectors.createStreamButton).click();
   }
 
-  inputReciever(value) {
-    cy.get(testSelectors.createStreamReceiverInput).click();
-    cy.get(testSelectors.createStreamReceiverInput).click();
-    cy.get(testSelectors.createStreamReceiverInput).type(value);
+  inputReceiver(value) {
+    cy.get(testSelectors.createStreamReceiverInput)
+      .click()
+      .click()
+      .type(value);
   }
 
   inputDeposit(value) {
-    cy.get(testSelectors.createStreamAmountInput).click();
-    cy.get(testSelectors.createStreamAmountInput).type(' {backspace}');
-    cy.get(testSelectors.createStreamAmountInput).type(value);
+    cy.get(testSelectors.createStreamAmountInput)
+      .click()
+      .type(' {backspace}')
+      .type(value);
   }
 
   inputPeriod(month, days, hours, mins) {
-    cy.get(testSelectors.createStreamMonthsInput).click();
-    cy.get(testSelectors.createStreamMonthsInput).type(' {backspace}');
-    cy.get(testSelectors.createStreamMonthsInput).type(month);
+    if (month !== '0') {
+      cy.get(testSelectors.createStreamMonthsInput)
+        .click()
+        .type(' {backspace}')
+        .type(month);
+    }
     //select days
-    cy.get(testSelectors.createStreamDaysInput).click();
-    cy.get(testSelectors.createStreamDaysInput).type(' {backspace}');
-    cy.get(testSelectors.createStreamDaysInput).type(days);
+    if (days !== '0') {
+      cy.get(testSelectors.createStreamDaysInput)
+        .click()
+        .type(' {backspace}')
+        .type(days);
+    }
     //select hours
-    cy.get(testSelectors.createStreamHoursInput).click();
-    cy.get(testSelectors.createStreamHoursInput).type(' {backspace}');
-    cy.get(testSelectors.createStreamHoursInput).type(hours);
+    if (hours !== '0') {
+      cy.get(testSelectors.createStreamHoursInput)
+        .click()
+        .type(' {backspace}')
+        .type(hours);
+    }
     //select mins
-    cy.get(testSelectors.createStreamMinutesInput).click();
-    cy.get(testSelectors.createStreamMinutesInput).type(' {backspace}');
-    cy.get(testSelectors.createStreamMinutesInput).type(mins);
+    cy.get(testSelectors.createStreamMinutesInput)
+      .click()
+      .type(' {backspace}')
+      .type(mins);
   }
 
   inputComments(value) {
-    cy.get(testSelectors.createStreamCommentInput).click();
-    cy.get(testSelectors.createStreamCommentInput).type(value);
+    cy.get(testSelectors.createStreamCommentInput)
+      .click()
+      .type(value);
   }
 
   uncheckAutostart() {
