@@ -55,7 +55,7 @@
   "scripts": {
     "start": "craco start",
     "build": "CI=false craco build",
-    "test": "craco test",
+    "test": "cypress run",
     "eslint": "eslint -c .eslintrc src --ext .js,.jsx,.ts,.tsx",
     "deploy": "yarn build && gh-pages -d build",
     "build-styleguidist": "yarn styleguidist server"
