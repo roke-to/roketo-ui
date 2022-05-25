@@ -4,6 +4,7 @@ import {ConnectedWalletAccount, Near, WalletConnection} from 'near-api-js';
 import {env} from 'shared/config';
 import {createNearInstance, getNearAuth, NearAuth} from 'shared/api/near';
 import {initRoketo, Roketo} from 'shared/api/roketo';
+import type {RoketoStream} from 'shared/api/roketo/interfaces/entities';
 import {initFT, RichTokens} from 'shared/api/ft';
 import {initPriceOracle, PriceOracle} from 'shared/api/price-oracle';
 
@@ -17,6 +18,21 @@ export const $roketoWallet = createStore<null | {
   tokens: RichTokens;
 }>(null);
 export const $priceOracle = createStore<null | PriceOracle>(null);
+export const $accountStreams = createStore<{
+  inputs: RoketoStream[];
+  outputs: RoketoStream[];
+}>({
+  inputs: [],
+  outputs: [],
+});
+
+export const $isSignedIn = $nearWallet.map(
+  (wallet) => wallet?.auth.signedIn ?? false,
+);
+
+export const $accountId = $nearWallet.map(
+  (wallet) => wallet?.auth.accountId ?? null,
+);
 
 const createNearWalletFx = createEffect(async () => {
   const near = await createNearInstance();
@@ -38,6 +54,55 @@ const createRoketoWalletFx = createEffect(
 const createPriceOracleFx = createEffect((account: ConnectedWalletAccount) =>
   initPriceOracle({account}),
 );
+const requestAccountStreamsFx = createEffect(async (roketo: Roketo) => {
+  const [inputs, outputs] = await Promise.all([
+    roketo.api.getAccountIncomingStreams({from: 0, limit: 100}),
+    roketo.api.getAccountOutgoingStreams({from: 0, limit: 100}),
+  ]);
+  return {inputs, outputs};
+});
+const streamsRevalidationTimerFx = createEffect(
+  () =>
+    new Promise<void>((rs) => {
+      setTimeout(rs, 30000);
+    }),
+);
+
+/**
+ * when roketo wallet becomes available or revalidation timer ends
+ * start revalidation timer again
+ * */
+sample({
+  clock: [createRoketoWalletFx.doneData, streamsRevalidationTimerFx.doneData],
+  target: streamsRevalidationTimerFx,
+});
+/**
+ * when last_created_stream is changed or revalidation timer ends
+ * read roketo wallet
+ * check whether it exists
+ * extract Roketo object from it
+ * and start requesting account streams with it
+ * */
+sample({
+  clock: [
+    $roketoWallet.map(
+      (wallet) => wallet?.roketo.account.last_created_stream ?? null,
+    ),
+    streamsRevalidationTimerFx.doneData,
+  ],
+  source: $roketoWallet,
+  filter: Boolean,
+  fn: (wallet) => wallet.roketo,
+  target: requestAccountStreamsFx,
+});
+/**
+ * when account streams successfully requested
+ * save them to store $accountStreams
+ */
+sample({
+  clock: requestAccountStreamsFx.doneData,
+  target: $accountStreams,
+});
 
 sample({
   clock: initWallets,
