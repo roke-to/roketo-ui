@@ -8,6 +8,6 @@ export const INITIAL_FORM_VALUES = {
   token: env.WNEAR_ID,
   speed: 0,
   deposit: 0,
-  autoStart: false,
+  autoStart: true,
   comment: '',
 };
