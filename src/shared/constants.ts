@@ -22,10 +22,13 @@ export const TIME_PERIOD_SIGNS = {
 
 export const testIds = {
   signInButton: 'signInButton',
+  signOutButton: 'signOutButton',
   availableForWithdrawalCaption: 'availableForWithdrawalCaption',
   withdrawAllButton: 'withdrawAllButton',
   createStreamButton: 'createStreamButton',
   withdrawButton: 'withdrawButton',
+  withdrawLoadingCaption: 'withdrawLoadingCaption',
+  streamProgressCaption: 'streamProgressCaption',
   streamControlsDropdown: 'streamControlsDropdown',
   streamStartButton: 'streamStartButton',
   streamPauseButton: 'streamPauseButton',
@@ -41,6 +44,7 @@ export const testIds = {
   createStreamCancelButton: 'createStreamCancelButton',
   createStreamSubmitButton: 'createStreamSubmitButton',
   openNotificationsButton: 'openNotificationsButton',
+  notificationsLoader: 'notificationsLoader',
   notificationElement: 'notificationElement',
   notificationPrimaryCaption: 'notificationPrimaryCaption',
   notificationSecondaryCaption: 'notificationSecondaryCaption',

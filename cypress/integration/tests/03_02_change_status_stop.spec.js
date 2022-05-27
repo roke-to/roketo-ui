@@ -2,17 +2,20 @@ import MyStreams from '../../support/pages/MyStreams';
 import Transaction from '../../support/pages/TransactionPage';
 import { login } from '../../support/login';
 
-it('stop stream', () => {
-    cy.viewport(1536, 960) ;
-    cy.wait(20000);
-    login();
+context('Stream stop', () => {
+  let account;
+
+  before(() => {
+    cy.task('getAccount').then((testAccount) => account = testAccount);
+  });
+
+  it('stop stream', () => {
+    cy.viewport(1536, 960);
+    login(account.seedPhrase);
     const mystreams = new MyStreams();
-    mystreams.getPage();
-    cy.wait(20000);
-    mystreams.changeStatus("stop");
-    cy.wait(5000);
-    const  transaction = new Transaction();
+    mystreams.visit();
+    mystreams.changeStatus('stop');
+    const transaction = new Transaction();
     transaction.approve();
-})
-
-
+  });
+});

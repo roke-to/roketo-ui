@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import useSWR, { SWRResponse } from 'swr';
 import type { PublicConfiguration } from 'swr/dist/types';
 import * as client from '@roketo/api-client';
@@ -135,6 +136,10 @@ export function useNotifications(): SWRResponse<client.Notification[]> {
     () => notificationsApiClient.findAll(),
     { onErrorRetry },
   );
+
+  useEffect(() => {
+    setTimeout(swr.mutate, 5000);
+  }, [swr]);
 
   return swr;
 }
