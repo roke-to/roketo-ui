@@ -8,7 +8,7 @@ context('Withdraw', () => {
 
   before(() => {
     cy.task('getAccount').then((testAccount) => sender = testAccount);
-    cy.task('getAccount', 'anotherTestAccount').then((anotherTestAccount) => receiver = anotherTestAccount);
+    cy.task('getAccount', { filename: 'anotherTestAccount' }).then((anotherTestAccount) => receiver = anotherTestAccount);
   });
 
   it('withdraw all before test', () => {
