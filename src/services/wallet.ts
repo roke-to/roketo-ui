@@ -17,13 +17,18 @@ export const $roketoWallet = createStore<null | {
   roketo: Roketo;
   tokens: RichTokens;
 }>(null);
-export const $priceOracle = createStore<null | PriceOracle>(null);
+export const $tokens = createStore<RichTokens>({});
+export const $priceOracle = createStore<PriceOracle>({
+  getPriceInUsd: () => '0',
+});
 export const $accountStreams = createStore<{
   inputs: RoketoStream[];
   outputs: RoketoStream[];
+  streamsLoaded: boolean;
 }>({
   inputs: [],
   outputs: [],
+  streamsLoaded: false,
 });
 
 export const $isSignedIn = $nearWallet.map(
@@ -101,6 +106,11 @@ sample({
  */
 sample({
   clock: requestAccountStreamsFx.doneData,
+  fn: ({inputs, outputs}) => ({
+    inputs,
+    outputs,
+    streamsLoaded: true,
+  }),
   target: $accountStreams,
 });
 
@@ -121,6 +131,14 @@ sample({
   clock: createRoketoWalletFx.doneData,
   target: $roketoWallet,
 });
+sample({
+  clock: createRoketoWalletFx.doneData,
+  fn: ({tokens}) => tokens,
+  target: $tokens,
+});
+/**
+ * when price oracle is initialized allow app to consume it from $priceOracle store
+ */
 sample({
   clock: createPriceOracleFx.doneData,
   target: $priceOracle,

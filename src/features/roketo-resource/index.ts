@@ -34,27 +34,6 @@ function useExtrapolation({ swr, revalidationPeriod, isEnabled = true }: {
   }, [swr, secondsTillRevalidation, revalidationPeriod, isEnabled]);
 }
 
-export function useStreams() {
-  const { auth, roketo } = useRoketoContext();
-
-  const swr = useSWR(
-    ['streams', auth.accountId, roketo.account.last_created_stream],
-    async () => {
-      const inputs = await roketo.api.getAccountIncomingStreams({ from: 0, limit: 100 });
-      const outputs = await roketo.api.getAccountOutgoingStreams({ from: 0, limit: 100 });
-
-      return {
-        inputs,
-        outputs
-      };
-    },
-  );
-
-  useExtrapolation({ swr, revalidationPeriod: 30 });
-
-  return swr;
-}
-
 export function useSingleStream(streamId: string) {
   const { roketo } = useRoketoContext();
 

@@ -1,45 +1,15 @@
-import React from 'react';
 import cn from 'classnames';
+import {useStore} from 'effector-react';
 
-import {useRoketoContext} from 'app/roketo-context';
-import {useStreams} from 'features/roketo-resource';
-import {isActiveStream} from 'shared/api/roketo/helpers';
-import { testIds } from 'shared/constants';
-
+import {testIds} from 'shared/constants';
 import {FinancialInfo} from '../FinancialInfo';
+import {$financialStatus} from './model';
 
-import {collectTotalFinancialAmountInfo, countTotalUSDWithdrawal} from '../../lib';
 import styles from './styles.module.scss';
 
-type FinancialStatusProps = {
-  className?: string,
-}
-export const FinancialStatus = ({className}: FinancialStatusProps) => {
-  const {tokens, priceOracle} = useRoketoContext();
-  const {data: streams} = useStreams();
-
-  const {inputs = [], outputs = []} = streams || {};
-
-  const activeInputStreams = inputs.filter(isActiveStream);
-  const activeOutputStreams = outputs.filter(isActiveStream);
-
-  const outcomeAmountInfo = collectTotalFinancialAmountInfo(
-    activeOutputStreams,
-    tokens,
-    priceOracle
-  );
-
-  const incomeAmountInfo = collectTotalFinancialAmountInfo(
-    activeInputStreams,
-    tokens,
-    priceOracle
-  );
-
-  const availableForWithdrawal = countTotalUSDWithdrawal(
-    activeInputStreams,
-    tokens,
-    priceOracle
-  );
+export const FinancialStatus = ({className}: {className?: string}) => {
+  const {outcomeAmountInfo, incomeAmountInfo, availableForWithdrawal} =
+    useStore($financialStatus);
 
   return (
     <section className={cn(styles.root, className)}>
