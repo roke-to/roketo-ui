@@ -1,0 +1,120 @@
+@import 'src/shared/ui/palette';
+
+.relative {
+  position: relative;
+}
+
+.controlButton {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  font-size: 12px;
+  width: 117px;
+  border-radius: 6px;
+  padding-left: 18px;
+
+  > svg {
+    margin-right: 8px;
+  }
+}
+
+.statusPadded {
+  padding-right: 17px;
+}
+
+.button {
+  padding: 9px 20px;
+}
+
+.modalContent {
+  padding: 24px;
+  max-width: 480px;
+  width: 100%;
+  border-radius: 8px;
+  background-color: white;
+  color: $light-black;
+}
+
+.modalOverlay {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  overflow: auto;
+  padding: 5vh 0;
+  flex-direction: column;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+  z-index: 1000;
+}
+
+.modalHeader {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.modalButtons {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+
+  > button:not(:last-child) {
+    margin-right: 16px;
+  }
+}
+
+.modalButton {
+  height: 48px;
+  border-radius: 8px;
+  padding: 0 20px;
+}
+
+.modalSecondary {
+  color: $blue;
+  border: 2px solid $blue;
+}
+
+.modalWarning {
+  color: white;
+  background-color: $orange;
+}
+
+.modalDanger {
+  color: white;
+  background-color: $danger;
+}
+
+.controlsMenu {
+  padding: 14px;
+  min-width: unset;
+  position: absolute;
+  border-radius: 12px;
+  margin-top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.dropdownOpener {
+  height: 32px;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 15px;
+}
+
+.start, .active {
+  background-color: #EEFFF4;
+  color: #1EBA52;
+}
+
+.pause {
+  background: #FFF7F0;
+  color: $orange;
+}
+
+.stop {
+  background-color: $light-red;
+  color: $danger;
+}

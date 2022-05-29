@@ -64,14 +64,12 @@ export class RoketoContractApi implements RoketoApi {
     const res = await this.contract.get_stream({
       stream_id: streamId,
     });
-    console.log('res', res)
 
     return res;
   }
 
   async getDao() {
     const res = await this.contract.get_dao();
-    console.log('res', res)
 
     return res;
   }

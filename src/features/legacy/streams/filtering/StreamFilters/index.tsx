@@ -4,14 +4,14 @@ import classNames from 'classnames';
 import {SortIcon, OrderType} from '@ui/icons/Sort';
 
 import { Filter, FilterOptionWithCounter } from 'shared/kit/Filter';
-import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import type { LegacyRoketoStream } from '../../../api/roketo/interfaces/entities';
 
 import {DirectionSorts} from '../DirectionSorts';
 import { useStreamFilters } from '../useStreamFilters';
 
 import styles from './styles.module.scss';
 
-function compareBy(a: RoketoStream, b: RoketoStream, key: keyof RoketoStream) {
+function compareBy(a: LegacyRoketoStream, b: LegacyRoketoStream, key: keyof LegacyRoketoStream) {
   return Number(b[key]) - Number(a[key]);
 }
 
@@ -19,28 +19,28 @@ const sorts = {
   bigBalanceFirst: {
     label: 'With high amount',
     order: OrderType.desc,
-    fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'balance'),
+    fn: (a: LegacyRoketoStream, b: LegacyRoketoStream) => compareBy(a, b, 'balance'),
   },
   highSpeedFirst: {
     label: 'With high speed',
     order: OrderType.desc,
-    fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'tokens_per_sec'),
+    fn: (a: LegacyRoketoStream, b: LegacyRoketoStream) => compareBy(a, b, 'tokens_per_tick'),
   },
   highSpeedLast: {
     label: 'With low speed',
     order: OrderType.asc,
-    fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'tokens_per_sec') * -1,
+    fn: (a: LegacyRoketoStream, b: LegacyRoketoStream) => compareBy(a, b, 'tokens_per_tick') * -1,
   },
   mostRecent: {
     label: 'Most recent',
     order: OrderType.desc,
-    fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'timestamp_created'),
+    fn: (a: LegacyRoketoStream, b: LegacyRoketoStream) => compareBy(a, b, 'timestamp_created'),
   },
 };
 
 type StreamFiltersProps = {
-  items: RoketoStream[] | undefined;
-  onFilterDone: (result: RoketoStream[] | undefined) => void;
+  items: LegacyRoketoStream[] | undefined;
+  onFilterDone: (result: LegacyRoketoStream[] | undefined) => void;
   className?: string;
 };
 
