@@ -80,7 +80,7 @@ export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
             Move all received tokens to your wallet.
           </p>
 
-          <div className={styles.preparedTokensWrapper}>
+          <div className={styles.preparedTokensWrapper} data-testid={testIds.withdrawTooltip}>
             {!streams &&
               <p
                 className={styles.description}

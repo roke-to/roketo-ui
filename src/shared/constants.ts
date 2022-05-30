@@ -27,6 +27,7 @@ export const testIds = {
   withdrawAllButton: 'withdrawAllButton',
   createStreamButton: 'createStreamButton',
   withdrawButton: 'withdrawButton',
+  withdrawTooltip: 'withdrawTooltip',
   withdrawLoadingCaption: 'withdrawLoadingCaption',
   streamProgressCaption: 'streamProgressCaption',
   streamControlsDropdown: 'streamControlsDropdown',

@@ -7,7 +7,7 @@ context('Stream creation', () => {
   let account;
 
   before(() => {
-    cy.task('getAccount').then((testAccount) => account = testAccount);
+    cy.task('getAccount', { reuse: true }).then((testAccount) => account = testAccount);
   });
 
   it('Create a stream without Autostart', () => {

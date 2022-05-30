@@ -24,8 +24,14 @@ module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
   on('task', {
-    async getAccount(filename = 'testAccount') {
+    async getAccount({ filename = 'testAccount', reuse = false } = {}) {
       const path = `./${filename}.json`;
+
+      if (!reuse) {
+        try {
+          fs.unlinkSync(path);
+        } catch(whatever) {}
+      }
 
       try {
         return JSON.parse(fs.readFileSync(path, 'utf-8'));

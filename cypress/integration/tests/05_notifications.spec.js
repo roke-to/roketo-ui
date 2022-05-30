@@ -10,8 +10,8 @@ context('Notifications', () => {
   let receiver;
 
   before(() => {
-    cy.task('getAccount').then((testAccount) => sender = testAccount);
-    cy.task('getAccount', 'anotherTestAccount').then((anotherTestAccount) => receiver = anotherTestAccount);
+    cy.task('getAccount').then((freshTestAccount) => sender = freshTestAccount);
+    cy.task('getAccount', { filename: 'anotherTestAccount' }).then((anotherFreshTestAccount) => receiver = anotherFreshTestAccount);
   });
 
   it('Sender NotificationsCheck', () => {

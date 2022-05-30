@@ -45,16 +45,22 @@ class MyStreams {
   checkwithdraw(shouldBeEmpty) {
     cy.get(testSelectors.withdrawAllButton).trigger('mouseover');
     cy.get(testSelectors.withdrawLoadingCaption).should('not.exist');
-    cy.get('body').then(($body) => {
-      const isEmpty = $body.text().includes('You have nothing to withdraw');
+    cy.get(testSelectors.withdrawTooltip).then(($tooltip) => {
+      const isEmpty = $tooltip.text().includes('You have nothing to withdraw');
       if (isEmpty !== shouldBeEmpty) {
-        throw new Error('test fails here');
+        throw new Error(
+          (shouldBeEmpty
+              ? 'There shouldn\'t have been anything for withdrawal, but there was '
+              : 'There should have been something for withdrawal, but there was '
+          ) + ' ' + $tooltip.text()
+        );
       }
     });
   }
 
   waitUntilDue() {
-    cy.get(testSelectors.streamProgressCaption).eq(0).contains('1 of 1', { timeout: 60000 });
+    // RegExp to catch "1 of 1" only and not "0.251 of 1".
+    cy.get(testSelectors.streamProgressCaption).eq(0).contains(/\b1 of 1\b/, { timeout: 60000 });
   }
 
   withdrawFirst() {
