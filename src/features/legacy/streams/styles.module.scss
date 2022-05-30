@@ -1,0 +1,47 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  color: $light-black;
+
+  flex-grow: 1;
+  padding-bottom: 28px;
+}
+
+.section {
+  margin-bottom: 28px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.header {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.buttonsWrapper {
+  padding-top: 28px;
+  & > button {
+    font-size: 16px;
+    height: 48px;
+    border-radius: 12px;
+    line-height: 24px;
+    padding: 12px 20px;
+  }
+}
+
+.title {
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 40px;
+  padding-top: 28px;
+  padding-right: 16px;
+}
+
+.streamFilters {
+  margin-bottom: 25px;
+}
+

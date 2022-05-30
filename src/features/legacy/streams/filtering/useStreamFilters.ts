@@ -1,8 +1,8 @@
 import { useRoketoContext } from 'app/roketo-context';
 import { useMemo } from 'react';
 
-import { STREAM_STATUS } from 'shared/api/roketo/constants';
-import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import { STREAM_STATUS } from '../../api/roketo/constants';
+import type { LegacyRoketoStream } from '../../api/roketo/interfaces/entities';
 
 import { useFilter, useFilters } from './lib';
 
@@ -14,28 +14,28 @@ const STREAM_TYPE_FILTER = {
 
 const STREAM_STATUS_FILTER = {
   ALL: 'All',
-  [STREAM_STATUS.Initialized]: 'Initialized',
-  [STREAM_STATUS.Active]: 'Active',
-  [STREAM_STATUS.Paused]: 'Paused',
+  [STREAM_STATUS.INITIALIZED]: 'Initialized',
+  [STREAM_STATUS.ACTIVE]: 'Active',
+  [STREAM_STATUS.PAUSED]: 'Paused',
 };
 
-export function useStreamFilters(streams: RoketoStream[] | undefined) {
+export function useStreamFilters(streams: LegacyRoketoStream[] | undefined) {
   const { auth } = useRoketoContext();
 
   const statusOptions = useMemo(
     () => ({
       [STREAM_STATUS_FILTER.ALL]: () => true,
-      [STREAM_STATUS_FILTER[STREAM_STATUS.Initialized]]: (stream: RoketoStream) => stream.status === STREAM_STATUS.Initialized,
-      [STREAM_STATUS_FILTER[STREAM_STATUS.Active]]: (stream: RoketoStream) => stream.status === STREAM_STATUS.Active,
-      [STREAM_STATUS_FILTER[STREAM_STATUS.Paused]]: (stream: RoketoStream) => stream.status === STREAM_STATUS.Paused,
+      [STREAM_STATUS_FILTER[STREAM_STATUS.INITIALIZED]]: (stream: LegacyRoketoStream) => stream.status === STREAM_STATUS.INITIALIZED,
+      [STREAM_STATUS_FILTER[STREAM_STATUS.ACTIVE]]: (stream: LegacyRoketoStream) => stream.status === STREAM_STATUS.ACTIVE,
+      [STREAM_STATUS_FILTER[STREAM_STATUS.PAUSED]]: (stream: LegacyRoketoStream) => stream.status === STREAM_STATUS.PAUSED,
     }),
     [],
   );
   const directionOptions = useMemo(
     () => ({
       [STREAM_TYPE_FILTER.ALL]: () => true,
-      [STREAM_TYPE_FILTER.INCOMING]: (stream: RoketoStream) => auth.accountId === stream.receiver_id,
-      [STREAM_TYPE_FILTER.OUTGOING]: (stream: RoketoStream) => auth.accountId === stream.owner_id,
+      [STREAM_TYPE_FILTER.INCOMING]: (stream: LegacyRoketoStream) => auth.accountId === stream.receiver_id,
+      [STREAM_TYPE_FILTER.OUTGOING]: (stream: LegacyRoketoStream) => auth.accountId === stream.owner_id,
     }),
     [auth.accountId],
   );

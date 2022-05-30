@@ -1,0 +1,25 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap-reverse;
+}
+
+.filtersWrapper {
+  display: flex;
+  align-items: center;
+
+  & > :not(:last-child) {
+    margin-right: 20px;
+  }
+}
+
+.sortWithOrder {
+  display: flex;
+  align-items: center;
+
+  & > :not(:last-child) {
+    margin-right: 6px;
+  }
+}

@@ -1,0 +1,56 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  display: flex;
+  flex-direction: column;
+
+  gap: 15px
+}
+
+.description {
+  color: $bluish-grey;
+  text-align: center;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.preparedTokensWrapper {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.preparedToken {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 10px;
+
+  background-color: transparent;
+
+  border: 1px solid $grey;
+  border-radius: 8px;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+
+  gap: 5px;
+}
+
+.amount {
+  color: $light-black;
+}
+
+.symbol {
+  text-transform: capitalize;
+  color: $grey;
+}
