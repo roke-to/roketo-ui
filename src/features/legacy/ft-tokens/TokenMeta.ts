@@ -1,4 +1,4 @@
-export type TokenTicker = string;
+type TokenTicker = string;
 
 export type TokenMetadata = {
   spec: null,

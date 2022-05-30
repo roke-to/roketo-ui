@@ -11,19 +11,6 @@ export const STREAM_DIRECTION = {
   OUT: 'out',
 } as const;
 
-export const STREAM_ACTION_TYPE = {
-  INIT: 'Init',
-  DEPOSIT: 'Deposit',
-  START: 'Start',
-  WITHDRAW: 'Withdraw',
-  PAUSE: 'Pause',
-  STOP: 'Stop',
-} as const;
-
-export const SECONDS_IN_MINUTE = 60;
-export const SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
-export const SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
-
 export const NEAR_BRIDGE = 'factory.bridge.near' as const;
 
 export const CONTRACT_VIEW_METHODS = [

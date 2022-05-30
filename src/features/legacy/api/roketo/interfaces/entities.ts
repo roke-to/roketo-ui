@@ -19,7 +19,7 @@ type NanosecondsTimestamp = string;
  * `FINISHED` - Finalized Status. stream has streamed all it's balance and account has been updated.
  * `INTERRUPTED` - Finalized Status. Stream has been stopped
  */
-export type StreamStatus =
+type StreamStatus =
   | "INITIALIZED"
   | "ACTIVE"
   | "PAUSED"

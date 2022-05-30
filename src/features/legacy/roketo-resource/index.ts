@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import useSWR, { SWRResponse } from 'swr';
 import { differenceInSeconds, formatDuration, intervalToDuration } from 'date-fns';
 import BigNumber from 'bignumber.js';
@@ -11,7 +11,7 @@ import { isActiveStream, isDead, isIdling } from '../api/roketo/helpers';
 import { SECONDS_IN_YEAR } from '../../../shared/constants';
 import { shortEnLocale } from '../../../shared/helpers/date';
 
-export function identifyStreamsDirection(streams: LegacyRoketoStream[], accountId: string) {
+function identifyStreamsDirection(streams: LegacyRoketoStream[], accountId: string) {
   return streams.map((stream) => ({
     ...stream,
     direction:
@@ -204,73 +204,6 @@ export function useLegacySingleStream(streamId: string, account?: RoketoAccount)
   }, [stream.status, isCompleted, swr]);
 
   return swr;
-}
-
-type UseSingleStreamHistoryProps = {
-  account?: RoketoAccount;
-  stream?: LegacyRoketoStream;
-}
-
-export function useSingleStreamHistory(
-  { pageSize = 3 },
-  { account, stream }: UseSingleStreamHistoryProps,
-) {
-  const { roketo } = useRoketoContext();
-
-  const streamId = stream ? stream.id : '';
-  const [page, setPage] = useState(0);
-
-  const maxPage = stream ? Math.ceil(stream.history_len / pageSize) - 1 : 0;
-
-  const nextPage = () => {
-    setPage(page + 1);
-  };
-  const prevPage = () => {
-    setPage(page - 1);
-  };
-  const canGoBack = page > 1;
-
-  const streamHistoryFetcher = async (key1: unknown, key2: unknown, key3: unknown, pageToFetch: number) => {
-    const streamHistory = await roketo.api.getStreamHistory({
-      streamId,
-      from: pageToFetch * pageSize,
-      to: (pageToFetch + 1) * pageSize,
-    });
-
-    return streamHistory;
-  };
-
-  const swr = useSWR(
-    () => {
-      const key = stream
-        ? ['stream_history', stream.id, account?.last_action, page]
-        : false;
-
-      return key;
-    },
-    streamHistoryFetcher,
-    {
-      onError: (error) => {
-        console.debug('useSingleStreamHistory error', error);
-      },
-    },
-  );
-
-  // ebanuty hack to prefetch next page
-  useSWR(
-    () => {
-      const key = stream
-        ? ['stream_history', stream.id, account?.last_action, page + 1]
-        : false;
-
-      return key;
-    },
-    streamHistoryFetcher,
-  );
-
-  return {
-    swr, canGoBack, nextPage, prevPage, maxPage, currentPage: page,
-  };
 }
 
 function calculateEndInfo(stream: LegacyRoketoStream, balance: BigNumber) {
