@@ -74,7 +74,7 @@ export const StreamsPage = () => {
           <h1 className={styles.title}>Streams</h1>
 
           <div className={cn(styles.flex, styles.buttonsWrapper)}>
-            <WithdrawAllButton>Withdraw tokens</WithdrawAllButton>
+            <WithdrawAllButton />
 
             <Button
               onClick={toggleModal}

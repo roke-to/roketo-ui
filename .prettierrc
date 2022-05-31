@@ -6,7 +6,7 @@
   "semi": true,
   "arrowParens": "always",
   "bracketSpacing": false,
-  "printWidth": 80,
+  "printWidth": 100,
   "endOfLine": "lf",
   "overrides": [
     {

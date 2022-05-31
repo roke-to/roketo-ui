@@ -12,6 +12,7 @@ export enum ButtonType {
 export enum DisplayMode {
   primary = 'primary',
   simple = 'simple',
+  secondary = 'secondary',
   action = 'action',
   invisible = 'invisible',
 }
@@ -42,6 +43,7 @@ export const Button = ({
     styles.root,
     {
       [styles.primary]: displayMode === DisplayMode.primary,
+      [styles.secondary]: displayMode === DisplayMode.secondary,
       [styles.action]: displayMode === DisplayMode.action,
       [styles.simple]: displayMode === DisplayMode.simple,
     },
