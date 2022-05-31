@@ -3,6 +3,9 @@
   "version": "0.2.0",
   "homepage": "https://app.roke.to/",
   "private": true,
+  "engines": {
+    "node": "16"
+  },
   "dependencies": {
     "@craco/craco": "^6.4.3",
     "@roketo/api-client": "roke-to/roketo-api-client#v0.0.20",
