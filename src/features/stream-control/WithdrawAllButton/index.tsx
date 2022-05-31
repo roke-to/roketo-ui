@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import {Button} from '@ui/components/Button';
+import {Button,DisplayMode} from '@ui/components/Button';
 
 import { Tooltip } from 'shared/kit/Tooltip';
 import { useRoketoContext } from 'app/roketo-context';
@@ -13,7 +13,8 @@ import { getAvailableToWithdraw, isActiveStream } from 'shared/api/roketo/helper
 
 import styles from './styles.module.scss';
 
-export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
+// TODO: move all computations to a model or a React.useMemo
+export function WithdrawAllButton() {
   const { tokens, roketo } = useRoketoContext();
   const streamsSWR = useStreams();
 
@@ -70,6 +71,9 @@ export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
     }
   }
 
+  const availableToWithdraw = streams && preparedTokenData.length !== 0;
+  const nothingToWithdraw = streams && preparedTokenData.length === 0;
+
   return (
     <Tooltip
       placement="bottom"
@@ -90,7 +94,7 @@ export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
               </p>
             }
 
-            {streams && preparedTokenData.length !== 0 && preparedTokenData.map((data) =>
+            {availableToWithdraw && preparedTokenData.map((data) =>
               <div
                 key={data.tokenAccountId}
                 className={styles.preparedToken}
@@ -104,7 +108,7 @@ export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
               </div>
             )}
 
-            {streams && preparedTokenData.length === 0 &&
+            {nothingToWithdraw &&
               <p className={styles.description}>
                 You have nothing to withdraw
               </p>
@@ -116,8 +120,9 @@ export function WithdrawAllButton({ children }: { children: React.ReactNode}) {
       <Button
         onClick={handleWithdraw}
         testId={testIds.withdrawAllButton}
+        displayMode={availableToWithdraw ? DisplayMode.action : DisplayMode.secondary}
       >
-        {children}
+        Withdraw tokens
       </Button>
     </Tooltip>
   );
