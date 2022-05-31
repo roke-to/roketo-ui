@@ -50,6 +50,7 @@ export const StreamsPage = () => {
       deposit,
       speed,
       token,
+      isLocked,
     } = values;
 
     const {formatter, api, roketoMeta} = tokens[token];
@@ -64,6 +65,7 @@ export const StreamsPage = () => {
       isAutoStart: autoStart,
       callbackUrl: returnPath,
       handleTransferStream: api.transfer,
+      isLocked,
     });
   };
 

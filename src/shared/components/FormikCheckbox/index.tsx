@@ -10,7 +10,7 @@ type CheckboxProps = {
   form: FormikState<any>,
 
   label?: React.ReactNode,
-  description?: string,
+  description?: React.ReactNode,
   isRequired?: boolean,
   className?: string;
 };

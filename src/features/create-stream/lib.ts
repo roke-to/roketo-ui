@@ -39,6 +39,7 @@ export const getFormValidationSchema = (near: Near, accountId: string) => Yup.ob
     .moreThan(0, 'Deposit should be more than 0'),
   speed: Yup.number().required('Stream duration is required').moreThan(0, 'Choose stream duration'),
   autoStart: Yup.boolean(),
+  isLocked: Yup.boolean(),
   comment: Yup.string().max(COMMENT_TEXT_LIMIT),
 });
 

@@ -35,6 +35,10 @@ export function getAvailableToWithdraw(stream: RoketoStream): BigNumber {
   );
 }
 
+export function isLocked({ is_locked, status }: RoketoStream) {
+  return is_locked && status !== STREAM_STATUS.Initialized;
+}
+
 export const getEmptyAccount = (): RoketoAccount => ({
   active_incoming_streams: 0,
   active_outgoing_streams: 0,

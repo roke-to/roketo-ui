@@ -10,4 +10,5 @@ export const INITIAL_FORM_VALUES = {
   deposit: 0,
   autoStart: true,
   comment: '',
+  isLocked: false,
 };

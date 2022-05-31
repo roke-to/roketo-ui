@@ -48,12 +48,31 @@ export type FormValues = {
   deposit: number;
   speed: number;
   token: string;
+  isLocked: boolean;
 }
 
 type CreateStreamProps = {
   onFormSubmit: (values: FormValues) => Promise<void>;
   onFormCancel: () => void;
 }
+
+const AUTOSTART_DESCRIPTION = (
+  <div>
+    Start stream immediately
+    <div className={styles.subDescription}>
+      If you select this field, the stream<br />will start immediately
+    </div>
+  </div>
+);
+
+const LOCK_DESCRIPTION = (
+  <div>
+    Uneditable stream
+    <div className={styles.subDescription}>
+      If you select this field, you will not be able<br />to carry out any actions on the stream
+    </div>
+  </div>
+);
 
 export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) => {
   const {near, auth} = useRoketoContext();
@@ -158,14 +177,21 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                 />
               </Row>
 
-              <Row>
+              <Row className={styles.checkboxes}>
                 <Field
                   name="autoStart"
-                  description="Start stream immediately"
+                  description={AUTOSTART_DESCRIPTION}
                   type="checkbox"
                   component={FormikCheckbox}
-                  className={styles.rowItem}
                   data-testid={testIds.createStreamAutostartCheckbox}
+                />
+
+                <Field
+                  name="isLocked"
+                  description={LOCK_DESCRIPTION}
+                  type="checkbox"
+                  component={FormikCheckbox}
+                  data-testid={testIds.createStreamLockedCheckbox}
                 />
               </Row>
 

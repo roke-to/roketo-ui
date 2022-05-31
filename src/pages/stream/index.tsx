@@ -21,6 +21,7 @@ import { WithdrawButton } from 'features/stream-control/WithdrawButton';
 import { TokenImage } from 'shared/kit/TokenImage';
 import { getRoundedPercentageRatio } from 'shared/helpers/math';
 import { getAvailableToWithdraw } from 'shared/api/roketo/helpers';
+import { Badge } from 'shared/components/Badge';
 
 import styles from './styles.module.scss';
 import { BreadcrumbIcon } from './BreadcrumbIcon';
@@ -311,6 +312,7 @@ export function StreamPage() {
                 </span>
               </div>
               <div className={classNames(styles.tile, styles.main)}>
+                {stream.is_locked && <Badge isOrange className={styles.closeBadge}>Locked</Badge>}
                 <StreamProgress stream={stream} />
                 <StreamButtons stream={stream} />
                 <StreamSpeed stream={stream} />

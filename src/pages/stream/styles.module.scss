@@ -93,6 +93,10 @@
   & > :not(:last-child) {
     margin-bottom: 24px;
   }
+
+  & > .closeBadge {
+    margin-bottom: 6px;
+  }
 }
 
 .numericProgress {

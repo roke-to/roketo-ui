@@ -35,14 +35,17 @@ export const StreamCard = ({stream, className}: StreamCardProps) => {
   const isIncomingStream = useGetStreamDirection(stream) === STREAM_DIRECTION.IN;
 
   const name = isIncomingStream ? stream.owner_id : stream.receiver_id;
-  const label = isIncomingStream ? undefined : 'Sending';
 
   const streamPageLink = generatePath(ROUTES_MAP.stream.path, {id});
 
   return (
     <div className={cn(styles.root, className)}>
       <Link to={streamPageLink} className={styles.name}>
-        <Name name={name} label={label}/>
+        <Name
+          name={name}
+          isOutgoing={!isIncomingStream}
+          isLocked={stream.is_locked}
+        />
       </Link>
 
       <StreamProgress stream={stream} className={styles.withMarginRight} />

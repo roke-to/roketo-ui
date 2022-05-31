@@ -1,0 +1,20 @@
+@import 'src/shared/ui/palette';
+
+.badge {
+  font-size: 12px;
+  line-height: 15px;
+  padding: 4px 6px;
+
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.blue {
+  color: $blue;
+  background-color: $light-blue;
+}
+
+.orange {
+  color: $orange;
+  background-color: #FFF7EE;
+}

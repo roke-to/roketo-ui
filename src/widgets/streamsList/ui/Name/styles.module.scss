@@ -4,24 +4,16 @@
   display: flex;
   align-items: center;
   overflow: hidden;
+
+  :not(:last-child) {
+    margin-right: 6px;
+  }
 }
 
 .name {
   font-weight: 600;
   font-size: 14px;
   line-height: 20px;
-  margin-right: 6px;
   text-overflow: ellipsis;
   overflow: hidden;
-
-  &Label {
-    color: $blue;
-    background-color: $light-blue;
-
-    font-size: 12px;
-    line-height: 15px;
-    padding: 4px 6px;
-
-    border-radius: 6px;
-  }
 }
