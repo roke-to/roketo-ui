@@ -82,7 +82,7 @@ export class RoketoContractApi implements RoketoApi {
     commissionOnCreate,
     tokensPerSec,
     cliffPeriodSec,
-    isAutoStart = true,
+    delayed = false,
     isExpirable,
     isLocked,
     callbackUrl,
@@ -98,7 +98,7 @@ export class RoketoContractApi implements RoketoApi {
       tokens_per_sec: BigInt(tokensPerSec),
       cliff_period_sec: cliffPeriodSec,
       is_locked: isLocked,
-      is_auto_start_enabled: isAutoStart,
+      is_auto_start_enabled: !delayed,
       is_expirable: isExpirable,
     };
 

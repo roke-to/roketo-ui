@@ -43,7 +43,7 @@ const StreamCreationError = ({error}: {error: string}) => (
 export type FormValues = {
   receiver: string;
   streamName: string;
-  autoStart: boolean;
+  delayed: boolean;
   comment: string;
   deposit: number;
   speed: number;
@@ -56,11 +56,11 @@ type CreateStreamProps = {
   onFormCancel: () => void;
 }
 
-const AUTOSTART_DESCRIPTION = (
+const DELAYED_DESCRIPTION = (
   <div>
-    Start stream immediately
+    Delayed start
     <div className={styles.subDescription}>
-      If you select this field, the stream<br />will start immediately
+      If you select this field, the stream<br />won't start immediately
     </div>
   </div>
 );
@@ -179,11 +179,11 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
 
               <Row className={styles.checkboxes}>
                 <Field
-                  name="autoStart"
-                  description={AUTOSTART_DESCRIPTION}
+                  name="delayed"
+                  description={DELAYED_DESCRIPTION}
                   type="checkbox"
                   component={FormikCheckbox}
-                  data-testid={testIds.createStreamAutostartCheckbox}
+                  data-testid={testIds.createStreamDelayedCheckbox}
                 />
 
                 <Field

@@ -11,7 +11,7 @@ export function createstream({ receiver = 'githubtest9.testnet', duration } = {}
   } else {
     stream.inputPeriod('1000', '10', '10', '10');
     // stream.inputComments('comment-comment');
-    stream.uncheckAutostart();
+    stream.setDelayed();
   }
   stream.submit();
   const transaction = new Transaction();

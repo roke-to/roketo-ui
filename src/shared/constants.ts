@@ -41,7 +41,7 @@ export const testIds = {
   createStreamHoursInput: 'createStreamHoursInput',
   createStreamMinutesInput: 'createStreamMinutesInput',
   createStreamCommentInput: 'createStreamCommentInput',
-  createStreamAutostartCheckbox: 'createStreamAutostartCheckbox',
+  createStreamDelayedCheckbox: 'createStreamDelayedCheckbox',
   createStreamLockedCheckbox: 'createStreamLockedCheckbox',
   createStreamCancelButton: 'createStreamCancelButton',
   createStreamSubmitButton: 'createStreamSubmitButton',
