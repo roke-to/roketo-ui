@@ -60,7 +60,7 @@ const DELAYED_DESCRIPTION = (
   <div>
     Delayed start
     <div className={styles.subDescription}>
-      If you select this field, the stream<br />won't start immediately
+      Select this if you want the stream not to start immediately,<br />you'll need to start it manually from stream page
     </div>
   </div>
 );
