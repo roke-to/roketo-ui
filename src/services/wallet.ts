@@ -39,6 +39,8 @@ export const $accountId = $nearWallet.map(
   (wallet) => wallet?.auth.accountId ?? null,
 );
 
+export const lastCreatedStreamUpdated = createEvent<string>();
+
 const createNearWalletFx = createEffect(async () => {
   const near = await createNearInstance();
   const auth = await getNearAuth(
@@ -72,7 +74,12 @@ const streamsRevalidationTimerFx = createEffect(
       setTimeout(rs, 30000);
     }),
 );
-
+sample({
+  clock: $roketoWallet,
+  filter: Boolean,
+  fn: (wallet) => wallet.roketo.account.last_created_stream,
+  target: lastCreatedStreamUpdated,
+});
 /**
  * when roketo wallet becomes available or revalidation timer ends
  * start revalidation timer again
@@ -89,12 +96,7 @@ sample({
  * and start requesting account streams with it
  * */
 sample({
-  clock: [
-    $roketoWallet.map(
-      (wallet) => wallet?.roketo.account.last_created_stream ?? null,
-    ),
-    streamsRevalidationTimerFx.doneData,
-  ],
+  clock: [lastCreatedStreamUpdated, streamsRevalidationTimerFx.doneData],
   source: $roketoWallet,
   filter: Boolean,
   fn: (wallet) => wallet.roketo,
