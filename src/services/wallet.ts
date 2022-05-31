@@ -1,12 +1,37 @@
-import {createStore, createEffect, createEvent, sample} from 'effector';
+import {createStore, createEffect, createEvent, sample, attach} from 'effector';
 import {ConnectedWalletAccount, Near, WalletConnection} from 'near-api-js';
+import type {Notification} from '@roketo/api-client';
 
 import {env} from 'shared/config';
 import {createNearInstance, getNearAuth, NearAuth} from 'shared/api/near';
 import {initRoketo, Roketo} from 'shared/api/roketo';
+import {
+  tokenProvider,
+  usersApiClient,
+  notificationsApiClient,
+} from 'shared/api/roketo-client';
 import type {RoketoStream} from 'shared/api/roketo/interfaces/entities';
 import {initFT, RichTokens} from 'shared/api/ft';
 import {initPriceOracle, PriceOracle} from 'shared/api/price-oracle';
+
+async function retry<T>(cb: () => Promise<T>) {
+  const retryCount = 3;
+  let error: unknown;
+  for (let i = 0; i <= retryCount; i += 1) {
+    try {
+      if (i > 0) {
+        // eslint-disable-next-line no-await-in-loop
+        await tokenProvider.refreshToken();
+      }
+      // eslint-disable-next-line no-await-in-loop
+      return await cb();
+    } catch (err: any) {
+      if (!err.message.startsWith('HTTP-Code: 401')) throw err;
+      error = err;
+    }
+  }
+  throw error;
+}
 
 export const initWallets = createEvent();
 
@@ -39,6 +64,31 @@ export const $accountId = $nearWallet.map(
   (wallet) => wallet?.auth.accountId ?? null,
 );
 
+export const $user = createStore<{name: string | null; email: string | null}>({
+  name: null,
+  email: null,
+});
+
+export const $notifications = createStore<Notification[]>([]);
+
+// eslint-disable-next-line arrow-body-style
+const getUserFx = createEffect(async (accountId: string) => {
+  return retry(() => usersApiClient.findOne(accountId));
+});
+
+// eslint-disable-next-line arrow-body-style
+const getNotificationsFx = createEffect(async () => {
+  return retry(() => notificationsApiClient.findAll());
+});
+
+export const updateUserFx = attach({
+  source: $accountId,
+  async effect(accountId, {name, email}: {name: string; email: string}) {
+    if (!accountId) return;
+    await usersApiClient.update(accountId, {name, email});
+  },
+});
+
 export const lastCreatedStreamUpdated = createEvent<string>();
 
 const createNearWalletFx = createEffect(async () => {
@@ -58,6 +108,7 @@ const createRoketoWalletFx = createEffect(
     return {roketo, tokens};
   },
 );
+export const $appLoading = createStore(true);
 const createPriceOracleFx = createEffect((account: ConnectedWalletAccount) =>
   initPriceOracle({account}),
 );
@@ -116,6 +167,36 @@ sample({
   target: $accountStreams,
 });
 
+/** when account id is exists, request user info and notifications for it */
+sample({
+  clock: $accountId,
+  filter: Boolean,
+  target: [getUserFx, getNotificationsFx],
+});
+
+sample({
+  clock: [getUserFx.doneData, updateUserFx.done.map(({params}) => params)],
+  target: $user,
+});
+sample({
+  clock: getNotificationsFx.doneData,
+  target: $notifications,
+});
+/** clear user when there is no account id */
+sample({
+  clock: $accountId,
+  filter: (id: string | null): id is null => !id,
+  fn: () => ({name: null, email: null}),
+  target: $user,
+});
+/** clear notifications when there is no account id */
+sample({
+  clock: $accountId,
+  filter: (id: string | null): id is null => !id,
+  fn: () => [],
+  target: $notifications,
+});
+
 sample({
   clock: initWallets,
   target: createNearWalletFx,
@@ -144,4 +225,9 @@ sample({
 sample({
   clock: createPriceOracleFx.doneData,
   target: $priceOracle,
+});
+sample({
+  clock: [createRoketoWalletFx.finally],
+  fn: () => false,
+  target: $appLoading,
 });

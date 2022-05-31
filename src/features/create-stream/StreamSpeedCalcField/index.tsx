@@ -1,9 +1,9 @@
 import React, {ChangeEvent, Dispatch, SetStateAction, useEffect, useState} from 'react';
+import {useStore} from 'effector-react';
 import cn from 'classnames';
 import {FieldInputProps, FormikState} from 'formik';
 
-import {useRoketoContext} from 'app/roketo-context';
-
+import {$tokens} from 'services/wallet';
 import {FormField} from '@ui/components/FormField';
 import {Input} from '@ui/components/Input';
 
@@ -64,7 +64,7 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
     tokenAccountId,
   } = props;
 
-  const {tokens} = useRoketoContext();
+  const tokens = useStore($tokens);
   const token = tokens[tokenAccountId];
   const {formatter} = token;
 

@@ -1,30 +1,34 @@
-import React, { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import classNames from 'classnames';
+import {useStore, useStoreMap} from 'effector-react';
 import Modal from 'react-modal';
+
+import { STREAM_STATUS } from 'shared/api/roketo/constants';
+import { testIds } from 'shared/constants';
+import {$accountId} from 'services/wallet';
 
 import { DropdownOpener } from 'shared/kit/DropdownOpener';
 import { DropdownMenu, DropdownMenuDivider, DropdownMenuItem } from 'shared/kit/DropdownMenu';
 import { useBool, BooleanControl } from 'shared/hooks/useBool';
-import { useRoketoContext } from 'app/roketo-context';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { isActiveStream, isWithCliff, isDead, isLocked, isPausedStream } from 'shared/api/roketo/helpers';
 
-import { STREAM_STATUS } from 'shared/api/roketo/constants';
-import { testIds } from 'shared/constants';
-
 import { StreamStatus } from '../StreamStatus';
+import {$loading, startStream, pauseStream, stopStream} from './model';
 
-import styles from './styles.module.scss';
 import { StartIcon } from './StartIcon';
 import { PauseIcon } from './PauseIcon';
 import { StopIcon } from './StopIcon';
+import styles from './styles.module.scss';
 
-type ConfirmModalProps = {
+function ConfirmModal({modalControl, onConfirm, header, buttonText, className, children}: {
   modalControl: BooleanControl;
   onConfirm: () => void;
-};
-
-function PauseConfirmModal({ modalControl, onConfirm }: ConfirmModalProps) {
+  header: ReactNode;
+  buttonText: ReactNode
+  children: ReactNode;
+  className: string
+}) {
   return (
     <Modal
       isOpen={modalControl.on}
@@ -32,10 +36,9 @@ function PauseConfirmModal({ modalControl, onConfirm }: ConfirmModalProps) {
       className={styles.modalContent}
       overlayClassName={styles.modalOverlay}
     >
-      <h2 className={styles.modalHeader}>Are you sure?</h2>
+      <h2 className={styles.modalHeader}>{header}</h2>
       <p>
-        As a stream receiver, you will not be able to resume stream. Only stream
-        owners can resume streams.
+        {children}
       </p>
       <div className={styles.modalButtons}>
         <button
@@ -51,85 +54,35 @@ function PauseConfirmModal({ modalControl, onConfirm }: ConfirmModalProps) {
             modalControl.turnOff();
             onConfirm();
           }}
-          className={classNames(styles.modalButton, styles.modalWarning)}
+          className={classNames(styles.modalButton, className)}
         >
-          Pause
+          {buttonText}
         </button>
       </div>
     </Modal>
   );
 }
 
-function StopConfirmModal({ modalControl, onConfirm }: ConfirmModalProps) {
-  return (
-    <Modal
-      isOpen={modalControl.on}
-      onRequestClose={modalControl.turnOff}
-      className={styles.modalContent}
-      overlayClassName={styles.modalOverlay}
-    >
-      <h2 className={styles.modalHeader}>Stop stream</h2>
-      <p>
-        This action will completely shut down the stream. After that, it can't be turned on.
-      </p>
-      <div className={styles.modalButtons}>
-        <button
-          type="button"
-          onClick={modalControl.turnOff}
-          className={classNames(styles.modalButton, styles.modalSecondary)}
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            modalControl.turnOff();
-            onConfirm();
-          }}
-          className={classNames(styles.modalButton, styles.modalDanger)}
-        >
-          Stop
-        </button>
-      </div>
-    </Modal>
-  );
-}
-
-type StreamControlsProps = {
+export function StreamControls({ stream, className }: {
   stream: RoketoStream;
   className?: string;
-};
-
-export function StreamControls({ stream, className }: StreamControlsProps) {
-  const { auth, roketo } = useRoketoContext();
+}) {
   const pauseModalControl = useBool(false);
   const stopModalControl = useBool(false);
-  const [loading, setLoading] = useState(false);
+  const loading = useStore($loading)
   const [menuOpened, setMenuOpened] = useState(false);
+  const {isOutgoing, isIncoming, isExternal} = useStoreMap({
+    store: $accountId,
+    keys: [stream],
+    fn(accountId) {
+      const outgoing = accountId === stream.owner_id;
+      const incoming = accountId === stream.receiver_id;
+      const external = !outgoing && !incoming;
+      return {isOutgoing: outgoing, isIncoming: incoming, isExternal: external}
+    }
+  })
 
-  const isOutgoing = auth.accountId === stream.owner_id;
-  const isIncoming = auth.accountId === stream.receiver_id;
-  const isExternalStream = !isOutgoing && !isIncoming;
-
-  const handlePause = async () => {
-    setLoading(true);
-    await roketo.api.pauseStream({ streamId: stream.id });
-    setLoading(false);
-  }
-
-  const handleStart = async () => {
-    setLoading(true);
-    await roketo.api.startStream({ streamId: stream.id });
-    setLoading(false);
-  }
-
-  const handleStop = async () => {
-    setLoading(true);
-    await roketo.api.stopStream({ streamId: stream.id });
-    setLoading(false);
-  }
-
-  if (isDead(stream) || isExternalStream) {
+  if (isDead(stream) || isExternal) {
     return (
       <StreamStatus
         className={className}
@@ -143,7 +96,7 @@ export function StreamControls({ stream, className }: StreamControlsProps) {
     if (isIncoming) {
       pauseModalControl.turnOn();
     } else {
-      handlePause();
+      pauseStream(stream.id);
     }
   }
 
@@ -180,16 +133,25 @@ export function StreamControls({ stream, className }: StreamControlsProps) {
 
   return (
     <div className={classNames(styles.relative, className)}>
-      <PauseConfirmModal
+      <ConfirmModal
         modalControl={pauseModalControl}
-        onConfirm={handlePause}
-      />
-
-      <StopConfirmModal
+        onConfirm={() => pauseStream(stream.id)}
+        header="Are you sure?"
+        buttonText="Pause"
+        className={styles.modalWarning}
+      >
+        As a stream receiver, you will not be able to resume stream. Only stream
+        owners can resume streams.
+      </ConfirmModal>
+      <ConfirmModal
         modalControl={stopModalControl}
-        onConfirm={handleStop}
-      />
-
+        onConfirm={() => stopStream(stream.id)}
+        header="Stop stream"
+        buttonText="Stop"
+        className={styles.modalDanger}
+      >
+        This action will completely shut down the stream. After that, it can't be turned on.
+      </ConfirmModal>
       <DropdownOpener
         opened={opened}
         onChange={setMenuOpened}
@@ -208,7 +170,7 @@ export function StreamControls({ stream, className }: StreamControlsProps) {
           <DropdownMenuItem>
             <button
               type="button"
-              onClick={handleStart}
+              onClick={() => startStream(stream.id)}
               className={classNames(styles.controlButton, styles.start)}
               data-testid={testIds.streamStartButton}
             >

@@ -1,4 +1,5 @@
-import { useRoketoContext } from 'app/roketo-context';
+import {useStore} from 'effector-react';
+import {$nearWallet, $priceOracle} from 'services/wallet';
 import { isWNearTokenId } from 'shared/helpers/isWNearTokenId';
 import { useToken } from 'shared/hooks/useToken';
 
@@ -16,18 +17,19 @@ type BalanceProps = {
 }
 
 export function Balance({ tokenAccountId, className, mode = DisplayMode.CRYPTO }: BalanceProps) {
-  const { auth, priceOracle } = useRoketoContext()
+  const priceOracle = useStore($priceOracle);
+  const nearWallet = useStore($nearWallet);
   const { balance, formatter, meta } = useToken(tokenAccountId);
 
   const actualCryptoBalance = isWNearTokenId(tokenAccountId)
-    ? auth.balance?.available || '0'
+    ? nearWallet?.auth.balance?.available ?? '0'
     : balance;
   const displayedCryptoAmount = formatter.amount(actualCryptoBalance);
 
   const showInUSD = mode === DisplayMode.USD;
 
   const amount = showInUSD
-    ? priceOracle.getPriceInUsd(tokenAccountId, displayedCryptoAmount)
+    ? priceOracle.getPriceInUsd(tokenAccountId, displayedCryptoAmount) ?? 0
     : displayedCryptoAmount;
   const currencySymbol = showInUSD ? '$' : meta.symbol;
 
