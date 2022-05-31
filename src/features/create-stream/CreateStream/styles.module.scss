@@ -44,6 +44,16 @@
   }
 }
 
+.checkboxes {
+  justify-content: flex-start;
+  gap: 50px;
+}
+
+@media (max-width: 767px) {
+  .checkboxes {
+    flex-direction: column;
+  }
+}
 .submitError {
   display: flex;
 
@@ -104,4 +114,11 @@
 /* Extra small - xs */
 @media (max-width: 767px) {
 
+}
+
+.subDescription {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: $bluish-grey;
 }

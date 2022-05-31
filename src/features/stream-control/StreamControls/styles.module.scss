@@ -104,6 +104,12 @@
   line-height: 15px;
 }
 
+.notAllowed {
+  background-color: $tertiary;
+  color: $light-black;
+  cursor: not-allowed;
+}
+
 .start, .active {
   background-color: #EEFFF4;
   color: #1EBA52;

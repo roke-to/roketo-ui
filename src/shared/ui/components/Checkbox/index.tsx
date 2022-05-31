@@ -4,7 +4,7 @@ import cn from 'classnames';
 import styles from './styles.module.scss';
 
 interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
-  description?: string,
+  description?: React.ReactNode,
   hasError?: boolean,
   className?: string,
 }
@@ -22,7 +22,7 @@ export const Checkbox: FC<CheckboxProps> = ({
       {...rest}
     />
     {description &&
-      <span className={styles.description}>{description}</span>
+      <div className={styles.description}>{description}</div>
     }
   </label>
 );

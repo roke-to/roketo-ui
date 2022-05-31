@@ -45,11 +45,12 @@ export const StreamsPage = () => {
   const handleCreateStream = async (values: FormValues) => {
     const {
       receiver,
-      autoStart,
+      delayed,
       comment,
       deposit,
       speed,
       token,
+      isLocked,
     } = values;
 
     const {formatter, api, roketoMeta} = tokens[token];
@@ -61,9 +62,10 @@ export const StreamsPage = () => {
       tokenAccountId: token,
       commissionOnCreate: roketoMeta.commission_on_create,
       tokensPerSec: speed,
-      isAutoStart: autoStart,
+      delayed,
       callbackUrl: returnPath,
       handleTransferStream: api.transfer,
+      isLocked,
     });
   };
 

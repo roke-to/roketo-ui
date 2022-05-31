@@ -1,13 +1,25 @@
 import React from 'react';
 
+import { Badge } from 'shared/components/Badge';
+
 import styles from './styles.module.scss';
 
-export const Name = ({name, label}: {name: string, label?: string | undefined}) => (
+type NameProps = {
+  name: string;
+  isOutgoing: boolean;
+  isLocked: boolean;
+};
+
+export const Name = ({ name, isOutgoing, isLocked }: NameProps) => (
   <div className={styles.flexCenter}>
     <span className={styles.name}>{name}</span>
 
-    {label &&
-      <span className={styles.nameLabel}>{label}</span>
+    {isOutgoing &&
+      <Badge>Sending</Badge>
+    }
+
+    {isLocked &&
+      <Badge isOrange>Locked</Badge>
     }
   </div>
 );

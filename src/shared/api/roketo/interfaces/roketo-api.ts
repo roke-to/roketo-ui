@@ -15,7 +15,7 @@ export type CreateStreamApiProps = {
   tokensPerSec: number;
   name?: string;
   cliffPeriodSec?: string;
-  isAutoStart?: boolean;
+  delayed?: boolean;
   isExpirable?: boolean,
   isLocked?: boolean,
   callbackUrl?: string;

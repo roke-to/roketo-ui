@@ -43,17 +43,36 @@ const StreamCreationError = ({error}: {error: string}) => (
 export type FormValues = {
   receiver: string;
   streamName: string;
-  autoStart: boolean;
+  delayed: boolean;
   comment: string;
   deposit: number;
   speed: number;
   token: string;
+  isLocked: boolean;
 }
 
 type CreateStreamProps = {
   onFormSubmit: (values: FormValues) => Promise<void>;
   onFormCancel: () => void;
 }
+
+const DELAYED_DESCRIPTION = (
+  <div>
+    Delayed start
+    <div className={styles.subDescription}>
+      Select this if you want the stream not to start immediately,<br />you'll need to start it manually from stream page
+    </div>
+  </div>
+);
+
+const LOCK_DESCRIPTION = (
+  <div>
+    Uneditable stream
+    <div className={styles.subDescription}>
+      If you select this field, you will not be able<br />to carry out any actions on the stream
+    </div>
+  </div>
+);
 
 export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) => {
   const {near, auth} = useRoketoContext();
@@ -158,14 +177,21 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                 />
               </Row>
 
-              <Row>
+              <Row className={styles.checkboxes}>
                 <Field
-                  name="autoStart"
-                  description="Start stream immediately"
+                  name="delayed"
+                  description={DELAYED_DESCRIPTION}
                   type="checkbox"
                   component={FormikCheckbox}
-                  className={styles.rowItem}
-                  data-testid={testIds.createStreamAutostartCheckbox}
+                  data-testid={testIds.createStreamDelayedCheckbox}
+                />
+
+                <Field
+                  name="isLocked"
+                  description={LOCK_DESCRIPTION}
+                  type="checkbox"
+                  component={FormikCheckbox}
+                  data-testid={testIds.createStreamLockedCheckbox}
                 />
               </Row>
 

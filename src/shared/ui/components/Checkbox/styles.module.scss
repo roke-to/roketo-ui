@@ -2,7 +2,7 @@
 
 .root {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 
   & > :not(:last-child) {
     margin-right: 12px;

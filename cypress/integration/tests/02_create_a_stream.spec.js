@@ -10,7 +10,7 @@ context('Stream creation', () => {
     cy.task('getAccount', { reuse: true }).then((testAccount) => account = testAccount);
   });
 
-  it('Create a stream without Autostart', () => {
+  it('Create a delayed stream', () => {
     cy.viewport(1536, 960);
     login(account.seedPhrase);
     const stream = new CreateStream();
@@ -19,7 +19,7 @@ context('Stream creation', () => {
     stream.inputDeposit('1');
     stream.inputPeriod('1000', '10', '10', '10');
     //stream.inputComments('comment-comment');
-    stream.uncheckAutostart();
+    stream.setDelayed();
     stream.submit();
     const transaction = new Transaction();
     transaction.approve();
@@ -27,7 +27,7 @@ context('Stream creation', () => {
     mystreams.checkNewStreamStatus('Initialized');
   });
 
-  it('Create a stream with Autostart', () => {
+  it('Create a non-delayed stream', () => {
     cy.viewport(1536, 960);
     login(account.seedPhrase);
     const stream = new CreateStream();

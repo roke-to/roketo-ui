@@ -53,8 +53,8 @@ class CreateStream {
       .type(value);
   }
 
-  uncheckAutostart() {
-    cy.get(testSelectors.createStreamAutostartCheckbox).click();
+  setDelayed() {
+    cy.get(testSelectors.createStreamDelayedCheckbox).click();
   }
 
   submit() {

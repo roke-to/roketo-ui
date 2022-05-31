@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuDivider, DropdownMenuItem } from 'shared/kit/
 import { useBool, BooleanControl } from 'shared/hooks/useBool';
 import { useRoketoContext } from 'app/roketo-context';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
-import {isActiveStream, isDead, isPausedStream} from 'shared/api/roketo/helpers';
+import { isActiveStream, isDead, isLocked, isPausedStream } from 'shared/api/roketo/helpers';
 
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
 import { testIds } from 'shared/constants';
@@ -162,6 +162,21 @@ export function StreamControls({ stream, className }: StreamControlsProps) {
     [styles.pause]: isPausedStream(stream),
     [styles.stop]: isDead(stream),
   };
+
+  if (isLocked(stream)) {
+    return (
+      <div className={classNames(styles.relative, className)}>
+        <button
+          type="button"
+          className={classNames(styles.dropdownOpener, styles.notAllowed)}
+        >
+          <StreamStatus
+            stream={stream}
+          />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className={classNames(styles.relative, className)}>
