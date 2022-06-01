@@ -30,7 +30,7 @@ function StreamProgress({ stream }: { stream: RoketoStream }) {
   const { tokens } = useRoketoContext();
 
   const { meta, formatter } = tokens[stream.token_account_id];
-  const { progress: { streamed, withdrawn, full } } = streamViewData(stream);
+  const { progress: { streamed, withdrawn, full }, percentages } = streamViewData(stream);
 
   return (
     <div>
@@ -45,6 +45,8 @@ function StreamProgress({ stream }: { stream: RoketoStream }) {
         total={full}
         streamed={streamed}
         withdrawn={withdrawn}
+        cliffPercent={percentages.cliff}
+        withBigCliffMark
       />
     </div>
   );
@@ -146,6 +148,7 @@ function StreamData({stream}: {stream: RoketoStream}) {
   const {tokens} = useRoketoContext();
   const {
     streamEndTimestamp,
+    cliffEndTimestamp,
     timeLeft,
     progress: {streamed, left, full},
   } = streamViewData(stream);
@@ -185,6 +188,13 @@ function StreamData({stream}: {stream: RoketoStream}) {
           )}
         </span>
       </InfoRow>
+      {cliffEndTimestamp && (
+        <InfoRow title={isPast(cliffEndTimestamp) ? 'Cliff Period Ended' : 'Cliff Period Ends'}>
+          <span className={styles.font14}>
+            {format(cliffEndTimestamp, "PP 'at' p")}
+          </span>
+        </InfoRow>
+      )}
       {streamEndTimestamp && (
         <InfoRow title={isPast(streamEndTimestamp) ? 'Stream Ended' : 'Stream Ends'}>
           <span className={styles.font14}>

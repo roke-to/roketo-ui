@@ -28,7 +28,7 @@ type StreamStatusProps = {
 export const StreamProgress = ({stream, className}: StreamStatusProps) => {
   const {token_account_id: tokenId, tokens_per_sec: tokensPerSec} = stream;
 
-  const {progress, timeLeft} = streamViewData(stream);
+  const {progress, timeLeft, percentages} = streamViewData(stream);
 
   const {formatter, meta: {symbol}} = useToken(tokenId);
 
@@ -64,6 +64,7 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
             total={progress.full}
             streamed={progress.streamed}
             withdrawn={progress.withdrawn}
+            cliffPercent={percentages.cliff}
           />
 
           <div className={cn(styles.status, styles.speed)}>
@@ -105,6 +106,7 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
           total={progress.full}
           streamed={progress.streamed}
           withdrawn={progress.withdrawn}
+          cliffPercent={percentages.cliff}
         />
       </div>
     </RCTooltip>

@@ -121,6 +121,7 @@ export function WithdrawAllButton() {
         onClick={handleWithdraw}
         testId={testIds.withdrawAllButton}
         displayMode={availableToWithdraw ? DisplayMode.action : DisplayMode.secondary}
+        className={availableToWithdraw ? undefined : styles.notAllowed}
       >
         Withdraw tokens
       </Button>
