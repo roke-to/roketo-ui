@@ -19,7 +19,7 @@
   border-radius: 12px;
 
   height: 100%;
-  width: 0%;
+  width: 0;
 
   transition: width 2s;
 
@@ -29,4 +29,28 @@
 
 .withdrawn {
   background-color: $orange;
+}
+
+.cliffMarkContainer {
+  position: absolute;
+  top: calc(50% + 1px);
+  transform: translate(-50%, -50%);
+  padding: 10px;
+  height: calc(100% + 20px);
+}
+
+.cliffMark {
+  background-color: $light-black;
+  cursor: help;
+
+  height: calc(100% - 2px);
+  width: 2px;
+
+  &Big {
+    width: 4px;
+  }
+
+  &Passed {
+    background-color: $tertiary;
+  }
 }

@@ -26,7 +26,7 @@ type Props = {
   children?: React.ReactNode;
   onClick?: (event: any) => void;
   testId?: string;
-}
+} & Omit<React.ComponentProps<'button'>, 'type'>
 
 export const Button = ({
   type = ButtonType.button,
