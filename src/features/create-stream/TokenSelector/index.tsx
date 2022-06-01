@@ -110,6 +110,7 @@ export const TokenSelector = (props: TokenSelectorProps) => {
         >
           {allAvailableTokens.map(token => (
             <TokenOption
+              key={token.meta.name}
               token={token}
               onClick={() => handleChooseTokenOptions(token)}
               className={styles.withHover}
