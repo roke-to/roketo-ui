@@ -81,7 +81,7 @@ export function useSingleStream(streamId: string) {
   return swr;
 }
 
-function calculateEndInfo(stream: RoketoStream, balance: BigNumber) {
+function calculateEndTimestamp(stream: RoketoStream) {
   /**
    * if stream is not started yet or paused right now
    * then there is no way to calculate stream end time
@@ -91,7 +91,7 @@ function calculateEndInfo(stream: RoketoStream, balance: BigNumber) {
   const tokensPerMs = new BigNumber(stream.tokens_per_sec).dividedBy(1000)
   const lastActionTime = stream.last_action / 1000000
 
-  const timeToCompleteEntireStream = balance.dividedBy(tokensPerMs).toNumber()
+  const timeToCompleteEntireStream = new BigNumber(stream.balance).dividedBy(tokensPerMs).toNumber()
   /**
    * if this stream is active but 100% complete then it will be a time in the past
    * as well as in the case of "Finished" stream
@@ -147,7 +147,7 @@ export function streamViewData(stream: RoketoStream, withExtrapolation: boolean 
     isDead: isDead(stream),
     percentages,
     timeLeft,
-    streamEndInfo: calculateEndInfo(stream, balance),
+    streamEndTimestamp: calculateEndTimestamp(stream),
     progress: {
       full: full.toFixed(),
       withdrawn: withdrawn.toFixed(),

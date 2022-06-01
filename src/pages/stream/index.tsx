@@ -145,7 +145,7 @@ function StreamData({stream}: {stream: RoketoStream}) {
   const direction = useGetStreamDirection(stream);
   const {tokens} = useRoketoContext();
   const {
-    streamEndInfo,
+    streamEndTimestamp,
     timeLeft,
     progress: {streamed, left, full},
   } = streamViewData(stream);
@@ -185,10 +185,10 @@ function StreamData({stream}: {stream: RoketoStream}) {
           )}
         </span>
       </InfoRow>
-      {streamEndInfo !== null && (
-        <InfoRow title={isPast(streamEndInfo) ? 'Stream Ended' : 'Stream Ends'}>
+      {streamEndTimestamp && (
+        <InfoRow title={isPast(streamEndTimestamp) ? 'Stream Ended' : 'Stream Ends'}>
           <span className={styles.font14}>
-            {format(new Date(streamEndInfo), "PP 'at' p")}
+            {format(streamEndTimestamp, "PP 'at' p")}
           </span>
         </InfoRow>
       )}
