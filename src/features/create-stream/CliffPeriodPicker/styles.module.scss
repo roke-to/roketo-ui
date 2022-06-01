@@ -1,0 +1,23 @@
+@import 'src/shared/ui/palette';
+
+.error {
+  border-color: $danger;
+}
+
+.maxWidth {
+  width: 100%;
+}
+
+:global(.react-datetime-picker__wrapper) {
+  height: 50px;
+
+  border: 1px solid $grey;
+  padding: 0 12px;
+  border-radius: 8px;
+  background-color: $white;
+
+  color: $light-black;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+}

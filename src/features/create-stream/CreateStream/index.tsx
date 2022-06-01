@@ -17,6 +17,7 @@ import { testIds } from 'shared/constants';
 import {env} from 'shared/config';
 import {StreamSpeedCalcField} from '../StreamSpeedCalcField';
 import {TokenSelector} from '../TokenSelector';
+import { CliffPeriodPicker } from '../CliffPeriodPicker';
 
 import {FeeDisclaimer} from '../FeeDisclaimer'
 
@@ -49,6 +50,7 @@ export type FormValues = {
   speed: number;
   token: string;
   isLocked: boolean;
+  cliffDateTime: Date | null;
 }
 
 type CreateStreamProps = {
@@ -60,7 +62,9 @@ const DELAYED_DESCRIPTION = (
   <div>
     Delayed start
     <div className={styles.subDescription}>
-      Select this if you want the stream not to start immediately,<br />you'll need to start it manually from stream page
+      Select this if you want the stream not to start immediately,<br />
+      you'll need to start it manually from stream page<br />
+      (streams with cliff cannot be delayed)
     </div>
   </div>
 );
@@ -105,6 +109,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
           handleSubmit,
           setFieldValue,
           setFieldTouched,
+          validateField,
         }) => {
           const activeTokenAccountId = values.token;
 
@@ -121,6 +126,20 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   className={styles.rowItem}
                   data-testid={testIds.createStreamReceiverInput}
                 />
+
+                <Field
+                  isRequired
+                  name="token"
+                  label="Token"
+                  activeTokenAccountId={values.token}
+                  onTokenChoose={async (tokenAccountId: string) => {
+                    await setFieldValue('token', tokenAccountId, false);
+                    await setFieldTouched('token', true, false);
+                    validateField('token');
+                  }}
+                  component={TokenSelector}
+                  className={styles.rowItem}
+                />
               </Row>
 
               <Row className={styles.amount}>
@@ -136,15 +155,14 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                 />
 
                 <Field
-                  isRequired
-                  name="token"
-                  label="Token"
-                  activeTokenAccountId={values.token}
-                  onTokenChoose={(tokenAccountId: string) => {
-                    setFieldValue('token', tokenAccountId, false);
-                    setFieldTouched('token', true, false);
+                  name="cliffDateTime"
+                  label="Cliff period"
+                  component={CliffPeriodPicker}
+                  onCliffDateTimeChange={async (cliffDateTime: Date | null) => {
+                    await setFieldValue('cliffDateTime', cliffDateTime, false);
+                    await setFieldTouched('cliffDateTime', true, false);
+                    validateField('cliffDateTime');
                   }}
-                  component={TokenSelector}
                   className={styles.rowItem}
                 />
               </Row>
@@ -157,9 +175,10 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   label="Stream duration:"
                   deposit={values.deposit}
                   component={StreamSpeedCalcField}
-                  onSpeedChange={(speed: number) => {
-                    setFieldValue('speed', speed, false);
-                    setFieldTouched('speed', true, false);
+                  onSpeedChange={async (speed: number) => {
+                    await setFieldValue('speed', speed, false);
+                    await setFieldTouched('speed', true, false);
+                    validateField('speed');
                   }}
                   className={styles.rowItem}
                 />
@@ -180,6 +199,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
               <Row className={styles.checkboxes}>
                 <Field
                   name="delayed"
+                  disabled={Boolean(values.cliffDateTime)}
                   description={DELAYED_DESCRIPTION}
                   type="checkbox"
                   component={FormikCheckbox}

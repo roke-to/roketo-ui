@@ -42,7 +42,7 @@ export const Controls = ({className, stream}: Props) => {
   return (
     <div className={cn(styles.root, className)}>
       {showWithdraw &&
-        <WithdrawButton stream={stream} />
+        <WithdrawButton stream={stream} small />
       }
 
       <StreamControls stream={stream} />

@@ -219,6 +219,13 @@
   font-weight: 600;
 }
 
+.name {
+  max-width: 280px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  user-select: all;
+}
+
 .font14 {
   text-align: right;
   font-size: 14px;

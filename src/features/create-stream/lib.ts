@@ -41,6 +41,9 @@ export const getFormValidationSchema = (near: Near, accountId: string) => Yup.ob
   autoStart: Yup.boolean(),
   isLocked: Yup.boolean(),
   comment: Yup.string().max(COMMENT_TEXT_LIMIT),
+  cliffDateTime: Yup.date()
+    .nullable()
+    .test('futureDate', 'Date cannot be in the past', (value) => !value || value > new Date()),
 });
 
 export const getDurationInSeconds = (months: number, days: number, hours: number, minutes: number) => {
