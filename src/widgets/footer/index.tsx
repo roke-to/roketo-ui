@@ -1,5 +1,6 @@
 import React from 'react';
 
+import {env} from 'shared/config';
 import {Layout} from '@ui/components/Layout';
 import {DisplayType, Logo} from '@ui/icons/Logo';
 import {TelegramLogo} from '@ui/icons/Telegram';
@@ -102,6 +103,8 @@ export const Footer = () => (
         Registered address: Intershore Chambers, Road Town, Tortola, British Virgin Islands
         <br/>
         Registration number: 2089289
+        <br/>
+        Build info: {env.COMMIT_HASH} {env.BUILD_TIME}
       </section>
     </Layout>
   </footer>
