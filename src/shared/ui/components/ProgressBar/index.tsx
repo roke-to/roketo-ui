@@ -6,9 +6,9 @@ import {getRoundedPercentageRatio} from 'shared/helpers/math';
 import styles from './styles.module.scss';
 
 type Props = {
-  total: number,
-  streamed: number,
-  withdrawn: number,
+  total: string,
+  streamed: string,
+  withdrawn: string,
 
   className?: string,
 };

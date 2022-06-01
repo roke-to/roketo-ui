@@ -39,8 +39,8 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
   const streamedText = TokenFormatter.formatSmartly(streamed);
   const withdrawnText = TokenFormatter.formatSmartly(withdrawn);
 
-  const streamedPercentage = getRoundedPercentageRatio(streamed, total, 1);
-  const withdrawnPercentage = getRoundedPercentageRatio(withdrawn, streamed, 1);
+  const streamedPercentage = getRoundedPercentageRatio(progress.streamed, progress.full, 1);
+  const withdrawnPercentage = getRoundedPercentageRatio(progress.withdrawn, progress.streamed, 1);
 
   const progressText = `${streamedText} of ${total}`;
 
@@ -61,9 +61,9 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
           </div>
 
           <ProgressBar
-            total={total}
-            streamed={streamed}
-            withdrawn={withdrawn}
+            total={progress.full}
+            streamed={progress.streamed}
+            withdrawn={progress.withdrawn}
           />
 
           <div className={cn(styles.status, styles.speed)}>
@@ -102,9 +102,9 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
         </div>
 
         <ProgressBar
-          total={total}
-          streamed={streamed}
-          withdrawn={withdrawn}
+          total={progress.full}
+          streamed={progress.streamed}
+          withdrawn={progress.withdrawn}
         />
       </div>
     </RCTooltip>
