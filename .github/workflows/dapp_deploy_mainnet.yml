@@ -7,7 +7,7 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
-      - name: Get Time
+      - name: Get Time 🕒
         id: time
         uses: nanzm/get-time-action@v1.1
         with:
