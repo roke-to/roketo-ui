@@ -65,9 +65,9 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
           </div>
 
           <ProgressBar
-            total={total}
-            streamed={streamed}
-            withdrawn={withdrawn}
+            total={progress.full}
+            streamed={progress.streamed}
+            withdrawn={progress.withdrawn}
           />
 
           <div className={cn(styles.status, styles.speed)}>
@@ -106,9 +106,9 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
         </div>
 
         <ProgressBar
-          total={total}
-          streamed={streamed}
-          withdrawn={withdrawn}
+          total={progress.full}
+          streamed={progress.streamed}
+          withdrawn={progress.withdrawn}
         />
       </div>
     </RCTooltip>

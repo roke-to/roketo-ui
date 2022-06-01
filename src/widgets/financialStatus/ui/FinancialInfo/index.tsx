@@ -13,7 +13,7 @@ type FinancialInfoProps = {
   testId?: string;
 };
 
-export const FinancialInfo = ({title, total, streamed , withdrawn, withProgressBar = true, testId}: FinancialInfoProps) => {
+export const FinancialInfo = ({title, total, streamed = 0, withdrawn = 0, withProgressBar = true, testId}: FinancialInfoProps) => {
   const financialContent = streamed ? `$ ${streamed} of ${total}` : `$ ${total}`;
 
   return (
@@ -23,7 +23,7 @@ export const FinancialInfo = ({title, total, streamed , withdrawn, withProgressB
       <span className={styles.finance} data-testid={testId}>{financialContent}</span>
 
       {withProgressBar &&
-        <ProgressBar total={total} streamed={streamed || 0} withdrawn={withdrawn || 0} />
+        <ProgressBar total={String(total)} streamed={String(streamed)} withdrawn={String(withdrawn)} />
       }
     </div>
   );

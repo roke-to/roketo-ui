@@ -42,9 +42,9 @@ function StreamProgress({ stream }: { stream: LegacyRoketoStream }) {
         <span>{`${meta.symbol} ${formatter.amount(streamed)} of ${formatter.amount(full)}`}</span>
       </div>
       <ProgressBar
-        total={Number(full)}
-        streamed={Number(streamed)}
-        withdrawn={Number(withdrawn)}
+        total={full}
+        streamed={streamed}
+        withdrawn={withdrawn}
       />
     </div>
   );
