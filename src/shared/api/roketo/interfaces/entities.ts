@@ -14,7 +14,7 @@ type StreamStatus =
 
 export type RoketoStream = {
   balance: StringInt; // Tokens that are not withdrawn, tho they can be already streamed
-  cliff?: StringInt;
+  cliff?: number;
   creator_id: AccountId;
   description: string; // Custom data sent along with the stream
   id: StreamId; // Stream unique id
@@ -103,7 +103,7 @@ export type RoketoCreateRequest = {
     receiver_id: string;
     balance: string;
     tokens_per_sec: BigInt;
-    cliff_period_sec?: string;
+    cliff_period_sec?: number;
     is_auto_start_enabled?: boolean;
     is_expirable?: boolean;
     is_locked?: boolean;
