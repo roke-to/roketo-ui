@@ -133,8 +133,21 @@ export function useNotifications(): SWRResponse<client.Notification[]> {
 
   const swr = useSWR(
     auth.accountId ? 'notifications' : null,
-    () => notificationsApiClient.findAll(),
-    { onErrorRetry },
+    async () => {
+      const allNotifications = await notificationsApiClient.findAll();
+
+      const KNOWN_NOTIFICATION_TYPES = new Set([
+        'StreamStarted',
+        'StreamPaused',
+        'StreamFinished',
+        'StreamIsDue',
+        'StreamContinued',
+        'StreamCliffPassed',
+      ]);
+
+      return allNotifications.filter((notification) => KNOWN_NOTIFICATION_TYPES.has(notification.type));
+    },
+  { onErrorRetry }
   );
 
   useEffect(() => {
