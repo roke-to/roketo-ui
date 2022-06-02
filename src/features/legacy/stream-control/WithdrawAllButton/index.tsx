@@ -11,7 +11,7 @@ import { useRoketoContext } from '../../roketo-context';
 import { useAccount, useLegacyStreams } from '../../roketo-resource';
 
 import { useStreamControl } from './useStreamControl';
-import { useToken } from '../../hooks/useToken';
+import { useTokenFormatter } from '../../hooks/useTokenFormatter';
 
 type TokenBalanceProps = {
   ticker: string;
@@ -20,7 +20,7 @@ type TokenBalanceProps = {
 };
 
 function TokenBalance({ ticker, balance, className }: TokenBalanceProps) {
-  const {formatter} = useToken(ticker);
+  const formatter = useTokenFormatter(ticker);
   const balanceInt = formatter.amount(balance);
   return (
     <div
