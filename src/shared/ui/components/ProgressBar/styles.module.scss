@@ -29,6 +29,7 @@
 
 .withdrawn {
   background-color: $orange;
+  cursor: help;
 }
 
 .cliffMarkContainer {
@@ -41,7 +42,6 @@
 
 .cliffMark {
   background-color: $light-black;
-  cursor: help;
 
   height: calc(100% - 2px);
   width: 2px;

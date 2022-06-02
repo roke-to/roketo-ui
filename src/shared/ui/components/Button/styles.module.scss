@@ -40,7 +40,6 @@
 }
 
 .secondary {
-  @extend .primary;
   background-color: $tertiary;
   color: $light-black;
 }

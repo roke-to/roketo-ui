@@ -51,6 +51,7 @@ export const StreamsPage = () => {
       speed,
       token,
       isLocked,
+      cliffDateTime,
     } = values;
 
     const {formatter, api, roketoMeta} = tokens[token];
@@ -62,10 +63,11 @@ export const StreamsPage = () => {
       tokenAccountId: token,
       commissionOnCreate: roketoMeta.commission_on_create,
       tokensPerSec: speed,
-      delayed,
+      delayed: cliffDateTime ? false : delayed,
       callbackUrl: returnPath,
       handleTransferStream: api.transfer,
       isLocked,
+      cliffPeriodSec: cliffDateTime ? Math.floor((cliffDateTime.getTime() - Date.now()) / 1000) : undefined,
     });
   };
 

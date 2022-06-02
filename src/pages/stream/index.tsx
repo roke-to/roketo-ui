@@ -165,12 +165,12 @@ function StreamData({stream}: {stream: RoketoStream}) {
     <div className={classNames(styles.tile, styles.infoTile)}>
       <div className={styles.blockHeader}>Stream info</div>
       <InfoRow title="Sender">
-        <span className={styles.font16}>
+        <span className={classNames(styles.font16, styles.name)}>
           {direction === STREAM_DIRECTION.OUT ? 'You' : stream.owner_id}
         </span>
       </InfoRow>
       <InfoRow title="Receiver">
-        <span className={styles.font16}>
+        <span className={classNames(styles.font16, styles.name)}>
           {direction === STREAM_DIRECTION.IN ? 'You' : stream.receiver_id}
         </span>
       </InfoRow>

@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { Button, ButtonType, DisplayMode } from '@ui/components/Button';
 import { useRoketoContext } from 'app/roketo-context';
@@ -12,9 +13,10 @@ import styles from './styles.module.scss';
 
 type WithdrawButtonProps = {
   stream: RoketoStream;
+  small?: boolean;
 } & Omit<React.ComponentProps<'button'>, 'type'>;
 
-export function WithdrawButton({ stream, ...rest }: WithdrawButtonProps) {
+export function WithdrawButton({ stream, small = false, ...rest }: WithdrawButtonProps) {
   const { tokens, roketo } = useRoketoContext();
   const available = getAvailableToWithdraw(stream);
   const { percentages: { cliff, streamed } } = streamViewData(stream);
@@ -35,8 +37,8 @@ export function WithdrawButton({ stream, ...rest }: WithdrawButtonProps) {
       disabled={Number(amount) === 0}
       type={ButtonType.button}
       displayMode={hasPassedCliff ? DisplayMode.primary : DisplayMode.secondary}
-      className={hasPassedCliff ? undefined : styles.notAllowed}
-      onClick={handleWithdraw}
+      className={classNames({ [styles.notAllowed]: !hasPassedCliff, [styles.small]: small })}
+      onClick={hasPassedCliff ? handleWithdraw : undefined}
       testId={testIds.withdrawButton}
       {...rest}
     >

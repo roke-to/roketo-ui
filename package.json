@@ -43,6 +43,7 @@
     "prettier": "2.3.2",
     "rc-tooltip": "^5.1.1",
     "react": "^16.13.1",
+    "react-datetime-picker": "^3.5.0",
     "react-dom": "^16.13.1",
     "react-modal": "^3.14.4",
     "react-router-dom": "^5.2.0",
@@ -64,6 +65,7 @@
     "build-styleguidist": "yarn styleguidist server"
   },
   "devDependencies": {
+    "@types/react-datetime-picker": "^3.4.1",
     "cypress": "^9.5.4",
     "near-cli": "^3.3.0",
     "near-seed-phrase": "^0.2.0"

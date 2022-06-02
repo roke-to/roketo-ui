@@ -11,4 +11,5 @@ export const INITIAL_FORM_VALUES = {
   delayed: false,
   comment: '',
   isLocked: false,
+  cliffDateTime: null,
 };
