@@ -24,8 +24,12 @@ export function isWithCliff(stream?: RoketoStream) {
   return Boolean(stream?.cliff);
 }
 
+export function hasPassedCliff(stream: RoketoStream) {
+  return !stream.cliff || Date.now() > stream.cliff / 1000_000;
+}
+
 export function getAvailableToWithdraw(stream: RoketoStream): BigNumber {
-  if (isIdling(stream)) {
+  if (isIdling(stream) || !hasPassedCliff(stream)) {
     return new BigNumber(0);
   }
 
