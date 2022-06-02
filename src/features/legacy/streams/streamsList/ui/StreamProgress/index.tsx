@@ -8,13 +8,12 @@ import {ClockIcon} from 'shared/icons/Clock';
 import {getRoundedPercentageRatio} from 'shared/helpers/math';
 
 import {TokenFormatter} from 'shared/api/ft/token-formatter';
-import {useToken} from '../../../../hooks/useToken';
 import {streamViewData} from '../../../../roketo-resource';
 import {LegacyRoketoStream} from '../../../../api/roketo/interfaces/entities';
 import { TICK_TO_S } from '../../../../api/roketo/config';
 
 import styles from './styles.module.scss';
-import { env } from '../../../../../../shared/config';
+import { useTokenFormatter } from '../../../../hooks/useTokenFormatter';
 
 const TOOLTIP_ALIGN = {
   points: ['tl', 'bc'],
@@ -33,12 +32,11 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
 
   const {progress, timeLeft} = streamViewData(stream);
 
-  const {formatter} = useToken(tokenId);
-  const symbol = stream.ticker === 'NEAR' ? env.WNEAR_ID : stream.ticker;
+  const formatter = useTokenFormatter(tokenId);
 
-  const streamed = Number(formatter.toHumanReadableValue(progress.streamed, 3));
-  const withdrawn = Number(formatter.toHumanReadableValue(progress.withdrawn, 3));
-  const total = Number(formatter.toHumanReadableValue(progress.full, 3));
+  const streamed = Number(formatter.amount(progress.streamed));
+  const withdrawn = Number(formatter.amount(progress.withdrawn));
+  const total = Number(formatter.amount(progress.full));
 
   const streamedText = TokenFormatter.formatSmartly(streamed);
   const withdrawnText = TokenFormatter.formatSmartly(withdrawn);
@@ -61,7 +59,7 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
           <div className={styles.innerStatus}>
             <span>{progressText}</span>
             {' '}
-            <span className={cn(styles.grey, styles.smaller)}>{symbol}</span>
+            <span className={cn(styles.grey, styles.smaller)}>{tokenId}</span>
           </div>
 
           <ProgressBar
@@ -72,7 +70,7 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
 
           <div className={cn(styles.status, styles.speed)}>
             {speedFormattedValue}{' '}
-            <span className={cn(styles.grey, styles.smaller)}>{symbol} / {speedUnit}</span>
+            <span className={cn(styles.grey, styles.smaller)}>{tokenId} / {speedUnit}</span>
           </div>
 
           {timeLeft && (
@@ -102,7 +100,7 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
         <div className={styles.status}>
           <span>{progressText}</span>
           {' '}
-          <span className={styles.grey}>{symbol}</span>
+          <span className={styles.grey}>{tokenId}</span>
         </div>
 
         <ProgressBar

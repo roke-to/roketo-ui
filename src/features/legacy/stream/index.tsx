@@ -9,11 +9,9 @@ import { PageError } from 'shared/components/PageError';
 import {DropdownOpener} from 'shared/kit/DropdownOpener';
 import { Layout } from '@ui/components/Layout';
 import { getStreamingSpeed } from 'features/create-stream/lib';
-import { useRoketoContext } from 'app/roketo-context';
 import { ProgressBar } from '@ui/components/ProgressBar';
 import { TokenImage } from 'shared/kit/TokenImage';
 import { getRoundedPercentageRatio } from 'shared/helpers/math';
-import { env } from 'shared/config';
 
 import { STREAM_STATUS } from '../api/roketo/constants';
 import { StreamControls } from '../stream-control/StreamControls';
@@ -24,22 +22,24 @@ import { getLegacyStreamLink, LEGACY_ROUTES_MAP } from '../routing';
 import { BreadcrumbIcon } from './BreadcrumbIcon';
 import styles from './styles.module.scss';
 import { TICK_TO_S } from '../api/roketo/config';
+import { useRoketoContext } from '../roketo-context';
 import { WithdrawAllButton } from '../stream-control/WithdrawAllButton';
+import { useTokenFormatter } from '../hooks/useTokenFormatter';
+import { RichToken } from '../../../shared/api/ft';
 
 function StreamProgress({ stream }: { stream: LegacyRoketoStream }) {
-  const { tokens } = useRoketoContext();
+  const formatter = useTokenFormatter(stream.ticker);
 
-  const { meta, formatter } = tokens[stream.ticker === 'NEAR' ? env.WNEAR_ID : stream.ticker];
   const { progress: { streamed, withdrawn, full } } = streamViewData(stream);
 
   return (
     <div>
       <div className={styles.numericProgress}>
         <TokenImage
-          tokenAccountId={stream.ticker === 'NEAR' ? env.WNEAR_ID : stream.ticker}
+          tokenAccountId={stream.ticker}
           className={styles.tokenIcon}
         />
-        <span>{`${meta.symbol} ${formatter.amount(streamed)} of ${formatter.amount(full)}`}</span>
+        <span>{`${stream.ticker} ${formatter.amount(streamed)} of ${formatter.amount(full)}`}</span>
       </div>
       <ProgressBar
         total={full}
@@ -70,13 +70,13 @@ function StreamButtons({stream}: {stream: LegacyRoketoStream}) {
 }
 
 function StreamSpeed({stream}: {stream: LegacyRoketoStream}) {
-  const {tokens} = useRoketoContext();
+  const formatter = useTokenFormatter(stream.ticker);
 
   return (
     <div>
       <span className={styles.blockTitle}>Speed</span>
       <div className={styles.speed}>
-        {getStreamingSpeed(Number(stream.tokens_per_tick) * TICK_TO_S, tokens[stream.ticker === 'NEAR' ? env.WNEAR_ID : stream.ticker])}
+        {getStreamingSpeed(Number(stream.tokens_per_tick) * TICK_TO_S, { formatter, meta: { symbol: stream.ticker } } as unknown as RichToken)}
       </div>
     </div>
   );
@@ -150,11 +150,12 @@ function StreamData({stream}: {stream: LegacyRoketoStream}) {
     progress: {streamed, left, full},
   } = streamViewData(stream);
 
+  const formatter = useTokenFormatter(stream.ticker);
+  const { metadata: meta } = tokens.get(stream.ticker);
+
   const streamedToTotalPercentageRatio = getRoundedPercentageRatio(streamed, full).toNumber();
   const leftToTotalPercentageRatio = getRoundedPercentageRatio(left, full).toNumber();
   const available = Number(stream.available_to_withdraw);
-
-  const {meta, formatter} = tokens[stream.ticker === 'NEAR' ? env.WNEAR_ID : stream.ticker];
   
   const [showOtherInfo, setShowOtherInfo] = useState(false);
 
