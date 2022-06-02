@@ -3,12 +3,15 @@ import { useParams, Link } from 'react-router-dom';
 import copy from 'clipboard-copy';
 import classNames from 'classnames';
 import { format, isPast } from 'date-fns';
+import Modal from 'react-modal';
 
 import { streamViewData, useSingleStream } from 'features/roketo-resource';
 import { LinkIcon } from '@ui/icons/Link';
 import { getStreamLink, ROUTES_MAP } from 'shared/helpers/routing';
 import { PageError } from 'shared/components/PageError';
 import {DropdownOpener} from 'shared/kit/DropdownOpener';
+import {Button, ButtonType} from '@ui/components/Button';
+import {Input} from '@ui/components/Input';
 import { Layout } from '@ui/components/Layout';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { getStreamingSpeed } from 'features/create-stream/lib';
@@ -17,6 +20,7 @@ import { ProgressBar } from '@ui/components/ProgressBar';
 import { StreamControls } from 'features/stream-control/StreamControls';
 import { STREAM_DIRECTION, useGetStreamDirection } from 'shared/hooks/useGetStreamDirection';
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
+import { useBool } from 'shared/hooks/useBool';
 import { WithdrawButton } from 'features/stream-control/WithdrawButton';
 import { TokenImage } from 'shared/kit/TokenImage';
 import { getRoundedPercentageRatio } from 'shared/helpers/math';
@@ -55,6 +59,8 @@ function StreamProgress({ stream }: { stream: RoketoStream }) {
 function StreamButtons({stream}: {stream: RoketoStream}) {
   const {isDead} = streamViewData(stream);
   const direction = useGetStreamDirection(stream);
+  const addFundsModal = useBool(false);
+  const [deposit, setDeposit] = useState('');
 
   if (isDead) {
     return null;
@@ -62,6 +68,58 @@ function StreamButtons({stream}: {stream: RoketoStream}) {
 
   return (
     <div className={styles.buttons}>
+      <Modal
+        isOpen={addFundsModal.on}
+        onRequestClose={addFundsModal.turnOff}
+        className={styles.modalContent}
+        overlayClassName={styles.modalOverlay}
+      >
+        <form onSubmit={(e) => {
+          e.preventDefault()
+          addFundsModal.turnOff()
+
+          /** add api request here */
+
+          setDeposit('');
+        }}>
+          <h2 className={styles.modalHeader}>Amount to deposit</h2>
+          <p>
+            <Input
+              required
+              name="deposit"
+              placeholder="0.00 NEAR"
+              value={deposit ?? ''}
+              onChange={(e) => {
+                const rawText = e.currentTarget.value;
+                if (rawText.length === 0) {
+                  setDeposit('')
+                } else if (!Number.isNaN(+rawText)) {
+                  setDeposit(rawText);
+                }
+              }}
+            />
+            <div className={styles.dueDate}>
+              <span className={styles.dueDateLabel}>New due date:</span>
+              <span className={styles.dueDateValue}>-</span>
+            </div>
+          </p>
+          <div className={styles.modalButtons}>
+            <button
+              type="button"
+              onClick={addFundsModal.turnOff}
+              className={classNames(styles.modalButton, styles.modalSecondary)}
+            >
+              Cancel
+            </button>
+            <Button
+              type={ButtonType.submit}
+              className={styles.modalButton}
+              disabled={deposit === '' || Number.isNaN(+deposit)}
+            >Add funds</Button>
+          </div>
+        </form>
+      </Modal>
+      <Button onClick={addFundsModal.turnOn}>Add funds</Button>
       <StreamControls stream={stream} />
 
       {direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.Active &&
