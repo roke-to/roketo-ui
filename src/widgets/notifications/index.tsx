@@ -23,6 +23,8 @@ import { StartIcon } from './StartIcon';
 import { PauseIcon } from './PauseIcon';
 import { BangIcon } from './BangIcon';
 
+const KNOWN_NOTIFICATION_TYPES = new Set(['StreamStarted', 'StreamPaused', 'StreamFinished', 'StreamIsDue', 'StreamContinued']);
+
 function NotificationIcon({ type }: { type: NotificationType }) {
   const IconComponent = (() => {
     switch (type) {
@@ -167,34 +169,36 @@ export function Notifications() {
             </h3>
           }
 
-          {notificationsSWR.data?.map((notification, index, notifications) => (
-            <React.Fragment key={notification.id}>
-              {index !== 0 && <div className={styles.divider} />}
-              {(index === 0 || !isSameDay(notifications[index - 1].createdAt, notification.createdAt)) &&
-                <div className={styles.date}>
-                  {isToday(notification.createdAt)
-                    ? 'Today'
-                    : isYesterday(notification.createdAt)
-                      ? 'Yesterday'
-                      : format(notification.createdAt, 'PP')
-                  }
-                </div>
-              }
-              <Link
-                to={generatePath(ROUTES_MAP.stream.path, { id: notification.payload.id })}
-                className={classNames(
-                  styles.notification,
-                  !notification.isRead && styles.unread
-                )}
-                onClick={closeDropdown}
-                data-testid={testIds.notificationElement}
-              >
-                <NotificationIcon type={notification.type} />
-                <NotificationBody notification={notification} />
-                <div className={styles.time}>{format(new Date(notification.createdAt), 'HH:mm')}</div>
-              </Link>
-            </React.Fragment>
-          ))}
+          {notificationsSWR.data?.filter((notification) => KNOWN_NOTIFICATION_TYPES.has(notification.type))
+            .map((notification, index, notifications) => (
+              <React.Fragment key={notification.id}>
+                {index !== 0 && <div className={styles.divider} />}
+                {(index === 0 || !isSameDay(notifications[index - 1].createdAt, notification.createdAt)) &&
+                  <div className={styles.date}>
+                    {isToday(notification.createdAt)
+                      ? 'Today'
+                      : isYesterday(notification.createdAt)
+                        ? 'Yesterday'
+                        : format(notification.createdAt, 'PP')
+                    }
+                  </div>
+                }
+                <Link
+                  to={generatePath(ROUTES_MAP.stream.path, { id: notification.payload.id })}
+                  className={classNames(
+                    styles.notification,
+                    !notification.isRead && styles.unread
+                  )}
+                  onClick={closeDropdown}
+                  data-testid={testIds.notificationElement}
+                >
+                  <NotificationIcon type={notification.type} />
+                  <NotificationBody notification={notification} />
+                  <div className={styles.time}>{format(new Date(notification.createdAt), 'HH:mm')}</div>
+                </Link>
+              </React.Fragment>
+            ))
+          }
         </div>
       </DropdownMenu>
     </div>
