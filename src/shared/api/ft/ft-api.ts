@@ -56,6 +56,42 @@ export class FTApi {
     return res && res.total !== '0';
   }
 
+  addFunds = (amountInYocto: string, streamId: string, callbackUrl: string) => {
+    const actions = [
+      transactions.functionCall(
+        'ft_transfer_call',
+        {
+          receiver_id: env.ROKETO_CONTRACT_NAME,
+          amount: amountInYocto,
+          memo: 'Roketo transfer',
+          msg: JSON.stringify({
+            Deposit: {
+              stream_id: streamId,
+            }
+          }),
+        },
+        '100000000000000',
+        '1',
+      )
+    ]
+    if (isWNearTokenId(this.tokenAccountId)) {
+      actions.unshift(
+        transactions.functionCall(
+          "near_deposit",
+          {},
+          '30000000000000',
+          amountInYocto,
+        )
+      )
+    }
+    // @ts-expect-error signAndSendTransaction is protected
+    return this.account.signAndSendTransaction({
+      receiverId: this.tokenAccountId,
+      walletCallbackUrl: callbackUrl,
+      actions
+    })
+  }
+
   transfer = async (payload: RoketoCreateRequest, amount: string, callbackUrl?: string) => {
     const [ isRegisteredSender, isRegisteredReceiver ] = await Promise.all([
       this.getIsRegistered(payload.owner_id),

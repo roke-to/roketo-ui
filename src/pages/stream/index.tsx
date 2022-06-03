@@ -3,12 +3,16 @@ import { useParams, Link } from 'react-router-dom';
 import copy from 'clipboard-copy';
 import classNames from 'classnames';
 import { format, isPast } from 'date-fns';
+import Modal from 'react-modal';
+import BigNumber from 'bignumber.js';
 
 import { streamViewData, useSingleStream } from 'features/roketo-resource';
 import { LinkIcon } from '@ui/icons/Link';
 import { getStreamLink, ROUTES_MAP } from 'shared/helpers/routing';
 import { PageError } from 'shared/components/PageError';
 import {DropdownOpener} from 'shared/kit/DropdownOpener';
+import {Button, ButtonType} from '@ui/components/Button';
+import {Input} from '@ui/components/Input';
 import { Layout } from '@ui/components/Layout';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { getStreamingSpeed } from 'features/create-stream/lib';
@@ -17,6 +21,7 @@ import { ProgressBar } from '@ui/components/ProgressBar';
 import { StreamControls } from 'features/stream-control/StreamControls';
 import { STREAM_DIRECTION, useGetStreamDirection } from 'shared/hooks/useGetStreamDirection';
 import { STREAM_STATUS } from 'shared/api/roketo/constants';
+import { useBool } from 'shared/hooks/useBool';
 import { WithdrawButton } from 'features/stream-control/WithdrawButton';
 import { TokenImage } from 'shared/kit/TokenImage';
 import { getRoundedPercentageRatio } from 'shared/helpers/math';
@@ -53,8 +58,26 @@ function StreamProgress({ stream }: { stream: RoketoStream }) {
 }
 
 function StreamButtons({stream}: {stream: RoketoStream}) {
-  const {isDead} = streamViewData(stream);
+  const {tokens} = useRoketoContext();
+  const token = tokens[stream.token_account_id];
+  const {isDead, streamEndTimestamp, percentages: {left}} = streamViewData(stream);
   const direction = useGetStreamDirection(stream);
+  const addFundsModal = useBool(false);
+  const [deposit, setDeposit] = useState('');
+  let dueDate: string | null = null;
+  const isStreamEnded = left === 0;
+  const hasValidAdditionalFunds = deposit !== '' && !Number.isNaN(+deposit);
+  const isOutgoingStream = direction === STREAM_DIRECTION.OUT;
+  if (isOutgoingStream && hasValidAdditionalFunds && streamEndTimestamp) {
+    const resultTime = +new BigNumber(token.formatter.toYocto(deposit))
+      .dividedBy(stream.tokens_per_sec)
+      .multipliedBy(1000)
+      .plus(streamEndTimestamp)
+      .toFixed();
+    if (!Number.isNaN(resultTime)) {
+      dueDate = format(resultTime, "PP 'at' p");
+    }
+  }
 
   if (isDead) {
     return null;
@@ -62,6 +85,60 @@ function StreamButtons({stream}: {stream: RoketoStream}) {
 
   return (
     <div className={styles.buttons}>
+      <Modal
+        isOpen={isStreamEnded ? false : addFundsModal.on}
+        onRequestClose={addFundsModal.turnOff}
+        className={styles.modalContent}
+        overlayClassName={styles.modalOverlay}
+      >
+        <form autoComplete="off" onSubmit={async (e) => {
+          e.preventDefault()
+          addFundsModal.turnOff();
+          setDeposit('');
+          if (!hasValidAdditionalFunds) return
+          const amount = token.formatter.toYocto(deposit);
+          await token.api.addFunds(amount, stream.id, window.location.href);
+        }}>
+          <h2 className={styles.modalHeader}>Amount to deposit</h2>
+          <p>
+            <Input
+              required
+              name="deposit"
+              placeholder="0.00 NEAR"
+              value={deposit ?? ''}
+              onChange={(e) => {
+                const rawText = e.currentTarget.value;
+                if (rawText.length === 0) {
+                  setDeposit('')
+                } else if (!Number.isNaN(+rawText)) {
+                  setDeposit(rawText);
+                }
+              }}
+            />
+            {dueDate && (
+              <div className={styles.dueDate}>
+                <span className={styles.dueDateLabel}>New due date:</span>
+                <span className={styles.dueDateValue}>{dueDate}</span>
+              </div>
+            )}
+          </p>
+          <div className={styles.modalButtons}>
+            <button
+              type="button"
+              onClick={addFundsModal.turnOff}
+              className={classNames(styles.modalButton, styles.modalSecondary)}
+            >
+              Cancel
+            </button>
+            <Button
+              type={ButtonType.submit}
+              className={styles.modalButton}
+              disabled={!hasValidAdditionalFunds}
+            >Add funds</Button>
+          </div>
+        </form>
+      </Modal>
+      {!isStreamEnded && isOutgoingStream && <Button onClick={addFundsModal.turnOn}>Add funds</Button>}
       <StreamControls stream={stream} />
 
       {direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.Active &&
@@ -152,7 +229,6 @@ function StreamData({stream}: {stream: RoketoStream}) {
     timeLeft,
     progress: {streamed, left, full},
   } = streamViewData(stream);
-
   const streamedToTotalPercentageRatio = getRoundedPercentageRatio(streamed, full).toNumber();
   const leftToTotalPercentageRatio = getRoundedPercentageRatio(left, full).toNumber();
   const available = getAvailableToWithdraw(stream).toNumber();
