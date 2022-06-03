@@ -16,11 +16,12 @@ import {$tokens} from '~/entities/wallet';
 
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {getAvailableToWithdraw} from '~/shared/api/roketo/lib';
+import {getAvailableToWithdraw, isIdling} from '~/shared/api/roketo/lib';
 import {Badge} from '~/shared/components/Badge';
 import {PageError} from '~/shared/components/PageError';
 import {useBool} from '~/shared/hooks/useBool';
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
+import {useRerender} from '~/shared/hooks/useRerender';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 import {TokenImage} from '~/shared/kit/TokenImage';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
@@ -355,6 +356,13 @@ export function StreamPage() {
   const loading = useStore($loading);
   const stream = useStore($stream);
   const pageError = useStore($pageError);
+
+  const isStreamTicking = Boolean(
+    stream && !isIdling(stream) && streamViewData(stream).percentages.left > 0,
+  );
+
+  useRerender(1000, isStreamTicking);
+
   return (
     <div className={styles.root}>
       <Layout>
