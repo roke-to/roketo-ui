@@ -10,9 +10,9 @@ import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {
   isActiveStream,
   isDead,
-  isLocked,
   isPausedStream,
   isWithCliff,
+  wasStartedAndLocked,
 } from '~/shared/api/roketo/lib';
 import {testIds} from '~/shared/constants';
 import {BooleanControl, useBool} from '~/shared/hooks/useBool';
@@ -121,7 +121,7 @@ export function StreamControls({stream, className}: {stream: RoketoStream; class
     [styles.stop]: isDead(stream),
   };
 
-  if (isLocked(stream)) {
+  if (wasStartedAndLocked(stream)) {
     return (
       <div className={classNames(styles.relative, className)}>
         <button type="button" className={classNames(styles.dropdownOpener, styles.notAllowed)}>
