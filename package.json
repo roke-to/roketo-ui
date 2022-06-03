@@ -13,7 +13,8 @@
     "eslint": "eslint -c .eslintrc src --ext .js,.jsx,.ts,.tsx",
     "deploy": "yarn build && gh-pages -d build",
     "preview": "vite preview",
-    "build-styleguidist": "styleguidist server"
+    "build-styleguidist": "styleguidist server",
+    "prepare": "is-ci || husky install"
   },
   "dependencies": {
     "@effector/reflect": "^7.1.1",
@@ -71,6 +72,9 @@
     "eslint-plugin-react": "^7.29.3",
     "eslint-plugin-react-hooks": "^4.3.0",
     "gh-pages": "^2.2.0",
+    "husky": "^8.0.1",
+    "is-ci": "^3.0.1",
+    "lint-staged": "^13.0.0",
     "near-cli": "^3.3.0",
     "near-seed-phrase": "^0.2.0",
     "postcss": "^7.0.39",
