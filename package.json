@@ -14,7 +14,10 @@
     "deploy": "yarn build && gh-pages -d build",
     "preview": "vite preview",
     "build-styleguidist": "styleguidist server",
-    "prepare": "is-ci || husky install"
+    "prepare": "is-ci || husky install",
+    "pretty": "prettier \"./**/**.{ts,tsx,js,jsx,mjs,cjs,css,scss,sass,md,*.json,.prettierrc,.lintstagedrc,.babelrc,.eslintrc,*.webmanifest}\"",
+    "format": "yarn pretty --write",
+    "format:check": "yarn pretty --check"
   },
   "dependencies": {
     "@effector/reflect": "^7.1.1",
