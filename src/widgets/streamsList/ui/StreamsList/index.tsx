@@ -2,7 +2,7 @@ import React from 'react';
 import cn from 'classnames';
 import {useStoreMap} from 'effector-react';
 
-import {$accountStreams} from '~/services/wallet';
+import {$accountStreams} from '~/entities/wallet';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 
 import {Button} from '@ui/components/Button';

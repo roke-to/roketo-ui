@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import {useStore} from 'effector-react';
 
-import {$isSignedIn} from '~/services/wallet';
+import {$isSignedIn} from '~/entities/wallet';
 
 import {Logo} from '@ui/icons/Logo';
 import {Layout} from '@ui/components/Layout';

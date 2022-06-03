@@ -8,7 +8,7 @@ import {
 } from 'react-router-dom';
 import { useStore } from 'effector-react';
 
-import { $isSignedIn } from '~/services/wallet';
+import { $isSignedIn } from '~/entities/wallet';
 
 import { Header } from '~/shared/components/Header';
 import { PrivateRoute } from '~/shared/components/PrivateRoute';

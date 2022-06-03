@@ -3,7 +3,7 @@ import cn from 'classnames';
 import {Field, Formik} from 'formik';
 import {useStore} from 'effector-react';
 
-import {$tokens} from '~/services/wallet';
+import {$tokens} from '~/entities/wallet';
 
 import {Button, ButtonType, DisplayMode as ButtonDisplayMode} from '@ui/components/Button';
 import {ErrorSign} from '@ui/icons/ErrorSign';

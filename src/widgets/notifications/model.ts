@@ -1,6 +1,6 @@
 import {attach} from 'effector';
 import {notificationsApiClient} from '~/shared/api/roketo-client';
-import {$notifications} from '~/services/wallet';
+import {$notifications} from '~/entities/wallet';
 
 export const markAllReadFx = attach({
   source: $notifications,

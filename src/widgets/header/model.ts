@@ -1,5 +1,5 @@
 import {combine} from 'effector';
-import {$roketoWallet, $priceOracle} from '~/services/wallet';
+import {$roketoWallet, $priceOracle} from '~/entities/wallet';
 import {TimePeriod} from '~/shared/constants';
 import {getBalancePerDesiredPeriod} from '~/shared/helpers/speed';
 import {StreamType} from './streamType';

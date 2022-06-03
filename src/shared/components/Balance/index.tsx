@@ -1,5 +1,5 @@
 import {useStore} from 'effector-react';
-import {$nearWallet, $priceOracle} from '~/services/wallet';
+import {$nearWallet, $priceOracle} from '~/entities/wallet';
 import { isWNearTokenId } from '~/shared/helpers/isWNearTokenId';
 import { useToken } from '~/shared/hooks/useToken';
 

@@ -1,6 +1,6 @@
 import {generatePath} from 'react-router-dom';
 import {attach} from 'effector';
-import {$roketoWallet} from '~/services/wallet';
+import {$roketoWallet} from '~/entities/wallet';
 import type {FormValues} from '~/features/create-stream/CreateStream';
 import {ROUTES_MAP} from '~/shared/helpers/routing';
 

@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import {useStore} from 'effector-react';
 
-import {$roketoWallet, $tokens} from '~/services/wallet';
+import {$roketoWallet, $tokens} from '~/entities/wallet';
 import {Button, ButtonType, DisplayMode} from '@ui/components/Button';
 import { RoketoStream } from '~/shared/api/roketo/interfaces/entities';
 import { Tooltip } from '~/shared/kit/Tooltip';

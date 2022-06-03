@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {useStore} from 'effector-react';
 
-import {$user, updateUserFx} from '~/services/wallet';
+import {$user, updateUserFx} from '~/entities/wallet';
 
 import { Button, ButtonType } from '@ui/components/Button';
 import { Input } from '@ui/components/Input';

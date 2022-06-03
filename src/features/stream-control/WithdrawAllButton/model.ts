@@ -1,7 +1,7 @@
 import {createStore, createEvent, sample, attach} from 'effector';
 import type BigNumber from 'bignumber.js';
 
-import {$roketoWallet, $tokens, $accountStreams} from '~/services/wallet';
+import {$roketoWallet, $tokens, $accountStreams} from '~/entities/wallet';
 import {
   getAvailableToWithdraw,
   isActiveStream,

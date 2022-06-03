@@ -1,5 +1,5 @@
 import {useStoreMap} from 'effector-react';
-import {$tokens} from '~/services/wallet';
+import {$tokens} from '~/entities/wallet';
 
 type NearTokenImageProps = {
   className?: string;

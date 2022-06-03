@@ -3,7 +3,7 @@ import {useStore} from 'effector-react';
 import cn from 'classnames';
 import {FieldInputProps, FormikState} from 'formik';
 
-import {$tokens} from '~/services/wallet';
+import {$tokens} from '~/entities/wallet';
 import {FormField} from '@ui/components/FormField';
 import {Input} from '@ui/components/Input';
 

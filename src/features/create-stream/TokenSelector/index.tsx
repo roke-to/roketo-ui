@@ -3,7 +3,7 @@ import {useStore} from 'effector-react';
 import {FieldInputProps, FormikState} from 'formik';
 import cn from 'classnames';
 
-import {$tokens} from '~/services/wallet';
+import {$tokens} from '~/entities/wallet';
 import {FormField} from '@ui/components/FormField';
 
 import type {RichToken} from '~/shared/api/ft';

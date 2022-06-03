@@ -2,7 +2,7 @@ import {useState, useCallback} from 'react';
 import cn from 'classnames';
 import {useStoreMap} from 'effector-react';
 
-import {$accountStreams} from '~/services/wallet';
+import {$accountStreams} from '~/entities/wallet';
 import {Layout} from '@ui/components/Layout';
 import {Button} from '@ui/components/Button';
 

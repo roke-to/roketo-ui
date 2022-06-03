@@ -1,6 +1,6 @@
 import {attach} from 'effector';
 
-import {$roketoWallet} from '~/services/wallet';
+import {$roketoWallet} from '~/entities/wallet';
 
 const modifyStreamFx = attach({
   source: $roketoWallet,

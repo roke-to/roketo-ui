@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {useStore} from 'effector-react';
 
-import {$accountId, $user} from '~/services/wallet';
+import {$accountId, $user} from '~/entities/wallet';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 import {DropdownMenu} from '~/shared/kit/DropdownMenu';
 import {env} from '~/shared/config';

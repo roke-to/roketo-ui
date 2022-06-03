@@ -7,7 +7,7 @@ import { format, isPast } from 'date-fns';
 import Modal from 'react-modal';
 import BigNumber from 'bignumber.js';
 
-import {$tokens} from '~/services/wallet';
+import {$tokens} from '~/entities/wallet';
 import { streamViewData } from '~/features/roketo-resource';
 import { LinkIcon } from '@ui/icons/Link';
 import { getStreamLink, ROUTES_MAP } from '~/shared/helpers/routing';
@@ -239,7 +239,7 @@ function StreamData({stream}: {stream: RoketoStream}) {
   const available = getAvailableToWithdraw(stream).toNumber();
 
   const {meta, formatter} = tokens[stream.token_account_id];
-  
+
   const [showOtherInfo, setShowOtherInfo] = useState(false);
 
   return (

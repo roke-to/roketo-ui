@@ -5,7 +5,7 @@ import { isToday, isYesterday, isSameDay, format } from 'date-fns';
 import { generatePath, Link } from 'react-router-dom';
 import type {NotificationTypeEnum as NotificationType, Notification} from '@roketo/api-client'
 
-import {$tokens, $notifications} from '~/services/wallet';
+import {$tokens, $notifications} from '~/entities/wallet';
 
 import { ROUTES_MAP } from '~/shared/helpers/routing';
 import { DropdownOpener } from '~/shared/kit/DropdownOpener';

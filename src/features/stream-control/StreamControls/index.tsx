@@ -5,7 +5,7 @@ import Modal from 'react-modal';
 
 import { STREAM_STATUS } from '~/shared/api/roketo/constants';
 import { testIds } from '~/shared/constants';
-import {$accountId} from '~/services/wallet';
+import {$accountId} from '~/entities/wallet';
 
 import { DropdownOpener } from '~/shared/kit/DropdownOpener';
 import { DropdownMenu, DropdownMenuDivider, DropdownMenuItem } from '~/shared/kit/DropdownMenu';
