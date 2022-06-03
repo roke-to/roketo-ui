@@ -83,7 +83,7 @@ export function Routing() {
         <PrivateRoute
           exact
           redirect={<Redirect to={authorize.path} />}
-          allowed={auth.signedIn}
+          allowed={signedIn}
           path={legacyStreams.path}
         >
           <LegacyStreamsPage />

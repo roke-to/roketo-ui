@@ -12,7 +12,7 @@ export const handleCreateStreamFx = attach({
   async effect(wallet, values: FormValues) {
     if (!wallet) throw Error('no roketo wallet exists');
     const {roketo, tokens} = wallet;
-    const {receiver, autoStart, comment, deposit, speed, token} = values;
+    const {receiver, delayed, comment, deposit, speed, token} = values;
 
     const {formatter, api, roketoMeta} = tokens[token];
 
@@ -23,7 +23,7 @@ export const handleCreateStreamFx = attach({
       tokenAccountId: token,
       commissionOnCreate: roketoMeta.commission_on_create,
       tokensPerSec: speed,
-      isAutoStart: autoStart,
+      delayed,
       callbackUrl: returnPath,
       handleTransferStream: api.transfer,
     });

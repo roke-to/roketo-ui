@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { useParams, Link } from 'react-router-dom';
-import {useStore, useGate} from 'effector-react';
+import {useStore, useStoreMap, useGate} from 'effector-react';
 import copy from 'clipboard-copy';
 import classNames from 'classnames';
 import { format, isPast } from 'date-fns';
@@ -60,8 +60,11 @@ function StreamProgress({ stream }: { stream: RoketoStream }) {
 }
 
 function StreamButtons({stream}: {stream: RoketoStream}) {
-  const {tokens} = useRoketoContext();
-  const token = tokens[stream.token_account_id];
+  const token = useStoreMap({
+    store: $tokens,
+    keys: [stream.token_account_id],
+    fn: (tokens) => tokens[stream.token_account_id],
+  });
   const {isDead, streamEndTimestamp, percentages: {left}} = streamViewData(stream);
   const direction = useGetStreamDirection(stream);
   const addFundsModal = useBool(false);

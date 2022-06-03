@@ -1,7 +1,7 @@
 import React from 'react';
 import {useStore} from 'effector-react';
 
-import {Button} from '@ui/components/Button';
+import {Button, DisplayMode} from '@ui/components/Button';
 import { Tooltip } from 'shared/kit/Tooltip';
 import { TokenImage } from 'shared/kit/TokenImage';
 import { testIds } from 'shared/constants';

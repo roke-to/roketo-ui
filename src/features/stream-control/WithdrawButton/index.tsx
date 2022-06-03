@@ -1,8 +1,9 @@
 import React from 'react';
 import classNames from 'classnames';
+import {useStore} from 'effector-react';
 
-import { Button, ButtonType, DisplayMode } from '@ui/components/Button';
-import { useRoketoContext } from 'app/roketo-context';
+import {$roketoWallet, $tokens} from 'services/wallet';
+import {Button, ButtonType, DisplayMode} from '@ui/components/Button';
 import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { Tooltip } from 'shared/kit/Tooltip';
 import { streamViewData } from 'features/roketo-resource';
@@ -17,7 +18,8 @@ type WithdrawButtonProps = {
 } & Omit<React.ComponentProps<'button'>, 'type'>;
 
 export function WithdrawButton({ stream, small = false, ...rest }: WithdrawButtonProps) {
-  const { tokens, roketo } = useRoketoContext();
+  const tokens = useStore($tokens);
+  const wallet = useStore($roketoWallet);
   const available = getAvailableToWithdraw(stream);
   const { percentages: { cliff, streamed } } = streamViewData(stream);
   const tokenAccountId = stream.token_account_id;
@@ -26,8 +28,7 @@ export function WithdrawButton({ stream, small = false, ...rest }: WithdrawButto
 
   const handleWithdraw = (e: React.SyntheticEvent) => {
     e.preventDefault();
-
-    roketo.api.withdraw({ streamIds: [ stream.id ] });
+    wallet?.roketo.api.withdraw({ streamIds: [ stream.id ] });
   }
 
   const hasPassedCliff = !cliff || streamed > cliff;

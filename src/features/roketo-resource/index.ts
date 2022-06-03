@@ -1,64 +1,10 @@
-import { useEffect, useState } from 'react';
 import BigNumber from 'bignumber.js';
-import useSWR, { SWRResponse } from 'swr';
 import { formatDuration, intervalToDuration } from 'date-fns';
 
 import { getAvailableToWithdraw, isDead, isIdling } from 'shared/api/roketo/helpers';
-import { STREAM_STATUS } from 'shared/api/roketo/constants';
-import { useRoketoContext } from 'app/roketo-context';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { SECONDS_IN_YEAR } from 'shared/constants';
 import { shortEnLocale } from 'shared/helpers/date';
-
-function useExtrapolation({ swr, revalidationPeriod, isEnabled = true }: {
-  swr: SWRResponse,
-  revalidationPeriod: number,
-  isEnabled?: boolean,
-}) {
-  const [secondsTillRevalidation, setSecondsTillRevalidation] = useState(revalidationPeriod);
-
-  useEffect(() => {
-    if (!isEnabled) {
-      return;
-    }
-
-    const id = setTimeout(() => {
-      if (secondsTillRevalidation <= 0) {
-        setSecondsTillRevalidation(revalidationPeriod);
-        swr.mutate();
-      } else {
-        setSecondsTillRevalidation((secondsLeft) => secondsLeft - 1);
-      }
-    }, 1000);
-    return () => clearTimeout(id);
-  }, [swr, secondsTillRevalidation, revalidationPeriod, isEnabled]);
-}
-
-export function useSingleStream(streamId: string) {
-  const { roketo } = useRoketoContext();
-
-  const swr = useSWR<RoketoStream>(
-    () => {
-      const key = roketo.account
-        ? ['stream', streamId, roketo.account.last_created_stream]
-        : false;
-      return key;
-    },
-    async () => {
-      const stream = await roketo.api.getStream({ streamId });
-
-      return stream;
-    },
-    {
-      errorRetryInterval: 2000,
-      errorRetryCount: 3,
-    },
-  );
-
-  useExtrapolation({ swr, revalidationPeriod: 10, isEnabled: swr.data?.status === STREAM_STATUS.Active });
-
-  return swr;
-}
 
 function calculateEndTimestamp(stream: RoketoStream) {
   /**

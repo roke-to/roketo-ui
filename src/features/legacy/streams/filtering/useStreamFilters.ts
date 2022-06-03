@@ -1,4 +1,4 @@
-import { useRoketoContext } from 'app/roketo-context';
+import { useRoketoContext } from 'features/legacy/roketo-context';
 import { useMemo } from 'react';
 
 import { STREAM_STATUS } from '../../api/roketo/constants';
