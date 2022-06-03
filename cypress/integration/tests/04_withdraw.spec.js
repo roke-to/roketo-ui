@@ -14,7 +14,6 @@ context('Withdraw', () => {
   it('withdraw all before test', () => {
     login(receiver.seedPhrase);
     const mystreams = new MyStreams();
-    mystreams.visit();
     mystreams.withdraw();
     const SHOULD_BE_EMPTY = true;
     mystreams.checkwithdraw(SHOULD_BE_EMPTY);

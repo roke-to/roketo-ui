@@ -3,9 +3,11 @@ import Transaction from './TransactionPage';
 
 class MyStreams {
   checkNewStreamStatus(value) {
-    cy.get(testSelectors.streamControlsDropdown).then(() => {
-      cy.get('.styles_statusPadded__3UL71').eq(0).should('have.text', value);
-    })
+    cy.get(testSelectors.streamControlsDropdown).eq(0).contains(value);
+  }
+
+  checkStreamDoesntExist() {
+    cy.get(testSelectors.streamControlsDropdown).should('not.exist');
   }
 
   changeStatus(value) {
@@ -17,7 +19,7 @@ class MyStreams {
     }
     if (value === 'stop') {
       cy.get(testSelectors.streamStopButton).eq(0).click( {force: true})
-      cy.get('.styles_modalButton__uHmah').eq(1).click();
+      cy.get(testSelectors.streamModalStopButton).click();
     }
   }
 

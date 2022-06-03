@@ -13,7 +13,6 @@ context('Stream pause', () => {
     cy.viewport(1536, 960);
     login(account.seedPhrase);
     const mystreams = new MyStreams();
-    mystreams.visit();
     mystreams.changeStatus('pause');
     const transaction = new Transaction();
     transaction.approve();
