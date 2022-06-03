@@ -92,7 +92,7 @@ export class FTApi {
       );
     }
     // @ts-expect-error signAndSendTransaction is protected
-    return this.account.signAndSendTransaction({
+    this.account.signAndSendTransaction({
       receiverId: this.tokenAccountId,
       walletCallbackUrl: callbackUrl,
       actions,
