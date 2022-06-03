@@ -1,14 +1,16 @@
+import {createstream} from '../../support/createstream';
+import {login} from '../../support/login';
 import MyStreams from '../../support/pages/MyStreams';
-import { login } from '../../support/login';
-import { createstream } from '../../support/createstream';
 
 context('Withdraw', () => {
   let sender;
   let receiver;
 
   before(() => {
-    cy.task('getAccount').then((testAccount) => sender = testAccount);
-    cy.task('getAccount', { filename: 'anotherTestAccount' }).then((anotherTestAccount) => receiver = anotherTestAccount);
+    cy.task('getAccount').then((testAccount) => (sender = testAccount));
+    cy.task('getAccount', {filename: 'anotherTestAccount'}).then(
+      (anotherTestAccount) => (receiver = anotherTestAccount),
+    );
   });
 
   it('withdraw all before test', () => {
@@ -22,7 +24,7 @@ context('Withdraw', () => {
   it('create stream', () => {
     cy.viewport(1536, 960);
     login(sender.seedPhrase);
-    createstream({ duration: 'short', receiver: receiver.accountId });
+    createstream({duration: 'short', receiver: receiver.accountId});
     const mystreams = new MyStreams();
     mystreams.checkNewStreamStatus('Active');
   });

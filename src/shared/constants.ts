@@ -1,4 +1,3 @@
-
 export const SECONDS_IN_MINUTE = 60;
 export const SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
 export const SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
@@ -18,7 +17,7 @@ export const TIME_PERIOD_SIGNS = {
   [TimePeriod.Day]: '/d',
   [TimePeriod.Minute]: '/m',
   [TimePeriod.Second]: '/s',
-}
+};
 
 export const testIds = {
   signInButton: 'signInButton',
@@ -56,6 +55,6 @@ export const testIds = {
 const testIdsKeys = Object.keys(testIds) as Array<keyof typeof testIds>;
 
 export const testSelectors = testIdsKeys.reduce(
-  (selectors, key) => ({ ...selectors, [key]: `[data-testid="${testIds[key]}"]` }),
-  {} as Record<keyof typeof testIds, string>
+  (selectors, key) => ({...selectors, [key]: `[data-testid="${testIds[key]}"]`}),
+  {} as Record<keyof typeof testIds, string>,
 );

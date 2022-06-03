@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
-import {useStoreMap} from 'effector-react'
+import {useStoreMap} from 'effector-react';
+import {useMemo} from 'react';
 
-import {$accountId} from '~/entities/wallet'
-import { STREAM_STATUS } from '~/shared/api/roketo/constants';
-import type { RoketoStream } from '~/shared/api/roketo/interfaces/entities';
+import {$accountId} from '~/entities/wallet';
+import {STREAM_STATUS} from '~/shared/api/roketo/constants';
+import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 
-import { useFilter, useFilters } from './lib';
+import {useFilter, useFilters} from './lib';
 
 const STREAM_TYPE_FILTER = {
   ALL: 'All',
@@ -22,20 +22,23 @@ const STREAM_STATUS_FILTER = {
 
 const statusOptions = {
   [STREAM_STATUS_FILTER.ALL]: () => true,
-  [STREAM_STATUS_FILTER[STREAM_STATUS.Initialized]]: (stream: RoketoStream) => stream.status === STREAM_STATUS.Initialized,
-  [STREAM_STATUS_FILTER[STREAM_STATUS.Active]]: (stream: RoketoStream) => stream.status === STREAM_STATUS.Active,
-  [STREAM_STATUS_FILTER[STREAM_STATUS.Paused]]: (stream: RoketoStream) => stream.status === STREAM_STATUS.Paused,
-}
+  [STREAM_STATUS_FILTER[STREAM_STATUS.Initialized]]: (stream: RoketoStream) =>
+    stream.status === STREAM_STATUS.Initialized,
+  [STREAM_STATUS_FILTER[STREAM_STATUS.Active]]: (stream: RoketoStream) =>
+    stream.status === STREAM_STATUS.Active,
+  [STREAM_STATUS_FILTER[STREAM_STATUS.Paused]]: (stream: RoketoStream) =>
+    stream.status === STREAM_STATUS.Paused,
+};
 
 export function useStreamFilters(streams: RoketoStream[] | undefined) {
   const directionOptions = useStoreMap({
     store: $accountId,
     keys: [],
-    fn: accountId => ({
+    fn: (accountId) => ({
       [STREAM_TYPE_FILTER.ALL]: () => true,
       [STREAM_TYPE_FILTER.INCOMING]: (stream: RoketoStream) => accountId === stream.receiver_id,
       [STREAM_TYPE_FILTER.OUTGOING]: (stream: RoketoStream) => accountId === stream.owner_id,
-    })
+    }),
   });
 
   const statusFilter = useFilter({

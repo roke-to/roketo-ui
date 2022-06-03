@@ -5,17 +5,16 @@ import {
   CONTRACT_CHANGE_METHODS as NEAR_CHANGE_METHODS,
   CONTRACT_VIEW_METHODS as NEAR_VIEW_METHODS,
 } from '../near/constants';
-
 import {ROKETO_CONTRACT_NAME} from './config';
-import {RoketoContract} from './interfaces/contracts';
-import {RoketoApi} from './interfaces/roketo-api';
-import {RoketoStatus, RoketoTokenStatus} from './interfaces/entities';
-import {RoketoContractApi} from './contract-api';
 import {
   NEAR_BRIDGE,
   CONTRACT_CHANGE_METHODS as ROKETO_CHANGE_METHODS,
   CONTRACT_VIEW_METHODS as ROKETO_VIEW_METHODS,
 } from './constants';
+import {RoketoContractApi} from './contract-api';
+import {RoketoContract} from './interfaces/contracts';
+import {RoketoStatus, RoketoTokenStatus} from './interfaces/entities';
+import {RoketoApi} from './interfaces/roketo-api';
 
 export interface Roketo {
   api: RoketoApi;

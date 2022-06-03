@@ -7,6 +7,7 @@ Dev server use `.env` and testnet by default
 ```bash
 yarn start
 ```
+
 ## Build for production
 
 ```bash
@@ -21,10 +22,10 @@ yarn build --mode testnet
 
 How ViteJS handle environment variables and configs [read here](https://vitejs.dev/guide/env-and-mode.html).
 
-* .env - for dev server with testnet
-* .env.local - for override .env (git ignored)
-* .env.mainnet - for mainnet`s vars production mode
-* .env.testnet - for testnet`s vars production mode
+- .env - for dev server with testnet
+- .env.local - for override .env (git ignored)
+- .env.mainnet - for mainnet`s vars production mode
+- .env.testnet - for testnet`s vars production mode
 
 # Links
 

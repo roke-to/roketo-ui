@@ -4,22 +4,16 @@ import ReactModal from 'react-modal';
 import styles from './styles.module.scss';
 
 type Props = {
-  isOpen: boolean,
-  children?: React.ReactNode,
+  isOpen: boolean;
+  children?: React.ReactNode;
 
-  title?: string,
-  onCloseModal?: () => void,
+  title?: string;
+  onCloseModal?: () => void;
 };
 
 // eslint-disable-next-line react/prefer-stateless-function
 export const Modal = (props: Props) => {
-  const {
-    title,
-    children,
-    isOpen = true,
-    onCloseModal,
-  } = props;
-
+  const {title, children, isOpen = true, onCloseModal} = props;
 
   return (
     <ReactModal
@@ -31,13 +25,11 @@ export const Modal = (props: Props) => {
     >
       <div>
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-        <span className={styles.close} onClick={onCloseModal}/>
+        <span className={styles.close} onClick={onCloseModal} />
 
         <h2 className={styles.title}>{title}</h2>
 
-        <div className={styles.contentContainer}>
-          {children}
-        </div>
+        <div className={styles.contentContainer}>{children}</div>
       </div>
     </ReactModal>
   );

@@ -1,20 +1,25 @@
-import React from 'react';
 import cn from 'classnames';
+import React from 'react';
 
 import {Button} from '@ui/components/Button';
 
 import styles from './styles.module.scss';
 
 type Props = {
-  directions: string[],
-  activeDirection: string,
-  isInactive: boolean
-  onDirectionClick: (direction: string) => void,
+  directions: string[];
+  activeDirection: string;
+  isInactive: boolean;
+  onDirectionClick: (direction: string) => void;
 };
 
-export const DirectionSorts = ({directions, activeDirection, onDirectionClick, isInactive}: Props) => (
+export const DirectionSorts = ({
+  directions,
+  activeDirection,
+  onDirectionClick,
+  isInactive,
+}: Props) => (
   <div className={styles.root}>
-    {directions.map(direction => (
+    {directions.map((direction) => (
       <Button
         key={direction}
         className={cn(styles.sort, {[styles.active]: direction === activeDirection})}

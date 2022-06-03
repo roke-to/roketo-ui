@@ -1,26 +1,19 @@
 import classNames from 'classnames';
 import {useStoreMap} from 'effector-react';
 
+import {Balance, DisplayMode} from '~/shared/components/Balance';
 import {env} from '~/shared/config';
 import {TIME_PERIOD_SIGNS, TimePeriod} from '~/shared/constants';
 
-import {WalletIcon} from '@ui/icons/Wallet';
 import {IncomeIcon} from '@ui/icons/Income';
 import {OutcomeIcon} from '@ui/icons/Outcome';
-import {Balance, DisplayMode} from '~/shared/components/Balance';
+import {WalletIcon} from '@ui/icons/Wallet';
 
-import {StreamType} from '../../streamType';
 import {$totalUSDAmountPerHour} from '../../model';
-
+import {StreamType} from '../../streamType';
 import styles from './styles.module.scss';
 
-const TokenAmountSpeed = ({
-  type,
-  className,
-}: {
-  type: StreamType;
-  className: string;
-}) => {
+const TokenAmountSpeed = ({type, className}: {type: StreamType; className: string}) => {
   const totalAmountInUSD = useStoreMap({
     store: $totalUSDAmountPerHour,
     keys: [type],
@@ -28,9 +21,7 @@ const TokenAmountSpeed = ({
   });
 
   return (
-    <div className={className}>
-      {`${totalAmountInUSD} $ ${TIME_PERIOD_SIGNS[TimePeriod.Hour]}`}
-    </div>
+    <div className={className}>{`${totalAmountInUSD} $ ${TIME_PERIOD_SIGNS[TimePeriod.Hour]}`}</div>
   );
 };
 
@@ -51,11 +42,7 @@ export const FinancialActivity = ({className}: {className: string}) => (
     {/* Balance */}
     <div className={styles.wrapper}>
       <WalletIcon />
-      <Balance
-        className={styles.balance}
-        tokenAccountId={env.WNEAR_ID}
-        mode={DisplayMode.USD}
-      />
+      <Balance className={styles.balance} tokenAccountId={env.WNEAR_ID} mode={DisplayMode.USD} />
     </div>
   </div>
 );

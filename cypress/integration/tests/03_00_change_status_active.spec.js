@@ -1,13 +1,13 @@
-import { createstream } from '../../support/createstream';
+import {createstream} from '../../support/createstream';
+import {login} from '../../support/login';
 import MyStreams from '../../support/pages/MyStreams';
 import Transaction from '../../support/pages/TransactionPage';
-import { login } from '../../support/login';
 
 context('Stream start', () => {
   let account;
 
   before(() => {
-    cy.task('getAccount', { reuse: true }).then((testAccount) => account = testAccount);
+    cy.task('getAccount', {reuse: true}).then((testAccount) => (account = testAccount));
   });
 
   it('run stream', () => {
@@ -16,7 +16,7 @@ context('Stream start', () => {
     createstream();
 
     const mystreams = new MyStreams();
-    mystreams.changeStatus('start')
+    mystreams.changeStatus('start');
     const transaction = new Transaction();
     transaction.approve();
     mystreams.checkNewStreamStatus('Active');

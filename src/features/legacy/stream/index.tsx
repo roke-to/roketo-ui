@@ -1,51 +1,47 @@
-import React, {useState} from 'react';
-import { useParams, Link } from 'react-router-dom';
-import copy from 'clipboard-copy';
 import classNames from 'classnames';
-import { format, isPast } from 'date-fns';
+import copy from 'clipboard-copy';
+import {format, isPast} from 'date-fns';
+import React, {useState} from 'react';
+import {useParams, Link} from 'react-router-dom';
 
-import { LinkIcon } from '@ui/icons/Link';
-import { PageError } from '~/shared/components/PageError';
+import {getStreamingSpeed} from '~/features/create-stream/lib';
+import {PageError} from '~/shared/components/PageError';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
-import { Layout } from '@ui/components/Layout';
-import { getStreamingSpeed } from '~/features/create-stream/lib';
-import { ProgressBar } from '@ui/components/ProgressBar';
-import { TokenImage } from '~/shared/kit/TokenImage';
-import { getRoundedPercentageRatio } from '~/shared/lib/math';
+import {TokenImage} from '~/shared/kit/TokenImage';
+import {getRoundedPercentageRatio} from '~/shared/lib/math';
 
-import { STREAM_STATUS } from '../api/roketo/constants';
-import { StreamControls } from '../stream-control/StreamControls';
-import { STREAM_DIRECTION, useGetStreamDirection } from '../hooks/useGetStreamDirection';
-import { streamViewData, useAccount, useLegacySingleStream } from '../roketo-resource';
-import type { LegacyRoketoStream } from '../api/roketo/interfaces/entities';
-import { getLegacyStreamLink, LEGACY_ROUTES_MAP } from '../routing';
-import { BreadcrumbIcon } from './BreadcrumbIcon';
+import {Layout} from '@ui/components/Layout';
+import {ProgressBar} from '@ui/components/ProgressBar';
+import {LinkIcon} from '@ui/icons/Link';
+
+import {RichToken} from '../../../shared/api/ft';
+import {TICK_TO_S} from '../api/roketo/config';
+import {STREAM_STATUS} from '../api/roketo/constants';
+import type {LegacyRoketoStream} from '../api/roketo/interfaces/entities';
+import {STREAM_DIRECTION, useGetStreamDirection} from '../hooks/useGetStreamDirection';
+import {useTokenFormatter} from '../hooks/useTokenFormatter';
+import {useRoketoContext} from '../roketo-context';
+import {streamViewData, useAccount, useLegacySingleStream} from '../roketo-resource';
+import {getLegacyStreamLink, LEGACY_ROUTES_MAP} from '../routing';
+import {StreamControls} from '../stream-control/StreamControls';
+import {WithdrawAllButton} from '../stream-control/WithdrawAllButton';
+import {BreadcrumbIcon} from './BreadcrumbIcon';
 import styles from './styles.module.scss';
-import { TICK_TO_S } from '../api/roketo/config';
-import { useRoketoContext } from '../roketo-context';
-import { WithdrawAllButton } from '../stream-control/WithdrawAllButton';
-import { useTokenFormatter } from '../hooks/useTokenFormatter';
-import { RichToken } from '../../../shared/api/ft';
 
-function StreamProgress({ stream }: { stream: LegacyRoketoStream }) {
+function StreamProgress({stream}: {stream: LegacyRoketoStream}) {
   const formatter = useTokenFormatter(stream.ticker);
 
-  const { progress: { streamed, withdrawn, full } } = streamViewData(stream);
+  const {
+    progress: {streamed, withdrawn, full},
+  } = streamViewData(stream);
 
   return (
     <div>
       <div className={styles.numericProgress}>
-        <TokenImage
-          tokenAccountId={stream.ticker}
-          className={styles.tokenIcon}
-        />
+        <TokenImage tokenAccountId={stream.ticker} className={styles.tokenIcon} />
         <span>{`${stream.ticker} ${formatter.amount(streamed)} of ${formatter.amount(full)}`}</span>
       </div>
-      <ProgressBar
-        total={full}
-        streamed={streamed}
-        withdrawn={withdrawn}
-      />
+      <ProgressBar total={full} streamed={streamed} withdrawn={withdrawn} />
     </div>
   );
 }
@@ -62,9 +58,9 @@ function StreamButtons({stream}: {stream: LegacyRoketoStream}) {
     <div className={styles.buttons}>
       <StreamControls stream={stream} />
 
-      {direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.ACTIVE && stream.available_to_withdraw !== '0' &&
-        <WithdrawAllButton>Withdraw all</WithdrawAllButton>
-      }
+      {direction === STREAM_DIRECTION.IN &&
+        stream.status === STREAM_STATUS.ACTIVE &&
+        stream.available_to_withdraw !== '0' && <WithdrawAllButton>Withdraw all</WithdrawAllButton>}
     </div>
   );
 }
@@ -76,7 +72,10 @@ function StreamSpeed({stream}: {stream: LegacyRoketoStream}) {
     <div>
       <span className={styles.blockTitle}>Speed</span>
       <div className={styles.speed}>
-        {getStreamingSpeed(Number(stream.tokens_per_tick) * TICK_TO_S, { formatter, meta: { symbol: stream.ticker } } as unknown as RichToken)}
+        {getStreamingSpeed(Number(stream.tokens_per_tick) * TICK_TO_S, {
+          formatter,
+          meta: {symbol: stream.ticker},
+        } as unknown as RichToken)}
       </div>
     </div>
   );
@@ -99,20 +98,14 @@ function StreamComment({stream}: {stream: LegacyRoketoStream}) {
   return (
     <div>
       <span className={styles.blockTitle}>Comment</span>
-      <div className={styles.commentBody}>
-        {comment}
-      </div>
+      <div className={styles.commentBody}>{comment}</div>
     </div>
   );
 }
 
 function CopyButton({stringToCopy}: {stringToCopy: string}) {
   return (
-    <button
-      type="button"
-      className={styles.copyButton}
-      onClick={() => copy(stringToCopy)}
-    >
+    <button type="button" className={styles.copyButton} onClick={() => copy(stringToCopy)}>
       <LinkIcon className={styles.linkIcon} />
     </button>
   );
@@ -132,7 +125,7 @@ function StreamCopyUrlBlock({stream}: {stream: LegacyRoketoStream}) {
   );
 }
 
-function InfoRow({ title, children }: { title: string, children: React.ReactNode }) {
+function InfoRow({title, children}: {title: string; children: React.ReactNode}) {
   return (
     <div className={styles.infoRow}>
       <span className={styles.infoTitle}>{title}</span>
@@ -151,7 +144,7 @@ function StreamData({stream}: {stream: LegacyRoketoStream}) {
   } = streamViewData(stream);
 
   const formatter = useTokenFormatter(stream.ticker);
-  const { metadata: meta } = tokens.get(stream.ticker);
+  const {metadata: meta} = tokens.get(stream.ticker);
 
   const streamedToTotalPercentageRatio = getRoundedPercentageRatio(streamed, full).toNumber();
   const leftToTotalPercentageRatio = getRoundedPercentageRatio(left, full).toNumber();
@@ -180,17 +173,12 @@ function StreamData({stream}: {stream: LegacyRoketoStream}) {
       </InfoRow>
       <InfoRow title="Stream Created">
         <span className={styles.font14}>
-          {format(
-            new Date(Number(stream.timestamp_created) / 1000000),
-            "PP 'at' p",
-          )}
+          {format(new Date(Number(stream.timestamp_created) / 1000000), "PP 'at' p")}
         </span>
       </InfoRow>
       {streamEndInfo !== null && (
         <InfoRow title={isPast(streamEndInfo) ? 'Stream Ended' : 'Stream Ends'}>
-          <span className={styles.font14}>
-            {format(new Date(streamEndInfo), "PP 'at' p")}
-          </span>
+          <span className={styles.font14}>{format(new Date(streamEndInfo), "PP 'at' p")}</span>
         </InfoRow>
       )}
       <InfoRow title="Token">
@@ -215,9 +203,7 @@ function StreamData({stream}: {stream: LegacyRoketoStream}) {
         <>
           <InfoRow title="Stream ID">
             <div className={styles.centeredFlex}>
-              <span className={classNames(styles.font14, styles.streamID)}>
-                {stream.id}
-              </span>
+              <span className={classNames(styles.font14, styles.streamID)}>{stream.id}</span>
               <CopyButton stringToCopy={stream.id} />
             </div>
           </InfoRow>
@@ -229,9 +215,7 @@ function StreamData({stream}: {stream: LegacyRoketoStream}) {
               {formatter.amount(streamed)}&nbsp;
               <span className={styles.font12}>
                 {meta.symbol}{' '}
-                <span className={styles.grey}>
-                  ({streamedToTotalPercentageRatio}%)
-                </span>
+                <span className={styles.grey}>({streamedToTotalPercentageRatio}%)</span>
               </span>
             </span>
           </InfoRow>
@@ -239,10 +223,7 @@ function StreamData({stream}: {stream: LegacyRoketoStream}) {
             <span className={styles.font14}>
               {formatter.amount(left)}&nbsp;
               <span className={styles.font12}>
-                {meta.symbol}{' '}
-                <span className={styles.grey}>
-                  ({leftToTotalPercentageRatio}%)
-                </span>
+                {meta.symbol} <span className={styles.grey}>({leftToTotalPercentageRatio}%)</span>
               </span>
             </span>
           </InfoRow>
@@ -270,16 +251,13 @@ export function LegacyStreamPage() {
     <div className={styles.root}>
       <Layout>
         <div className={styles.breadbrumbs}>
-          <Link
-            to={LEGACY_ROUTES_MAP.legacyStreams.path}
-            className={styles.streamsLink}
-          >
+          <Link to={LEGACY_ROUTES_MAP.legacyStreams.path} className={styles.streamsLink}>
             Streams (legacy)
           </Link>
           <BreadcrumbIcon className={styles.breadbrumb} />
           <span className={styles.id}>{id}</span>
         </div>
-        {pageError &&
+        {pageError && (
           <PageError
             className="max-w-2xl mx-auto py-32"
             message={pageError.message}
@@ -287,21 +265,17 @@ export function LegacyStreamPage() {
               streamSWR.mutate();
             }}
           />
-        }
-        {!pageError && !stream &&
+        )}
+        {!pageError && !stream && (
           <div className="py-32 text-center text-gray text-2xl">Loading...</div>
-        }
+        )}
 
-        {!pageError && stream &&
+        {!pageError && stream && (
           <main className={styles.stream}>
             <div className={styles.left}>
               <div className={classNames(styles.tile, styles.remaining)}>
-                <span className={styles.blockTitle}>
-                  Remaining
-                </span>
-                <span>
-                  {streamViewData(stream).timeLeft || 'Finished'}
-                </span>
+                <span className={styles.blockTitle}>Remaining</span>
+                <span>{streamViewData(stream).timeLeft || 'Finished'}</span>
               </div>
               <div className={classNames(styles.tile, styles.main)}>
                 <StreamProgress stream={stream} />
@@ -316,7 +290,7 @@ export function LegacyStreamPage() {
               <StreamData stream={stream} />
             </div>
           </main>
-        }
+        )}
       </Layout>
     </div>
   );

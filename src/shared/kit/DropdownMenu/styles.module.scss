@@ -8,7 +8,8 @@
   min-width: 100%;
 
   background-color: $white;
-  filter: drop-shadow(2px 2px 17px rgba(138, 150, 168, 0.12)) drop-shadow(-2px -3px 21px rgba(138, 150, 168, 0.12));
+  filter: drop-shadow(2px 2px 17px rgba(138, 150, 168, 0.12))
+    drop-shadow(-2px -3px 21px rgba(138, 150, 168, 0.12));
 
   border-radius: 16px;
   padding: 16px;
@@ -21,7 +22,7 @@
 }
 
 .menuDivider {
-  border: 1px solid #EEEEEE;
+  border: 1px solid #eeeeee;
   width: 100%;
 }
 

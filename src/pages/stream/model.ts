@@ -1,8 +1,8 @@
 import {createStore, sample, attach, combine, createEffect} from 'effector';
 import {createGate} from 'effector-react';
 
-import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {$roketoWallet, lastCreatedStreamUpdated} from '~/entities/wallet';
+import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 
 export const pageGate = createGate<string | null>({defaultState: null});
 export const $stream = createStore<RoketoStream | null>(null);
@@ -13,11 +13,7 @@ const requestStreamFx = attach({
     return streamId && wallet?.roketo.api.getStream({streamId});
   },
 });
-export const $loading = combine(
-  $stream,
-  $pageError,
-  (stream, error) => !stream && !error,
-);
+export const $loading = combine($stream, $pageError, (stream, error) => !stream && !error);
 
 const streamRevalidationTimerFx = createEffect(
   () =>
@@ -32,11 +28,7 @@ const streamRevalidationTimerFx = createEffect(
  * and start requesting stream data
  * */
 sample({
-  clock: [
-    lastCreatedStreamUpdated,
-    pageGate.state,
-    streamRevalidationTimerFx.doneData,
-  ],
+  clock: [lastCreatedStreamUpdated, pageGate.state, streamRevalidationTimerFx.doneData],
   source: pageGate.state,
   filter: pageGate.status,
   target: requestStreamFx,

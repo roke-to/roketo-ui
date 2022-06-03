@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
+import React, {useEffect, useState} from 'react';
+
+import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
+import {Filter, FilterOptionWithCounter} from '~/shared/kit/Filter';
 
 import {SortIcon, OrderType} from '@ui/icons/Sort';
 
-import { Filter, FilterOptionWithCounter } from '~/shared/kit/Filter';
-import type { RoketoStream } from '~/shared/api/roketo/interfaces/entities';
-
 import {DirectionSorts} from '../DirectionSorts';
-import { useStreamFilters } from '../useStreamFilters';
-
+import {useStreamFilters} from '../useStreamFilters';
 import styles from './styles.module.scss';
 
 function compareBy(a: RoketoStream, b: RoketoStream, key: keyof RoketoStream) {
@@ -44,13 +43,13 @@ type StreamFiltersProps = {
   className?: string;
 };
 
-export function StreamFilters({ items, onFilterDone, className }: StreamFiltersProps) {
+export function StreamFilters({items, onFilterDone, className}: StreamFiltersProps) {
   const filter = useStreamFilters(items);
   const {filteredItems} = filter.result;
 
   const [sorting, setSorting] = useState(sorts.mostRecent);
   const sortOptions = Object.values(sorts);
-  const isEmptyList = items ? items.length === 0 : true
+  const isEmptyList = items ? items.length === 0 : true;
 
   useEffect(() => {
     if (!filteredItems) {

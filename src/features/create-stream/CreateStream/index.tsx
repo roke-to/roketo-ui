@@ -1,35 +1,27 @@
-import React, {useState} from 'react';
 import cn from 'classnames';
-import {Field, Formik} from 'formik';
 import {useStore} from 'effector-react';
+import {Field, Formik} from 'formik';
+import React, {useState} from 'react';
 
 import {$tokens} from '~/entities/wallet';
+import {Balance, DisplayMode} from '~/shared/components/Balance';
+import {FormikCheckbox} from '~/shared/components/FormikCheckbox';
+import {FormikInput} from '~/shared/components/FormikInput';
+import {FormikTextArea} from '~/shared/components/FormikTextArea';
+import {env} from '~/shared/config';
+import {testIds} from '~/shared/constants';
 
 import {Button, ButtonType, DisplayMode as ButtonDisplayMode} from '@ui/components/Button';
 import {ErrorSign} from '@ui/icons/ErrorSign';
 
-import {FormikInput} from '~/shared/components/FormikInput';
-import {FormikCheckbox} from '~/shared/components/FormikCheckbox';
-import {FormikTextArea} from '~/shared/components/FormikTextArea';
-import {Balance, DisplayMode} from '~/shared/components/Balance';
-
-import { testIds } from '~/shared/constants';
-
-import {env} from '~/shared/config';
+import {CliffPeriodPicker} from '../CliffPeriodPicker';
 import {StreamSpeedCalcField} from '../StreamSpeedCalcField';
 import {TokenSelector} from '../TokenSelector';
-import { CliffPeriodPicker } from '../CliffPeriodPicker';
-
 import {INITIAL_FORM_VALUES, COMMENT_TEXT_LIMIT} from '../constants';
-
 import {formValidationSchema} from './model';
-
 import styles from './styles.module.scss';
 
-const Row = ({
-  children,
-  className,
-}: {children: React.ReactNode, className?: string}) => (
+const Row = ({children, className}: {children: React.ReactNode; className?: string}) => (
   <div className={cn(styles.row, className)}>{children}</div>
 );
 
@@ -43,19 +35,21 @@ export type FormValues = {
   token: string;
   isLocked: boolean;
   cliffDateTime: Date | null;
-}
+};
 
 type CreateStreamProps = {
   onFormSubmit: (values: FormValues) => Promise<void>;
   onFormCancel: () => void;
-}
+};
 
 const DELAYED_DESCRIPTION = (
   <div>
     Delayed start
     <div className={styles.subDescription}>
-      Select this if you want the stream not to start immediately,<br />
-      you'll need to start it manually from stream page<br />
+      Select this if you want the stream not to start immediately,
+      <br />
+      you'll need to start it manually from stream page
+      <br />
       (streams with cliff cannot be delayed)
     </div>
   </div>
@@ -65,19 +59,20 @@ const LOCK_DESCRIPTION = (
   <div>
     Uneditable stream
     <div className={styles.subDescription}>
-      If you select this field, you will not be able<br />to carry out any actions on the stream
+      If you select this field, you will not be able
+      <br />
+      to carry out any actions on the stream
     </div>
   </div>
 );
 
 export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) => {
-  const tokens = useStore($tokens)
+  const tokens = useStore($tokens);
   const [submitError, setError] = useState<Error | null>(null);
 
   const handleFormSubmit = (formValues: FormValues) => {
-    onFormSubmit(formValues)
-      .catch(error => setError(error));
-  }
+    onFormSubmit(formValues).catch((error) => setError(error));
+  };
   return (
     <div className={styles.root}>
       <h2 className={styles.title}>Create Stream</h2>
@@ -85,27 +80,18 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
       <Formik
         initialValues={INITIAL_FORM_VALUES}
         onSubmit={handleFormSubmit}
-
         validateOnBlur
-
         validationSchema={formValidationSchema}
         validateOnChange={false}
         validateOnMount={false}
       >
-        {({
-          values,
-          handleSubmit,
-          setFieldValue,
-          setFieldTouched,
-          validateField,
-        }) => {
+        {({values, handleSubmit, setFieldValue, setFieldTouched, validateField}) => {
           const activeTokenAccountId = values.token;
 
           const {meta: tokenMeta, formatter, roketoMeta} = tokens[activeTokenAccountId];
 
           return (
             <form onSubmit={handleSubmit} className={styles.form}>
-
               <Row>
                 <Field
                   isRequired
@@ -138,9 +124,11 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   name="deposit"
                   label="Amount to stream:"
                   component={FormikInput}
-                  placeholder='Amount to stream'
+                  placeholder="Amount to stream"
                   className={styles.rowItem}
-                  description={(<Balance tokenAccountId={activeTokenAccountId} mode={DisplayMode.CRYPTO} />)}
+                  description={
+                    <Balance tokenAccountId={activeTokenAccountId} mode={DisplayMode.CRYPTO} />
+                  }
                   data-testid={testIds.createStreamAmountInput}
                 />
 

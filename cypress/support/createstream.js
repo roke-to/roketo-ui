@@ -1,7 +1,7 @@
 import CreateStream from './pages/CreateStream';
 import Transaction from './pages/TransactionPage';
 
-export function createstream({ receiver = 'githubtest9.testnet', duration } = {}) {
+export function createstream({receiver = 'githubtest9.testnet', duration} = {}) {
   const stream = new CreateStream();
   stream.createStream();
   stream.inputReceiver(receiver);

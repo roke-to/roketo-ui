@@ -1,35 +1,32 @@
-import React from 'react';
 import cn from 'classnames';
+import React from 'react';
 
 import {Button} from '@ui/components/Button';
 import {Spinner} from '@ui/components/Spinner';
 
 import {LegacyRoketoStream} from '../../../../api/roketo/interfaces/entities';
-import { useAccount, useLegacyStreams } from '../../../../roketo-resource';
-
+import {useAccount, useLegacyStreams} from '../../../../roketo-resource';
 import {StreamCard} from '../StreamCard';
 import styles from './styles.module.scss';
 
 type Props = {
-  displayingStreams: LegacyRoketoStream[] | undefined,
+  displayingStreams: LegacyRoketoStream[] | undefined;
 
-  onCreateStreamClick: () => void,
+  onCreateStreamClick: () => void;
 
-  className?: string,
-}
+  className?: string;
+};
 
-const EmptyState = ({children}: {children: React.ReactNode}) => <div className={styles.emptyState}>{children}</div>
+const EmptyState = ({children}: {children: React.ReactNode}) => (
+  <div className={styles.emptyState}>{children}</div>
+);
 
 export const StreamsList = (props: Props) => {
-  const {
-    className,
-    displayingStreams,
-    onCreateStreamClick,
-  } = props;
+  const {className, displayingStreams, onCreateStreamClick} = props;
 
   const accountSWR = useAccount();
 
-  const {data: streams} = useLegacyStreams({ account: accountSWR.data });
+  const {data: streams} = useLegacyStreams({account: accountSWR.data});
   const {inputs = [], outputs = []} = streams || {};
 
   const allStreams = [...inputs, ...outputs];
@@ -48,9 +45,7 @@ export const StreamsList = (props: Props) => {
   if (streams && allStreamsLength === 0) {
     return (
       <EmptyState>
-        <div>
-          You don't have any streams yet.
-        </div>
+        <div>You don't have any streams yet.</div>
         <Button onClick={onCreateStreamClick}>Create First Stream</Button>
       </EmptyState>
     );
@@ -73,7 +68,7 @@ export const StreamsList = (props: Props) => {
           <h3 className={styles.title}>Comment</h3>
         </div>
 
-        {displayingStreams?.map(stream => (
+        {displayingStreams?.map((stream) => (
           <StreamCard
             stream={stream}
             key={stream.id}
@@ -83,4 +78,4 @@ export const StreamsList = (props: Props) => {
       </section>
     </div>
   );
-}
+};

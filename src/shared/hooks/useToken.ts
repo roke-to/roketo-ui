@@ -1,6 +1,7 @@
 import {useStore} from 'effector-react';
-import { isWNearTokenId } from '~/shared/lib/isWNearTokenId';
+
 import {$tokens} from '~/entities/wallet';
+import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 
 export function useToken(tokenAccountId: string) {
   const tokens = useStore($tokens);

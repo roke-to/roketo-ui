@@ -8,34 +8,37 @@
 // You can read more here:
 // https://on.cypress.io/plugins-guide
 // ***********************************************************
-
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
-
+// eslint-disable-next-line import/no-import-module-exports
 import fs from 'fs';
-import { createTestAccount } from '../support/createTestAccount';
+
+// eslint-disable-next-line import/no-import-module-exports
+import {createTestAccount} from '../support/createTestAccount';
 
 /**
  * @type {Cypress.PluginConfig}
  */
 // eslint-disable-next-line no-unused-vars
 
-module.exports = (on, config) => {
+module.exports = (on) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
   on('task', {
-    async getAccount({ filename = 'testAccount', reuse = false } = {}) {
+    async getAccount({filename = 'testAccount', reuse = false} = {}) {
       const path = `./${filename}.json`;
 
       if (!reuse) {
         try {
           fs.unlinkSync(path);
-        } catch(whatever) {}
+        } catch (whatever) {
+          // no catch
+        }
       }
 
       try {
         return JSON.parse(fs.readFileSync(path, 'utf-8'));
-      } catch(noFileExists) {
+      } catch (noFileExists) {
         const account = await createTestAccount();
 
         fs.writeFileSync(path, JSON.stringify(account), 'utf-8');

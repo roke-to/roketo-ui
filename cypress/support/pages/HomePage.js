@@ -1,4 +1,5 @@
-import { testSelectors } from '../../../src/shared/constants';
+/* eslint-disable import/no-unresolved, import/extensions */
+import {testSelectors} from '../../../src/shared/constants';
 
 class HomePage {
   visit() {

@@ -5,7 +5,7 @@ class Transaction {
 
   approve() {
     cy.get('.button-group > .blue').click();
-    cy.contains('Sending', { timeout: 60000 }).should('not.exist');
+    cy.contains('Sending', {timeout: 60000}).should('not.exist');
   }
 
   cancel() {

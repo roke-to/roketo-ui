@@ -1,19 +1,17 @@
-import React from 'react';
 import cn from 'classnames';
 import RCTooltip from 'rc-tooltip';
+import React from 'react';
 
+import {TokenFormatter} from '~/shared/api/ft/token-formatter';
+import {getRoundedPercentageRatio} from '~/shared/lib/math';
 import {ProgressBar} from '~/shared/ui/components/ProgressBar';
 import {ClockIcon} from '~/shared/ui/icons/Clock';
 
-import {getRoundedPercentageRatio} from '~/shared/lib/math';
-
-import {TokenFormatter} from '~/shared/api/ft/token-formatter';
-import {streamViewData} from '../../../../roketo-resource';
+import {TICK_TO_S} from '../../../../api/roketo/config';
 import {LegacyRoketoStream} from '../../../../api/roketo/interfaces/entities';
-import { TICK_TO_S } from '../../../../api/roketo/config';
-
+import {useTokenFormatter} from '../../../../hooks/useTokenFormatter';
+import {streamViewData} from '../../../../roketo-resource';
 import styles from './styles.module.scss';
-import { useTokenFormatter } from '../../../../hooks/useTokenFormatter';
 
 const TOOLTIP_ALIGN = {
   points: ['tl', 'bc'],
@@ -46,7 +44,8 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
 
   const progressText = `${streamedText} of ${total}`;
 
-  const {formattedValue: speedFormattedValue, unit: speedUnit} = formatter.tokensPerMeaningfulPeriod(tokensPerSec);
+  const {formattedValue: speedFormattedValue, unit: speedUnit} =
+    formatter.tokensPerMeaningfulPeriod(tokensPerSec);
 
   return (
     <RCTooltip
@@ -57,8 +56,7 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
       overlay={
         <div className={cn(styles.tooltip, styles.text)}>
           <div className={styles.innerStatus}>
-            <span>{progressText}</span>
-            {' '}
+            <span>{progressText}</span>{' '}
             <span className={cn(styles.grey, styles.smaller)}>{tokenId}</span>
           </div>
 
@@ -70,37 +68,33 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
 
           <div className={cn(styles.status, styles.speed)}>
             {speedFormattedValue}{' '}
-            <span className={cn(styles.grey, styles.smaller)}>{tokenId} / {speedUnit}</span>
+            <span className={cn(styles.grey, styles.smaller)}>
+              {tokenId} / {speedUnit}
+            </span>
           </div>
 
           {timeLeft && (
             <div className={styles.remained}>
-              <ClockIcon className={styles.clock}/>
+              <ClockIcon className={styles.clock} />
               {timeLeft}
             </div>
           )}
 
           <div className={cn(styles.progress, styles.streamed)}>
             Streamed: {streamedText}{' '}
-            <span className={cn(styles.grey, styles.smaller)}>
-               {`${streamedPercentage}%`}
-            </span>
+            <span className={cn(styles.grey, styles.smaller)}>{`${streamedPercentage}%`}</span>
           </div>
 
           <div className={cn(styles.progress, styles.withdrawn)}>
             Withdrawn: {withdrawnText}{' '}
-            <span className={cn(styles.grey, styles.smaller)}>
-               {`${withdrawnPercentage}%`}
-            </span>
+            <span className={cn(styles.grey, styles.smaller)}>{`${withdrawnPercentage}%`}</span>
           </div>
         </div>
       }
     >
       <div className={cn(styles.root, styles.text, className)}>
         <div className={styles.status}>
-          <span>{progressText}</span>
-          {' '}
-          <span className={styles.grey}>{tokenId}</span>
+          <span>{progressText}</span> <span className={styles.grey}>{tokenId}</span>
         </div>
 
         <ProgressBar

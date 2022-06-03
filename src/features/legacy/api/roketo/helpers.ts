@@ -1,30 +1,20 @@
-import { STREAM_STATUS } from './constants';
-import { LegacyRoketoStream, RoketoAccount } from './interfaces/entities';
+import {STREAM_STATUS} from './constants';
+import {LegacyRoketoStream, RoketoAccount} from './interfaces/entities';
 
 export function isIdling(stream: LegacyRoketoStream) {
-  return (
-    stream.status === STREAM_STATUS.INITIALIZED
-    || stream.status === STREAM_STATUS.PAUSED
-  );
+  return stream.status === STREAM_STATUS.INITIALIZED || stream.status === STREAM_STATUS.PAUSED;
 }
 
 export function isDead(stream: LegacyRoketoStream) {
-  return (
-    stream.status === STREAM_STATUS.FINISHED
-    || stream.status === STREAM_STATUS.INTERRUPTED
-  );
+  return stream.status === STREAM_STATUS.FINISHED || stream.status === STREAM_STATUS.INTERRUPTED;
 }
 
 export function isActiveStream(stream: LegacyRoketoStream) {
-  return (
-    stream.status === STREAM_STATUS.ACTIVE
-  );
+  return stream.status === STREAM_STATUS.ACTIVE;
 }
 
 export function isPausedStream(stream: LegacyRoketoStream) {
-  return (
-    stream.status === STREAM_STATUS.PAUSED
-  );
+  return stream.status === STREAM_STATUS.PAUSED;
 }
 
 export const getEmptyAccount = (id: string = 'any'): RoketoAccount => ({

@@ -1,6 +1,6 @@
-import React from 'react';
 import classNames from 'classnames';
-import { Link, useRouteMatch } from 'react-router-dom';
+import React from 'react';
+import {Link, useRouteMatch} from 'react-router-dom';
 
 type NavLinkProps = {
   icon: React.ReactNode;
@@ -10,9 +10,7 @@ type NavLinkProps = {
   onClick: () => void;
 };
 
-export function NavLink({
-  icon, children, className, to, onClick
-}: NavLinkProps) {
+export function NavLink({icon, children, className, to, onClick}: NavLinkProps) {
   const activeClassname = 'bg-hover';
   const match = useRouteMatch(to);
   const isActive = match && match.isExact;
@@ -31,14 +29,7 @@ export function NavLink({
       )}
       onClick={onClick}
     >
-      <div
-        className={classNames(
-          'group-hover:text-blue',
-          isActive ? 'text-blue' : '',
-        )}
-      >
-        {icon}
-      </div>
+      <div className={classNames('group-hover:text-blue', isActive ? 'text-blue' : '')}>{icon}</div>
       <div className="ml-2">{children}</div>
     </Link>
   );

@@ -6,10 +6,7 @@ const modifyStreamFx = attach({
   source: $roketoWallet,
   async effect(
     wallet,
-    {
-      command,
-      streamId,
-    }: {command: 'start' | 'stop' | 'pause'; streamId: string},
+    {command, streamId}: {command: 'start' | 'stop' | 'pause'; streamId: string},
   ) {
     if (!wallet) return null;
     switch (command) {

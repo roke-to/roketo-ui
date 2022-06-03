@@ -1,22 +1,17 @@
-import React from 'react';
 import classNames from 'classnames';
-import { useRouteMatch } from 'react-router-dom';
+import React from 'react';
+import {useRouteMatch} from 'react-router-dom';
 
-import { ROUTES_MAP } from '~/shared/lib/routing';
+import {ROUTES_MAP} from '~/shared/lib/routing';
+import {Header as FullHeader} from '~/widgets/header/Header';
+
 import {Logo} from '@ui/icons/Logo';
-import { Header as FullHeader } from '~/widgets/header/Header';
 
 import styles from './styles.module.scss';
 
 function MinifiedHeader() {
   return (
-    <div
-      className={classNames(
-        'py-4 px-6',
-        'absolute w-full pt-8',
-        'flex justify-center',
-      )}
-    >
+    <div className={classNames('py-4 px-6', 'absolute w-full pt-8', 'flex justify-center')}>
       <Logo className={styles.logo} />
     </div>
   );

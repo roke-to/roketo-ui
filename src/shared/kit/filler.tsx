@@ -12,10 +12,6 @@ export function filler<T, Props extends {[key: string]: any}>({
 }) {
   return function Filler(props: Props) {
     const data = useStore(source);
-    return data === null ? (
-      <Placeholder {...props} />
-    ) : (
-      <View {...props} data={data} />
-    );
+    return data === null ? <Placeholder {...props} /> : <View {...props} data={data} />;
   };
 }

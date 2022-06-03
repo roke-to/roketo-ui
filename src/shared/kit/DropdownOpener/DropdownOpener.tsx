@@ -1,5 +1,5 @@
-import React from 'react';
 import cn from 'classnames';
+import React from 'react';
 
 import {ArrowDown} from '@ui/icons/ArrowDown';
 
@@ -22,8 +22,8 @@ export function DropdownOpener({
   ...rest
 }: DropdownOpenerProps) {
   const arrowClassName = cn(styles.arrow, {
-      [styles.rotate]: opened,
-    });
+    [styles.rotate]: opened,
+  });
 
   return (
     <button
@@ -35,7 +35,7 @@ export function DropdownOpener({
     >
       {children}
 
-      <ArrowDown className={arrowClassName}/>
+      <ArrowDown className={arrowClassName} />
     </button>
   );
 }

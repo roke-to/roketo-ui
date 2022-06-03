@@ -1,13 +1,12 @@
-import {useState} from 'react';
 import {useStore} from 'effector-react';
+import {useState} from 'react';
 
 import {$accountId, $user} from '~/entities/wallet';
-import {DropdownOpener} from '~/shared/kit/DropdownOpener';
-import {DropdownMenu} from '~/shared/kit/DropdownMenu';
 import {env} from '~/shared/config';
+import {DropdownMenu} from '~/shared/kit/DropdownMenu';
+import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 
 import {ProfileForm} from './ProfileForm';
-
 import styles from './index.module.scss';
 
 export const Profile = () => {

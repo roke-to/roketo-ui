@@ -1,6 +1,6 @@
-import { connect, keyStores, WalletConnection, ConnectedWalletAccount } from 'near-api-js';
+import {connect, keyStores, WalletConnection, ConnectedWalletAccount} from 'near-api-js';
 
-import { env } from '~/shared/config';
+import {env} from '~/shared/config';
 
 export async function createNearInstance() {
   const keyStore = new keyStores.BrowserLocalStorageKeyStore();
@@ -19,9 +19,9 @@ export type NearAuth = {
   account: ConnectedWalletAccount;
   signedIn: boolean;
   accountId: string;
-  login: () => void,
-  logout: () => void,
-}
+  login: () => void;
+  logout: () => void;
+};
 
 export function getNearAuth(walletConnection: WalletConnection): NearAuth {
   const accountId = walletConnection.getAccountId();
@@ -48,8 +48,5 @@ export function getNearAuth(walletConnection: WalletConnection): NearAuth {
     accountId,
     login,
     logout,
-  }
+  };
 }
-
-
-

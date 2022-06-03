@@ -1,4 +1,5 @@
 import {useStoreMap} from 'effector-react';
+
 import {$tokens} from '~/entities/wallet';
 
 type NearTokenImageProps = {
@@ -67,7 +68,7 @@ type TokenIconProps = {
   className?: string;
 };
 
-export function TokenIcon({ tokenAccountId, className, ...rest }: TokenIconProps) {
+export function TokenIcon({tokenAccountId, className, ...rest}: TokenIconProps) {
   const image = useStoreMap({
     store: $tokens,
     keys: [tokenAccountId],
@@ -75,12 +76,12 @@ export function TokenIcon({ tokenAccountId, className, ...rest }: TokenIconProps
   });
 
   if (image) {
-    return (
-      <img src={image} alt={tokenAccountId} className={className} {...rest} />
-    );
+    return <img src={image} alt={tokenAccountId} className={className} {...rest} />;
   }
 
-  const Component = isValidTokenName(tokenAccountId) ? currentTokens[tokenAccountId] : FallbackTokenImage;
+  const Component = isValidTokenName(tokenAccountId)
+    ? currentTokens[tokenAccountId]
+    : FallbackTokenImage;
 
   return <Component className={className} {...rest} />;
 }

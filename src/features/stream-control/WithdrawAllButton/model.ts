@@ -1,11 +1,8 @@
-import {createStore, createEvent, sample, attach} from 'effector';
 import type BigNumber from 'bignumber.js';
+import {createStore, createEvent, sample, attach} from 'effector';
 
 import {$roketoWallet, $tokens, $accountStreams} from '~/entities/wallet';
-import {
-  getAvailableToWithdraw,
-  isActiveStream,
-} from '~/shared/api/roketo/lib';
+import {getAvailableToWithdraw, isActiveStream} from '~/shared/api/roketo/lib';
 
 export const triggerWithdrawAll = createEvent();
 
@@ -71,8 +68,7 @@ sample({
           tokenAccountId,
         };
       } else {
-        tokensData[tokenAccountId].available =
-          tokensData[tokenAccountId].available.plus(available);
+        tokensData[tokenAccountId].available = tokensData[tokenAccountId].available.plus(available);
       }
     }
     return {

@@ -6,10 +6,11 @@ class SignInPage {
   importExistingAccount() {
     cy.get('button').then(($button) => {
       if ($button.text().includes('Import a Different Account')) {
-        cy.get('.account-selector > .gray-blue').click( {force: true});
+        cy.get('.account-selector > .gray-blue').click({force: true});
       } else {
-        cy.get('.buttons > .link').click( {force: true});
-      }})
+        cy.get('.buttons > .link').click({force: true});
+      }
+    });
   }
 
   recoverAccount() {
@@ -17,9 +18,7 @@ class SignInPage {
   }
 
   inputPassphrase(value) {
-    cy.get('input')
-      .click()
-      .type(value);
+    cy.get('input').click().type(value);
     cy.get('[data-test-id="seedPhraseRecoverySubmitButton"]').click();
   }
 

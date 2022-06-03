@@ -1,18 +1,17 @@
-import React, {ChangeEvent, Dispatch, SetStateAction, useEffect, useState} from 'react';
-import {useStore} from 'effector-react';
 import cn from 'classnames';
+import {useStore} from 'effector-react';
 import {FieldInputProps, FormikState} from 'formik';
+import React, {ChangeEvent, Dispatch, SetStateAction, useEffect, useState} from 'react';
 
 import {$tokens} from '~/entities/wallet';
+import {testIds} from '~/shared/constants';
+import {usePrev} from '~/shared/hooks/usePrev';
+import {isLikeNumber} from '~/shared/lib/validation';
+
 import {FormField} from '@ui/components/FormField';
 import {Input} from '@ui/components/Input';
 
-import {usePrev} from '~/shared/hooks/usePrev';
-import {isLikeNumber} from '~/shared/lib/validation';
-import { testIds } from '~/shared/constants';
-
 import {getTokensPerSecondCount, getDurationInSeconds, getStreamingSpeed} from '../lib';
-
 import styles from './styles.module.scss';
 
 type SpeedInputProps = {
@@ -37,17 +36,17 @@ const SpeedInput = ({className, value, onChange, label, testId}: SpeedInputProps
 );
 
 type StreamSpeedCalcFieldProps = {
-  deposit: number,
-  tokenAccountId: string,
-  onSpeedChange: (speed: string) => void,
+  deposit: number;
+  tokenAccountId: string;
+  onSpeedChange: (speed: string) => void;
 
-  field: FieldInputProps<any>,
-  form: FormikState<any>,
+  field: FieldInputProps<any>;
+  form: FormikState<any>;
 
-  label?: React.ReactNode,
-  description?: React.ReactNode,
+  label?: React.ReactNode;
+  description?: React.ReactNode;
 
-  isRequired?: boolean,
+  isRequired?: boolean;
   className?: string;
 };
 
@@ -87,18 +86,17 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
     }
   }, [tokensPerSec, onSpeedChange, prevSpeed]);
 
-  const handleInputChangeFactory = (
-    setValue: Dispatch<SetStateAction<number>>,
-    valueLimit: number,
-  ) => (event: ChangeEvent<HTMLInputElement>) => {
-    const {value} = event.target;
+  const handleInputChangeFactory =
+    (setValue: Dispatch<SetStateAction<number>>, valueLimit: number) =>
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const {value} = event.target;
 
-    const safeValue = value || '0';
+      const safeValue = value || '0';
 
-    if (isLikeNumber(safeValue) && Number(safeValue) <= valueLimit) {
-      setValue(Number(safeValue));
-    }
-  };
+      if (isLikeNumber(safeValue) && Number(safeValue) <= valueLimit) {
+        setValue(Number(safeValue));
+      }
+    };
 
   const meaningfulSpeed = getStreamingSpeed(currentStreamingSpeed, token);
   const labelWithStreamingSpeed = (

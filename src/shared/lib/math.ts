@@ -17,6 +17,8 @@ const getExactPercentageRatio = (a: string | number, b: string | number): BigNum
 };
 
 // Retrieves a percentage ratio from A/B rounded to an integer
-export const getRoundedPercentageRatio = (a: string | number, b: string | number, roundRatio: number = 0): BigNumber => (
-  getExactPercentageRatio(a, b).dp(roundRatio)
-);
+export const getRoundedPercentageRatio = (
+  a: string | number,
+  b: string | number,
+  roundRatio: number = 0,
+): BigNumber => getExactPercentageRatio(a, b).dp(roundRatio);

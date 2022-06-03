@@ -9,6 +9,7 @@ import {
 import {WalletConnection} from 'near-api-js';
 
 import {env} from '~/shared/config';
+
 import {createNearInstance} from './near';
 
 const serverConfig = {baseServer: new ServerConfiguration(env.WEB_API_URL, {})};
@@ -18,9 +19,7 @@ class TokenProvider {
 
   private token: null | Promise<string> = null;
 
-  private readonly authApiClient = new AuthApi(
-    createConfiguration({...serverConfig}),
-  );
+  private readonly authApiClient = new AuthApi(createConfiguration({...serverConfig}));
 
   getToken() {
     if (!this.token) {
@@ -71,10 +70,7 @@ class TokenProvider {
 
   private async getAccountIdAndNear() {
     const near = await createNearInstance();
-    const walletConnection = new WalletConnection(
-      near,
-      env.ROKETO_CONTRACT_NAME,
-    );
+    const walletConnection = new WalletConnection(near, env.ROKETO_CONTRACT_NAME);
     const accountId = walletConnection.getAccountId();
 
     return {accountId, near};
@@ -83,16 +79,11 @@ class TokenProvider {
   private async generateLoginParams(): Promise<LoginDto> {
     const {accountId, near} = await this.getAccountIdAndNear();
 
-    const keyPair = await near.config.keyStore.getKey(
-      near.config.networkId,
-      accountId,
-    );
+    const keyPair = await near.config.keyStore.getKey(near.config.networkId, accountId);
 
     const timestamp = Date.now();
 
-    const {signature: Uint8Signature} = keyPair.sign(
-      new TextEncoder().encode(String(timestamp)),
-    ); // TODO: Polyfill TextEncoder?
+    const {signature: Uint8Signature} = keyPair.sign(new TextEncoder().encode(String(timestamp))); // TODO: Polyfill TextEncoder?
 
     const signature: number[] = Array.from(Uint8Signature);
 

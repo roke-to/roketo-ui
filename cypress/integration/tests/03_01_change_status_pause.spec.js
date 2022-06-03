@@ -1,12 +1,12 @@
+import {login} from '../../support/login';
 import MyStreams from '../../support/pages/MyStreams';
 import Transaction from '../../support/pages/TransactionPage';
-import { login } from '../../support/login';
 
 context('Stream pause', () => {
   let account;
 
   before(() => {
-    cy.task('getAccount', { reuse: true }).then((testAccount) => account = testAccount);
+    cy.task('getAccount', {reuse: true}).then((testAccount) => (account = testAccount));
   });
 
   it('pause stream', () => {

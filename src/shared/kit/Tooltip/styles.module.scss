@@ -16,11 +16,13 @@
 
   &:global(.rc-tooltip-placement-top) :global(.rc-tooltip-arrow) {
     border-bottom-color: white;
-    border-width: 0 8px 8px;  }
+    border-width: 0 8px 8px;
+  }
 
   &:global(.rc-tooltip-placement-left) :global(.rc-tooltip-arrow) {
     border-bottom-color: white;
-    border-width: 0 8px 8px;  }
+    border-width: 0 8px 8px;
+  }
 
   &:global(.rc-tooltip-placement-right) :global(.rc-tooltip-arrow) {
     border-bottom-color: white;
@@ -39,7 +41,7 @@
     font-weight: normal !important;
     line-height: 16px !important;
     text-align: center !important;
-    box-shadow: 0 0 10px rgba(0,0,0,0.25);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
     border: none;
     z-index: 1;
   }

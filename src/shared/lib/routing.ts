@@ -1,7 +1,7 @@
 export type Route = {
-  path: string,
-  title: String,
-}
+  path: string;
+  title: String;
+};
 
 export const ROUTES_MAP = {
   root: {
@@ -17,7 +17,7 @@ export const ROUTES_MAP = {
   },
   stream: {
     path: '/streams/:id',
-    title: 'Stream'
+    title: 'Stream',
   },
 };
 

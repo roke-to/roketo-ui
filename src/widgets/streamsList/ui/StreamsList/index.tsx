@@ -1,6 +1,6 @@
-import React from 'react';
 import cn from 'classnames';
 import {useStoreMap} from 'effector-react';
+import React from 'react';
 
 import {$accountStreams} from '~/entities/wallet';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
@@ -12,17 +12,19 @@ import {StreamCard} from '../StreamCard';
 import styles from './styles.module.scss';
 
 type Props = {
-  displayingStreams: RoketoStream[] | undefined,
+  displayingStreams: RoketoStream[] | undefined;
 
-  onCreateStreamClick: () => void,
+  onCreateStreamClick: () => void;
 
-  className?: string,
-}
+  className?: string;
+};
 
-const EmptyState = ({children}: {children: React.ReactNode}) => <div className={styles.emptyState}>{children}</div>
+const EmptyState = ({children}: {children: React.ReactNode}) => (
+  <div className={styles.emptyState}>{children}</div>
+);
 
 export const StreamsList = ({className, displayingStreams, onCreateStreamClick}: Props) => {
-  const {loading, hasStreams} = useStoreMap($accountStreams,  (value) => ({
+  const {loading, hasStreams} = useStoreMap($accountStreams, (value) => ({
     loading: !value.streamsLoaded,
     hasStreams: value.inputs.length + value.outputs.length > 0,
   }));
@@ -40,9 +42,7 @@ export const StreamsList = ({className, displayingStreams, onCreateStreamClick}:
   if (!hasStreams) {
     return (
       <EmptyState>
-        <div>
-          You don't have any streams yet.
-        </div>
+        <div>You don't have any streams yet.</div>
         <Button onClick={onCreateStreamClick}>Create First Stream</Button>
       </EmptyState>
     );
@@ -65,7 +65,7 @@ export const StreamsList = ({className, displayingStreams, onCreateStreamClick}:
           <h3 className={styles.title}>Comment</h3>
         </div>
 
-        {displayingStreams?.map(stream => (
+        {displayingStreams?.map((stream) => (
           <StreamCard
             stream={stream}
             key={stream.id}
@@ -75,4 +75,4 @@ export const StreamsList = ({className, displayingStreams, onCreateStreamClick}:
       </section>
     </div>
   );
-}
+};

@@ -1,17 +1,17 @@
-import {useEffect, useRef, useState} from 'react';
 import {useStore} from 'effector-react';
+import {useEffect, useRef, useState} from 'react';
 
 import {$user, updateUserFx} from '~/entities/wallet';
 
-import { Button, ButtonType } from '@ui/components/Button';
-import { Input } from '@ui/components/Input';
+import {Button, ButtonType} from '@ui/components/Button';
 import {FormField} from '@ui/components/FormField';
+import {Input} from '@ui/components/Input';
 import {Spinner} from '@ui/components/Spinner';
 
 import styles from './index.module.scss';
 
-const NAME_INPUT = "nameInput";
-const EMAIL_INPUT = "emailInput";
+const NAME_INPUT = 'nameInput';
+const EMAIL_INPUT = 'emailInput';
 
 export function ProfileForm() {
   const user = useStore($user);
@@ -29,8 +29,8 @@ export function ProfileForm() {
   return (
     <form
       className={styles.profileForm}
-      onSubmit={e => {
-        e.preventDefault()
+      onSubmit={(e) => {
+        e.preventDefault();
         updateUserFx({
           name: formRef.current?.[NAME_INPUT].value,
           email: formRef.current?.[EMAIL_INPUT].value,
@@ -38,13 +38,9 @@ export function ProfileForm() {
       }}
       ref={formRef}
     >
-      {isMutating &&
-        <Spinner wrapperClassName={styles.loaderWrapper} />
-      }
+      {isMutating && <Spinner wrapperClassName={styles.loaderWrapper} />}
 
-      <FormField
-        label='User name'
-      >
+      <FormField label="User name">
         <Input
           placeholder="Name"
           name={NAME_INPUT}
@@ -54,10 +50,7 @@ export function ProfileForm() {
         />
       </FormField>
 
-      <FormField
-        label='Email'
-        description='Email address is used for notifications'
-      >
+      <FormField label="Email" description="Email address is used for notifications">
         <Input
           placeholder="Email"
           name={EMAIL_INPUT}
@@ -67,10 +60,7 @@ export function ProfileForm() {
         />
       </FormField>
 
-      <Button
-        type={ButtonType.submit}
-        disabled={isMutating}
-      >
+      <Button type={ButtonType.submit} disabled={isMutating}>
         Save
       </Button>
     </form>

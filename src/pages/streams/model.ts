@@ -1,5 +1,6 @@
-import {generatePath} from 'react-router-dom';
 import {attach} from 'effector';
+import {generatePath} from 'react-router-dom';
+
 import {$roketoWallet} from '~/entities/wallet';
 import type {FormValues} from '~/features/create-stream/CreateStream';
 import {ROUTES_MAP} from '~/shared/lib/routing';
@@ -27,7 +28,9 @@ export const handleCreateStreamFx = attach({
       callbackUrl: returnPath,
       handleTransferStream: api.transfer,
       isLocked,
-      cliffPeriodSec: cliffDateTime ? Math.floor((cliffDateTime.getTime() - Date.now()) / 1000) : undefined,
+      cliffPeriodSec: cliffDateTime
+        ? Math.floor((cliffDateTime.getTime() - Date.now()) / 1000)
+        : undefined,
     });
   },
 });

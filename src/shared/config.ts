@@ -5,13 +5,13 @@ type EnvType = {
   ROKETO_CONTRACT_NAME: string;
   WALLET_URL: string;
   PUBLIC_URL: string;
-  PRICE_ORACLE_CONTRACT_NAME: string,
-  PRICE_ORACLE_SOURCE_ID: string,
+  PRICE_ORACLE_CONTRACT_NAME: string;
+  PRICE_ORACLE_SOURCE_ID: string;
   WNEAR_ID: string;
   WEB_API_URL: string;
-  COMMIT_HASH: string
-  BUILD_TIME: string | null
-}
+  COMMIT_HASH: string;
+  BUILD_TIME: string | null;
+};
 
 export const env: EnvType = {
   ACCOUNT_SUFFIX: import.meta.env.VITE_NEAR_ACCOUNT_SUFFIX,
@@ -28,4 +28,4 @@ export const env: EnvType = {
   BUILD_TIME: import.meta.env.BUILD_TIME ?? null,
 };
 
-export const GAS_SIZE = "200000000000000";
+export const GAS_SIZE = '200000000000000';

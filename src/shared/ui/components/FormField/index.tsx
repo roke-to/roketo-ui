@@ -1,5 +1,5 @@
-import React from 'react';
 import cn from 'classnames';
+import React from 'react';
 
 import styles from './styles.module.scss';
 
@@ -7,30 +7,30 @@ type FormFieldProps = {
   children: React.ReactNode;
 
   label?: React.ReactNode;
-  description?: React.ReactNode,
+  description?: React.ReactNode;
 
-  isRequired?: boolean,
+  isRequired?: boolean;
   error?: any;
 
   className?: string;
 };
 
 export const FormField = ({
-  children, isRequired = false, label, description, error, className, ...rest
+  children,
+  isRequired = false,
+  label,
+  description,
+  error,
+  className,
+  ...rest
 }: FormFieldProps) => (
-    <div className={cn(styles.root, className)} {...rest}>
-      {label &&
-        <label className={cn(styles.label, {[styles.required]: isRequired})}>{label}</label>
-      }
+  <div className={cn(styles.root, className)} {...rest}>
+    {label && <label className={cn(styles.label, {[styles.required]: isRequired})}>{label}</label>}
 
-      {children}
+    {children}
 
-      {description &&
-        <div className={styles.description}>{description}</div>
-      }
+    {description && <div className={styles.description}>{description}</div>}
 
-      {error &&
-        <div className={styles.error}>{error}</div>
-      }
-    </div>
-  )
+    {error && <div className={styles.error}>{error}</div>}
+  </div>
+);

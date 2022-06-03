@@ -1,6 +1,7 @@
-import React from 'react';
 import classNames from 'classnames';
-import { TokenIcon } from '~/shared/ui/icons/Tokens';
+import React from 'react';
+
+import {TokenIcon} from '~/shared/ui/icons/Tokens';
 
 type TokenImageProps = {
   tokenAccountId: string;
@@ -8,11 +9,7 @@ type TokenImageProps = {
   className?: string;
 };
 
-export function TokenImage({
-  tokenAccountId,
-  size = 8,
-  className,
-}: TokenImageProps) {
+export function TokenImage({tokenAccountId, size = 8, className}: TokenImageProps) {
   return (
     <div
       className={classNames(

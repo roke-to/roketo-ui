@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
 import cx from 'classnames';
-import {RadioButton} from '../RadioButton';
-import {DropdownOpener} from '../DropdownOpener';
-import {DropdownMenu} from '../DropdownMenu';
+import React, {useState} from 'react';
 
+import {DropdownMenu} from '../DropdownMenu';
+import {DropdownOpener} from '../DropdownOpener';
+import {RadioButton} from '../RadioButton';
 import styles from './styles.module.scss';
 
 type FilterOptionWithCounterProps = {
@@ -14,9 +14,7 @@ type FilterOptionWithCounterProps = {
 export function FilterOptionWithCounter({count, option}: FilterOptionWithCounterProps) {
   return (
     <span>
-      {option}
-      {' '}
-      <span className="text-gray font-normal">{count}</span>
+      {option} <span className="text-gray font-normal">{count}</span>
     </span>
   );
 }
@@ -34,7 +32,7 @@ type FilterProps<T> = {
   active: T;
   onChange: (option: T) => void;
   className?: string;
-  isDisabled?: boolean
+  isDisabled?: boolean;
 };
 
 export function Filter<T extends string | FilterOption>({
@@ -45,22 +43,17 @@ export function Filter<T extends string | FilterOption>({
   active,
   onChange,
   className,
-  isDisabled
+  isDisabled,
 }: FilterProps<T>) {
   const [opened, setOpened] = useState(false);
 
   return (
     <div className={cx(styles.root, className)}>
-      {label &&
-        <div className="text-gray mr-2">{label}</div>
-      }
+      {label && <div className="text-gray mr-2">{label}</div>}
 
       <div className={styles.dropdownWrapper}>
         <DropdownOpener
-          className={cx(
-            isDisabled && styles.dropdownInactive,
-            isDisabled && 'text-gray',
-          )}
+          className={cx(isDisabled && styles.dropdownInactive, isDisabled && 'text-gray')}
           opened={!isDisabled && opened}
           onChange={setOpened}
         >
