@@ -19,7 +19,7 @@ import {ROUTES_MAP} from '~/shared/lib/routing';
 import {BangIcon} from './BangIcon';
 import {BellIcon} from './BellIcon';
 import {FinishIcon} from './FinishIcon';
-import {markAllReadFx} from './model';
+import {markAllRead} from './model';
 import {PauseIcon} from './PauseIcon';
 import {StartIcon} from './StartIcon';
 import styles from './styles.module.scss';
@@ -217,7 +217,7 @@ export function Notifications() {
 
   const closeDropdown = useCallback(() => {
     setIsDropdownOpened(false);
-    markAllReadFx();
+    markAllRead();
   }, []);
 
   const hasUnreadNotifications = notifications.some(({isRead}) => !isRead) ?? false;
