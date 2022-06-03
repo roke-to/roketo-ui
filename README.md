@@ -1,4 +1,4 @@
-# Roke.to dApp frontend
+# Roke.to dApp
 
 ## Run dev server
 
