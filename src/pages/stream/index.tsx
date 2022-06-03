@@ -1,12 +1,11 @@
-import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import copy from 'clipboard-copy';
 import {format, isPast} from 'date-fns';
-import {useGate, useStore, useStoreMap} from 'effector-react';
+import {useGate, useStore} from 'effector-react';
 import React, {useState} from 'react';
-import Modal from 'react-modal';
 import {Link, useParams} from 'react-router-dom';
 
+import {AddFunds, useShouldShowAddFundsButton} from '~/features/add-funds';
 import {getStreamingSpeed} from '~/features/create-stream/lib';
 import {streamViewData} from '~/features/roketo-resource';
 import {StreamControls} from '~/features/stream-control/StreamControls';
@@ -16,10 +15,9 @@ import {$tokens} from '~/entities/wallet';
 
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {getAvailableToWithdraw, isIdling} from '~/shared/api/roketo/lib';
+import {getAvailableToWithdraw, isDead, isIdling} from '~/shared/api/roketo/lib';
 import {Badge} from '~/shared/components/Badge';
 import {PageError} from '~/shared/components/PageError';
-import {useBool} from '~/shared/hooks/useBool';
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 import {useRerender} from '~/shared/hooks/useRerender';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
@@ -27,8 +25,6 @@ import {TokenImage} from '~/shared/kit/TokenImage';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
 import {getStreamLink, ROUTES_MAP} from '~/shared/lib/routing';
 
-import {Button, ButtonType} from '@ui/components/Button';
-import {Input} from '@ui/components/Input';
 import {Layout} from '@ui/components/Layout';
 import {ProgressBar} from '@ui/components/ProgressBar';
 import {LinkIcon} from '@ui/icons/Link';
@@ -64,92 +60,12 @@ function StreamProgress({stream}: {stream: RoketoStream}) {
 }
 
 function StreamButtons({stream}: {stream: RoketoStream}) {
-  const token = useStoreMap({
-    store: $tokens,
-    keys: [stream.token_account_id],
-    fn: (tokens) => tokens[stream.token_account_id],
-  });
-  const {
-    isDead,
-    streamEndTimestamp,
-    percentages: {left},
-  } = streamViewData(stream);
+  const shouldShowAddFundsButton = useShouldShowAddFundsButton(stream);
   const direction = useGetStreamDirection(stream);
-  const addFundsModal = useBool(false);
-  const [deposit, setDeposit] = useState('');
-  let dueDate: string | null = null;
-  const isStreamEnded = left === 0;
-  const hasValidAdditionalFunds = Number(deposit) > 0;
-  const isOutgoingStream = direction === STREAM_DIRECTION.OUT;
-  if (isOutgoingStream && hasValidAdditionalFunds && streamEndTimestamp) {
-    const resultTime = new BigNumber(token.formatter.toYocto(deposit))
-      .dividedBy(stream.tokens_per_sec)
-      .multipliedBy(1000)
-      .plus(streamEndTimestamp)
-      .toNumber();
-    dueDate = format(resultTime, "PP 'at' p");
-  }
-
-  if (isDead) {
-    return null;
-  }
 
   return (
     <div className={styles.buttons}>
-      <Modal
-        isOpen={isStreamEnded ? false : addFundsModal.on}
-        onRequestClose={addFundsModal.turnOff}
-        className={styles.modalContent}
-        overlayClassName={styles.modalOverlay}
-      >
-        <form
-          autoComplete="off"
-          onSubmit={async (e) => {
-            e.preventDefault();
-            addFundsModal.turnOff();
-            setDeposit('');
-            if (!hasValidAdditionalFunds) return;
-            const amount = token.formatter.toYocto(deposit);
-            await token.api.addFunds(amount, stream.id, window.location.href);
-          }}
-        >
-          <h2 className={styles.modalHeader}>Amount to deposit</h2>
-          <p>
-            <Input
-              required
-              name="deposit"
-              placeholder="0.00 NEAR"
-              value={deposit ?? ''}
-              onChange={(e) => setDeposit(e.target.value)}
-            />
-            {dueDate && (
-              <div className={styles.dueDate}>
-                <span className={styles.dueDateLabel}>New due date:</span>
-                <span className={styles.dueDateValue}>{dueDate}</span>
-              </div>
-            )}
-          </p>
-          <div className={styles.modalButtons}>
-            <button
-              type="button"
-              onClick={addFundsModal.turnOff}
-              className={classNames(styles.modalButton, styles.modalSecondary)}
-            >
-              Cancel
-            </button>
-            <Button
-              type={ButtonType.submit}
-              className={styles.modalButton}
-              disabled={!hasValidAdditionalFunds}
-            >
-              Add funds
-            </Button>
-          </div>
-        </form>
-      </Modal>
-      {!isStreamEnded && isOutgoingStream && (
-        <Button onClick={addFundsModal.turnOn}>Add funds</Button>
-      )}
+      {shouldShowAddFundsButton && <AddFunds stream={stream} />}
       <StreamControls stream={stream} />
 
       {direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.Active && (
@@ -383,7 +299,7 @@ export function StreamPage() {
                   </Badge>
                 )}
                 <StreamProgress stream={stream} />
-                <StreamButtons stream={stream} />
+                {!isDead(stream) && <StreamButtons stream={stream} />}
                 <StreamSpeed stream={stream} />
                 <div className={styles.divider} />
                 <StreamComment stream={stream} />

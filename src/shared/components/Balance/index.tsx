@@ -6,6 +6,17 @@ import {$nearWallet, $priceOracle} from '~/entities/wallet';
 import {useToken} from '~/shared/hooks/useToken';
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 
+export function useBalanceForToken(tokenId: string) {
+  const nearWallet = useStore($nearWallet);
+  const {balance, formatter} = useToken(tokenId);
+
+  const actualCryptoBalance = isWNearTokenId(tokenId)
+    ? nearWallet?.auth.balance?.available ?? '0'
+    : balance;
+
+  return formatter.amount(actualCryptoBalance);
+}
+
 export enum DisplayMode {
   USD = 'USD',
   CRYPTO = 'CRYPTO',
@@ -21,13 +32,10 @@ type BalanceProps = {
 
 export function Balance({tokenAccountId, className, mode = DisplayMode.CRYPTO}: BalanceProps) {
   const priceOracle = useStore($priceOracle);
-  const nearWallet = useStore($nearWallet);
-  const {balance, formatter, meta} = useToken(tokenAccountId);
 
-  const actualCryptoBalance = isWNearTokenId(tokenAccountId)
-    ? nearWallet?.auth.balance?.available ?? '0'
-    : balance;
-  const displayedCryptoAmount = formatter.amount(actualCryptoBalance);
+  const {meta} = useToken(tokenAccountId);
+
+  const displayedCryptoAmount = useBalanceForToken(tokenAccountId);
 
   const showInUSD = mode === DisplayMode.USD;
 

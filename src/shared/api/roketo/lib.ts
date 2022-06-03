@@ -37,8 +37,12 @@ export function getAvailableToWithdraw(stream: RoketoStream): BigNumber {
   return BigNumber.minimum(stream.balance, Number(stream.tokens_per_sec) * period);
 }
 
-export function isLocked({is_locked, status}: RoketoStream) {
-  return is_locked && status !== STREAM_STATUS.Initialized;
+export function isLocked(stream: RoketoStream) {
+  return stream.is_locked;
+}
+
+export function wasStartedAndLocked(stream: RoketoStream) {
+  return isLocked(stream) && stream.status !== STREAM_STATUS.Initialized;
 }
 
 export const getEmptyAccount = (): RoketoAccount => ({
