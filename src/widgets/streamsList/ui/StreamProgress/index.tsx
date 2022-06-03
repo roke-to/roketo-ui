@@ -3,9 +3,9 @@ import cn from 'classnames';
 import RCTooltip from 'rc-tooltip';
 
 import {ProgressBar} from '~/shared/ui/components/ProgressBar';
-import {ClockIcon} from '~/shared/icons/Clock';
+import {ClockIcon} from '~/shared/ui/icons/Clock';
 
-import {getRoundedPercentageRatio} from '~/shared/helpers/math';
+import {getRoundedPercentageRatio} from '~/shared/lib/math';
 
 import {TokenFormatter} from '~/shared/api/ft/token-formatter';
 import {useToken} from '~/shared/hooks/useToken';

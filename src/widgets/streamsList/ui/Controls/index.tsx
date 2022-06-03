@@ -7,8 +7,8 @@ import {LinkIcon} from '@ui/icons/Link';
 import {WithdrawButton} from '~/features/stream-control/WithdrawButton';
 import { StreamControls } from '~/features/stream-control/StreamControls';
 
-import {getStreamLink} from '~/shared/helpers/routing';
-import {isActiveStream} from '~/shared/api/roketo/helpers';
+import {getStreamLink} from '~/shared/lib/routing';
+import {isActiveStream} from '~/shared/api/roketo/lib';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';

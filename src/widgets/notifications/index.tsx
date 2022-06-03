@@ -7,7 +7,7 @@ import type {NotificationTypeEnum as NotificationType, Notification} from '@roke
 
 import {$tokens, $notifications} from '~/entities/wallet';
 
-import { ROUTES_MAP } from '~/shared/helpers/routing';
+import { ROUTES_MAP } from '~/shared/lib/routing';
 import { DropdownOpener } from '~/shared/kit/DropdownOpener';
 import { DropdownMenu } from '~/shared/kit/DropdownMenu';
 import { STREAM_DIRECTION, useGetStreamDirection } from '~/shared/hooks/useGetStreamDirection';

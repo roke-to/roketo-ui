@@ -2,7 +2,7 @@ import { Account, Contract, utils, transactions } from 'near-api-js';
 import BigNumber from 'bignumber.js';
 import JSONbig from 'json-bigint';
 
-import { isWNearTokenId } from '~/shared/helpers/isWNearTokenId';
+import { isWNearTokenId } from '~/shared/lib/isWNearTokenId';
 import { env } from '~/shared/config';
 
 import { TokenMetadata } from './types';

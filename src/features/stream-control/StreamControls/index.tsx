@@ -11,7 +11,7 @@ import { DropdownOpener } from '~/shared/kit/DropdownOpener';
 import { DropdownMenu, DropdownMenuDivider, DropdownMenuItem } from '~/shared/kit/DropdownMenu';
 import { useBool, BooleanControl } from '~/shared/hooks/useBool';
 import type { RoketoStream } from '~/shared/api/roketo/interfaces/entities';
-import { isActiveStream, isWithCliff, isDead, isLocked, isPausedStream } from '~/shared/api/roketo/helpers';
+import { isActiveStream, isWithCliff, isDead, isLocked, isPausedStream } from '~/shared/api/roketo/lib';
 
 import { StreamStatus } from '../StreamStatus';
 import {$loading, startStream, pauseStream, stopStream} from './model';

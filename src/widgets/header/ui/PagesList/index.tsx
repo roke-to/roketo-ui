@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Route} from "~/shared/helpers/routing";
+import {Route} from "~/shared/lib/routing";
 
 import NavigationLink from "~/shared/components/NavigationLink";
 

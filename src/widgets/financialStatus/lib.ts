@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import {RichTokens} from '~/shared/api/ft';
 import {PriceOracle} from '~/shared/api/price-oracle';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {getAvailableToWithdraw} from '~/shared/api/roketo/helpers';
+import {getAvailableToWithdraw} from '~/shared/api/roketo/lib';
 import {streamViewData} from '~/features/roketo-resource';
 
 const INITIAL_VALUE = new BigNumber(0);

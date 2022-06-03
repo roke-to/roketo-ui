@@ -3,7 +3,7 @@ import cn from 'classnames';
 import {generatePath, Link} from 'react-router-dom';
 
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {ROUTES_MAP} from '~/shared/helpers/routing';
+import {ROUTES_MAP} from '~/shared/lib/routing';
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 
 import {Name} from '../Name';

@@ -8,7 +8,7 @@ import {FormField} from '@ui/components/FormField';
 import {Input} from '@ui/components/Input';
 
 import {usePrev} from '~/shared/hooks/usePrev';
-import {isLikeNumber} from '~/shared/helpers/validation';
+import {isLikeNumber} from '~/shared/lib/validation';
 import { testIds } from '~/shared/constants';
 
 import {getTokensPerSecondCount, getDurationInSeconds, getStreamingSpeed} from '../lib';

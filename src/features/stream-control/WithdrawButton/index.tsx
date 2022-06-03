@@ -7,7 +7,7 @@ import {Button, ButtonType, DisplayMode} from '@ui/components/Button';
 import { RoketoStream } from '~/shared/api/roketo/interfaces/entities';
 import { Tooltip } from '~/shared/kit/Tooltip';
 import { streamViewData } from '~/features/roketo-resource';
-import { getAvailableToWithdraw } from '~/shared/api/roketo/helpers';
+import { getAvailableToWithdraw } from '~/shared/api/roketo/lib';
 import { testIds } from '~/shared/constants';
 
 import styles from './styles.module.scss';

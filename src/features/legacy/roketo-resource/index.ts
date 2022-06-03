@@ -8,8 +8,8 @@ import { STREAM_DIRECTION, STREAM_STATUS } from '../api/roketo/constants';
 import { LegacyRoketoStream, RoketoAccount } from '../api/roketo/interfaces/entities';
 import { TICK_TO_MS, TICK_TO_S } from '../api/roketo/config';
 import { isActiveStream, isDead, isIdling } from '../api/roketo/helpers';
-import { SECONDS_IN_YEAR } from '../../../shared/constants';
-import { shortEnLocale } from '../../../shared/helpers/date';
+import { SECONDS_IN_YEAR } from "~/shared/constants";
+import { shortEnLocale } from "~/shared/lib/date";
 
 function identifyStreamsDirection(streams: LegacyRoketoStream[], accountId: string) {
   return streams.map((stream) => ({

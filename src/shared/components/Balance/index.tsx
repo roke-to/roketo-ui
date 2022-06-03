@@ -1,7 +1,7 @@
 import React from 'react'
 import {useStore} from 'effector-react';
 import {$nearWallet, $priceOracle} from '~/entities/wallet';
-import { isWNearTokenId } from '~/shared/helpers/isWNearTokenId';
+import { isWNearTokenId } from '~/shared/lib/isWNearTokenId';
 import { useToken } from '~/shared/hooks/useToken';
 
 export enum DisplayMode {

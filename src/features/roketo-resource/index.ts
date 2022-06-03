@@ -1,10 +1,10 @@
 import BigNumber from 'bignumber.js';
 import { formatDuration, intervalToDuration } from 'date-fns';
 
-import { getAvailableToWithdraw, isDead, isIdling } from '~/shared/api/roketo/helpers';
+import { getAvailableToWithdraw, isDead, isIdling } from '~/shared/api/roketo/lib';
 import type { RoketoStream } from '~/shared/api/roketo/interfaces/entities';
 import { SECONDS_IN_YEAR } from '~/shared/constants';
-import { shortEnLocale } from '~/shared/helpers/date';
+import { shortEnLocale } from '~/shared/lib/date';
 
 function calculateEndTimestamp(stream: RoketoStream) {
   /**
@@ -12,7 +12,7 @@ function calculateEndTimestamp(stream: RoketoStream) {
    * then there is no way to calculate stream end time
    * */
   if (isIdling(stream)) return null
-  
+
   const tokensPerMs = new BigNumber(stream.tokens_per_sec).dividedBy(1000)
   const lastActionTime = stream.last_action / 1000_000
 
@@ -84,7 +84,7 @@ export function streamViewData(stream: RoketoStream, withExtrapolation: boolean 
     available: availableToWithdraw.multipliedBy(100).dividedBy(full).toNumber(),
     cliff: calculateCliffPercent(stream),
   };
-  
+
   return {
     progresses,
     isDead: isDead(stream),

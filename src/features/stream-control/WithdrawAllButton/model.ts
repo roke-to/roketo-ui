@@ -5,7 +5,7 @@ import {$roketoWallet, $tokens, $accountStreams} from '~/entities/wallet';
 import {
   getAvailableToWithdraw,
   isActiveStream,
-} from '~/shared/api/roketo/helpers';
+} from '~/shared/api/roketo/lib';
 
 export const triggerWithdrawAll = createEvent();
 

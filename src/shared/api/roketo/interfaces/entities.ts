@@ -26,7 +26,7 @@ export type RoketoStream = {
   status: StreamStatus; // Stream status
   timestamp_created: number;
   token_account_id: AccountId;
-  tokens_per_sec: StringInt; // Streaming speed, refer to helpers.ts to learn how to convert it
+  tokens_per_sec: StringInt; // Streaming speed, refer to lib.ts to learn how to convert it
   tokens_total_withdrawn: StringInt;
 };
 

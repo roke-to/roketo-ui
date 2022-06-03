@@ -8,7 +8,7 @@ import {Layout} from '@ui/components/Layout';
 import {Authorization} from '~/features/authorization';
 import { LEGACY_ROUTES_MAP, useShowLegacyStreams } from '~/features/legacy';
 
-import {ROUTES_MAP} from '~/shared/helpers/routing';
+import {ROUTES_MAP} from '~/shared/lib/routing';
 import { useMediaQuery } from '~/shared/hooks/useMatchQuery';
 
 import {PageList} from './ui/PagesList';

@@ -16,7 +16,7 @@ import {Footer} from '~/widgets/footer';
 import { LEGACY_ROUTES_MAP, LegacyStreamPage, LegacyStreamsPage } from '~/features/legacy';
 
 import { env } from '~/shared/config';
-import { ROUTES_MAP } from '~/shared/helpers/routing';
+import { ROUTES_MAP } from '~/shared/lib/routing';
 
 import { StreamsPage } from './streams';
 import { AuthorizePage } from './authorize';

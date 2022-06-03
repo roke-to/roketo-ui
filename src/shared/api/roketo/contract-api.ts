@@ -5,7 +5,7 @@ import { GAS_SIZE } from '~/shared/config';
 import { RoketoContract } from './interfaces/contracts';
 import { RoketoAccount, RoketoStream } from './interfaces/entities';
 import { CreateStreamApiProps, RoketoApi, StreamsProps } from './interfaces/roketo-api';
-import { getEmptyAccount } from './helpers';
+import { getEmptyAccount } from './lib';
 
 type NewRoketoApiProps = {
   account: Account;
@@ -33,7 +33,7 @@ export class RoketoContractApi implements RoketoApi {
 
     try {
       const account = await this.contract.get_account({ account_id: this.account.accountId });
-  
+
       return account;
     } catch {
       return getEmptyAccount();
@@ -53,7 +53,7 @@ export class RoketoContractApi implements RoketoApi {
   async getAccountOutgoingStreams({ from, limit }: StreamsProps): Promise<RoketoStream[]> {
     try {
       const res = await this.contract.get_account_outgoing_streams({ account_id: this.account.accountId, from, limit });
-      
+
       return res;
     } catch {
       return [];

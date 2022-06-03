@@ -1,6 +1,6 @@
 import {createStore, sample} from 'effector';
 import {$tokens, $accountStreams, $priceOracle} from '~/entities/wallet';
-import {isActiveStream} from '~/shared/api/roketo/helpers';
+import {isActiveStream} from '~/shared/api/roketo/lib';
 
 import {
   collectTotalFinancialAmountInfo,

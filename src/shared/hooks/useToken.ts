@@ -1,5 +1,5 @@
 import {useStore} from 'effector-react';
-import { isWNearTokenId } from '~/shared/helpers/isWNearTokenId';
+import { isWNearTokenId } from '~/shared/lib/isWNearTokenId';
 import {$tokens} from '~/entities/wallet';
 
 export function useToken(tokenAccountId: string) {

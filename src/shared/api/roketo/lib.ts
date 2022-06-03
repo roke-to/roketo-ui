@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { millisecondsToSeconds } from 'date-fns';
 
-import { fromNanosecToSec } from '~/shared/helpers/date';
+import { fromNanosecToSec } from '~/shared/lib/date';
 
 import { STREAM_STATUS } from './constants';
 import { RoketoStream, RoketoAccount } from './interfaces/entities';
@@ -38,7 +38,7 @@ export function getAvailableToWithdraw(stream: RoketoStream): BigNumber {
   const period = nowSec - lastActionSec;
 
   return BigNumber.minimum(
-    stream.balance, 
+    stream.balance,
     Number(stream.tokens_per_sec) * period
   );
 }

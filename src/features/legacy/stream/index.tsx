@@ -11,7 +11,7 @@ import { Layout } from '@ui/components/Layout';
 import { getStreamingSpeed } from '~/features/create-stream/lib';
 import { ProgressBar } from '@ui/components/ProgressBar';
 import { TokenImage } from '~/shared/kit/TokenImage';
-import { getRoundedPercentageRatio } from '~/shared/helpers/math';
+import { getRoundedPercentageRatio } from '~/shared/lib/math';
 
 import { STREAM_STATUS } from '../api/roketo/constants';
 import { StreamControls } from '../stream-control/StreamControls';
@@ -156,7 +156,7 @@ function StreamData({stream}: {stream: LegacyRoketoStream}) {
   const streamedToTotalPercentageRatio = getRoundedPercentageRatio(streamed, full).toNumber();
   const leftToTotalPercentageRatio = getRoundedPercentageRatio(left, full).toNumber();
   const available = Number(stream.available_to_withdraw);
-  
+
   const [showOtherInfo, setShowOtherInfo] = useState(false);
 
   return (

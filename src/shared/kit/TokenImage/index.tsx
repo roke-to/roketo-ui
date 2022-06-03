@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { TokenIcon } from '~/shared/icons/Tokens';
+import { TokenIcon } from '~/shared/ui/icons/Tokens';
 
 type TokenImageProps = {
   tokenAccountId: string;
