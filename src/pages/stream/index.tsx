@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { useParams, Link, generatePath } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import copy from 'clipboard-copy';
 import classNames from 'classnames';
 import { format, isPast } from 'date-fns';
@@ -57,25 +57,23 @@ function StreamProgress({ stream }: { stream: RoketoStream }) {
   );
 }
 
-const redirectUrl = generatePath(ROUTES_MAP.streams.path);
-const returnPath = `${window.location.origin}/#${redirectUrl}`;
-
 function StreamButtons({stream}: {stream: RoketoStream}) {
   const {tokens} = useRoketoContext();
   const token = tokens[stream.token_account_id];
-  const {isDead, streamEndTimestamp, timeLeft} = streamViewData(stream);
+  const {isDead, streamEndTimestamp, percentages: {left}} = streamViewData(stream);
   const direction = useGetStreamDirection(stream);
   const addFundsModal = useBool(false);
   const [deposit, setDeposit] = useState('');
-  const streamSpeed = new BigNumber(stream.tokens_per_sec);
   let dueDate: string | null = null;
-  const isStreamEnded = !timeLeft;
+  const isStreamEnded = left === 0;
   const hasValidAdditionalFunds = deposit !== '' && !Number.isNaN(+deposit);
   const isOutgoingStream = direction === STREAM_DIRECTION.OUT;
   if (isOutgoingStream && hasValidAdditionalFunds && streamEndTimestamp) {
-    const amount = new BigNumber(token.formatter.toYocto(deposit));
-    const streamAdditionalTime = amount.dividedBy(streamSpeed).multipliedBy(1000);
-    const resultTime = +streamAdditionalTime.plus(streamEndTimestamp).toFixed();
+    const resultTime = +new BigNumber(token.formatter.toYocto(deposit))
+      .dividedBy(stream.tokens_per_sec)
+      .multipliedBy(1000)
+      .plus(streamEndTimestamp)
+      .toFixed();
     if (!Number.isNaN(resultTime)) {
       dueDate = format(resultTime, "PP 'at' p");
     }
@@ -99,7 +97,7 @@ function StreamButtons({stream}: {stream: RoketoStream}) {
           setDeposit('');
           if (!hasValidAdditionalFunds) return
           const amount = token.formatter.toYocto(deposit);
-          await token.api.addFunds(amount, stream.id, returnPath);
+          await token.api.addFunds(amount, stream.id, window.location.href);
         }}>
           <h2 className={styles.modalHeader}>Amount to deposit</h2>
           <p>
@@ -231,7 +229,6 @@ function StreamData({stream}: {stream: RoketoStream}) {
     timeLeft,
     progress: {streamed, left, full},
   } = streamViewData(stream);
-
   const streamedToTotalPercentageRatio = getRoundedPercentageRatio(streamed, full).toNumber();
   const leftToTotalPercentageRatio = getRoundedPercentageRatio(left, full).toNumber();
   const available = getAvailableToWithdraw(stream).toNumber();
