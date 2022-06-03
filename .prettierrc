@@ -9,13 +9,17 @@
   "printWidth": 100,
   "endOfLine": "lf",
   "importOrder": [
-    "~/",
-    "^~/pages/",
-    "^~/features/",
-    "^~/entities/",
-    "^~/shared/",
+    "<THIRD_PARTY_MODULES>",
+    "~/pages",
+    "^~/widgets",
+    "^~/features",
+    "^~/entities",
+    "^~/shared",
     "^@ui/",
     "^[./]"
   ],
-  "importOrderSeparation": true
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "importOrderGroupNamespaceSpecifiers": true,
+  "importOrderCaseInsensitive": true
 }
