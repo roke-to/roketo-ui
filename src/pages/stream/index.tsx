@@ -163,17 +163,15 @@ function StreamButtons({stream}: {stream: RoketoStream}) {
   const [deposit, setDeposit] = useState('');
   let dueDate: string | null = null;
   const isStreamEnded = left === 0;
-  const hasValidAdditionalFunds = deposit !== '' && !Number.isNaN(+deposit);
+  const hasValidAdditionalFunds = Number(deposit) > 0;
   const isOutgoingStream = direction === STREAM_DIRECTION.OUT;
   if (isOutgoingStream && hasValidAdditionalFunds && streamEndTimestamp) {
-    const resultTime = +new BigNumber(token.formatter.toYocto(deposit))
+    const resultTime = new BigNumber(token.formatter.toYocto(deposit))
       .dividedBy(stream.tokens_per_sec)
       .multipliedBy(1000)
       .plus(streamEndTimestamp)
-      .toFixed();
-    if (!Number.isNaN(resultTime)) {
-      dueDate = format(resultTime, "PP 'at' p");
-    }
+      .toNumber();
+    dueDate = format(resultTime, "PP 'at' p");
   }
 
   if (isDead) {
@@ -206,14 +204,7 @@ function StreamButtons({stream}: {stream: RoketoStream}) {
               name="deposit"
               placeholder="0.00 NEAR"
               value={deposit ?? ''}
-              onChange={(e) => {
-                const rawText = e.currentTarget.value;
-                if (rawText.length === 0) {
-                  setDeposit('');
-                } else if (!Number.isNaN(+rawText)) {
-                  setDeposit(rawText);
-                }
-              }}
+              onChange={(e) => setDeposit(e.target.value)}
             />
             {dueDate && (
               <div className={styles.dueDate}>
