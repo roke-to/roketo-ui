@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, generatePath } from 'react-router-dom';
 import copy from 'clipboard-copy';
 import classNames from 'classnames';
 import { format, isPast } from 'date-fns';
@@ -56,7 +56,12 @@ function StreamProgress({ stream }: { stream: RoketoStream }) {
   );
 }
 
+const redirectUrl = generatePath(ROUTES_MAP.streams.path);
+const returnPath = `${window.location.origin}/#${redirectUrl}`;
+
 function StreamButtons({stream}: {stream: RoketoStream}) {
+  const {tokens} = useRoketoContext();
+  const token = tokens[stream.token_account_id];
   const {isDead} = streamViewData(stream);
   const direction = useGetStreamDirection(stream);
   const addFundsModal = useBool(false);
@@ -74,13 +79,13 @@ function StreamButtons({stream}: {stream: RoketoStream}) {
         className={styles.modalContent}
         overlayClassName={styles.modalOverlay}
       >
-        <form onSubmit={(e) => {
+        <form onSubmit={async (e) => {
           e.preventDefault()
-          addFundsModal.turnOff()
-
-          /** add api request here */
-
+          addFundsModal.turnOff();
           setDeposit('');
+          if (Number.isNaN(+deposit)) return
+          const amount = token.formatter.toYocto(deposit);
+          await token.api.addFunds(amount, stream.id, returnPath);
         }}>
           <h2 className={styles.modalHeader}>Amount to deposit</h2>
           <p>
