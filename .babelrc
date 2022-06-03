@@ -1,0 +1,13 @@
+{
+  "presets": [
+    ["@babel/react", {
+      "runtime": "automatic"
+    }],
+    "@babel/typescript",
+    "@babel/env",
+    "patronum/babel-preset"
+  ],
+  "plugins": [
+    "effector/babel-plugin"
+  ]
+}
