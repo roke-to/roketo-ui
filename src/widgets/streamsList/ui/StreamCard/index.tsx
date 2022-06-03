@@ -1,27 +1,23 @@
-import React from 'react';
 import cn from 'classnames';
+import React from 'react';
 import {generatePath, Link} from 'react-router-dom';
 
-import {RoketoStream} from 'shared/api/roketo/interfaces/entities';
-import {ROUTES_MAP} from 'shared/helpers/routing';
-import {STREAM_DIRECTION, useGetStreamDirection} from 'shared/hooks/useGetStreamDirection';
-
-import {Name} from '../Name';
-import {StreamProgress} from '../StreamProgress';
+import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
+import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
+import {ROUTES_MAP} from '~/shared/lib/routing';
 
 import {Controls} from '../Controls';
+import {Name} from '../Name';
+import {StreamProgress} from '../StreamProgress';
 import styles from './styles.module.scss';
 
 type StreamCardProps = {
-  stream: RoketoStream,
-  className?: string,
-}
+  stream: RoketoStream;
+  className?: string;
+};
 
 export const StreamCard = ({stream, className}: StreamCardProps) => {
-  const {
-    id,
-    description,
-  } = stream;
+  const {id, description} = stream;
 
   let comment = '';
 
@@ -41,26 +37,16 @@ export const StreamCard = ({stream, className}: StreamCardProps) => {
   return (
     <div className={cn(styles.root, className)}>
       <Link to={streamPageLink} className={styles.name}>
-        <Name
-          name={name}
-          isOutgoing={!isIncomingStream}
-          isLocked={stream.is_locked}
-        />
+        <Name name={name} isOutgoing={!isIncomingStream} isLocked={stream.is_locked} />
       </Link>
 
       <StreamProgress stream={stream} className={styles.withMarginRight} />
 
-      <Link to={streamPageLink} className='col-span-2 grow-0'>
-        <p className={styles.comment}>
-          {comment}
-        </p>
+      <Link to={streamPageLink} className="col-span-2 grow-0">
+        <p className={styles.comment}>{comment}</p>
       </Link>
 
-
-      <Controls
-        stream={stream}
-        className={cn(styles.controls, 'col-span-2 grow-0')}
-      />
+      <Controls stream={stream} className={cn(styles.controls, 'col-span-2 grow-0')} />
     </div>
   );
 };

@@ -19,12 +19,7 @@ type NanosecondsTimestamp = string;
  * `FINISHED` - Finalized Status. stream has streamed all it's balance and account has been updated.
  * `INTERRUPTED` - Finalized Status. Stream has been stopped
  */
-type StreamStatus =
-  | "INITIALIZED"
-  | "ACTIVE"
-  | "PAUSED"
-  | "FINISHED"
-  | "INTERRUPTED";
+type StreamStatus = 'INITIALIZED' | 'ACTIVE' | 'PAUSED' | 'FINISHED' | 'INTERRUPTED';
 
 /**
  *
@@ -110,13 +105,7 @@ export type RoketoStatus = {
   tokens: RoketoTokenStatus[];
 };
 
-type StreamActionType =
-  | "Init"
-  | "Deposit"
-  | "Start"
-  | "Withdraw"
-  | "Pause"
-  | "Stop";
+type StreamActionType = 'Init' | 'Deposit' | 'Start' | 'Withdraw' | 'Pause' | 'Stop';
 
 /**
  * `actor` - Account id who triggered action

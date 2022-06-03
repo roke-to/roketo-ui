@@ -1,4 +1,5 @@
-import { testSelectors } from '../../../src/shared/constants';
+/* eslint-disable import/no-unresolved, import/extensions */
+import {testSelectors} from '../../../src/shared/constants';
 
 class CreateStream {
   createStream() {
@@ -6,51 +7,31 @@ class CreateStream {
   }
 
   inputReceiver(value) {
-    cy.get(testSelectors.createStreamReceiverInput)
-      .click()
-      .click()
-      .type(value);
+    cy.get(testSelectors.createStreamReceiverInput).click().click().type(value);
   }
 
   inputDeposit(value) {
-    cy.get(testSelectors.createStreamAmountInput)
-      .click()
-      .type(' {backspace}')
-      .type(value);
+    cy.get(testSelectors.createStreamAmountInput).click().type(' {backspace}').type(value);
   }
 
   inputPeriod(month, days, hours, mins) {
     if (month !== '0') {
-      cy.get(testSelectors.createStreamMonthsInput)
-        .click()
-        .type(' {backspace}')
-        .type(month);
+      cy.get(testSelectors.createStreamMonthsInput).click().type(' {backspace}').type(month);
     }
-    //select days
+    // select days
     if (days !== '0') {
-      cy.get(testSelectors.createStreamDaysInput)
-        .click()
-        .type(' {backspace}')
-        .type(days);
+      cy.get(testSelectors.createStreamDaysInput).click().type(' {backspace}').type(days);
     }
-    //select hours
+    // select hours
     if (hours !== '0') {
-      cy.get(testSelectors.createStreamHoursInput)
-        .click()
-        .type(' {backspace}')
-        .type(hours);
+      cy.get(testSelectors.createStreamHoursInput).click().type(' {backspace}').type(hours);
     }
-    //select mins
-    cy.get(testSelectors.createStreamMinutesInput)
-      .click()
-      .type(' {backspace}')
-      .type(mins);
+    // select mins
+    cy.get(testSelectors.createStreamMinutesInput).click().type(' {backspace}').type(mins);
   }
 
   inputComments(value) {
-    cy.get(testSelectors.createStreamCommentInput)
-      .click()
-      .type(value);
+    cy.get(testSelectors.createStreamCommentInput).click().type(value);
   }
 
   setDelayed() {

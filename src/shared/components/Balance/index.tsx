@@ -1,7 +1,10 @@
 import {useStore} from 'effector-react';
-import {$nearWallet, $priceOracle} from 'services/wallet';
-import { isWNearTokenId } from 'shared/helpers/isWNearTokenId';
-import { useToken } from 'shared/hooks/useToken';
+import React from 'react';
+
+import {$nearWallet, $priceOracle} from '~/entities/wallet';
+
+import {useToken} from '~/shared/hooks/useToken';
+import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 
 export enum DisplayMode {
   USD = 'USD',
@@ -10,16 +13,16 @@ export enum DisplayMode {
 }
 
 type BalanceProps = {
-  tokenAccountId: string,
-  className?: string,
+  tokenAccountId: string;
+  className?: string;
   // Display balance in USD or in Crypto currency
-  mode?: DisplayMode,
-}
+  mode?: DisplayMode;
+};
 
-export function Balance({ tokenAccountId, className, mode = DisplayMode.CRYPTO }: BalanceProps) {
+export function Balance({tokenAccountId, className, mode = DisplayMode.CRYPTO}: BalanceProps) {
   const priceOracle = useStore($priceOracle);
   const nearWallet = useStore($nearWallet);
-  const { balance, formatter, meta } = useToken(tokenAccountId);
+  const {balance, formatter, meta} = useToken(tokenAccountId);
 
   const actualCryptoBalance = isWNearTokenId(tokenAccountId)
     ? nearWallet?.auth.balance?.available ?? '0'
@@ -33,9 +36,5 @@ export function Balance({ tokenAccountId, className, mode = DisplayMode.CRYPTO }
     : displayedCryptoAmount;
   const currencySymbol = showInUSD ? '$' : meta.symbol;
 
-  return (
-    <span className={className}>
-      {`Balance: ${currencySymbol} ${amount}`}
-    </span>
-  );
+  return <span className={className}>{`Balance: ${currencySymbol} ${amount}`}</span>;
 }

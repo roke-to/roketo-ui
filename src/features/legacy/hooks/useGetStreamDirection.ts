@@ -1,5 +1,5 @@
-import { LegacyRoketoStream } from '../api/roketo/interfaces/entities';
-import { useRoketoContext } from '../roketo-context';
+import {LegacyRoketoStream} from '../api/roketo/interfaces/entities';
+import {useRoketoContext} from '../roketo-context';
 
 export const STREAM_DIRECTION = {
   IN: 'in',
@@ -8,8 +8,10 @@ export const STREAM_DIRECTION = {
 
 type StreamDirectionKeyType = keyof typeof STREAM_DIRECTION;
 
-export function useGetStreamDirection(stream: LegacyRoketoStream): typeof STREAM_DIRECTION[StreamDirectionKeyType] | null {
-  const { auth } = useRoketoContext();
+export function useGetStreamDirection(
+  stream: LegacyRoketoStream,
+): typeof STREAM_DIRECTION[StreamDirectionKeyType] | null {
+  const {auth} = useRoketoContext();
 
   if (stream.receiver_id === auth.accountId) {
     return STREAM_DIRECTION.IN;

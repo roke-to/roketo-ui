@@ -1,12 +1,12 @@
-import { Contract, Account, ConnectedWalletAccount } from 'near-api-js';
+import {Account, ConnectedWalletAccount, Contract} from 'near-api-js';
 
-import { RoketoTokenStatus } from '../api/roketo/interfaces/entities';
-import { TokenMeta, TokenMetadata } from './TokenMeta';
+import {RoketoTokenStatus} from '../api/roketo/interfaces/entities';
+import {TokenMeta, TokenMetadata} from './TokenMeta';
 
 type FTContract = Contract & {
-  ft_balance_of: (options: { account_id: string }) => Promise<never>;
+  ft_balance_of: (options: {account_id: string}) => Promise<never>;
   ft_metadata: () => Promise<TokenMetadata>;
-  storage_balance_of: (options: { account_id: string }) => Promise<never>;
+  storage_balance_of: (options: {account_id: string}) => Promise<never>;
 };
 
 function createFTContract(account: Account, address: string) {
@@ -36,9 +36,9 @@ export class Tokens {
 
   __contracts: Record<string, FTContract>;
 
-  tokens: Record<string, TokenMeta>
+  tokens: Record<string, TokenMeta>;
 
-  constructor({ tokens, account }: { tokens: RoketoTokenStatus[], account: ConnectedWalletAccount }) {
+  constructor({tokens, account}: {tokens: RoketoTokenStatus[]; account: ConnectedWalletAccount}) {
     this.__tokens = tokens;
     this.__account = account;
     this.__contracts = {};
@@ -60,8 +60,9 @@ export class Tokens {
   }
 
   get(ticker: string) {
-    const token = this.tokens[ticker]
-      || new TokenMeta({
+    const token =
+      this.tokens[ticker] ||
+      new TokenMeta({
         ticker,
         metadata: {
           spec: null,

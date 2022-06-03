@@ -3,7 +3,7 @@
 .root {
   padding: 75px 0;
 
-  box-shadow: inset 0px 1px 0px #E9EBF0;
+  box-shadow: inset 0px 1px 0px #e9ebf0;
   background-color: white;
 }
 
@@ -17,7 +17,7 @@
   // Divider
   &::before {
     content: '';
-    border-top: 1px solid #E9EBF0;
+    border-top: 1px solid #e9ebf0;
     border-radius: 3px;
   }
 }

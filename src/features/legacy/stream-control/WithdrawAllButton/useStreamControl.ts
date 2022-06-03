@@ -1,20 +1,20 @@
 import React from 'react';
 
-import { useRoketoContext } from '../../roketo-context';
+import {useRoketoContext} from '../../roketo-context';
 
 function assertMethodHasStreamId(streamId?: string): asserts streamId {
   console.assert(streamId, 'Provide stream id to use stream methods');
 }
 
 export function useStreamControl(streamId?: string) {
-  const { roketo } = useRoketoContext();
+  const {roketo} = useRoketoContext();
   const [loading, setLoading] = React.useState(false);
 
-  async function updateAllAndWithdraw({ tokensWithoutStorage = 0 }) {
-    await roketo.api.updateAccount({ tokensWithoutStorage });
+  async function updateAllAndWithdraw({tokensWithoutStorage = 0}) {
+    await roketo.api.updateAccount({tokensWithoutStorage});
   }
 
-  async function depositFunc({ token, deposit }: { token: string, deposit: string }) {
+  async function depositFunc({token, deposit}: {token: string; deposit: string}) {
     assertMethodHasStreamId(streamId);
 
     await roketo.api.depositStream({
@@ -51,14 +51,14 @@ export function useStreamControl(streamId?: string) {
   async function restart() {
     assertMethodHasStreamId(streamId);
     console.debug('restarting', streamId);
-    const res = await roketo.api.startStream({ streamId });
+    const res = await roketo.api.startStream({streamId});
     console.debug('restarting res', res);
   }
 
   async function stop() {
     assertMethodHasStreamId(streamId);
     console.debug('Stop called stopping', streamId);
-    const res = await roketo.api.stopStream({ streamId });
+    const res = await roketo.api.stopStream({streamId});
     console.debug('stopping res', res);
   }
 

@@ -1,6 +1,6 @@
+import cn from 'classnames';
 import React from 'react';
 import {Link} from 'react-router-dom';
-import cn from 'classnames';
 
 import styles from './styles.module.scss';
 
@@ -18,15 +18,15 @@ export enum DisplayMode {
 }
 
 type Props = {
-  type?: ButtonType
-  displayMode?: DisplayMode,
-  disabled?: boolean,
-  link?: string,
-  className?: string,
+  type?: ButtonType;
+  displayMode?: DisplayMode;
+  disabled?: boolean;
+  link?: string;
+  className?: string;
   children?: React.ReactNode;
   onClick?: (event: any) => void;
   testId?: string;
-} & Omit<React.ComponentProps<'button'>, 'type'>
+} & Omit<React.ComponentProps<'button'>, 'type'>;
 
 export const Button = ({
   type = ButtonType.button,
@@ -47,7 +47,7 @@ export const Button = ({
       [styles.action]: displayMode === DisplayMode.action,
       [styles.simple]: displayMode === DisplayMode.simple,
     },
-    className
+    className,
   );
 
   const button = (
@@ -65,11 +65,7 @@ export const Button = ({
   );
 
   if (link) {
-    return (
-      <Link to={link}>
-        {button}
-      </Link>
-    );
+    return <Link to={link}>{button}</Link>;
   }
 
   return button;

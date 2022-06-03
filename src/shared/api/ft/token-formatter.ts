@@ -1,21 +1,20 @@
-
 import numbro from 'numbro';
 
 import {
-  SECONDS_IN_YEAR,
-  SECONDS_IN_MONTH,
-  SECONDS_IN_WEEK,
   SECONDS_IN_DAY,
   SECONDS_IN_HOUR,
-  SECONDS_IN_MINUTE
-} from 'shared/constants';
+  SECONDS_IN_MINUTE,
+  SECONDS_IN_MONTH,
+  SECONDS_IN_WEEK,
+  SECONDS_IN_YEAR,
+} from '~/shared/constants';
 
 export class TokenFormatter {
   tokenDecimals: number;
 
   MP: number;
 
-  constructor(tokenDecimals: number ) {
+  constructor(tokenDecimals: number) {
     this.tokenDecimals = tokenDecimals;
     this.MP = 10 ** tokenDecimals;
   }
@@ -30,11 +29,11 @@ export class TokenFormatter {
     }
 
     return numbro(value).format({
-     mantissa: 3,
-     trimMantissa: true,
-     optionalMantissa: true,
-     average: true,
-   })
+      mantissa: 3,
+      trimMantissa: true,
+      optionalMantissa: true,
+      average: true,
+    });
   }
 
   // for display purposes, converts from yocto values
@@ -60,19 +59,15 @@ export class TokenFormatter {
   }
 
   toYocto(value: number | string) {
-    return numbro(value)
-      .multiply(this.MP)
-      .format({ mantissa: 0 });
+    return numbro(value).multiply(this.MP).format({mantissa: 0});
   }
 
   toHumanReadableValue(amount: number | string, decimals: number = 0): string {
-    return numbro(amount)
-      .divide(this.MP)
-      .format({
-        mantissa: decimals,
-        trimMantissa: true,
-        optionalMantissa: true,
-      });
+    return numbro(amount).divide(this.MP).format({
+      mantissa: decimals,
+      trimMantissa: true,
+      optionalMantissa: true,
+    });
   }
 
   // tries to find the best interval for display
@@ -97,20 +92,15 @@ export class TokenFormatter {
       [SECONDS_IN_YEAR]: 'year',
     };
 
-    const firstGoodLookingMultiplier = multipliers.find((multiplier) => {
-      const value = numbro(tokensPerSec)
-        .multiply(multiplier)
-        .divide(this.MP)
-        .value();
+    const firstGoodLookingMultiplier =
+      multipliers.find((multiplier) => {
+        const value = numbro(tokensPerSec).multiply(multiplier).divide(this.MP).value();
 
-      const isOk = value > 0.1;
-      return isOk;
-    }) || SECONDS_IN_YEAR;
+        const isOk = value > 0.1;
+        return isOk;
+      }) || SECONDS_IN_YEAR;
 
-    const value = numbro(tokensPerSec)
-      .multiply(firstGoodLookingMultiplier)
-      .divide(this.MP)
-      .value();
+    const value = numbro(tokensPerSec).multiply(firstGoodLookingMultiplier).divide(this.MP).value();
 
     return {
       formattedValue: TokenFormatter.formatSmartly(value),

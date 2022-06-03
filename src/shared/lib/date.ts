@@ -10,7 +10,8 @@ const formatDistanceLocale = {
 type TokenType = keyof typeof formatDistanceLocale;
 
 export const shortEnLocale = {
-  formatDistance: (token: TokenType, count: string) => formatDistanceLocale[token].replace('{{count}}', count),
+  formatDistance: (token: TokenType, count: string) =>
+    formatDistanceLocale[token].replace('{{count}}', count),
 };
 
 export function fromNanosecToSec(value: number | string) {

@@ -1,11 +1,11 @@
-import SignInPage from '../../support/pages/Login';
 import HomePage from '../../support/pages/HomePage';
+import SignInPage from '../../support/pages/Login';
 
 context('Login', () => {
   let account;
 
   before(() => {
-    cy.task('getAccount').then((testAccount) => account = testAccount);
+    cy.task('getAccount').then((testAccount) => (account = testAccount));
   });
 
   it('login with Pass phrase', () => {
@@ -13,7 +13,7 @@ context('Login', () => {
     home.visit();
     home.checkPage();
     home.goToSignIn();
-    //redirect to wallet
+    // redirect to wallet
     const signPage = new SignInPage();
     signPage.checkPage();
     signPage.importExistingAccount();

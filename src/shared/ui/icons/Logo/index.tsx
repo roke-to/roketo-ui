@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { ColoredLogo } from './ColoredLogo';
-import { BlackLogo } from './BlackLogo';
+import {BlackLogo} from './BlackLogo';
+import {ColoredLogo} from './ColoredLogo';
 
 export enum DisplayType {
   COLORED = 'colored',
@@ -14,19 +14,14 @@ const DISPLAY_TYPE_TO_LOGO_MAP = {
 };
 
 type Props = {
-  type?: DisplayType,
-  className?: string,
-}
+  type?: DisplayType;
+  className?: string;
+};
 
 export const Logo = (props: Props) => {
-  const {
-    type = DisplayType.COLORED,
-    className,
-  } = props;
+  const {type = DisplayType.COLORED, className} = props;
 
   const ChosenLogo = DISPLAY_TYPE_TO_LOGO_MAP[type];
 
-  return (
-    <ChosenLogo className={className} />
-  );
+  return <ChosenLogo className={className} />;
 };

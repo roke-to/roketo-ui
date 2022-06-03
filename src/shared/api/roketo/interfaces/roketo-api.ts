@@ -1,35 +1,31 @@
-import { FTApi } from 'shared/api/ft/ft-api';
+import {FTApi} from '~/shared/api/ft/ft-api';
 
-import {
-  RoketoAccount,
-  RoketoStream,
-  RoketoDao
-} from './entities';
+import {RoketoAccount, RoketoDao, RoketoStream} from './entities';
 
 export type CreateStreamApiProps = {
   comment: string;
   deposit: string;
-  commissionOnCreate: string,
+  commissionOnCreate: string;
   receiverId: string;
   tokenAccountId: string;
   tokensPerSec: number;
   name?: string;
   cliffPeriodSec?: number;
   delayed?: boolean;
-  isExpirable?: boolean,
-  isLocked?: boolean,
+  isExpirable?: boolean;
+  isLocked?: boolean;
   callbackUrl?: string;
-  handleTransferStream: FTApi['transfer'],
+  handleTransferStream: FTApi['transfer'];
 };
 
-export type StreamsProps = { from: number, limit: number };
+export type StreamsProps = {from: number; limit: number};
 
 export interface RoketoApi {
   // Get account overview info
   getAccount(): Promise<RoketoAccount>;
 
   // Get detailed stream data
-  getStream({ streamId }: { streamId: string }): Promise<RoketoStream>;
+  getStream({streamId}: {streamId: string}): Promise<RoketoStream>;
 
   // Get roketo dao status
   getDao(): Promise<RoketoDao>;
@@ -41,10 +37,10 @@ export interface RoketoApi {
   getAccountOutgoingStreams(params: StreamsProps): Promise<RoketoStream[]>;
 
   // Withdraws funds to user's account
-  withdraw({ streamIds }: { streamIds: string[] }): Promise<void>;
+  withdraw({streamIds}: {streamIds: string[]}): Promise<void>;
 
   // stream actions
-  stopStream(params: { streamId: string }): Promise<void>;
-  startStream(params: { streamId: string }): Promise<void>;
-  pauseStream(params: { streamId: string }): Promise<void>;
+  stopStream(params: {streamId: string}): Promise<void>;
+  startStream(params: {streamId: string}): Promise<void>;
+  pauseStream(params: {streamId: string}): Promise<void>;
 }

@@ -1,51 +1,54 @@
-import React, {useState} from 'react';
-import { useParams, Link } from 'react-router-dom';
-import {useStore, useStoreMap, useGate} from 'effector-react';
-import copy from 'clipboard-copy';
-import classNames from 'classnames';
-import { format, isPast } from 'date-fns';
-import Modal from 'react-modal';
 import BigNumber from 'bignumber.js';
+import classNames from 'classnames';
+import copy from 'clipboard-copy';
+import {format, isPast} from 'date-fns';
+import {useGate, useStore, useStoreMap} from 'effector-react';
+import React, {useState} from 'react';
+import Modal from 'react-modal';
+import {Link, useParams} from 'react-router-dom';
 
-import {$tokens} from 'services/wallet';
-import { streamViewData } from 'features/roketo-resource';
-import { LinkIcon } from '@ui/icons/Link';
-import { getStreamLink, ROUTES_MAP } from 'shared/helpers/routing';
-import { PageError } from 'shared/components/PageError';
-import {DropdownOpener} from 'shared/kit/DropdownOpener';
+import {getStreamingSpeed} from '~/features/create-stream/lib';
+import {streamViewData} from '~/features/roketo-resource';
+import {StreamControls} from '~/features/stream-control/StreamControls';
+import {WithdrawButton} from '~/features/stream-control/WithdrawButton';
+
+import {$tokens} from '~/entities/wallet';
+
+import {STREAM_STATUS} from '~/shared/api/roketo/constants';
+import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
+import {getAvailableToWithdraw} from '~/shared/api/roketo/lib';
+import {Badge} from '~/shared/components/Badge';
+import {PageError} from '~/shared/components/PageError';
+import {useBool} from '~/shared/hooks/useBool';
+import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
+import {DropdownOpener} from '~/shared/kit/DropdownOpener';
+import {TokenImage} from '~/shared/kit/TokenImage';
+import {getRoundedPercentageRatio} from '~/shared/lib/math';
+import {getStreamLink, ROUTES_MAP} from '~/shared/lib/routing';
+
 import {Button, ButtonType} from '@ui/components/Button';
 import {Input} from '@ui/components/Input';
-import { Layout } from '@ui/components/Layout';
-import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
-import { getStreamingSpeed } from 'features/create-stream/lib';
-import { ProgressBar } from '@ui/components/ProgressBar';
-import { StreamControls } from 'features/stream-control/StreamControls';
-import { STREAM_DIRECTION, useGetStreamDirection } from 'shared/hooks/useGetStreamDirection';
-import { STREAM_STATUS } from 'shared/api/roketo/constants';
-import { useBool } from 'shared/hooks/useBool';
-import { WithdrawButton } from 'features/stream-control/WithdrawButton';
-import { TokenImage } from 'shared/kit/TokenImage';
-import { getRoundedPercentageRatio } from 'shared/helpers/math';
-import { getAvailableToWithdraw } from 'shared/api/roketo/helpers';
-import { Badge } from 'shared/components/Badge';
+import {Layout} from '@ui/components/Layout';
+import {ProgressBar} from '@ui/components/ProgressBar';
+import {LinkIcon} from '@ui/icons/Link';
 
+import {BreadcrumbIcon} from './BreadcrumbIcon';
+import {$loading, $pageError, $stream, pageGate} from './model';
 import styles from './styles.module.scss';
-import { BreadcrumbIcon } from './BreadcrumbIcon';
-import {pageGate, $stream, $pageError, $loading} from './model'
 
-function StreamProgress({ stream }: { stream: RoketoStream }) {
+function StreamProgress({stream}: {stream: RoketoStream}) {
   const tokens = useStore($tokens);
 
-  const { meta, formatter } = tokens[stream.token_account_id];
-  const { progress: { streamed, withdrawn, full }, percentages } = streamViewData(stream);
+  const {meta, formatter} = tokens[stream.token_account_id];
+  const {
+    progress: {streamed, withdrawn, full},
+    percentages,
+  } = streamViewData(stream);
 
   return (
     <div>
       <div className={styles.numericProgress}>
-        <TokenImage
-          tokenAccountId={stream.token_account_id}
-          className={styles.tokenIcon}
-        />
+        <TokenImage tokenAccountId={stream.token_account_id} className={styles.tokenIcon} />
         <span>{`${meta.symbol} ${formatter.amount(streamed)} of ${formatter.amount(full)}`}</span>
       </div>
       <ProgressBar
@@ -65,7 +68,11 @@ function StreamButtons({stream}: {stream: RoketoStream}) {
     keys: [stream.token_account_id],
     fn: (tokens) => tokens[stream.token_account_id],
   });
-  const {isDead, streamEndTimestamp, percentages: {left}} = streamViewData(stream);
+  const {
+    isDead,
+    streamEndTimestamp,
+    percentages: {left},
+  } = streamViewData(stream);
   const direction = useGetStreamDirection(stream);
   const addFundsModal = useBool(false);
   const [deposit, setDeposit] = useState('');
@@ -96,14 +103,17 @@ function StreamButtons({stream}: {stream: RoketoStream}) {
         className={styles.modalContent}
         overlayClassName={styles.modalOverlay}
       >
-        <form autoComplete="off" onSubmit={async (e) => {
-          e.preventDefault()
-          addFundsModal.turnOff();
-          setDeposit('');
-          if (!hasValidAdditionalFunds) return
-          const amount = token.formatter.toYocto(deposit);
-          await token.api.addFunds(amount, stream.id, window.location.href);
-        }}>
+        <form
+          autoComplete="off"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            addFundsModal.turnOff();
+            setDeposit('');
+            if (!hasValidAdditionalFunds) return;
+            const amount = token.formatter.toYocto(deposit);
+            await token.api.addFunds(amount, stream.id, window.location.href);
+          }}
+        >
           <h2 className={styles.modalHeader}>Amount to deposit</h2>
           <p>
             <Input
@@ -114,7 +124,7 @@ function StreamButtons({stream}: {stream: RoketoStream}) {
               onChange={(e) => {
                 const rawText = e.currentTarget.value;
                 if (rawText.length === 0) {
-                  setDeposit('')
+                  setDeposit('');
                 } else if (!Number.isNaN(+rawText)) {
                   setDeposit(rawText);
                 }
@@ -139,16 +149,20 @@ function StreamButtons({stream}: {stream: RoketoStream}) {
               type={ButtonType.submit}
               className={styles.modalButton}
               disabled={!hasValidAdditionalFunds}
-            >Add funds</Button>
+            >
+              Add funds
+            </Button>
           </div>
         </form>
       </Modal>
-      {!isStreamEnded && isOutgoingStream && <Button onClick={addFundsModal.turnOn}>Add funds</Button>}
+      {!isStreamEnded && isOutgoingStream && (
+        <Button onClick={addFundsModal.turnOn}>Add funds</Button>
+      )}
       <StreamControls stream={stream} />
 
-      {direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.Active &&
+      {direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.Active && (
         <WithdrawButton stream={stream} />
-      }
+      )}
     </div>
   );
 }
@@ -183,20 +197,14 @@ function StreamComment({stream}: {stream: RoketoStream}) {
   return (
     <div>
       <span className={styles.blockTitle}>Comment</span>
-      <div className={styles.commentBody}>
-        {comment}
-      </div>
+      <div className={styles.commentBody}>{comment}</div>
     </div>
   );
 }
 
 function CopyButton({stringToCopy}: {stringToCopy: string}) {
   return (
-    <button
-      type="button"
-      className={styles.copyButton}
-      onClick={() => copy(stringToCopy)}
-    >
+    <button type="button" className={styles.copyButton} onClick={() => copy(stringToCopy)}>
       <LinkIcon className={styles.linkIcon} />
     </button>
   );
@@ -216,7 +224,7 @@ function StreamCopyUrlBlock({stream}: {stream: RoketoStream}) {
   );
 }
 
-function InfoRow({ title, children }: { title: string, children: React.ReactNode }) {
+function InfoRow({title, children}: {title: string; children: React.ReactNode}) {
   return (
     <div className={styles.infoRow}>
       <span className={styles.infoTitle}>{title}</span>
@@ -239,7 +247,7 @@ function StreamData({stream}: {stream: RoketoStream}) {
   const available = getAvailableToWithdraw(stream).toNumber();
 
   const {meta, formatter} = tokens[stream.token_account_id];
-  
+
   const [showOtherInfo, setShowOtherInfo] = useState(false);
 
   return (
@@ -263,24 +271,17 @@ function StreamData({stream}: {stream: RoketoStream}) {
       </InfoRow>
       <InfoRow title="Stream Created">
         <span className={styles.font14}>
-          {format(
-            new Date(Number(stream.timestamp_created) / 1000000),
-            "PP 'at' p",
-          )}
+          {format(new Date(Number(stream.timestamp_created) / 1000000), "PP 'at' p")}
         </span>
       </InfoRow>
       {cliffEndTimestamp && (
         <InfoRow title={isPast(cliffEndTimestamp) ? 'Cliff Period Ended' : 'Cliff Period Ends'}>
-          <span className={styles.font14}>
-            {format(cliffEndTimestamp, "PP 'at' p")}
-          </span>
+          <span className={styles.font14}>{format(cliffEndTimestamp, "PP 'at' p")}</span>
         </InfoRow>
       )}
       {streamEndTimestamp && (
         <InfoRow title={isPast(streamEndTimestamp) ? 'Stream Ended' : 'Stream Ends'}>
-          <span className={styles.font14}>
-            {format(streamEndTimestamp, "PP 'at' p")}
-          </span>
+          <span className={styles.font14}>{format(streamEndTimestamp, "PP 'at' p")}</span>
         </InfoRow>
       )}
       <InfoRow title="Token">
@@ -305,9 +306,7 @@ function StreamData({stream}: {stream: RoketoStream}) {
         <>
           <InfoRow title="Stream ID">
             <div className={styles.centeredFlex}>
-              <span className={classNames(styles.font14, styles.streamID)}>
-                {stream.id}
-              </span>
+              <span className={classNames(styles.font14, styles.streamID)}>{stream.id}</span>
               <CopyButton stringToCopy={stream.id} />
             </div>
           </InfoRow>
@@ -319,19 +318,14 @@ function StreamData({stream}: {stream: RoketoStream}) {
               {formatter.amount(streamed)}&nbsp;
               <span className={styles.font12}>
                 {meta.symbol}{' '}
-                <span className={styles.grey}>
-                  ({streamedToTotalPercentageRatio}%)
-                </span>
+                <span className={styles.grey}>({streamedToTotalPercentageRatio}%)</span>
               </span>
             </span>
           </InfoRow>
           {stream.timestamp_created !== stream.last_action && (
             <InfoRow title="Latest Withdrawal">
               <span className={styles.font14}>
-                {format(
-                  new Date(Number(stream.last_action) / 1000000),
-                  "PP 'at' p",
-                )}
+                {format(new Date(Number(stream.last_action) / 1000000), "PP 'at' p")}
               </span>
             </InfoRow>
           )}
@@ -339,10 +333,7 @@ function StreamData({stream}: {stream: RoketoStream}) {
             <span className={styles.font14}>
               {formatter.amount(left)}&nbsp;
               <span className={styles.font12}>
-                {meta.symbol}{' '}
-                <span className={styles.grey}>
-                  ({leftToTotalPercentageRatio}%)
-                </span>
+                {meta.symbol} <span className={styles.grey}>({leftToTotalPercentageRatio}%)</span>
               </span>
             </span>
           </InfoRow>
@@ -368,37 +359,30 @@ export function StreamPage() {
     <div className={styles.root}>
       <Layout>
         <div className={styles.breadbrumbs}>
-          <Link
-            to={ROUTES_MAP.streams.path}
-            className={styles.streamsLink}
-          >
+          <Link to={ROUTES_MAP.streams.path} className={styles.streamsLink}>
             Streams
           </Link>
           <BreadcrumbIcon className={styles.breadbrumb} />
           <span className={styles.id}>{id}</span>
         </div>
-        {pageError &&
-          <PageError
-            className="max-w-2xl mx-auto py-32"
-            message={pageError}
-            onRetry={() => {}}
-          />
-        }
+        {pageError && (
+          <PageError className="max-w-2xl mx-auto py-32" message={pageError} onRetry={() => {}} />
+        )}
         {loading && <div className="py-32 text-center text-gray text-2xl">Loading...</div>}
 
-        {!pageError && stream &&
+        {!pageError && stream && (
           <main className={styles.stream}>
             <div className={styles.left}>
               <div className={classNames(styles.tile, styles.remaining)}>
-                <span className={styles.blockTitle}>
-                  Remaining
-                </span>
-                <span>
-                  {streamViewData(stream).timeLeft || 'Finished'}
-                </span>
+                <span className={styles.blockTitle}>Remaining</span>
+                <span>{streamViewData(stream).timeLeft || 'Finished'}</span>
               </div>
               <div className={classNames(styles.tile, styles.main)}>
-                {stream.is_locked && <Badge isOrange className={styles.closeBadge}>Locked</Badge>}
+                {stream.is_locked && (
+                  <Badge isOrange className={styles.closeBadge}>
+                    Locked
+                  </Badge>
+                )}
                 <StreamProgress stream={stream} />
                 <StreamButtons stream={stream} />
                 <StreamSpeed stream={stream} />
@@ -411,7 +395,7 @@ export function StreamPage() {
               <StreamData stream={stream} />
             </div>
           </main>
-        }
+        )}
       </Layout>
     </div>
   );

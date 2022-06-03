@@ -1,10 +1,10 @@
-import { Account } from 'near-api-js';
+import {Account} from 'near-api-js';
 
-import { RoketoDao, RoketoTokenMeta } from 'shared/api/roketo/interfaces/entities';
+import {RoketoDao, RoketoTokenMeta} from '~/shared/api/roketo/interfaces/entities';
 
-import { TokenMetadata } from './types';
-import { TokenFormatter } from './token-formatter';
-import { FTApi } from './ft-api';
+import {FTApi} from './ft-api';
+import {TokenFormatter} from './token-formatter';
+import {TokenMetadata} from './types';
 
 export type RichToken = {
   api: FTApi;
@@ -15,33 +15,32 @@ export type RichToken = {
 };
 
 export type RichTokens = {
-  [tokenAccountId: string]: RichToken,
-}
+  [tokenAccountId: string]: RichToken;
+};
 
 type InitFRProps = {
   account: Account;
   tokens: RoketoDao['tokens'];
-}
+};
 
-export async function initFT({ account, tokens }: InitFRProps) {
+export async function initFT({account, tokens}: InitFRProps) {
   const richTokens: RichTokens = {};
 
-  await Promise.all(Object.keys(tokens).map(async (tokenAccountId: string) => {
-    const api = new FTApi(account, tokenAccountId);
-    const [ meta, balance ] = await Promise.all([
-      api.getMetadata(),
-      api.getBalance(),
-    ])
-    const formatter = new TokenFormatter(meta.decimals);
+  await Promise.all(
+    Object.keys(tokens).map(async (tokenAccountId: string) => {
+      const api = new FTApi(account, tokenAccountId);
+      const [meta, balance] = await Promise.all([api.getMetadata(), api.getBalance()]);
+      const formatter = new TokenFormatter(meta.decimals);
 
-    richTokens[tokenAccountId] = {
-      api,
-      formatter,
-      roketoMeta: tokens[tokenAccountId],
-      meta,
-      balance
-    };
-  }));
+      richTokens[tokenAccountId] = {
+        api,
+        formatter,
+        roketoMeta: tokens[tokenAccountId],
+        meta,
+        balance,
+      };
+    }),
+  );
 
   return richTokens;
 }

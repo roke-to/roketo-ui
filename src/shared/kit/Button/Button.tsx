@@ -1,6 +1,7 @@
-import React from 'react';
 import classNames from 'classnames';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import {Link} from 'react-router-dom';
+
 import './Button.scss';
 
 const variants = {
@@ -52,16 +53,18 @@ export function Button({
 
   if (variant === variants.main) {
     variantStyles = 'Button--main';
-    sizeStyles = size === 'normal'
-      ? 'px-5 py-4  rounded-2xl font-semibold'
-      : size === 'big'
+    sizeStyles =
+      size === 'normal'
+        ? 'px-5 py-4  rounded-2xl font-semibold'
+        : size === 'big'
         ? 'px-12 py-6 rounded-3xl font-bold'
         : '';
   } else if (variant === variants.outlined) {
     variantStyles = 'border-solid border font-semibold rounded-lg ';
-    colorStyles = color === 'light'
-      ? 'border-blue hover:bg-blue'
-      : color === 'dark'
+    colorStyles =
+      color === 'light'
+        ? 'border-blue hover:bg-blue'
+        : color === 'dark'
         ? 'border-border hover:bg-hover hover:border-hover'
         : '';
   } else if (variant === variants.filled) {
@@ -77,7 +80,7 @@ export function Button({
       colorStyles,
       disabled ? 'Button--disabled' : '',
       'transition-all',
-      className
+      className,
     ),
   };
 
@@ -91,7 +94,9 @@ export function Button({
   );
 
   return restProps.link ? (
-    <Link {...commonProps} {...restProps}>{content}</Link>
+    <Link {...commonProps} {...restProps}>
+      {content}
+    </Link>
   ) : (
     <button
       {...commonProps}

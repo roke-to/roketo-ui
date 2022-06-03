@@ -1,7 +1,8 @@
 import classNames from 'classnames';
+import React from 'react';
 
-import { STREAM_STATUS } from '../api/roketo/constants';
-import type { LegacyRoketoStream } from '../api/roketo/interfaces/entities';
+import {STREAM_STATUS} from '../api/roketo/constants';
+import type {LegacyRoketoStream} from '../api/roketo/interfaces/entities';
 
 const bindings = {
   [STREAM_STATUS.INITIALIZED]: {
@@ -26,12 +27,8 @@ type StreamStatusProps = {
   className?: string;
 };
 
-export function StreamStatus({ stream, className }: StreamStatusProps) {
+export function StreamStatus({stream, className}: StreamStatusProps) {
   const binding = bindings[stream.status];
 
-  return (
-    <div className={classNames(className)}>
-      {binding.label}
-    </div>
-  );
+  return <div className={classNames(className)}>{binding.label}</div>;
 }

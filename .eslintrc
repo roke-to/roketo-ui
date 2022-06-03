@@ -3,42 +3,70 @@
     "browser": true,
     "node": true
   },
-  "extends": [
-    "airbnb",
-    "airbnb/hooks",
-    "airbnb-typescript",
-    "prettier"
-  ],
-  "plugins": [
-    "prettier"
-  ],
-  "parserOptions": {
-    "project": "./tsconfig.json"
-  },
-  "rules": {
-    "jsx-a11y/label-has-associated-control": "off",
-    "react/require-default-props": "off",
-    "react/react-in-jsx-scope": "off",
-    "import/no-extraneous-dependencies": "warn",
-    "react/function-component-definition": "off",
-    "react/no-unescaped-entities": "warn",
-    "import/prefer-default-export": "off",
-    "class-methods-use-this": "warn",
-    "react/prop-types": "warn",
-    "react/jsx-props-no-spreading": "warn",
-    "no-nested-ternary": "warn",
-    "no-underscore-dangle": "warn",
-    "consistent-return": "warn"
-  },
-  "settings": {
-    "import/parsers": {
-      "@typescript-eslint/parser": [".ts", ".tsx"]
+  "plugins": ["prettier"],
+  "overrides": [
+    {
+      "files": ["./cypress/**"],
+      "plugins": ["cypress"],
+      "extends": ["plugin:cypress/recommended"],
+      "globals": {
+        "context": "readonly",
+        "before": "readonly",
+        "cy": "readonly",
+        "it": "readonly"
+      },
+      "rules": {
+        "class-methods-use-this": "off",
+        "no-return-assign": "off"
+      }
     },
-    "import/resolver": {
-      "typescript": {
-        "alwaysTryTypes": true, // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/unist`
+    {
+      "files": ["*.ts", "*.tsx"],
+      "extends": ["airbnb", "airbnb/hooks", "airbnb-typescript", "prettier"],
+      "parserOptions": {
         "project": "./tsconfig.json"
+      },
+      "settings": {
+        "import/parsers": {
+          "@typescript-eslint/parser": [".ts", ".tsx"]
+        },
+        "import/resolver": {
+          "typescript": {
+            "alwaysTryTypes": true,
+            // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/unist`
+            "project": "./tsconfig.json"
+          }
+        }
+      },
+      "rules": {
+        "class-methods-use-this": "warn",
+        "consistent-return": "warn",
+        "import/no-default-export": "warn",
+        "import/no-extraneous-dependencies": "warn",
+        "import/prefer-default-export": "off",
+        "jsx-a11y/label-has-associated-control": "warn",
+        "no-nested-ternary": "warn",
+        "no-underscore-dangle": "warn",
+        "react/function-component-definition": "off",
+        "react/jsx-props-no-spreading": "warn",
+        "react/no-unescaped-entities": "warn",
+        "react/prop-types": "warn",
+        "react/react-in-jsx-scope": "off",
+        "react/require-default-props": "off"
+      }
+    },
+    {
+      "files": "*.js",
+      "parserOptions": {
+        "sourceType": "module",
+        "ecmaVersion": 2021
+      }
+    },
+    {
+      "files": ["vite.config.js"],
+      "rules": {
+        "import/no-extraneous-dependencies": "off"
       }
     }
-  }
+  ]
 }

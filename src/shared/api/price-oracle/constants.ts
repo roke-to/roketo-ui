@@ -11,9 +11,5 @@ export const TOKEN_MULTIPLIER_MAP = {
   'dai.bridge.near': DAI_MULTIPLIER,
 };
 
-export const CONTRACT_VIEW_METHODS_LIST = [
-  'get_assets',
-  'get_asset',
-  'get_price_data',
-];
+export const CONTRACT_VIEW_METHODS_LIST = ['get_assets', 'get_asset', 'get_price_data'];
 export const CONTRACT_CHANGE_METHODS_LIST = [];

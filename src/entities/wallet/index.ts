@@ -1,18 +1,14 @@
-import {createStore, createEffect, createEvent, sample, attach} from 'effector';
-import {ConnectedWalletAccount, Near, WalletConnection} from 'near-api-js';
 import type {Notification} from '@roketo/api-client';
+import {attach, createEffect, createEvent, createStore, sample} from 'effector';
+import {ConnectedWalletAccount, Near, WalletConnection} from 'near-api-js';
 
-import {env} from 'shared/config';
-import {createNearInstance, getNearAuth, NearAuth} from 'shared/api/near';
-import {initRoketo, Roketo} from 'shared/api/roketo';
-import {
-  tokenProvider,
-  usersApiClient,
-  notificationsApiClient,
-} from 'shared/api/roketo-client';
-import type {RoketoStream} from 'shared/api/roketo/interfaces/entities';
-import {initFT, RichTokens} from 'shared/api/ft';
-import {initPriceOracle, PriceOracle} from 'shared/api/price-oracle';
+import {initFT, RichTokens} from '~/shared/api/ft';
+import {createNearInstance, getNearAuth, NearAuth} from '~/shared/api/near';
+import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
+import {initRoketo, Roketo} from '~/shared/api/roketo';
+import {notificationsApiClient, tokenProvider, usersApiClient} from '~/shared/api/roketo-client';
+import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
+import {env} from '~/shared/config';
 
 async function retry<T>(cb: () => Promise<T>) {
   const retryCount = 3;
@@ -35,9 +31,7 @@ async function retry<T>(cb: () => Promise<T>) {
 
 export const initWallets = createEvent();
 
-export const $nearWallet = createStore<null | {near: Near; auth: NearAuth}>(
-  null,
-);
+export const $nearWallet = createStore<null | {near: Near; auth: NearAuth}>(null);
 export const $roketoWallet = createStore<null | {
   roketo: Roketo;
   tokens: RichTokens;
@@ -56,13 +50,9 @@ export const $accountStreams = createStore<{
   streamsLoaded: false,
 });
 
-export const $isSignedIn = $nearWallet.map(
-  (wallet) => wallet?.auth.signedIn ?? false,
-);
+export const $isSignedIn = $nearWallet.map((wallet) => wallet?.auth.signedIn ?? false);
 
-export const $accountId = $nearWallet.map(
-  (wallet) => wallet?.auth.accountId ?? null,
-);
+export const $accountId = $nearWallet.map((wallet) => wallet?.auth.accountId ?? null);
 
 export const $user = createStore<{name: string | null; email: string | null}>({
   name: null,
@@ -93,21 +83,17 @@ export const lastCreatedStreamUpdated = createEvent<string>();
 
 const createNearWalletFx = createEffect(async () => {
   const near = await createNearInstance();
-  const auth = await getNearAuth(
-    new WalletConnection(near, env.ROKETO_CONTRACT_NAME),
-  );
+  const auth = await getNearAuth(new WalletConnection(near, env.ROKETO_CONTRACT_NAME));
   return {near, auth};
 });
-const createRoketoWalletFx = createEffect(
-  async (account: ConnectedWalletAccount) => {
-    const roketo = await initRoketo({account});
-    const tokens = await initFT({
-      account,
-      tokens: roketo.dao.tokens,
-    });
-    return {roketo, tokens};
-  },
-);
+const createRoketoWalletFx = createEffect(async (account: ConnectedWalletAccount) => {
+  const roketo = await initRoketo({account});
+  const tokens = await initFT({
+    account,
+    tokens: roketo.dao.tokens,
+  });
+  return {roketo, tokens};
+});
 export const $appLoading = createStore(true);
 const createPriceOracleFx = createEffect((account: ConnectedWalletAccount) =>
   initPriceOracle({account}),

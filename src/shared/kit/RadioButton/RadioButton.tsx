@@ -1,5 +1,5 @@
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
 
 import styles from './styles.module.scss';
 
@@ -10,9 +10,7 @@ type RadioButtonProps<T> = {
   onChange: (value: T) => void;
 };
 
-export function RadioButton<T>({
-  active, label, value, onChange,
-}: RadioButtonProps<T>) {
+export function RadioButton<T>({active, label, value, onChange}: RadioButtonProps<T>) {
   return (
     <label className={styles.root}>
       <input
@@ -21,13 +19,9 @@ export function RadioButton<T>({
         checked={active}
         onChange={() => onChange(value)}
       />
-      <div
-        className={classNames(styles.radio, {[styles.radioActive]: active})}
-      />
+      <div className={classNames(styles.radio, {[styles.radioActive]: active})} />
 
-      <div className={styles.text}>
-        {label}
-      </div>
+      <div className={styles.text}>{label}</div>
     </label>
   );
 }

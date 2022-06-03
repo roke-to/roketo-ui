@@ -3,10 +3,10 @@ import React from 'react';
 export type BooleanControl = {
   on: boolean;
   off: boolean;
-  toggle: () => void,
-  turnOff: () => void,
-  turnOn: () => void,
-  setOn: (state: boolean) => void,
+  toggle: () => void;
+  turnOff: () => void;
+  turnOn: () => void;
+  setOn: (state: boolean) => void;
 };
 
 export function useBool(initial: boolean): BooleanControl {

@@ -34,7 +34,7 @@
 
 .required {
   &:after {
-    content: "*";
+    content: '*';
 
     position: absolute;
     top: 0;
@@ -43,5 +43,3 @@
     color: $danger;
   }
 }
-
-

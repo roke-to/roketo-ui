@@ -1,14 +1,13 @@
 import React from 'react';
 
-import {Route} from "shared/helpers/routing";
-
-import NavigationLink from "shared/components/NavigationLink";
+import {NavigationLink} from '~/shared/components/NavigationLink';
+import {Route} from '~/shared/lib/routing';
 
 import styles from './styles.module.scss';
 
 type PageListProps = {
-  pageRoutes: Route[],
-}
+  pageRoutes: Route[];
+};
 
 export const PageList = (props: PageListProps) => {
   const {pageRoutes = []} = props;
@@ -19,13 +18,9 @@ export const PageList = (props: PageListProps) => {
 
   return (
     <ul className={styles.root}>
-      {pageRoutes.map(route => (
+      {pageRoutes.map((route) => (
         <li className={styles.pageLink} key={route.path}>
-          <NavigationLink
-            to={route.path}
-          >
-            {route.title}
-          </NavigationLink>
+          <NavigationLink to={route.path}>{route.title}</NavigationLink>
         </li>
       ))}
     </ul>

@@ -1,11 +1,11 @@
 import BigNumber from 'bignumber.js';
-import { Account, Contract, WalletConnection } from 'near-api-js';
+import {Account, Contract, WalletConnection} from 'near-api-js';
 
-import { GAS_SIZE, STORAGE_DEPOSIT } from './config';
-import { RoketoContract } from './interfaces/contracts';
-import { RoketoApi } from './interfaces/roketo-api';
-import { RoketoTokenStatus, RoketoAccount } from './interfaces/entities';
-import { getEmptyAccount } from './helpers';
+import {GAS_SIZE, STORAGE_DEPOSIT} from './config';
+import {getEmptyAccount} from './helpers';
+import {RoketoContract} from './interfaces/contracts';
+import {RoketoAccount, RoketoTokenStatus} from './interfaces/entities';
+import {RoketoApi} from './interfaces/roketo-api';
 
 export function RoketoContractApi({
   contract,
@@ -32,7 +32,7 @@ export function RoketoContractApi({
   const getAccount = async (accountId: string): Promise<RoketoAccount> => {
     const fallback = getEmptyAccount(accountId);
     try {
-      const newAccount = await contract.get_account({ account_id: accountId });
+      const newAccount = await contract.get_account({account_id: accountId});
       return newAccount || fallback;
     } catch (e) {
       console.debug('[RoketoContractApi]: nearerror', e);
@@ -43,9 +43,7 @@ export function RoketoContractApi({
   return {
     // account methods
     getCurrentAccount: () => getAccount(walletConnection.getAccountId()),
-    updateAccount: async function updateAccount({
-      tokensWithoutStorage = 0,
-    }): Promise<void> {
+    updateAccount: async function updateAccount({tokensWithoutStorage = 0}): Promise<void> {
       const res = await contract.update_account(
         {
           account_id: account.accountId,
@@ -54,22 +52,15 @@ export function RoketoContractApi({
         new BigNumber(STORAGE_DEPOSIT)
           .multipliedBy(tokensWithoutStorage)
           .plus(operationalCommission)
-          .toFixed()
+          .toFixed(),
       );
       return res;
     },
     // stream methods
     getAccount,
     createStream: async function createStream(
-      {
-        deposit,
-        receiverId,
-        token,
-        speed,
-        description,
-        isAutoStartEnabled = true,
-      },
-      { callbackUrl } = {}
+      {deposit, receiverId, token, speed, description, isAutoStartEnabled = true},
+      {callbackUrl} = {},
     ) {
       let res;
       const createCommission = tokens[token].commission_on_create;
@@ -123,9 +114,9 @@ export function RoketoContractApi({
         throw error;
       }
     },
-    depositStream: async function depositStream({ streamId, token, deposit }) {
+    depositStream: async function depositStream({streamId, token, deposit}) {
       if (token === 'NEAR') {
-        await contract.deposit({ stream_id: streamId }, GAS_SIZE, deposit);
+        await contract.deposit({stream_id: streamId}, GAS_SIZE, deposit);
       } else {
         const tokenContract = ft[token].contract;
 
@@ -139,38 +130,38 @@ export function RoketoContractApi({
             }),
           },
           GAS_SIZE,
-          1
+          1,
         );
       }
     },
-    pauseStream: async function pauseStream({ streamId }) {
+    pauseStream: async function pauseStream({streamId}) {
       const res = await contract.pause_stream(
-        { stream_id: streamId },
+        {stream_id: streamId},
         GAS_SIZE,
-        operationalCommission
+        operationalCommission,
       );
 
       return res;
     },
-    startStream: async function startStream({ streamId }) {
+    startStream: async function startStream({streamId}) {
       const res = await contract.start_stream(
-        { stream_id: streamId },
+        {stream_id: streamId},
         GAS_SIZE,
-        operationalCommission
+        operationalCommission,
       );
 
       return res;
     },
-    stopStream: async function stopStream({ streamId }) {
+    stopStream: async function stopStream({streamId}) {
       const res = await contract.stop_stream(
-        { stream_id: streamId },
+        {stream_id: streamId},
         GAS_SIZE,
-        operationalCommission
+        operationalCommission,
       );
       return res;
     },
     // View methods
-    getStream: async function getStream({ streamId }) {
+    getStream: async function getStream({streamId}) {
       const res = await contract.get_stream({
         stream_id: streamId,
       });
@@ -181,7 +172,7 @@ export function RoketoContractApi({
       const res = await contract.get_status({});
       return res;
     },
-    getStreamHistory: async function getStreamHistory({ streamId, from, to }) {
+    getStreamHistory: async function getStreamHistory({streamId, from, to}) {
       const res = await contract.get_stream_history({
         stream_id: streamId,
         from,

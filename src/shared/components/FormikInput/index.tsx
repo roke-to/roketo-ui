@@ -1,34 +1,24 @@
-import React from 'react';
-
 import {FieldInputProps, FormikState} from 'formik';
+import React from 'react';
 
 import {FormField} from '@ui/components/FormField';
 import {Input} from '@ui/components/Input';
 
 type InputProps = {
-  placeholder: string,
+  placeholder: string;
 
-  field: FieldInputProps<any>,
-  form: FormikState<any>,
+  field: FieldInputProps<any>;
+  form: FormikState<any>;
 
-  label?: React.ReactNode,
-  description?: React.ReactNode,
+  label?: React.ReactNode;
+  description?: React.ReactNode;
 
-  isRequired?: boolean,
+  isRequired?: boolean;
   className?: string;
 };
 
 export const FormikInput = (props: InputProps) => {
-  const {
-    placeholder,
-    description,
-    isRequired,
-    className,
-    field,
-    form,
-    label,
-    ...rest
-  } = props;
+  const {placeholder, description, isRequired, className, field, form, label, ...rest} = props;
 
   const error = form.errors[field.name];
 
@@ -49,4 +39,4 @@ export const FormikInput = (props: InputProps) => {
       />
     </FormField>
   );
-}
+};

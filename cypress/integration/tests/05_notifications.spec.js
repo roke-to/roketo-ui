@@ -1,17 +1,19 @@
+import {createstream} from '../../support/createstream';
+import {login} from '../../support/login';
+import {logout} from '../../support/logout';
 import MyStreams from '../../support/pages/MyStreams';
 import Notification from '../../support/pages/Notification';
-import { login } from '../../support/login';
 import Transaction from '../../support/pages/TransactionPage';
-import { createstream } from '../../support/createstream';
-import { logout } from "../../support/logout";
 
 context('Notifications', () => {
   let sender;
   let receiver;
 
   before(() => {
-    cy.task('getAccount').then((freshTestAccount) => sender = freshTestAccount);
-    cy.task('getAccount', { filename: 'anotherTestAccount' }).then((anotherFreshTestAccount) => receiver = anotherFreshTestAccount);
+    cy.task('getAccount').then((freshTestAccount) => (sender = freshTestAccount));
+    cy.task('getAccount', {filename: 'anotherTestAccount'}).then(
+      (anotherFreshTestAccount) => (receiver = anotherFreshTestAccount),
+    );
   });
 
   it('Sender NotificationsCheck', () => {
@@ -24,7 +26,7 @@ context('Notifications', () => {
     logout();
 
     login(sender.seedPhrase);
-    createstream({ duration: 'short', receiver: receiver.accountId });
+    createstream({duration: 'short', receiver: receiver.accountId});
     const mystreams = new MyStreams();
     // mystreams.checkNewStreamStatus('Active');
 
@@ -36,7 +38,6 @@ context('Notifications', () => {
     transaction.approve();
     notif.openNotifications();
     notif.checknew('pause', receiver.accountId);
-
 
     mystreams.changeStatus('start');
     transaction.approve();

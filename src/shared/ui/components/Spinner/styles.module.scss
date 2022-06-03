@@ -30,7 +30,8 @@
     right: 0;
   }
 
-  &::before, &::after {
+  &::before,
+  &::after {
     position: absolute;
 
     content: '';

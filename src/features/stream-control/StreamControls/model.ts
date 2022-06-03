@@ -1,15 +1,12 @@
 import {attach} from 'effector';
 
-import {$roketoWallet} from 'services/wallet';
+import {$roketoWallet} from '~/entities/wallet';
 
 const modifyStreamFx = attach({
   source: $roketoWallet,
   async effect(
     wallet,
-    {
-      command,
-      streamId,
-    }: {command: 'start' | 'stop' | 'pause'; streamId: string},
+    {command, streamId}: {command: 'start' | 'stop' | 'pause'; streamId: string},
   ) {
     if (!wallet) return null;
     switch (command) {

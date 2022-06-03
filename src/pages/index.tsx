@@ -1,27 +1,22 @@
-import { useEffect } from 'react';
+import {useStore} from 'effector-react';
+import {useEffect} from 'react';
+import {Redirect, Route, HashRouter as Router, Switch} from 'react-router-dom';
 
-import {
-  HashRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-} from 'react-router-dom';
-import { useStore } from 'effector-react';
+import {Footer} from '~/widgets/footer';
 
-import { $isSignedIn } from 'services/wallet';
+import {LEGACY_ROUTES_MAP, LegacyStreamPage, LegacyStreamsPage} from '~/features/legacy';
 
-import { Header } from 'shared/components/Header';
-import { PrivateRoute } from 'shared/components/PrivateRoute';
-import {Footer} from 'widgets/footer';
-import { LEGACY_ROUTES_MAP, LegacyStreamPage, LegacyStreamsPage } from 'features/legacy';
+import {$isSignedIn} from '~/entities/wallet';
 
-import { env } from 'shared/config';
-import { ROUTES_MAP } from 'shared/helpers/routing';
+import {Header} from '~/shared/components/Header';
+import {PrivateRoute} from '~/shared/components/PrivateRoute';
+import {env} from '~/shared/config';
+import {ROUTES_MAP} from '~/shared/lib/routing';
 
-import { StreamsPage } from './streams';
-import { AuthorizePage } from './authorize';
-import { StreamPage } from './stream';
-import { NotFoundPage } from './not-found';
+import {AuthorizePage} from './authorize';
+import {NotFoundPage} from './not-found';
+import {StreamPage} from './stream';
+import {StreamsPage} from './streams';
 
 const TRASH_QUERY_PARAMS = ['transactionHashes', 'errorCode', 'errorMessage'];
 
@@ -39,19 +34,11 @@ export function Routing() {
     window.history.replaceState(null, '', url);
   });
 
-  const signedIn = useStore($isSignedIn)
+  const signedIn = useStore($isSignedIn);
 
-  const {
-    root,
-    stream,
-    streams,
-    authorize,
-  } = ROUTES_MAP;
+  const {root, stream, streams, authorize} = ROUTES_MAP;
 
-  const {
-    legacyStream,
-    legacyStreams,
-  } = LEGACY_ROUTES_MAP;
+  const {legacyStream, legacyStreams} = LEGACY_ROUTES_MAP;
 
   return (
     <Router basename={env.PUBLIC_URL}>

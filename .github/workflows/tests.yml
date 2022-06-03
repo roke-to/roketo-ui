@@ -6,11 +6,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
           wait-on-timeout: 120
           record: false
           parallel: false
-          start: yarn start 
+          start: yarn start --port 3000
           wait-on: 'http://localhost:3000'

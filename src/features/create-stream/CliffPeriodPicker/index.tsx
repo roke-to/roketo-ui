@@ -1,5 +1,5 @@
-import React from 'react';
 import {FieldInputProps, FormikState} from 'formik';
+import React from 'react';
 import DateTimePicker from 'react-datetime-picker';
 
 import {FormField} from '@ui/components/FormField';
@@ -7,10 +7,10 @@ import {FormField} from '@ui/components/FormField';
 import styles from './styles.module.scss';
 
 type CliffPeriodPickerProps = {
-  label?: React.ReactNode,
+  label?: React.ReactNode;
 
-  field: FieldInputProps<any>,
-  form: FormikState<any>,
+  field: FieldInputProps<any>;
+  form: FormikState<any>;
 
   className?: string;
 
@@ -27,11 +27,7 @@ export const CliffPeriodPicker = ({
   const error = form.errors[field.name];
 
   return (
-    <FormField
-      className={className}
-      label={label}
-      error={error}
-    >
+    <FormField className={className} label={label} error={error}>
       <DateTimePicker
         className={styles.maxWidth}
         amPmAriaLabel="Select AM/PM"

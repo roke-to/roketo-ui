@@ -4,13 +4,13 @@ type StringInt = string;
 type StreamId = string;
 type AccountId = string;
 
-type SafeFloat = { val: number, pow: number };
+type SafeFloat = {val: number; pow: number};
 
 type StreamStatus =
-  | "Initialized"          // stream has been created, but not started, happens if "auto-start" is set to false when stream created
-  | "Active"               // stream is all set and money is flowing
-  | "Paused"               // stream has been set to pause, it may be started again any time
-  | { Finished: string }   // stream has streamed all it's balance and account has been updated.
+  | 'Initialized' // stream has been created, but not started, happens if "auto-start" is set to false when stream created
+  | 'Active' // stream is all set and money is flowing
+  | 'Paused' // stream has been set to pause, it may be started again any time
+  | {Finished: string}; // stream has streamed all it's balance and account has been updated.
 
 export type RoketoStream = {
   balance: StringInt; // Tokens that are not withdrawn, tho they can be already streamed
@@ -26,13 +26,13 @@ export type RoketoStream = {
   status: StreamStatus; // Stream status
   timestamp_created: number;
   token_account_id: AccountId;
-  tokens_per_sec: StringInt; // Streaming speed, refer to helpers.ts to learn how to convert it
+  tokens_per_sec: StringInt; // Streaming speed, refer to lib.ts to learn how to convert it
   tokens_total_withdrawn: StringInt;
 };
 
 type TokenAmount = {
   [tokenAccountId: string]: StringInt;
-}
+};
 
 export type RoketoAccount = {
   active_incoming_streams: number;
@@ -66,7 +66,7 @@ export type RoketoDao = {
   dao_id: AccountId;
   eth_near_ratio: SafeFloat;
   oracles: []; // TODO
-  tokens: { [tokenAccountId: string]: RoketoTokenMeta }
+  tokens: {[tokenAccountId: string]: RoketoTokenMeta};
   utility_token_decimals: number;
   utility_token_id: AccountId;
 };
@@ -79,32 +79,32 @@ export type RoketoTokenStats = {
   streams: number;
   total_commission_collected: StringInt;
   total_deposit: StringInt;
-  transferred: StringInt
+  transferred: StringInt;
   tvl: StringInt;
 };
 
 // all contract stats
 export type RoketoStats = {
-  dao_tokens: { [tokenAccountId: string]: RoketoTokenStats }
+  dao_tokens: {[tokenAccountId: string]: RoketoTokenStats};
   last_update_time: number;
   total_account_deposit_eth: StringInt;
   total_account_deposit_near: StringInt;
   total_accounts: number;
   total_active_streams: number;
-  total_aurora_streams: number
+  total_aurora_streams: number;
   total_dao_tokens: number;
   total_streams: number;
-  total_streams_unlisted: number
+  total_streams_unlisted: number;
 };
 
 export type RoketoCreateRequest = {
-    description: string;
-    owner_id: string;
-    receiver_id: string;
-    balance: string;
-    tokens_per_sec: BigInt;
-    cliff_period_sec?: number;
-    is_auto_start_enabled?: boolean;
-    is_expirable?: boolean;
-    is_locked?: boolean;
-}
+  description: string;
+  owner_id: string;
+  receiver_id: string;
+  balance: string;
+  tokens_per_sec: BigInt;
+  cliff_period_sec?: number;
+  is_auto_start_enabled?: boolean;
+  is_expirable?: boolean;
+  is_locked?: boolean;
+};

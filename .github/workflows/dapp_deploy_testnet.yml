@@ -6,16 +6,18 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
+
       - name: Get Time 🕒
         id: time
         uses: nanzm/get-time-action@v1.1
         with:
           timeZone: 0
           format: 'YYYY-MM-DD-HH-mm'
+
       - name: Set up Node.js ⚙️
         uses: actions/setup-node@v2
         with:
-          node-version: '16.x'
+          node-version: '18.x'
           cache: 'yarn'
           cache-dependency-path: yarn.lock
 
@@ -27,9 +29,8 @@ jobs:
       - name: Install and Build 🔧
         working-directory: .
         run: |
-          yarn
-          mv .env.development .env.production.local
-          yarn build
+          yarn install --frozen-lockfile
+          yarn build --mode testnet
         env:
           BUILD_TIME: '${{ steps.time.outputs.time }}'
           COMMIT_HASH: ${GITHUB_SHA::8}
@@ -38,6 +39,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           branch: master
-          folder: build
+          folder: dist
           repository-name: roke-to/roketo-test-dapp-public
           ssh-key: ${{ secrets.DEPLOY_KEY_TEST }}

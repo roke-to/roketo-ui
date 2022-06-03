@@ -1,11 +1,10 @@
 import {createStore, sample} from 'effector';
-import {$tokens, $accountStreams, $priceOracle} from 'services/wallet';
-import {isActiveStream} from 'shared/api/roketo/helpers';
 
-import {
-  collectTotalFinancialAmountInfo,
-  countTotalUSDWithdrawal,
-} from '../../lib';
+import {$accountStreams, $priceOracle, $tokens} from '~/entities/wallet';
+
+import {isActiveStream} from '~/shared/api/roketo/lib';
+
+import {collectTotalFinancialAmountInfo, countTotalUSDWithdrawal} from '../../lib';
 
 export const $financialStatus = createStore({
   outcomeAmountInfo: {
@@ -31,21 +30,9 @@ sample({
     const activeInputStreams = inputs.filter(isActiveStream);
     const activeOutputStreams = outputs.filter(isActiveStream);
     return {
-      outcomeAmountInfo: collectTotalFinancialAmountInfo(
-        activeOutputStreams,
-        tokens,
-        priceOracle,
-      ),
-      incomeAmountInfo: collectTotalFinancialAmountInfo(
-        activeInputStreams,
-        tokens,
-        priceOracle,
-      ),
-      availableForWithdrawal: countTotalUSDWithdrawal(
-        activeInputStreams,
-        tokens,
-        priceOracle,
-      ),
+      outcomeAmountInfo: collectTotalFinancialAmountInfo(activeOutputStreams, tokens, priceOracle),
+      incomeAmountInfo: collectTotalFinancialAmountInfo(activeInputStreams, tokens, priceOracle),
+      availableForWithdrawal: countTotalUSDWithdrawal(activeInputStreams, tokens, priceOracle),
     };
   },
   target: $financialStatus,

@@ -1,10 +1,10 @@
-import React from 'react';
 import cn from 'classnames';
+import React from 'react';
 
 import './Palette.scss';
 
 type Props = {
-  color: string,
+  color: string;
 };
 
 export const Palette = ({color}: Props) => {
@@ -13,11 +13,7 @@ export const Palette = ({color}: Props) => {
     [color]: true,
   });
 
-  return (
-    <div className={classNames}>
-      {`цвет: ${color}`}
-    </div>
-  );
-}
+  return <div className={classNames}>{`цвет: ${color}`}</div>;
+};
 
 export default Palette;

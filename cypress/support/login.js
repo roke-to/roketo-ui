@@ -1,5 +1,5 @@
-import SignInPage from './pages/Login';
 import HomePage from './pages/HomePage';
+import SignInPage from './pages/Login';
 
 export function login(seedPhrase) {
   const home = new HomePage();

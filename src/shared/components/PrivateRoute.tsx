@@ -1,4 +1,5 @@
-import { Route } from 'react-router-dom';
+import React from 'react';
+import {Route} from 'react-router-dom';
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
@@ -9,20 +10,14 @@ type PrivateRouteProps = {
   redirect: React.ReactNode;
   path: string;
   exact: boolean;
-}
+};
 
 export function PrivateRoute({
   children,
   allowed,
   redirect,
   path,
-  exact = false
+  exact = false,
 }: PrivateRouteProps) {
-  return (
-    <Route
-      exact={exact}
-      path={path}
-      render={() => (allowed ? children : redirect)}
-    />
-  );
+  return <Route exact={exact} path={path} render={() => (allowed ? children : redirect)} />;
 }

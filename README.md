@@ -1,23 +1,31 @@
 # Roke.to dApp
 
 ## Run dev server
-Dev server use .env.development
-```$
-# yarn start
+
+Dev server use `.env` and testnet by default
+
+```bash
+yarn start
 ```
+
 ## Build for production
 
-```$
-# cp .env.<mainnet/testnet> .env.production.local
-# yarn build
+```bash
+# for mainnet
+yarn build --mode mainnet
+
+# for testnet
+yarn build --mode testnet
 ```
 
-## .env
-* .env.development - for local dev server
-* .env.development.local - for override .env.development (git ignored)
-* .env.production - for common vars
-* .env.mainnet - for mainnet`s vars only
-* .env.testnet - for testnet`s vars only
+## Configuration
+
+How ViteJS handle environment variables and configs [read here](https://vitejs.dev/guide/env-and-mode.html).
+
+- .env - for dev server with testnet
+- .env.local - for override .env (git ignored)
+- .env.mainnet - for mainnet`s vars production mode
+- .env.testnet - for testnet`s vars production mode
 
 # Links
 

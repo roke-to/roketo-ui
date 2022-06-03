@@ -1,4 +1,4 @@
-import {env} from 'shared/config';
+import {env} from '~/shared/config';
 
 export const COMMENT_TEXT_LIMIT = 80;
 

@@ -1,15 +1,14 @@
 import cn from 'classnames';
 import {useStore} from 'effector-react';
 
-import {testIds} from 'shared/constants';
+import {testIds} from '~/shared/constants';
+
 import {FinancialInfo} from '../FinancialInfo';
 import {$financialStatus} from './model';
-
 import styles from './styles.module.scss';
 
 export const FinancialStatus = ({className}: {className?: string}) => {
-  const {outcomeAmountInfo, incomeAmountInfo, availableForWithdrawal} =
-    useStore($financialStatus);
+  const {outcomeAmountInfo, incomeAmountInfo, availableForWithdrawal} = useStore($financialStatus);
 
   return (
     <section className={cn(styles.root, className)}>

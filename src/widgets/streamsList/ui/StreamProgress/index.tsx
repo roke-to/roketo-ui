@@ -1,17 +1,16 @@
-import React from 'react';
 import cn from 'classnames';
 import RCTooltip from 'rc-tooltip';
+import React from 'react';
 
-import {ProgressBar} from 'shared/ui/components/ProgressBar';
-import {ClockIcon} from 'shared/icons/Clock';
+import {streamViewData} from '~/features/roketo-resource';
 
-import {getRoundedPercentageRatio} from 'shared/helpers/math';
-
-import {TokenFormatter} from 'shared/api/ft/token-formatter';
-import {useToken} from 'shared/hooks/useToken';
-import {streamViewData} from 'features/roketo-resource';
-import {RoketoStream} from 'shared/api/roketo/interfaces/entities';
-import { testIds } from 'shared/constants';
+import {TokenFormatter} from '~/shared/api/ft/token-formatter';
+import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
+import {testIds} from '~/shared/constants';
+import {useToken} from '~/shared/hooks/useToken';
+import {getRoundedPercentageRatio} from '~/shared/lib/math';
+import {ProgressBar} from '~/shared/ui/components/ProgressBar';
+import {ClockIcon} from '~/shared/ui/icons/Clock';
 
 import styles from './styles.module.scss';
 
@@ -30,7 +29,10 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
 
   const {progress, timeLeft, percentages} = streamViewData(stream);
 
-  const {formatter, meta: {symbol}} = useToken(tokenId);
+  const {
+    formatter,
+    meta: {symbol},
+  } = useToken(tokenId);
 
   const streamed = Number(formatter.toHumanReadableValue(progress.streamed, 3));
   const withdrawn = Number(formatter.toHumanReadableValue(progress.withdrawn, 3));
@@ -44,7 +46,8 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
 
   const progressText = `${streamedText} of ${total}`;
 
-  const {formattedValue: speedFormattedValue, unit: speedUnit} = formatter.tokensPerMeaningfulPeriod(tokensPerSec);
+  const {formattedValue: speedFormattedValue, unit: speedUnit} =
+    formatter.tokensPerMeaningfulPeriod(tokensPerSec);
 
   return (
     <RCTooltip
@@ -55,8 +58,7 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
       overlay={
         <div className={cn(styles.tooltip, styles.text)}>
           <div className={styles.innerStatus}>
-            <span>{progressText}</span>
-            {' '}
+            <span>{progressText}</span>{' '}
             <span className={cn(styles.grey, styles.smaller)}>{symbol}</span>
           </div>
 
@@ -69,36 +71,33 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
 
           <div className={cn(styles.status, styles.speed)}>
             {speedFormattedValue}{' '}
-            <span className={cn(styles.grey, styles.smaller)}>{symbol} / {speedUnit}</span>
+            <span className={cn(styles.grey, styles.smaller)}>
+              {symbol} / {speedUnit}
+            </span>
           </div>
 
           {timeLeft && (
             <div className={styles.remained}>
-              <ClockIcon className={styles.clock}/>
+              <ClockIcon className={styles.clock} />
               {timeLeft}
             </div>
           )}
 
           <div className={cn(styles.progress, styles.streamed)}>
             Streamed: {streamedText}{' '}
-            <span className={cn(styles.grey, styles.smaller)}>
-               {`${streamedPercentage}%`}
-            </span>
+            <span className={cn(styles.grey, styles.smaller)}>{`${streamedPercentage}%`}</span>
           </div>
 
           <div className={cn(styles.progress, styles.withdrawn)}>
             Withdrawn: {withdrawnText}{' '}
-            <span className={cn(styles.grey, styles.smaller)}>
-               {`${withdrawnPercentage}%`}
-            </span>
+            <span className={cn(styles.grey, styles.smaller)}>{`${withdrawnPercentage}%`}</span>
           </div>
         </div>
       }
     >
       <div className={cn(styles.root, styles.text, className)}>
         <div className={styles.status}>
-          <span data-testid={testIds.streamProgressCaption}>{progressText}</span>
-          {' '}
+          <span data-testid={testIds.streamProgressCaption}>{progressText}</span>{' '}
           <span className={styles.grey}>{symbol}</span>
         </div>
 

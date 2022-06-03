@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Near, WalletConnection } from 'near-api-js';
+import {Near, WalletConnection} from 'near-api-js';
+import React, {useContext, useEffect, useState} from 'react';
 
-import { createNearInstance, getNearAuth, NearAuth } from './api/near';
-import { initRoketo, Roketo } from './api/roketo';
-import { Tokens } from './ft-tokens';
-import { env } from '../../shared/config';
+import {env} from '../../shared/config';
+import {createNearInstance, getNearAuth, NearAuth} from './api/near';
+import {initRoketo, Roketo} from './api/roketo';
+import {Tokens} from './ft-tokens';
 
 type AppServices = {
   auth: NearAuth;
@@ -15,11 +15,7 @@ type AppServices = {
 };
 const AppContext = React.createContext<AppServices | null>(null);
 
-export function RoketoLegacyContextProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function RoketoLegacyContextProvider({children}: {children: React.ReactNode}) {
   const [context, setContext] = useState<AppServices | null>(null);
 
   useEffect(() => {
@@ -50,11 +46,7 @@ export function RoketoLegacyContextProvider({
     init();
   }, []);
 
-  return (
-    <AppContext.Provider value={context}>
-      {context ? children : null}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={context}>{context ? children : null}</AppContext.Provider>;
 }
 
 const ERR_NOT_IN_NEAR_CONTEXT = new Error('Near context is not found');
