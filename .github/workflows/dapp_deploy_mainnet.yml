@@ -7,12 +7,14 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
+
       - name: Get Time 🕒
         id: time
         uses: nanzm/get-time-action@v1.1
         with:
           timeZone: 0
           format: 'YYYY-MM-DD-HH-mm'
+
       - name: Set up Node.js ⚙️
         uses: actions/setup-node@v2
         with:
@@ -29,7 +31,7 @@ jobs:
         working-directory: .
         run: |
           yarn
-          yarn build
+          yarn build --mode mainnet
         env:
           BUILD_TIME: '${{ steps.time.outputs.time }}'
           COMMIT_HASH: ${GITHUB_SHA::8}
@@ -38,6 +40,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           branch: master
-          folder: build
+          folder: dist
           repository-name: roke-to/roketo-dapp-public
           ssh-key: ${{ secrets.DEPLOY_KEY }}

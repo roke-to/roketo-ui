@@ -29,17 +29,17 @@ export function getNearAuth(walletConnection: WalletConnection): NearAuth {
 
   async function login() {
     const appTitle = 'Roketo Token Streaming Service';
-  
+
     await walletConnection.requestSignIn(
-      process.env.REACT_APP_ROKETO_LEGACY_CONTRACT_NAME,
+      import.meta.env.VITE_ROKETO_LEGACY_CONTRACT_NAME,
       appTitle,
     );
   }
-  
+
   async function logout() {
     await walletConnection.signOut();
 
-    window.location.reload(); 
+    window.location.reload();
   }
 
   return {
