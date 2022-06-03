@@ -8,7 +8,7 @@ import {
 } from '@roketo/api-client';
 import {WalletConnection} from 'near-api-js';
 
-import {env} from 'shared/config';
+import {env} from '~/shared/config';
 import {createNearInstance} from './near';
 
 const serverConfig = {baseServer: new ServerConfiguration(env.WEB_API_URL, {})};

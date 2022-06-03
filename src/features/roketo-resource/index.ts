@@ -1,10 +1,10 @@
 import BigNumber from 'bignumber.js';
 import { formatDuration, intervalToDuration } from 'date-fns';
 
-import { getAvailableToWithdraw, isDead, isIdling } from 'shared/api/roketo/helpers';
-import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
-import { SECONDS_IN_YEAR } from 'shared/constants';
-import { shortEnLocale } from 'shared/helpers/date';
+import { getAvailableToWithdraw, isDead, isIdling } from '~/shared/api/roketo/helpers';
+import type { RoketoStream } from '~/shared/api/roketo/interfaces/entities';
+import { SECONDS_IN_YEAR } from '~/shared/constants';
+import { shortEnLocale } from '~/shared/helpers/date';
 
 function calculateEndTimestamp(stream: RoketoStream) {
   /**

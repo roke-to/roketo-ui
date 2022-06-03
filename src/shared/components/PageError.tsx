@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import React from 'react';
-import { Button } from 'shared/kit/Button';
-import hackImage from 'shared/images/RUSSIANS_HACK.gif';
-import crabImage from 'shared/images/crab.gif';
+import { Button } from '~/shared/kit/Button';
+import hackImage from '~/shared/images/RUSSIANS_HACK.gif';
+import crabImage from '~/shared/images/crab.gif';
 
 type PageErrorProps = {
   message?: React.ReactNode;

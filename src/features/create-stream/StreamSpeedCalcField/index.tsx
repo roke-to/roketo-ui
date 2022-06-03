@@ -3,13 +3,13 @@ import {useStore} from 'effector-react';
 import cn from 'classnames';
 import {FieldInputProps, FormikState} from 'formik';
 
-import {$tokens} from 'services/wallet';
+import {$tokens} from '~/services/wallet';
 import {FormField} from '@ui/components/FormField';
 import {Input} from '@ui/components/Input';
 
-import {usePrev} from 'shared/hooks/usePrev';
-import {isLikeNumber} from 'shared/helpers/validation';
-import { testIds } from 'shared/constants';
+import {usePrev} from '~/shared/hooks/usePrev';
+import {isLikeNumber} from '~/shared/helpers/validation';
+import { testIds } from '~/shared/constants';
 
 import {getTokensPerSecondCount, getDurationInSeconds, getStreamingSpeed} from '../lib';
 

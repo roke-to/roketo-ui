@@ -1,15 +1,15 @@
 import { Link } from 'react-router-dom';
 import {useStore} from 'effector-react';
 
-import {$isSignedIn} from 'services/wallet';
+import {$isSignedIn} from '~/services/wallet';
 
 import {Logo} from '@ui/icons/Logo';
 import {Layout} from '@ui/components/Layout';
-import {Authorization} from 'features/authorization';
-import { LEGACY_ROUTES_MAP, useShowLegacyStreams } from 'features/legacy';
+import {Authorization} from '~/features/authorization';
+import { LEGACY_ROUTES_MAP, useShowLegacyStreams } from '~/features/legacy';
 
-import {ROUTES_MAP} from 'shared/helpers/routing';
-import { useMediaQuery } from 'shared/hooks/useMatchQuery';
+import {ROUTES_MAP} from '~/shared/helpers/routing';
+import { useMediaQuery } from '~/shared/hooks/useMatchQuery';
 
 import {PageList} from './ui/PagesList';
 import {FinancialActivity} from './ui/FinancialActivity';

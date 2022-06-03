@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 
-import { STREAM_STATUS } from 'shared/api/roketo/constants';
-import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import { STREAM_STATUS } from '~/shared/api/roketo/constants';
+import type { RoketoStream } from '~/shared/api/roketo/interfaces/entities';
 
 const bindings = {
   [STREAM_STATUS.Initialized]: {

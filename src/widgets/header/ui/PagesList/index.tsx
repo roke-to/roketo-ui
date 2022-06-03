@@ -1,8 +1,8 @@
 import React from 'react';
 
-import {Route} from "shared/helpers/routing";
+import {Route} from "~/shared/helpers/routing";
 
-import NavigationLink from "shared/components/NavigationLink";
+import NavigationLink from "~/shared/components/NavigationLink";
 
 import styles from './styles.module.scss';
 

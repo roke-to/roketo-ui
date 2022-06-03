@@ -2,16 +2,16 @@ import React from 'react';
 import cn from 'classnames';
 import RCTooltip from 'rc-tooltip';
 
-import {ProgressBar} from 'shared/ui/components/ProgressBar';
-import {ClockIcon} from 'shared/icons/Clock';
+import {ProgressBar} from '~/shared/ui/components/ProgressBar';
+import {ClockIcon} from '~/shared/icons/Clock';
 
-import {getRoundedPercentageRatio} from 'shared/helpers/math';
+import {getRoundedPercentageRatio} from '~/shared/helpers/math';
 
-import {TokenFormatter} from 'shared/api/ft/token-formatter';
-import {useToken} from 'shared/hooks/useToken';
-import {streamViewData} from 'features/roketo-resource';
-import {RoketoStream} from 'shared/api/roketo/interfaces/entities';
-import { testIds } from 'shared/constants';
+import {TokenFormatter} from '~/shared/api/ft/token-formatter';
+import {useToken} from '~/shared/hooks/useToken';
+import {streamViewData} from '~/features/roketo-resource';
+import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
+import { testIds } from '~/shared/constants';
 
 import styles from './styles.module.scss';
 

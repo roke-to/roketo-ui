@@ -8,7 +8,7 @@ import {
   SECONDS_IN_DAY,
   SECONDS_IN_HOUR,
   SECONDS_IN_MINUTE
-} from 'shared/constants';
+} from '~/shared/constants';
 
 export class TokenFormatter {
   tokenDecimals: number;

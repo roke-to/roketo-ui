@@ -3,15 +3,15 @@ import classNames from 'classnames';
 import {useStore, useStoreMap} from 'effector-react';
 import Modal from 'react-modal';
 
-import { STREAM_STATUS } from 'shared/api/roketo/constants';
-import { testIds } from 'shared/constants';
-import {$accountId} from 'services/wallet';
+import { STREAM_STATUS } from '~/shared/api/roketo/constants';
+import { testIds } from '~/shared/constants';
+import {$accountId} from '~/services/wallet';
 
-import { DropdownOpener } from 'shared/kit/DropdownOpener';
-import { DropdownMenu, DropdownMenuDivider, DropdownMenuItem } from 'shared/kit/DropdownMenu';
-import { useBool, BooleanControl } from 'shared/hooks/useBool';
-import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
-import { isActiveStream, isWithCliff, isDead, isLocked, isPausedStream } from 'shared/api/roketo/helpers';
+import { DropdownOpener } from '~/shared/kit/DropdownOpener';
+import { DropdownMenu, DropdownMenuDivider, DropdownMenuItem } from '~/shared/kit/DropdownMenu';
+import { useBool, BooleanControl } from '~/shared/hooks/useBool';
+import type { RoketoStream } from '~/shared/api/roketo/interfaces/entities';
+import { isActiveStream, isWithCliff, isDead, isLocked, isPausedStream } from '~/shared/api/roketo/helpers';
 
 import { StreamStatus } from '../StreamStatus';
 import {$loading, startStream, pauseStream, stopStream} from './model';

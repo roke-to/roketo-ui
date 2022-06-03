@@ -2,17 +2,17 @@ import {createStore, createEffect, createEvent, sample, attach} from 'effector';
 import {ConnectedWalletAccount, Near, WalletConnection} from 'near-api-js';
 import type {Notification} from '@roketo/api-client';
 
-import {env} from 'shared/config';
-import {createNearInstance, getNearAuth, NearAuth} from 'shared/api/near';
-import {initRoketo, Roketo} from 'shared/api/roketo';
+import {env} from '~/shared/config';
+import {createNearInstance, getNearAuth, NearAuth} from '~/shared/api/near';
+import {initRoketo, Roketo} from '~/shared/api/roketo';
 import {
   tokenProvider,
   usersApiClient,
   notificationsApiClient,
-} from 'shared/api/roketo-client';
-import type {RoketoStream} from 'shared/api/roketo/interfaces/entities';
-import {initFT, RichTokens} from 'shared/api/ft';
-import {initPriceOracle, PriceOracle} from 'shared/api/price-oracle';
+} from '~/shared/api/roketo-client';
+import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
+import {initFT, RichTokens} from '~/shared/api/ft';
+import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
 
 async function retry<T>(cb: () => Promise<T>) {
   const retryCount = 3;

@@ -1,11 +1,11 @@
 import {useStore} from 'effector-react';
 
-import {$isSignedIn, $nearWallet} from 'services/wallet';
+import {$isSignedIn, $nearWallet} from '~/services/wallet';
 
 import { Button } from '@ui/components/Button';
 import {LogoutIcon} from '@ui/icons/LogOut';
 
-import { testIds } from 'shared/constants';
+import { testIds } from '~/shared/constants';
 
 import styles from './index.module.scss';
 

@@ -8,15 +8,15 @@ import {
 } from 'react-router-dom';
 import { useStore } from 'effector-react';
 
-import { $isSignedIn } from 'services/wallet';
+import { $isSignedIn } from '~/services/wallet';
 
-import { Header } from 'shared/components/Header';
-import { PrivateRoute } from 'shared/components/PrivateRoute';
-import {Footer} from 'widgets/footer';
-import { LEGACY_ROUTES_MAP, LegacyStreamPage, LegacyStreamsPage } from 'features/legacy';
+import { Header } from '~/shared/components/Header';
+import { PrivateRoute } from '~/shared/components/PrivateRoute';
+import {Footer} from '~/widgets/footer';
+import { LEGACY_ROUTES_MAP, LegacyStreamPage, LegacyStreamsPage } from '~/features/legacy';
 
-import { env } from 'shared/config';
-import { ROUTES_MAP } from 'shared/helpers/routing';
+import { env } from '~/shared/config';
+import { ROUTES_MAP } from '~/shared/helpers/routing';
 
 import { StreamsPage } from './streams';
 import { AuthorizePage } from './authorize';

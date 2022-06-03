@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 
-import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import { RoketoStream } from '~/shared/api/roketo/interfaces/entities';
 
 type FilterFn = (stream: RoketoStream) => boolean;
 

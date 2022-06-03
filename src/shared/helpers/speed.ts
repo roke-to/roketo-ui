@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import {
   SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE,
   TimePeriod,
-} from 'shared/constants';
+} from '~/shared/constants';
 
 export const getBalancePerDesiredPeriod = (balancePerSecond: string, period: TimePeriod) => {
   const balanceSpeedPerSecond = new BigNumber(balancePerSecond);

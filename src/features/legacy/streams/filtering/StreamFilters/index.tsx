@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import {SortIcon, OrderType} from '@ui/icons/Sort';
 
-import { Filter, FilterOptionWithCounter } from 'shared/kit/Filter';
+import { Filter, FilterOptionWithCounter } from '~/shared/kit/Filter';
 import type { LegacyRoketoStream } from '../../../api/roketo/interfaces/entities';
 
 import {DirectionSorts} from '../DirectionSorts';

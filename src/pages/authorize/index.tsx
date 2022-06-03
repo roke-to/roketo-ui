@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import {Authorization} from 'features/authorization';
+import {Authorization} from '~/features/authorization';
 
 import styles from './styles.module.scss';
 

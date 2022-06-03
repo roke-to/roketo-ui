@@ -1,4 +1,4 @@
-import { TokenFormatter } from 'shared/api/ft/token-formatter';
+import { TokenFormatter } from '~/shared/api/ft/token-formatter';
 
 import { useRoketoContext } from '../roketo-context';
 

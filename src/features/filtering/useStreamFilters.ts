@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import {useStoreMap} from 'effector-react'
 
-import {$accountId} from 'services/wallet'
-import { STREAM_STATUS } from 'shared/api/roketo/constants';
-import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
+import {$accountId} from '~/services/wallet'
+import { STREAM_STATUS } from '~/shared/api/roketo/constants';
+import type { RoketoStream } from '~/shared/api/roketo/interfaces/entities';
 
 import { useFilter, useFilters } from './lib';
 

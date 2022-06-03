@@ -1,7 +1,7 @@
 import numbro from 'numbro';
 import * as nearAPI from 'near-api-js';
 
-import {env} from 'shared/config';
+import {env} from '~/shared/config';
 
 import {TokenAccountId, TokenMultiplierMap, TokenPriceCollection, TokenPriceRaw} from './interfaces/entites';
 import {PriceOracleContract} from './interfaces/contract';

@@ -4,8 +4,8 @@ import classNames from 'classnames';
 import Modal from 'react-modal';
 
 import { Button, DisplayMode } from '@ui/components/Button';
-import { TokenImage } from 'shared/kit/TokenImage';
-import { Tooltip } from 'shared/kit/Tooltip';
+import { TokenImage } from '~/shared/kit/TokenImage';
+import { Tooltip } from '~/shared/kit/Tooltip';
 import { useBool } from '../../hooks/useBool';
 import { useRoketoContext } from '../../roketo-context';
 import { useAccount, useLegacyStreams } from '../../roketo-resource';

@@ -5,13 +5,13 @@ import classNames from 'classnames';
 import { format, isPast } from 'date-fns';
 
 import { LinkIcon } from '@ui/icons/Link';
-import { PageError } from 'shared/components/PageError';
-import {DropdownOpener} from 'shared/kit/DropdownOpener';
+import { PageError } from '~/shared/components/PageError';
+import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 import { Layout } from '@ui/components/Layout';
-import { getStreamingSpeed } from 'features/create-stream/lib';
+import { getStreamingSpeed } from '~/features/create-stream/lib';
 import { ProgressBar } from '@ui/components/ProgressBar';
-import { TokenImage } from 'shared/kit/TokenImage';
-import { getRoundedPercentageRatio } from 'shared/helpers/math';
+import { TokenImage } from '~/shared/kit/TokenImage';
+import { getRoundedPercentageRatio } from '~/shared/helpers/math';
 
 import { STREAM_STATUS } from '../api/roketo/constants';
 import { StreamControls } from '../stream-control/StreamControls';

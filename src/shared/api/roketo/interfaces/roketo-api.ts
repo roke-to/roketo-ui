@@ -1,4 +1,4 @@
-import { FTApi } from 'shared/api/ft/ft-api';
+import { FTApi } from '~/shared/api/ft/ft-api';
 
 import {
   RoketoAccount,

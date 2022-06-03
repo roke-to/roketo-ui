@@ -1,9 +1,9 @@
 import BigNumber from 'bignumber.js';
 import {addMonths, differenceInDays} from 'date-fns';
 
-import {SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE} from 'shared/constants';
+import {SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE} from '~/shared/constants';
 
-import type {RichToken} from 'shared/api/ft';
+import type {RichToken} from '~/shared/api/ft';
 
 export const getDurationInSeconds = (months: number, days: number, hours: number, minutes: number) => {
   const daysInMonths = differenceInDays(addMonths(new Date(), months), new Date());

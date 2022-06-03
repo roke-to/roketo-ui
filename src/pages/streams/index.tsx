@@ -2,20 +2,20 @@ import {useState, useCallback} from 'react';
 import cn from 'classnames';
 import {useStoreMap} from 'effector-react';
 
-import {$accountStreams} from 'services/wallet';
+import {$accountStreams} from '~/services/wallet';
 import {Layout} from '@ui/components/Layout';
 import {Button} from '@ui/components/Button';
 
-import {Modal} from 'shared/components/Modal';
+import {Modal} from '~/shared/components/Modal';
 
-import {WithdrawAllButton} from 'features/stream-control/WithdrawAllButton';
-import {StreamFilters} from 'features/filtering/StreamFilters';
-import {CreateStream} from 'features/create-stream/CreateStream';
-import {FinancialStatus} from 'widgets/financialStatus';
-import {StreamsList} from 'widgets/streamsList';
+import {WithdrawAllButton} from '~/features/stream-control/WithdrawAllButton';
+import {StreamFilters} from '~/features/filtering/StreamFilters';
+import {CreateStream} from '~/features/create-stream/CreateStream';
+import {FinancialStatus} from '~/widgets/financialStatus';
+import {StreamsList} from '~/widgets/streamsList';
 
-import {RoketoStream} from 'shared/api/roketo/interfaces/entities';
-import { testIds } from 'shared/constants';
+import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
+import { testIds } from '~/shared/constants';
 import {handleCreateStreamFx} from './model'
 
 import styles from './styles.module.scss';

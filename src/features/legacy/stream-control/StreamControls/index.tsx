@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import Modal from 'react-modal';
 
-import { DropdownOpener } from 'shared/kit/DropdownOpener';
-import { DropdownMenu, DropdownMenuDivider, DropdownMenuItem } from 'shared/kit/DropdownMenu';
+import { DropdownOpener } from '~/shared/kit/DropdownOpener';
+import { DropdownMenu, DropdownMenuDivider, DropdownMenuItem } from '~/shared/kit/DropdownMenu';
 import { useBool, BooleanControl } from '../../hooks/useBool';
 import { useRoketoContext } from '../../roketo-context';
 import type { LegacyRoketoStream } from '../../api/roketo/interfaces/entities';

@@ -1,6 +1,6 @@
 import { connect, keyStores, WalletConnection, ConnectedWalletAccount } from 'near-api-js';
 
-import { env } from 'shared/config';
+import { env } from '~/shared/config';
 
 export async function createNearInstance() {
   const keyStore = new keyStores.BrowserLocalStorageKeyStore();

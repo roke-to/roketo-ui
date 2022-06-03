@@ -1,6 +1,6 @@
 import { Account } from 'near-api-js';
 
-import { RoketoDao, RoketoTokenMeta } from 'shared/api/roketo/interfaces/entities';
+import { RoketoDao, RoketoTokenMeta } from '~/shared/api/roketo/interfaces/entities';
 
 import { TokenMetadata } from './types';
 import { TokenFormatter } from './token-formatter';

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {env} from 'shared/config';
+import {env} from '~/shared/config';
 import {Layout} from '@ui/components/Layout';
 import {DisplayType, Logo} from '@ui/icons/Logo';
 import {TelegramLogo} from '@ui/icons/Telegram';

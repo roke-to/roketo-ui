@@ -1,6 +1,6 @@
 import {useStore} from 'effector-react'
-import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
-import {$accountId} from 'services/wallet';
+import { RoketoStream } from '~/shared/api/roketo/interfaces/entities';
+import {$accountId} from '~/services/wallet';
 
 export const STREAM_DIRECTION = {
   IN: 'in',

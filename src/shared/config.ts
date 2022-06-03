@@ -13,7 +13,7 @@ type EnvType = {
   BUILD_TIME: string | null
 }
 
-export const env = {
+export const env: EnvType = {
   ACCOUNT_SUFFIX: import.meta.env.VITE_NEAR_ACCOUNT_SUFFIX,
   NEAR_NETWORK_ID: import.meta.env.VITE_NEAR_NETWORK_ID,
   NEAR_NODE_URL: import.meta.env.VITE_NEAR_NODE_URL,
@@ -26,6 +26,6 @@ export const env = {
   WEB_API_URL: import.meta.env.VITE_WEB_API_URL,
   COMMIT_HASH: import.meta.env.COMMIT_HASH ?? 'development',
   BUILD_TIME: import.meta.env.BUILD_TIME ?? null,
-} as EnvType;
+};
 
 export const GAS_SIZE = "200000000000000";

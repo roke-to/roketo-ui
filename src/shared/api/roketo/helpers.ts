@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { millisecondsToSeconds } from 'date-fns';
 
-import { fromNanosecToSec } from 'shared/helpers/date';
+import { fromNanosecToSec } from '~/shared/helpers/date';
 
 import { STREAM_STATUS } from './constants';
 import { RoketoStream, RoketoAccount } from './interfaces/entities';

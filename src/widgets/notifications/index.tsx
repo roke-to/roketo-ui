@@ -5,15 +5,15 @@ import { isToday, isYesterday, isSameDay, format } from 'date-fns';
 import { generatePath, Link } from 'react-router-dom';
 import type {NotificationTypeEnum as NotificationType, Notification} from '@roketo/api-client'
 
-import {$tokens, $notifications} from 'services/wallet';
+import {$tokens, $notifications} from '~/services/wallet';
 
-import { ROUTES_MAP } from 'shared/helpers/routing';
-import { DropdownOpener } from 'shared/kit/DropdownOpener';
-import { DropdownMenu } from 'shared/kit/DropdownMenu';
-import { STREAM_DIRECTION, useGetStreamDirection } from 'shared/hooks/useGetStreamDirection';
-import { streamViewData } from 'features/roketo-resource';
-import { useMediaQuery } from 'shared/hooks/useMatchQuery';
-import { testIds } from 'shared/constants';
+import { ROUTES_MAP } from '~/shared/helpers/routing';
+import { DropdownOpener } from '~/shared/kit/DropdownOpener';
+import { DropdownMenu } from '~/shared/kit/DropdownMenu';
+import { STREAM_DIRECTION, useGetStreamDirection } from '~/shared/hooks/useGetStreamDirection';
+import { streamViewData } from '~/features/roketo-resource';
+import { useMediaQuery } from '~/shared/hooks/useMatchQuery';
+import { testIds } from '~/shared/constants';
 
 import styles from './styles.module.scss';
 

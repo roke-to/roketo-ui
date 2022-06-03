@@ -1,7 +1,7 @@
 import * as nearAPI from "near-api-js";
 import { Account } from "near-api-js";
 
-import { env } from "shared/config";
+import { env } from "~/shared/config";
 
 import { RoketoContract } from './interfaces/contracts';
 import { RoketoContractApi } from "./contract-api";

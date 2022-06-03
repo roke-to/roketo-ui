@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { useOutsideClick } from 'shared/hooks/useOutsideClick';
+import { useOutsideClick } from '~/shared/hooks/useOutsideClick';
 
 import styles from './styles.module.scss';
 

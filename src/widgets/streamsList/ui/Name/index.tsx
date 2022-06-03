@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Badge } from 'shared/components/Badge';
+import { Badge } from '~/shared/components/Badge';
 
 import styles from './styles.module.scss';
 

@@ -1,7 +1,7 @@
 import {combine} from 'effector';
-import {$roketoWallet, $priceOracle} from 'services/wallet';
-import {TimePeriod} from 'shared/constants';
-import {getBalancePerDesiredPeriod} from 'shared/helpers/speed';
+import {$roketoWallet, $priceOracle} from '~/services/wallet';
+import {TimePeriod} from '~/shared/constants';
+import {getBalancePerDesiredPeriod} from '~/shared/helpers/speed';
 import {StreamType} from './streamType';
 
 export const $totalUSDAmountPerHour = combine(

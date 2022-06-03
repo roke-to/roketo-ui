@@ -1,7 +1,7 @@
 import {attach} from 'effector';
 import * as Yup from 'yup';
 
-import {$nearWallet, $accountId} from 'services/wallet';
+import {$nearWallet, $accountId} from '~/services/wallet';
 import {COMMENT_TEXT_LIMIT} from '../constants';
 
 const isReceiverNotEqualOwnerFx = attach({

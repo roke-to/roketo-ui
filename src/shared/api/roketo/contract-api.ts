@@ -1,7 +1,7 @@
 import { Account } from 'near-api-js';
 import BigNumber from 'bignumber.js';
 
-import { GAS_SIZE } from 'shared/config';
+import { GAS_SIZE } from '~/shared/config';
 import { RoketoContract } from './interfaces/contracts';
 import { RoketoAccount, RoketoStream } from './interfaces/entities';
 import { CreateStreamApiProps, RoketoApi, StreamsProps } from './interfaces/roketo-api';

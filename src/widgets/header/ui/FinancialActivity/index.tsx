@@ -1,13 +1,13 @@
 import classNames from 'classnames';
 import {useStoreMap} from 'effector-react';
 
-import {env} from 'shared/config';
-import {TIME_PERIOD_SIGNS, TimePeriod} from 'shared/constants';
+import {env} from '~/shared/config';
+import {TIME_PERIOD_SIGNS, TimePeriod} from '~/shared/constants';
 
 import {WalletIcon} from '@ui/icons/Wallet';
 import {IncomeIcon} from '@ui/icons/Income';
 import {OutcomeIcon} from '@ui/icons/Outcome';
-import {Balance, DisplayMode} from 'shared/components/Balance';
+import {Balance, DisplayMode} from '~/shared/components/Balance';
 
 import {StreamType} from '../../streamType';
 import {$totalUSDAmountPerHour} from '../../model';

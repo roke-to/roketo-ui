@@ -1,10 +1,10 @@
 import {useState} from 'react';
 import {useStore} from 'effector-react';
 
-import {$accountId, $user} from 'services/wallet';
-import {DropdownOpener} from 'shared/kit/DropdownOpener';
-import {DropdownMenu} from 'shared/kit/DropdownMenu';
-import {env} from 'shared/config';
+import {$accountId, $user} from '~/services/wallet';
+import {DropdownOpener} from '~/shared/kit/DropdownOpener';
+import {DropdownMenu} from '~/shared/kit/DropdownMenu';
+import {env} from '~/shared/config';
 
 import {ProfileForm} from './ProfileForm';
 

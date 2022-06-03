@@ -2,9 +2,9 @@ import React from 'react';
 import {useStore} from 'effector-react';
 
 import {Button, DisplayMode} from '@ui/components/Button';
-import { Tooltip } from 'shared/kit/Tooltip';
-import { TokenImage } from 'shared/kit/TokenImage';
-import { testIds } from 'shared/constants';
+import { Tooltip } from '~/shared/kit/Tooltip';
+import { TokenImage } from '~/shared/kit/TokenImage';
+import { testIds } from '~/shared/constants';
 
 import styles from './styles.module.scss';
 import {$tokenData, triggerWithdrawAll} from './model';

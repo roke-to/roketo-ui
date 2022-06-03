@@ -3,19 +3,19 @@ import cn from 'classnames';
 import {Field, Formik} from 'formik';
 import {useStore} from 'effector-react';
 
-import {$tokens} from 'services/wallet';
+import {$tokens} from '~/services/wallet';
 
 import {Button, ButtonType, DisplayMode as ButtonDisplayMode} from '@ui/components/Button';
 import {ErrorSign} from '@ui/icons/ErrorSign';
 
-import {FormikInput} from 'shared/components/FormikInput';
-import {FormikCheckbox} from 'shared/components/FormikCheckbox';
-import {FormikTextArea} from 'shared/components/FormikTextArea';
-import {Balance, DisplayMode} from 'shared/components/Balance';
+import {FormikInput} from '~/shared/components/FormikInput';
+import {FormikCheckbox} from '~/shared/components/FormikCheckbox';
+import {FormikTextArea} from '~/shared/components/FormikTextArea';
+import {Balance, DisplayMode} from '~/shared/components/Balance';
 
-import { testIds } from 'shared/constants';
+import { testIds } from '~/shared/constants';
 
-import {env} from 'shared/config';
+import {env} from '~/shared/config';
 import {StreamSpeedCalcField} from '../StreamSpeedCalcField';
 import {TokenSelector} from '../TokenSelector';
 import { CliffPeriodPicker } from '../CliffPeriodPicker';

@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import {useStore} from 'effector-react';
 
-import {testIds} from 'shared/constants';
+import {testIds} from '~/shared/constants';
 import {FinancialInfo} from '../FinancialInfo';
 import {$financialStatus} from './model';
 
