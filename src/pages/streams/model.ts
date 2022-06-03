@@ -12,7 +12,7 @@ export const handleCreateStreamFx = attach({
   async effect(wallet, values: FormValues) {
     if (!wallet) throw Error('no roketo wallet exists');
     const {roketo, tokens} = wallet;
-    const {receiver, delayed, comment, deposit, speed, token} = values;
+    const {receiver, delayed, comment, deposit, speed, token, isLocked, cliffDateTime} = values;
 
     const {formatter, api, roketoMeta} = tokens[token];
 
@@ -26,6 +26,8 @@ export const handleCreateStreamFx = attach({
       delayed,
       callbackUrl: returnPath,
       handleTransferStream: api.transfer,
+      isLocked,
+      cliffPeriodSec: cliffDateTime ? Math.floor((cliffDateTime.getTime() - Date.now()) / 1000) : undefined,
     });
   },
 });

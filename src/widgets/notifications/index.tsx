@@ -32,6 +32,7 @@ function NotificationIcon({ type }: { type: NotificationType }) {
       case 'StreamFinished': return FinishIcon;
       case 'StreamIsDue': return BangIcon;
       case 'StreamContinued': return StartIcon;
+      case 'StreamCliffPassed': return BangIcon;
       default: throw new Error('This should never happen');
     }
   })();
@@ -105,6 +106,12 @@ function NotificationBody({ notification: { type, payload: stream } }: { notific
         </PrimaryText>
         <SecondaryText>Amount left: <strong>{formatter.amount(left)}&nbsp;{symbol}</strong></SecondaryText>
         <SecondaryText>Time left: <strong>{timeLeft}</strong></SecondaryText>
+      </div>
+    );
+    case 'StreamCliffPassed': return (
+      <div className={styles.notificationBody}>
+        <PrimaryText>The stream {direction === STREAM_DIRECTION.IN ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`} has <strong>passed the cliff period</strong>.</PrimaryText>
+        <SecondaryText>Available for withdrawal: <strong>{formatter.amount(left)}&nbsp;{symbol}</strong></SecondaryText>
       </div>
     );
     default: throw new Error('This should never happen');
