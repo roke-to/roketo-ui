@@ -168,6 +168,22 @@ sample({
   clock: getNotificationsFx.doneData,
   target: $notifications,
 });
+
+const notificationsUpdateTimerFx = createEffect(
+  () =>
+    new Promise<void>((rs) => {
+      setTimeout(rs, 5000);
+    }),
+);
+sample({
+  clock: getNotificationsFx.done,
+  target: notificationsUpdateTimerFx,
+});
+sample({
+  clock: notificationsUpdateTimerFx.done,
+  target: getNotificationsFx,
+});
+
 /** clear user when there is no account id */
 sample({
   clock: $accountId,
