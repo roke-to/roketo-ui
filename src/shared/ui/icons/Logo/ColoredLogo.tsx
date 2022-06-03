@@ -1,3 +1,5 @@
+import React from 'react'
+
 export function ColoredLogo({ className }: { className?: string }) {
   return (
     <svg width="85" height="37" viewBox="0 0 85 37" fill="none" className={className}>

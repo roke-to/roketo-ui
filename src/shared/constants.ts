@@ -34,6 +34,7 @@ export const testIds = {
   streamStartButton: 'streamStartButton',
   streamPauseButton: 'streamPauseButton',
   streamStopButton: 'streamStopButton',
+  streamModalStopButton: 'streamModalStopButton',
   createStreamReceiverInput: 'createStreamReceiverInput',
   createStreamAmountInput: 'createStreamAmountInput',
   createStreamMonthsInput: 'createStreamMonthsInput',

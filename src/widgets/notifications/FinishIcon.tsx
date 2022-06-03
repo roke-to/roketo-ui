@@ -1,3 +1,5 @@
+import React from 'react'
+
 export function FinishIcon({ className }: { className: string }) {
   return (
     <svg className={className} width="44" height="44" viewBox="0 0 44 44" fill="none">

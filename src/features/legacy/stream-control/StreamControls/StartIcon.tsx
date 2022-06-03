@@ -1,3 +1,6 @@
+
+import React from 'react'
+
 export function StartIcon() {
   return (
     <svg width="8" height="10" viewBox="0 0 8 10" fill="none">

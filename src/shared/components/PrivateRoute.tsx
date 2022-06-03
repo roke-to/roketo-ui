@@ -1,3 +1,4 @@
+import React from 'react'
 import { Route } from 'react-router-dom';
 
 // A wrapper for <Route> that redirects to the login

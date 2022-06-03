@@ -1,3 +1,4 @@
+import React from 'react'
 import classNames from 'classnames';
 
 import { STREAM_STATUS } from '../api/roketo/constants';
