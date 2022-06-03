@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import React from 'react';
 
-import hackImage from '~/shared/images/RUSSIANS_HACK.gif';
 import crabImage from '~/shared/images/crab.gif';
+import hackImage from '~/shared/images/RUSSIANS_HACK.gif';
 import {Button} from '~/shared/kit/Button';
 
 type PageErrorProps = {

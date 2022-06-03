@@ -1,7 +1,7 @@
-import {attach} from 'effector';
 import * as Yup from 'yup';
+import {attach} from 'effector';
 
-import {$nearWallet, $accountId} from '~/entities/wallet';
+import {$accountId, $nearWallet} from '~/entities/wallet';
 
 import {COMMENT_TEXT_LIMIT} from '../constants';
 

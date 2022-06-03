@@ -1,28 +1,29 @@
 import classNames from 'classnames';
 import {useStore, useStoreMap} from 'effector-react';
-import {useState, ReactNode} from 'react';
+import {ReactNode, useState} from 'react';
 import Modal from 'react-modal';
 
 import {$accountId} from '~/entities/wallet';
+
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {
   isActiveStream,
-  isWithCliff,
   isDead,
   isLocked,
   isPausedStream,
+  isWithCliff,
 } from '~/shared/api/roketo/lib';
 import {testIds} from '~/shared/constants';
-import {useBool, BooleanControl} from '~/shared/hooks/useBool';
+import {BooleanControl, useBool} from '~/shared/hooks/useBool';
 import {DropdownMenu, DropdownMenuDivider, DropdownMenuItem} from '~/shared/kit/DropdownMenu';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 
 import {StreamStatus} from '../StreamStatus';
+import {$loading, pauseStream, startStream, stopStream} from './model';
 import {PauseIcon} from './PauseIcon';
 import {StartIcon} from './StartIcon';
 import {StopIcon} from './StopIcon';
-import {$loading, startStream, pauseStream, stopStream} from './model';
 import styles from './styles.module.scss';
 
 function ConfirmModal({

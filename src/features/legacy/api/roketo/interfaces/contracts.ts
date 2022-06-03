@@ -1,6 +1,6 @@
 import {Contract} from 'near-api-js';
 
-import {RoketoAccount, RoketoStatus, LegacyRoketoStream, StreamAction} from './entities';
+import {LegacyRoketoStream, RoketoAccount, RoketoStatus, StreamAction} from './entities';
 
 type ContractChangeFunctionArgs<P> = {
   args: P;

@@ -4,7 +4,7 @@ import {Account, Contract, WalletConnection} from 'near-api-js';
 import {GAS_SIZE, STORAGE_DEPOSIT} from './config';
 import {getEmptyAccount} from './helpers';
 import {RoketoContract} from './interfaces/contracts';
-import {RoketoTokenStatus, RoketoAccount} from './interfaces/entities';
+import {RoketoAccount, RoketoTokenStatus} from './interfaces/entities';
 import {RoketoApi} from './interfaces/roketo-api';
 
 export function RoketoContractApi({

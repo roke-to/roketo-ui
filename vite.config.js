@@ -1,7 +1,7 @@
-import {viteCommonjs, esbuildCommonjs} from '@originjs/vite-plugin-commonjs';
+import * as path from 'path';
+import {esbuildCommonjs, viteCommonjs} from '@originjs/vite-plugin-commonjs';
 import babel from '@rollup/plugin-babel';
 import react from '@vitejs/plugin-react';
-import * as path from 'path';
 import {defineConfig} from 'vite';
 import svgr from 'vite-plugin-svgr';
 

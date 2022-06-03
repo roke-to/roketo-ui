@@ -1,4 +1,4 @@
-import {connect, keyStores, WalletConnection, ConnectedWalletAccount} from 'near-api-js';
+import {connect, ConnectedWalletAccount, keyStores, WalletConnection} from 'near-api-js';
 import {AccountBalance} from 'near-api-js/lib/account';
 
 import {env} from '~/shared/config';

@@ -4,7 +4,7 @@ import {millisecondsToSeconds} from 'date-fns';
 import {fromNanosecToSec} from '~/shared/lib/date';
 
 import {STREAM_STATUS} from './constants';
-import {RoketoStream, RoketoAccount} from './interfaces/entities';
+import {RoketoAccount, RoketoStream} from './interfaces/entities';
 
 export const isActiveStream = (stream: RoketoStream) => stream.status === STREAM_STATUS.Active;
 export const isPausedStream = (stream: RoketoStream) => stream.status === STREAM_STATUS.Paused;

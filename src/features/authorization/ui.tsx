@@ -1,6 +1,7 @@
 import {useStore} from 'effector-react';
 
 import {$isSignedIn, $nearWallet} from '~/entities/wallet';
+
 import {testIds} from '~/shared/constants';
 
 import {Button} from '@ui/components/Button';

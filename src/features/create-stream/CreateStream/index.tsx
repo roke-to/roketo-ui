@@ -4,6 +4,7 @@ import {Field, Formik} from 'formik';
 import React, {useState} from 'react';
 
 import {$tokens} from '~/entities/wallet';
+
 import {Balance, DisplayMode} from '~/shared/components/Balance';
 import {FormikCheckbox} from '~/shared/components/FormikCheckbox';
 import {FormikInput} from '~/shared/components/FormikInput';
@@ -11,13 +12,13 @@ import {FormikTextArea} from '~/shared/components/FormikTextArea';
 import {env} from '~/shared/config';
 import {testIds} from '~/shared/constants';
 
-import {Button, ButtonType, DisplayMode as ButtonDisplayMode} from '@ui/components/Button';
+import {Button, DisplayMode as ButtonDisplayMode, ButtonType} from '@ui/components/Button';
 import {ErrorSign} from '@ui/icons/ErrorSign';
 
 import {CliffPeriodPicker} from '../CliffPeriodPicker';
+import {COMMENT_TEXT_LIMIT, INITIAL_FORM_VALUES} from '../constants';
 import {StreamSpeedCalcField} from '../StreamSpeedCalcField';
 import {TokenSelector} from '../TokenSelector';
-import {INITIAL_FORM_VALUES, COMMENT_TEXT_LIMIT} from '../constants';
 import {formValidationSchema} from './model';
 import styles from './styles.module.scss';
 

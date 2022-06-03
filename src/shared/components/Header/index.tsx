@@ -2,8 +2,9 @@ import classNames from 'classnames';
 import React from 'react';
 import {useRouteMatch} from 'react-router-dom';
 
-import {ROUTES_MAP} from '~/shared/lib/routing';
 import {Header as FullHeader} from '~/widgets/header/Header';
+
+import {ROUTES_MAP} from '~/shared/lib/routing';
 
 import {Logo} from '@ui/icons/Logo';
 

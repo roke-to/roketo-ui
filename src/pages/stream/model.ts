@@ -1,7 +1,8 @@
-import {createStore, sample, attach, combine, createEffect} from 'effector';
+import {attach, combine, createEffect, createStore, sample} from 'effector';
 import {createGate} from 'effector-react';
 
 import {$roketoWallet, lastCreatedStreamUpdated} from '~/entities/wallet';
+
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 
 export const pageGate = createGate<string | null>({defaultState: null});

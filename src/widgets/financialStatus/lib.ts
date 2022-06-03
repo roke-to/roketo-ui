@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 
 import {streamViewData} from '~/features/roketo-resource';
+
 import {RichTokens} from '~/shared/api/ft';
 import {PriceOracle} from '~/shared/api/price-oracle';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';

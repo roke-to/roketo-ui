@@ -4,6 +4,7 @@ import {FieldInputProps, FormikState} from 'formik';
 import React, {ChangeEvent, Dispatch, SetStateAction, useEffect, useState} from 'react';
 
 import {$tokens} from '~/entities/wallet';
+
 import {testIds} from '~/shared/constants';
 import {usePrev} from '~/shared/hooks/usePrev';
 import {isLikeNumber} from '~/shared/lib/validation';
@@ -11,7 +12,7 @@ import {isLikeNumber} from '~/shared/lib/validation';
 import {FormField} from '@ui/components/FormField';
 import {Input} from '@ui/components/Input';
 
-import {getTokensPerSecondCount, getDurationInSeconds, getStreamingSpeed} from '../lib';
+import {getDurationInSeconds, getStreamingSpeed, getTokensPerSecondCount} from '../lib';
 import styles from './styles.module.scss';
 
 type SpeedInputProps = {

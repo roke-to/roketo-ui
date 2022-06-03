@@ -1,4 +1,4 @@
-import {RoketoAccount, RoketoStatus, LegacyRoketoStream, StreamAction} from './entities';
+import {LegacyRoketoStream, RoketoAccount, RoketoStatus, StreamAction} from './entities';
 
 export interface RoketoApi {
   // View Methods

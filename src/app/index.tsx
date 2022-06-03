@@ -2,13 +2,15 @@ import {useStore} from 'effector-react';
 import 'error-polyfill';
 import React, {useEffect} from 'react';
 
-import {initWallets, $appLoading} from '~/entities/wallet';
-import {RoketoLegacyContextProvider} from '~/features/legacy/roketo-context';
 import {Routing} from '~/pages';
+
+import {RoketoLegacyContextProvider} from '~/features/legacy/roketo-context';
+
+import {$appLoading, initWallets} from '~/entities/wallet';
 
 import './styles/index.scss';
 
-function App() {
+export function App() {
   useEffect(() => {
     initWallets();
   }, []);
@@ -17,5 +19,3 @@ function App() {
     <RoketoLegacyContextProvider>{isLoading ? null : <Routing />}</RoketoLegacyContextProvider>
   );
 }
-
-export default App;

@@ -2,6 +2,7 @@ import {useStore} from 'effector-react';
 import React from 'react';
 
 import {$nearWallet, $priceOracle} from '~/entities/wallet';
+
 import {useToken} from '~/shared/hooks/useToken';
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 

@@ -1,8 +1,10 @@
 import {attach} from 'effector';
 import {generatePath} from 'react-router-dom';
 
-import {$roketoWallet} from '~/entities/wallet';
 import type {FormValues} from '~/features/create-stream/CreateStream';
+
+import {$roketoWallet} from '~/entities/wallet';
+
 import {ROUTES_MAP} from '~/shared/lib/routing';
 
 const redirectUrl = generatePath(ROUTES_MAP.streams.path);

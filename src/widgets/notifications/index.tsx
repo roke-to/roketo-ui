@@ -1,12 +1,14 @@
-import type {NotificationTypeEnum as NotificationType, Notification} from '@roketo/api-client';
+import type {Notification, NotificationTypeEnum as NotificationType} from '@roketo/api-client';
 import classNames from 'classnames';
-import {isToday, isYesterday, isSameDay, format} from 'date-fns';
+import {format, isSameDay, isToday, isYesterday} from 'date-fns';
 import {useStore} from 'effector-react';
 import React, {useCallback, useState} from 'react';
 import {generatePath, Link} from 'react-router-dom';
 
-import {$tokens, $notifications} from '~/entities/wallet';
 import {streamViewData} from '~/features/roketo-resource';
+
+import {$notifications, $tokens} from '~/entities/wallet';
+
 import {testIds} from '~/shared/constants';
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
@@ -17,9 +19,9 @@ import {ROUTES_MAP} from '~/shared/lib/routing';
 import {BangIcon} from './BangIcon';
 import {BellIcon} from './BellIcon';
 import {FinishIcon} from './FinishIcon';
+import {markAllReadFx} from './model';
 import {PauseIcon} from './PauseIcon';
 import {StartIcon} from './StartIcon';
-import {markAllReadFx} from './model';
 import styles from './styles.module.scss';
 
 function NotificationIcon({type}: {type: NotificationType}) {

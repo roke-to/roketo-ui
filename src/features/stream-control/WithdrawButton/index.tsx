@@ -2,8 +2,10 @@ import classNames from 'classnames';
 import {useStore} from 'effector-react';
 import React from 'react';
 
-import {$roketoWallet, $tokens} from '~/entities/wallet';
 import {streamViewData} from '~/features/roketo-resource';
+
+import {$roketoWallet, $tokens} from '~/entities/wallet';
+
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {getAvailableToWithdraw} from '~/shared/api/roketo/lib';
 import {testIds} from '~/shared/constants';

@@ -1,6 +1,6 @@
 import {FTApi} from '~/shared/api/ft/ft-api';
 
-import {RoketoAccount, RoketoStream, RoketoDao} from './entities';
+import {RoketoAccount, RoketoDao, RoketoStream} from './entities';
 
 export type CreateStreamApiProps = {
   comment: string;

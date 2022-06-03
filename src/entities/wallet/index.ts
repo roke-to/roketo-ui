@@ -1,12 +1,12 @@
 import type {Notification} from '@roketo/api-client';
-import {createStore, createEffect, createEvent, sample, attach} from 'effector';
+import {attach, createEffect, createEvent, createStore, sample} from 'effector';
 import {ConnectedWalletAccount, Near, WalletConnection} from 'near-api-js';
 
 import {initFT, RichTokens} from '~/shared/api/ft';
 import {createNearInstance, getNearAuth, NearAuth} from '~/shared/api/near';
 import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
 import {initRoketo, Roketo} from '~/shared/api/roketo';
-import {tokenProvider, usersApiClient, notificationsApiClient} from '~/shared/api/roketo-client';
+import {notificationsApiClient, tokenProvider, usersApiClient} from '~/shared/api/roketo-client';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {env} from '~/shared/config';
 

@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {Filter, FilterOptionWithCounter} from '~/shared/kit/Filter';
 
-import {SortIcon, OrderType} from '@ui/icons/Sort';
+import {OrderType, SortIcon} from '@ui/icons/Sort';
 
 import {DirectionSorts} from '../DirectionSorts';
 import {useStreamFilters} from '../useStreamFilters';

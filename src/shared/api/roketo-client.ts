@@ -1,10 +1,10 @@
 import {
-  ServerConfiguration,
   AuthApi,
-  UsersApi,
-  NotificationsApi,
   createConfiguration,
   LoginDto,
+  NotificationsApi,
+  ServerConfiguration,
+  UsersApi,
 } from '@roketo/api-client';
 import {WalletConnection} from 'near-api-js';
 

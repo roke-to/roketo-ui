@@ -1,4 +1,4 @@
-import {Contract, Account, ConnectedWalletAccount} from 'near-api-js';
+import {Account, ConnectedWalletAccount, Contract} from 'near-api-js';
 
 import {RoketoTokenStatus} from '../api/roketo/interfaces/entities';
 import {TokenMeta, TokenMetadata} from './TokenMeta';

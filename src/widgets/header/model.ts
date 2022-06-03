@@ -1,6 +1,7 @@
 import {combine} from 'effector';
 
-import {$roketoWallet, $priceOracle} from '~/entities/wallet';
+import {$priceOracle, $roketoWallet} from '~/entities/wallet';
+
 import {TimePeriod} from '~/shared/constants';
 import {getBalancePerDesiredPeriod} from '~/shared/lib/speed';
 

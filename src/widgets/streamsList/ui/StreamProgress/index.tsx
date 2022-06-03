@@ -3,6 +3,7 @@ import RCTooltip from 'rc-tooltip';
 import React from 'react';
 
 import {streamViewData} from '~/features/roketo-resource';
+
 import {TokenFormatter} from '~/shared/api/ft/token-formatter';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {testIds} from '~/shared/constants';

@@ -2,11 +2,11 @@ import {Contract} from 'near-api-js';
 
 import {
   RoketoAccount,
-  RoketoStream,
   RoketoDao,
-  RoketoTokenStats,
-  RoketoTokenMeta,
   RoketoStats,
+  RoketoStream,
+  RoketoTokenMeta,
+  RoketoTokenStats,
 } from './entities';
 
 type ContractChangeFunctionArgs<P> = {

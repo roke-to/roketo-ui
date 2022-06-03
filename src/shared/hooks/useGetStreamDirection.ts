@@ -1,6 +1,7 @@
 import {useStore} from 'effector-react';
 
 import {$accountId} from '~/entities/wallet';
+
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 
 export const STREAM_DIRECTION = {

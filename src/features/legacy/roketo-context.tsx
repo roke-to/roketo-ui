@@ -1,5 +1,5 @@
 import {Near, WalletConnection} from 'near-api-js';
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 
 import {env} from '../../shared/config';
 import {createNearInstance, getNearAuth, NearAuth} from './api/near';

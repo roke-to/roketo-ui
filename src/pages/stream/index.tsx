@@ -7,11 +7,13 @@ import React, {useState} from 'react';
 import Modal from 'react-modal';
 import {Link, useParams} from 'react-router-dom';
 
-import {$tokens} from '~/entities/wallet';
 import {getStreamingSpeed} from '~/features/create-stream/lib';
 import {streamViewData} from '~/features/roketo-resource';
 import {StreamControls} from '~/features/stream-control/StreamControls';
 import {WithdrawButton} from '~/features/stream-control/WithdrawButton';
+
+import {$tokens} from '~/entities/wallet';
+
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {getAvailableToWithdraw} from '~/shared/api/roketo/lib';

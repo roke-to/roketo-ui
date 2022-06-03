@@ -4,6 +4,7 @@ import {FieldInputProps, FormikState} from 'formik';
 import React, {useState} from 'react';
 
 import {$tokens} from '~/entities/wallet';
+
 import type {RichToken} from '~/shared/api/ft';
 import {DropdownMenu} from '~/shared/kit/DropdownMenu';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';

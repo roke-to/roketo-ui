@@ -1,7 +1,8 @@
 import type BigNumber from 'bignumber.js';
-import {createStore, createEvent, sample, attach} from 'effector';
+import {attach, createEvent, createStore, sample} from 'effector';
 
-import {$roketoWallet, $tokens, $accountStreams} from '~/entities/wallet';
+import {$accountStreams, $roketoWallet, $tokens} from '~/entities/wallet';
+
 import {getAvailableToWithdraw, isActiveStream} from '~/shared/api/roketo/lib';
 
 export const triggerWithdrawAll = createEvent();

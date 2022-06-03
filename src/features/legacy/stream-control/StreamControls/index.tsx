@@ -8,7 +8,7 @@ import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 import {STREAM_STATUS} from '../../api/roketo/constants';
 import {isActiveStream, isDead, isPausedStream} from '../../api/roketo/helpers';
 import type {LegacyRoketoStream} from '../../api/roketo/interfaces/entities';
-import {useBool, BooleanControl} from '../../hooks/useBool';
+import {BooleanControl, useBool} from '../../hooks/useBool';
 import {useRoketoContext} from '../../roketo-context';
 import {StreamStatus} from '../StreamStatus';
 import {PauseIcon} from './PauseIcon';

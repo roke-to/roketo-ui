@@ -1,9 +1,11 @@
 import {useStore} from 'effector-react';
 import {Link} from 'react-router-dom';
 
-import {$isSignedIn} from '~/entities/wallet';
 import {Authorization} from '~/features/authorization';
 import {LEGACY_ROUTES_MAP, useShowLegacyStreams} from '~/features/legacy';
+
+import {$isSignedIn} from '~/entities/wallet';
+
 import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
 import {ROUTES_MAP} from '~/shared/lib/routing';
 

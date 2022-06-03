@@ -3,6 +3,7 @@ import {useStoreMap} from 'effector-react';
 import React from 'react';
 
 import {$accountStreams} from '~/entities/wallet';
+
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 
 import {Button} from '@ui/components/Button';

@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 
 import {Filter, FilterOptionWithCounter} from '~/shared/kit/Filter';
 
-import {SortIcon, OrderType} from '@ui/icons/Sort';
+import {OrderType, SortIcon} from '@ui/icons/Sort';
 
 import type {LegacyRoketoStream} from '../../../api/roketo/interfaces/entities';
 import {DirectionSorts} from '../DirectionSorts';

@@ -1,14 +1,17 @@
 import {useStore} from 'effector-react';
 import {useEffect} from 'react';
-import {HashRouter as Router, Route, Switch, Redirect} from 'react-router-dom';
+import {Redirect, Route, HashRouter as Router, Switch} from 'react-router-dom';
+
+import {Footer} from '~/widgets/footer';
+
+import {LEGACY_ROUTES_MAP, LegacyStreamPage, LegacyStreamsPage} from '~/features/legacy';
 
 import {$isSignedIn} from '~/entities/wallet';
-import {LEGACY_ROUTES_MAP, LegacyStreamPage, LegacyStreamsPage} from '~/features/legacy';
+
 import {Header} from '~/shared/components/Header';
 import {PrivateRoute} from '~/shared/components/PrivateRoute';
 import {env} from '~/shared/config';
 import {ROUTES_MAP} from '~/shared/lib/routing';
-import {Footer} from '~/widgets/footer';
 
 import {AuthorizePage} from './authorize';
 import {NotFoundPage} from './not-found';

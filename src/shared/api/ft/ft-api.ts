@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import JSONbig from 'json-bigint';
-import {Account, Contract, utils, transactions} from 'near-api-js';
+import {Account, Contract, transactions, utils} from 'near-api-js';
 
 import {env} from '~/shared/config';
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';

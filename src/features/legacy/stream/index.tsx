@@ -2,9 +2,10 @@ import classNames from 'classnames';
 import copy from 'clipboard-copy';
 import {format, isPast} from 'date-fns';
 import React, {useState} from 'react';
-import {useParams, Link} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 
 import {getStreamingSpeed} from '~/features/create-stream/lib';
+
 import {PageError} from '~/shared/components/PageError';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 import {TokenImage} from '~/shared/kit/TokenImage';

@@ -1,12 +1,12 @@
 import numbro from 'numbro';
 
 import {
-  SECONDS_IN_YEAR,
-  SECONDS_IN_MONTH,
-  SECONDS_IN_WEEK,
   SECONDS_IN_DAY,
   SECONDS_IN_HOUR,
   SECONDS_IN_MINUTE,
+  SECONDS_IN_MONTH,
+  SECONDS_IN_WEEK,
+  SECONDS_IN_YEAR,
 } from '~/shared/constants';
 
 export class TokenFormatter {

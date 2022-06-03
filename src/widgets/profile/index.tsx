@@ -2,12 +2,13 @@ import {useStore} from 'effector-react';
 import {useState} from 'react';
 
 import {$accountId, $user} from '~/entities/wallet';
+
 import {env} from '~/shared/config';
 import {DropdownMenu} from '~/shared/kit/DropdownMenu';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 
-import {ProfileForm} from './ProfileForm';
 import styles from './index.module.scss';
+import {ProfileForm} from './ProfileForm';
 
 export const Profile = () => {
   const [isDropdownOpened, setIsDropdownOpened] = useState(false);
