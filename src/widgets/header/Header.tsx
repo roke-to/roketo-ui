@@ -1,10 +1,11 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
+import {useStore} from 'effector-react';
+
+import {$isSignedIn} from 'services/wallet';
 
 import {Logo} from '@ui/icons/Logo';
 import {Layout} from '@ui/components/Layout';
 import {Authorization} from 'features/authorization';
-import { useRoketoContext } from 'app/roketo-context';
 import { LEGACY_ROUTES_MAP, useShowLegacyStreams } from 'features/legacy';
 
 import {ROUTES_MAP} from 'shared/helpers/routing';
@@ -21,7 +22,7 @@ import styles from './styles.module.scss';
 const ROUTES_TO_DISPLAY = [ROUTES_MAP.streams];
 
 export const Header = () => {
-  const { auth } = useRoketoContext();
+  const signedIn = useStore($isSignedIn)
   const withSecondFloor = !useMediaQuery('(min-width: 1280px)');
   const showLegacyStreams = useShowLegacyStreams();
 
@@ -34,7 +35,7 @@ export const Header = () => {
             <Link to="/" className={styles.unshrinkable}>
               <Logo className={styles.logo}/>
             </Link>
-            {auth.signedIn && <PageList pageRoutes={
+            {signedIn && <PageList pageRoutes={
               showLegacyStreams
                 ? [...ROUTES_TO_DISPLAY, LEGACY_ROUTES_MAP.legacyStreams]
                 : ROUTES_TO_DISPLAY
@@ -42,14 +43,14 @@ export const Header = () => {
           </div>
 
           <div className={styles.right}>
-            {auth.signedIn && !withSecondFloor && <FinancialActivity className={styles.marginRight} />}
-            {auth.signedIn && <Profile />}
-            {auth.signedIn && !withSecondFloor && <Notifications />}
+            {signedIn && !withSecondFloor && <FinancialActivity className={styles.marginRight} />}
+            {signedIn && <Profile />}
+            {signedIn && !withSecondFloor && <Notifications />}
             {!withSecondFloor && <Authorization />}
           </div>
         </Layout>
       </div>
-      {auth.signedIn && withSecondFloor && (
+      {signedIn && withSecondFloor && (
         <div className={styles.secondWrapper}>
           <Layout className={styles.secondRoot}>
             <FinancialActivity className={styles.marginRight} />

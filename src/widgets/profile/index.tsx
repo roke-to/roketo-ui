@@ -1,23 +1,22 @@
-import React, { useState } from 'react';
+import {useState} from 'react';
+import {useStore} from 'effector-react';
 
-import {useRoketoContext} from 'app/roketo-context';
-import {useUser} from 'shared/api/roketo-web';
-import { DropdownOpener } from 'shared/kit/DropdownOpener';
-import { DropdownMenu } from 'shared/kit/DropdownMenu';
+import {$accountId, $user} from 'services/wallet';
+import {DropdownOpener} from 'shared/kit/DropdownOpener';
+import {DropdownMenu} from 'shared/kit/DropdownMenu';
 import {env} from 'shared/config';
 
-import { ProfileForm } from './ProfileForm';
+import {ProfileForm} from './ProfileForm';
 
 import styles from './index.module.scss';
 
 export const Profile = () => {
   const [isDropdownOpened, setIsDropdownOpened] = useState(false);
   const [needFallback, setNeedFallback] = useState(false);
-  const { auth } = useRoketoContext();
-  const userSWR = useUser();
 
-  const {name, email} = userSWR.data ?? {};
-  const { accountId } = auth;
+  const accountId = useStore($accountId);
+
+  const {name, email} = useStore($user);
 
   return (
     <div className={styles.profile}>
@@ -26,11 +25,9 @@ export const Profile = () => {
         className={styles.dropdownOpener}
         opened={isDropdownOpened}
       >
-        <span className={styles.name}>
-          {name || accountId}
-        </span>
+        <span className={styles.name}>{name || accountId}</span>
 
-        {needFallback ? (
+        {needFallback || !accountId ? (
           <svg className={styles.avatar} />
         ) : (
           <img
@@ -52,4 +49,3 @@ export const Profile = () => {
     </div>
   );
 };
-

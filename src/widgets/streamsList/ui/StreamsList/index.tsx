@@ -1,12 +1,12 @@
 import React from 'react';
 import cn from 'classnames';
+import {useStoreMap} from 'effector-react';
 
+import {$accountStreams} from 'services/wallet';
 import {RoketoStream} from 'shared/api/roketo/interfaces/entities';
 
 import {Button} from '@ui/components/Button';
 import {Spinner} from '@ui/components/Spinner';
-
-import {useStreams} from 'features/roketo-resource';
 
 import {StreamCard} from '../StreamCard';
 import styles from './styles.module.scss';
@@ -21,22 +21,15 @@ type Props = {
 
 const EmptyState = ({children}: {children: React.ReactNode}) => <div className={styles.emptyState}>{children}</div>
 
-export const StreamsList = (props: Props) => {
-  const {
-    className,
-    displayingStreams,
-    onCreateStreamClick,
-  } = props;
+export const StreamsList = ({className, displayingStreams, onCreateStreamClick}: Props) => {
+  const {loading, hasStreams} = useStoreMap($accountStreams,  (value) => ({
+    loading: !value.streamsLoaded,
+    hasStreams: value.inputs.length + value.outputs.length > 0,
+  }));
 
-  const {data: streams} = useStreams();
-  const {inputs = [], outputs = []} = streams || {};
+  const hasDisplayedStreams = (displayingStreams?.length ?? 0) > 0;
 
-  const allStreams = [...inputs, ...outputs];
-  const allStreamsLength = allStreams.length;
-
-  const displayingStreamsLength = displayingStreams?.length ?? 0;
-
-  if (!streams) {
+  if (loading) {
     return (
       <EmptyState>
         <Spinner wrapperClassName={styles.loader} />
@@ -44,7 +37,7 @@ export const StreamsList = (props: Props) => {
     );
   }
 
-  if (streams && allStreamsLength === 0) {
+  if (!hasStreams) {
     return (
       <EmptyState>
         <div>
@@ -55,7 +48,7 @@ export const StreamsList = (props: Props) => {
     );
   }
 
-  if (streams && allStreamsLength !== 0 && displayingStreamsLength === 0) {
+  if (!hasDisplayedStreams) {
     return (
       <EmptyState>
         <div>No streams matching your filters. Try selecting different ones</div>

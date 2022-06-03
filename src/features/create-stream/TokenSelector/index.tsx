@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
+import {useStore} from 'effector-react';
 import {FieldInputProps, FormikState} from 'formik';
 import cn from 'classnames';
 
+import {$tokens} from 'services/wallet';
 import {FormField} from '@ui/components/FormField';
 
 import type {RichToken} from 'shared/api/ft';
@@ -9,8 +11,6 @@ import type {RichToken} from 'shared/api/ft';
 import {DropdownOpener} from 'shared/kit/DropdownOpener';
 import {DropdownMenu} from 'shared/kit/DropdownMenu';
 import {TokenImage} from 'shared/kit/TokenImage';
-
-import {useRoketoContext} from 'app/roketo-context';
 
 import styles from './styles.module.scss';
 
@@ -71,7 +71,7 @@ export const TokenSelector = (props: TokenSelectorProps) => {
     activeTokenAccountId,
   } = props;
 
-  const {tokens} = useRoketoContext();
+  const tokens = useStore($tokens);
 
   const [isDropdownOpened, setIsDropdownOpened] = useState(false);
 

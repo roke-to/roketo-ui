@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
 import { useParams, Link } from 'react-router-dom';
+import {useStore, useStoreMap, useGate} from 'effector-react';
 import copy from 'clipboard-copy';
 import classNames from 'classnames';
 import { format, isPast } from 'date-fns';
 import Modal from 'react-modal';
 import BigNumber from 'bignumber.js';
 
-import { streamViewData, useSingleStream } from 'features/roketo-resource';
+import {$tokens} from 'services/wallet';
+import { streamViewData } from 'features/roketo-resource';
 import { LinkIcon } from '@ui/icons/Link';
 import { getStreamLink, ROUTES_MAP } from 'shared/helpers/routing';
 import { PageError } from 'shared/components/PageError';
@@ -16,7 +18,6 @@ import {Input} from '@ui/components/Input';
 import { Layout } from '@ui/components/Layout';
 import type { RoketoStream } from 'shared/api/roketo/interfaces/entities';
 import { getStreamingSpeed } from 'features/create-stream/lib';
-import { useRoketoContext } from 'app/roketo-context';
 import { ProgressBar } from '@ui/components/ProgressBar';
 import { StreamControls } from 'features/stream-control/StreamControls';
 import { STREAM_DIRECTION, useGetStreamDirection } from 'shared/hooks/useGetStreamDirection';
@@ -30,9 +31,10 @@ import { Badge } from 'shared/components/Badge';
 
 import styles from './styles.module.scss';
 import { BreadcrumbIcon } from './BreadcrumbIcon';
+import {pageGate, $stream, $pageError, $loading} from './model'
 
 function StreamProgress({ stream }: { stream: RoketoStream }) {
-  const { tokens } = useRoketoContext();
+  const tokens = useStore($tokens);
 
   const { meta, formatter } = tokens[stream.token_account_id];
   const { progress: { streamed, withdrawn, full }, percentages } = streamViewData(stream);
@@ -58,8 +60,11 @@ function StreamProgress({ stream }: { stream: RoketoStream }) {
 }
 
 function StreamButtons({stream}: {stream: RoketoStream}) {
-  const {tokens} = useRoketoContext();
-  const token = tokens[stream.token_account_id];
+  const token = useStoreMap({
+    store: $tokens,
+    keys: [stream.token_account_id],
+    fn: (tokens) => tokens[stream.token_account_id],
+  });
   const {isDead, streamEndTimestamp, percentages: {left}} = streamViewData(stream);
   const direction = useGetStreamDirection(stream);
   const addFundsModal = useBool(false);
@@ -149,7 +154,7 @@ function StreamButtons({stream}: {stream: RoketoStream}) {
 }
 
 function StreamSpeed({stream}: {stream: RoketoStream}) {
-  const {tokens} = useRoketoContext();
+  const tokens = useStore($tokens);
 
   return (
     <div>
@@ -222,7 +227,7 @@ function InfoRow({ title, children }: { title: string, children: React.ReactNode
 
 function StreamData({stream}: {stream: RoketoStream}) {
   const direction = useGetStreamDirection(stream);
-  const {tokens} = useRoketoContext();
+  const tokens = useStore($tokens);
   const {
     streamEndTimestamp,
     cliffEndTimestamp,
@@ -355,11 +360,10 @@ function StreamData({stream}: {stream: RoketoStream}) {
 
 export function StreamPage() {
   const {id} = useParams() as {id: string};
-  const streamSWR = useSingleStream(id);
-
-  const stream = streamSWR.data;
-  const pageError = streamSWR.error;
-
+  useGate(pageGate, id);
+  const loading = useStore($loading);
+  const stream = useStore($stream);
+  const pageError = useStore($pageError);
   return (
     <div className={styles.root}>
       <Layout>
@@ -376,15 +380,11 @@ export function StreamPage() {
         {pageError &&
           <PageError
             className="max-w-2xl mx-auto py-32"
-            message={pageError.message}
-            onRetry={() => {
-              streamSWR.mutate();
-            }}
+            message={pageError}
+            onRetry={() => {}}
           />
         }
-        {!pageError && !stream &&
-          <div className="py-32 text-center text-gray text-2xl">Loading...</div>
-        }
+        {loading && <div className="py-32 text-center text-gray text-2xl">Loading...</div>}
 
         {!pageError && stream &&
           <main className={styles.stream}>

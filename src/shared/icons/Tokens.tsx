@@ -1,5 +1,5 @@
-import React from 'react';
-import { useRoketoContext } from 'app/roketo-context';
+import {useStoreMap} from 'effector-react';
+import {$tokens} from 'services/wallet';
 
 type NearTokenImageProps = {
   className?: string;
@@ -68,8 +68,11 @@ type TokenIconProps = {
 };
 
 export function TokenIcon({ tokenAccountId, className, ...rest }: TokenIconProps) {
-  const { tokens } = useRoketoContext();
-  const image = tokens[tokenAccountId]?.meta?.icon;
+  const image = useStoreMap({
+    store: $tokens,
+    keys: [tokenAccountId],
+    fn: (tokens) => tokens[tokenAccountId]?.meta?.icon ?? null,
+  });
 
   if (image) {
     return (

@@ -1,5 +1,6 @@
+import {useStore} from 'effector-react'
 import { RoketoStream } from 'shared/api/roketo/interfaces/entities';
-import { useRoketoContext } from 'app/roketo-context';
+import {$accountId} from 'services/wallet';
 
 export const STREAM_DIRECTION = {
   IN: 'in',
@@ -9,13 +10,13 @@ export const STREAM_DIRECTION = {
 type StreamDirectionKeyType = keyof typeof STREAM_DIRECTION;
 
 export function useGetStreamDirection(stream: RoketoStream): typeof STREAM_DIRECTION[StreamDirectionKeyType] | null {
-  const { auth } = useRoketoContext();
+  const accountId = useStore($accountId)
 
-  if (stream.receiver_id === auth.accountId) {
+  if (stream.receiver_id === accountId) {
     return STREAM_DIRECTION.IN;
   }
 
-  if (stream.owner_id === auth.accountId) {
+  if (stream.owner_id === accountId) {
     return STREAM_DIRECTION.OUT;
   }
 

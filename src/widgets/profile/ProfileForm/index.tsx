@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
+import {useStore} from 'effector-react';
 
-import { useRoketoContext } from 'app/roketo-context';
-import { usersApiClient, useUser, User } from 'shared/api/roketo-web';
+import {$user, updateUserFx} from 'services/wallet';
 
 import { Button, ButtonType } from '@ui/components/Button';
 import { Input } from '@ui/components/Input';
@@ -14,65 +14,31 @@ const NAME_INPUT = "nameInput";
 const EMAIL_INPUT = "emailInput";
 
 export function ProfileForm() {
-  const { auth } = useRoketoContext();
-
+  const user = useStore($user);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [isMutating, setIsMutating] = useState(false);
-
-  const userSWR = useUser();
+  const isMutating = useStore(updateUserFx.pending);
 
   useEffect(() => {
-    setName(userSWR.data?.name ?? '');
-    setEmail(userSWR.data?.email ?? '');
-  }, [userSWR.data]);
+    setName(user.name ?? '');
+    setEmail(user.email ?? '');
+  }, [user]);
 
   const formRef = useRef<HTMLFormElement | null>(null);
-
-  const updateUser = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!userSWR.data) {
-      return;
-    }
-
-    setIsMutating(true);
-
-    const newName = formRef.current?.[NAME_INPUT].value;
-    const newEmail = formRef.current?.[EMAIL_INPUT].value;
-
-    const cachedUser = userSWR.data;
-
-    await userSWR.mutate(
-      async () => {
-        try {
-          const updateUserDto = {
-            name: newName,
-            email: newEmail,
-          };
-
-          await usersApiClient.update(auth.accountId, updateUserDto);
-
-          return Object.assign(new User(), cachedUser, updateUserDto);
-        } catch (error) {
-          return cachedUser;
-        }
-      },
-      { revalidate: false, optimisticData: { ...userSWR.data, name: newName }, rollbackOnError: true }
-    );
-
-    setIsMutating(false);
-  }, [auth.accountId, userSWR]);
-
-  const busy = userSWR.isValidating || isMutating;
 
   return (
     <form
       className={styles.profileForm}
-      onSubmit={updateUser}
+      onSubmit={e => {
+        e.preventDefault()
+        updateUserFx({
+          name: formRef.current?.[NAME_INPUT].value,
+          email: formRef.current?.[EMAIL_INPUT].value,
+        });
+      }}
       ref={formRef}
     >
-      {busy &&
+      {isMutating &&
         <Spinner wrapperClassName={styles.loaderWrapper} />
       }
 
@@ -84,7 +50,7 @@ export function ProfileForm() {
           name={NAME_INPUT}
           value={name}
           onChange={(e) => setName(e.target.value)}
-          disabled={busy}
+          disabled={isMutating}
         />
       </FormField>
 
@@ -97,13 +63,13 @@ export function ProfileForm() {
           name={EMAIL_INPUT}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          disabled={busy}
+          disabled={isMutating}
         />
       </FormField>
 
       <Button
         type={ButtonType.submit}
-        disabled={busy}
+        disabled={isMutating}
       >
         Save
       </Button>

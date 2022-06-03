@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import {
   HashRouter as Router,
@@ -6,10 +6,12 @@ import {
   Switch,
   Redirect,
 } from 'react-router-dom';
+import { useStore } from 'effector-react';
+
+import { $isSignedIn } from 'services/wallet';
 
 import { Header } from 'shared/components/Header';
 import { PrivateRoute } from 'shared/components/PrivateRoute';
-import { useRoketoContext } from 'app/roketo-context';
 import {Footer} from 'widgets/footer';
 import { LEGACY_ROUTES_MAP, LegacyStreamPage, LegacyStreamsPage } from 'features/legacy';
 
@@ -37,7 +39,7 @@ export function Routing() {
     window.history.replaceState(null, '', url);
   });
 
-  const { auth } = useRoketoContext();
+  const signedIn = useStore($isSignedIn)
 
   const {
     root,
@@ -59,7 +61,7 @@ export function Routing() {
         <PrivateRoute
           exact
           redirect={<Redirect to={streams.path} />}
-          allowed={!auth.signedIn}
+          allowed={!signedIn}
           path={root.path}
         >
           <Redirect to={authorize.path} />
@@ -68,7 +70,7 @@ export function Routing() {
         <PrivateRoute
           exact
           redirect={<Redirect to={streams.path} />}
-          allowed={!auth.signedIn}
+          allowed={!signedIn}
           path={authorize.path}
         >
           <AuthorizePage />
@@ -81,7 +83,7 @@ export function Routing() {
         <PrivateRoute
           exact
           redirect={<Redirect to={authorize.path} />}
-          allowed={auth.signedIn}
+          allowed={signedIn}
           path={legacyStreams.path}
         >
           <LegacyStreamsPage />
@@ -94,7 +96,7 @@ export function Routing() {
         <PrivateRoute
           exact
           redirect={<Redirect to={authorize.path} />}
-          allowed={auth.signedIn}
+          allowed={signedIn}
           path={streams.path}
         >
           <StreamsPage />

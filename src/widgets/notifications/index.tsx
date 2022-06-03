@@ -1,16 +1,16 @@
 import React, { useCallback, useState } from 'react';
 import classNames from 'classnames';
+import {useStore} from 'effector-react';
 import { isToday, isYesterday, isSameDay, format } from 'date-fns';
 import { generatePath, Link } from 'react-router-dom';
+import type {NotificationTypeEnum as NotificationType, Notification} from '@roketo/api-client'
 
-import {Spinner} from '@ui/components/Spinner';
+import {$tokens, $notifications} from 'services/wallet';
 
 import { ROUTES_MAP } from 'shared/helpers/routing';
-import { notificationsApiClient, useNotifications, NotificationType, Notification } from 'shared/api/roketo-web';
 import { DropdownOpener } from 'shared/kit/DropdownOpener';
 import { DropdownMenu } from 'shared/kit/DropdownMenu';
 import { STREAM_DIRECTION, useGetStreamDirection } from 'shared/hooks/useGetStreamDirection';
-import { useRoketoContext } from 'app/roketo-context';
 import { streamViewData } from 'features/roketo-resource';
 import { useMediaQuery } from 'shared/hooks/useMatchQuery';
 import { testIds } from 'shared/constants';
@@ -22,6 +22,7 @@ import { FinishIcon } from './FinishIcon';
 import { StartIcon } from './StartIcon';
 import { PauseIcon } from './PauseIcon';
 import { BangIcon } from './BangIcon';
+import { markAllReadFx } from './model';
 
 function NotificationIcon({ type }: { type: NotificationType }) {
   const IconComponent = (() => {
@@ -54,7 +55,7 @@ function SecondaryText({ children }: { children: React.ReactNode }) {
 }
 
 function NotificationBody({ notification: { type, payload: stream } }: { notification: Notification }) {
-  const { tokens } = useRoketoContext();
+  const tokens = useStore($tokens);
   const direction = useGetStreamDirection(stream);
   const { progress: { full, streamed, left }, timeLeft } = streamViewData(stream, WITHOUT_EXTRAPOLATION);
 
@@ -121,25 +122,14 @@ export function Notifications() {
   const compact = useMediaQuery('(max-width: 645px)');
 
   const [isDropdownOpened, setIsDropdownOpened] = useState(false);
-  const notificationsSWR = useNotifications();
+  const notifications = useStore($notifications);
 
   const closeDropdown = useCallback(() => {
     setIsDropdownOpened(false);
+    markAllReadFx();
+  }, []);
 
-    if (!notificationsSWR.data) {
-      return;
-    }
-
-    notificationsSWR.mutate(
-      async (notifications) => {
-        await notificationsApiClient.markAllRead();
-
-        return notifications?.map((notification) => notification.isRead ? notification : { ...notification, isRead: true });
-      }
-    );
-  }, [notificationsSWR]);
-
-  const hasUnreadNotifications = notificationsSWR.data?.some(({ isRead }) => !isRead) ?? false;
+  const hasUnreadNotifications = notifications.some(({ isRead }) => !isRead) ?? false;
 
   return (
     <div className={styles.root}>
@@ -161,20 +151,14 @@ export function Notifications() {
           <header className={styles.header} >
             Notifications
           </header>
-          {!notificationsSWR.data &&
-            <Spinner
-              wrapperClassName={styles.loader}
-              testId={testIds.notificationsLoader}
-            />
-          }
 
-          {notificationsSWR.data?.length === 0 &&
+          {notifications.length === 0 &&
             <h3 className="text-3xl text-center my-12 mx-auto">
               Your notifications will be displayed here.
             </h3>
           }
 
-          {notificationsSWR.data?.map((notification, index, notifications) => (
+          {notifications.map((notification, index) => (
             <React.Fragment key={notification.id}>
               {index !== 0 && <div className={styles.divider} />}
               {(index === 0 || !isSameDay(notifications[index - 1].createdAt, notification.createdAt)) &&

@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import cn from 'classnames';
 import {Field, Formik} from 'formik';
+import {useStore} from 'effector-react';
 
-import {useRoketoContext} from 'app/roketo-context';
+import {$tokens} from 'services/wallet';
 
 import {Button, ButtonType, DisplayMode as ButtonDisplayMode} from '@ui/components/Button';
 import {ErrorSign} from '@ui/icons/ErrorSign';
@@ -19,11 +20,9 @@ import {StreamSpeedCalcField} from '../StreamSpeedCalcField';
 import {TokenSelector} from '../TokenSelector';
 import { CliffPeriodPicker } from '../CliffPeriodPicker';
 
-import {FeeDisclaimer} from '../FeeDisclaimer'
-
 import {INITIAL_FORM_VALUES, COMMENT_TEXT_LIMIT} from '../constants';
 
-import {getFormValidationSchema} from '../lib';
+import {formValidationSchema} from './model';
 
 import styles from './styles.module.scss';
 
@@ -32,13 +31,6 @@ const Row = ({
   className,
 }: {children: React.ReactNode, className?: string}) => (
   <div className={cn(styles.row, className)}>{children}</div>
-);
-
-const StreamCreationError = ({error}: {error: string}) => (
-  <div className={styles.submitError}>
-    <ErrorSign />
-    <span>{error}</span>
-  </div>
 );
 
 export type FormValues = {
@@ -79,17 +71,13 @@ const LOCK_DESCRIPTION = (
 );
 
 export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) => {
-  const {near, auth} = useRoketoContext();
-
+  const tokens = useStore($tokens)
   const [submitError, setError] = useState<Error | null>(null);
-
-  const validationSchema = getFormValidationSchema(near, auth.accountId);
 
   const handleFormSubmit = (formValues: FormValues) => {
     onFormSubmit(formValues)
       .catch(error => setError(error));
   }
-
   return (
     <div className={styles.root}>
       <h2 className={styles.title}>Create Stream</h2>
@@ -100,7 +88,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
 
         validateOnBlur
 
-        validationSchema={validationSchema}
+        validationSchema={formValidationSchema}
         validateOnChange={false}
         validateOnMount={false}
       >
@@ -112,6 +100,8 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
           validateField,
         }) => {
           const activeTokenAccountId = values.token;
+
+          const {meta: tokenMeta, formatter, roketoMeta} = tokens[activeTokenAccountId];
 
           return (
             <form onSubmit={handleSubmit} className={styles.form}>
@@ -216,13 +206,22 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
               </Row>
 
               <Row>
-                <FeeDisclaimer tokenAccountId={activeTokenAccountId} className={styles.feeDisclaimer} />
+                {tokenMeta && (
+                  <div className={styles.feeDisclaimer}>
+                    {`You will be charged 
+                      ${formatter.amount(roketoMeta.commission_on_create)} 
+                      ${tokenMeta.symbol} fee for the stream`}
+                  </div>
+                )}
               </Row>
 
               <div className={styles.actionButtonsWrapper}>
-                {submitError &&
-                  <StreamCreationError error={submitError.message} />
-                }
+                {submitError && (
+                  <div className={styles.submitError}>
+                    <ErrorSign />
+                    <span>{submitError.message}</span>
+                  </div>
+                )}
 
                 <Button
                   displayMode={ButtonDisplayMode.simple}
