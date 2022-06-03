@@ -4,7 +4,7 @@ import {$notifications} from '~/entities/wallet';
 
 import {notificationsApiClient} from '~/shared/api/roketo-client';
 
-export const markAllRead = createEvent();
+export const dropdownClosed = createEvent();
 
 const markAllReadFx = attach({
   source: $notifications,
@@ -16,16 +16,12 @@ const markAllReadFx = attach({
 });
 
 sample({
-  clock: markAllRead,
+  clock: dropdownClosed,
   target: markAllReadFx,
 });
 
-sample({
-  clock: markAllRead,
-  source: $notifications,
-  fn: (notifications) =>
-    notifications.map((notification) =>
-      notification.isRead ? notification : {...notification, isRead: true},
-    ),
-  target: $notifications,
-});
+$notifications.on(dropdownClosed, (notifications) =>
+  notifications.map((notification) =>
+    notification.isRead ? notification : {...notification, isRead: true},
+  ),
+);
