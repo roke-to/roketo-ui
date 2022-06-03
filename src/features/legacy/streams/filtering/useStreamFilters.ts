@@ -1,9 +1,8 @@
 import {useMemo} from 'react';
 
-import {useRoketoContext} from '~/features/legacy/roketo-context';
-
 import {STREAM_STATUS} from '../../api/roketo/constants';
 import type {LegacyRoketoStream} from '../../api/roketo/interfaces/entities';
+import {useRoketoContext} from '../../roketo-context';
 import {useFilter, useFilters} from './lib';
 
 const STREAM_TYPE_FILTER = {
