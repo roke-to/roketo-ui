@@ -7,7 +7,12 @@ import svgr from 'vite-plugin-svgr';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [viteCommonjs(), react(), svgr(), babel({extensions: ['.ts', '.tsx']})],
+  plugins: [
+    viteCommonjs(),
+    react(),
+    svgr(),
+    babel({extensions: ['.ts', '.tsx'], babelHelpers: 'bundled'}),
+  ],
   resolve: {
     alias: [
       {find: '~', replacement: path.resolve('src')},
