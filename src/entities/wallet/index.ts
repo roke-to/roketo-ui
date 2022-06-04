@@ -73,6 +73,7 @@ const KNOWN_NOTIFICATION_TYPES = new Set([
   'StreamIsDue',
   'StreamContinued',
   'StreamCliffPassed',
+  'StreamFundsAdded',
 ]);
 // eslint-disable-next-line arrow-body-style
 const getNotificationsFx = createEffect(async () => {
