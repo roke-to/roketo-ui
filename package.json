@@ -41,6 +41,7 @@
     "react-modal": "^3.14.4",
     "react-router-dom": "^5.2.0",
     "swr": "^1.1.1",
+    "vite-plugin-checker": "^0.4.6",
     "yup": "^0.32.9"
   },
   "devDependencies": {
