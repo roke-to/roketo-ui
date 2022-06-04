@@ -66,9 +66,23 @@ const getUserFx = createEffect(async (accountId: string) => {
   return retry(() => usersApiClient.findOne(accountId));
 });
 
+const KNOWN_NOTIFICATION_TYPES = new Set([
+  'StreamStarted',
+  'StreamPaused',
+  'StreamFinished',
+  'StreamIsDue',
+  'StreamContinued',
+  'StreamCliffPassed',
+]);
 // eslint-disable-next-line arrow-body-style
 const getNotificationsFx = createEffect(async () => {
-  return retry(() => notificationsApiClient.findAll());
+  return retry(async () => {
+    const allNotifications = await notificationsApiClient.findAll();
+
+    return allNotifications.filter((notification) =>
+      KNOWN_NOTIFICATION_TYPES.has(notification.type),
+    );
+  });
 });
 
 export const updateUserFx = attach({
