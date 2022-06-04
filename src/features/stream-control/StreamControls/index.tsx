@@ -33,6 +33,7 @@ function ConfirmModal({
   buttonText,
   className,
   children,
+  testId,
 }: {
   modalControl: BooleanControl;
   onConfirm: () => void;
@@ -40,6 +41,7 @@ function ConfirmModal({
   buttonText: ReactNode;
   children: ReactNode;
   className: string;
+  testId?: string;
 }) {
   return (
     <Modal
@@ -65,6 +67,7 @@ function ConfirmModal({
             onConfirm();
           }}
           className={classNames(styles.modalButton, className)}
+          data-testid={testId}
         >
           {buttonText}
         </button>
@@ -146,6 +149,7 @@ export function StreamControls({stream, className}: {stream: RoketoStream; class
         header="Stop stream"
         buttonText="Stop"
         className={styles.modalDanger}
+        testId={testIds.streamModalStopButton}
       >
         This action will completely shut down the stream. After that, it can't be turned on.
       </ConfirmModal>
