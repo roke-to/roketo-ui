@@ -1,4 +1,4 @@
-// @ts-ignore
+import {format} from 'date-fns';
 import React from 'react';
 
 import {env} from '~/shared/config';
@@ -79,7 +79,9 @@ export const Footer = () => (
         <br />
         Registration number: 2089289
         <br />
-        Build info: {env.COMMIT_HASH} {env.BUILD_TIME}
+        {import.meta.env.MODE === 'development'
+          ? 'Development build'
+          : `Built from ${env.COMMIT_HASH} on ${format(Date.parse(env.BUILD_TIME), "PP 'at' p")}`}
       </section>
     </Layout>
   </footer>
