@@ -44,4 +44,5 @@ export const formValidationSchema = Yup.object().shape({
   speed: Yup.number().required('Stream duration is required').moreThan(0, 'Choose stream duration'),
   autoStart: Yup.boolean(),
   comment: Yup.string().max(COMMENT_TEXT_LIMIT),
+  color: Yup.string(),
 });
