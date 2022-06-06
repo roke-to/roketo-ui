@@ -23,7 +23,7 @@ export const StreamCard = ({stream, className}: StreamCardProps) => {
 
   try {
     const parsedDescription = JSON.parse(description);
-    comment = parsedDescription.comment;
+    comment = parsedDescription.comment ?? parsedDescription.c;
   } catch {
     comment = description;
   }

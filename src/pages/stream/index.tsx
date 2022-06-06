@@ -177,7 +177,7 @@ function StreamComment({stream}: {stream: RoketoStream}) {
 
   try {
     const parsedDescription = JSON.parse(stream.description);
-    comment = parsedDescription.comment;
+    comment = parsedDescription.comment ?? parsedDescription.c;
   } catch {
     comment = stream.description;
   }

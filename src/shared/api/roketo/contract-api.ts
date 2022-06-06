@@ -93,10 +93,10 @@ export class RoketoContractApi implements RoketoApi {
     isLocked,
     callbackUrl,
     handleTransferStream,
+    color,
   }: CreateStreamApiProps) {
     const totalAmount = new BigNumber(deposit).plus(commissionOnCreate).toFixed();
     const transferPayload = {
-      description: JSON.stringify({comment}),
       balance: deposit,
       owner_id: this.account.accountId,
       receiver_id: receiverId,
@@ -107,6 +107,13 @@ export class RoketoContractApi implements RoketoApi {
       is_auto_start_enabled: !delayed,
       is_expirable: isExpirable,
     };
+    if (color || comment.length > 0) {
+      const description: {c?: string; col?: string} = {};
+      if (color) description.col = color;
+      if (comment.length > 0) description.c = comment;
+      // @ts-expect-error
+      transferPayload.description = JSON.stringify(description);
+    }
 
     return handleTransferStream(transferPayload, totalAmount, callbackUrl);
   }
