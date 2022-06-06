@@ -9,5 +9,9 @@
   },
   "component": {
     "slowTestThreshold": 300
+  },
+  "retries": {
+    "runMode": 1,
+    "openMode": 0
   }
 }

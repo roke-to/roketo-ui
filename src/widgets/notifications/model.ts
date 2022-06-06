@@ -1,10 +1,12 @@
-import {attach} from 'effector';
+import {attach, createEvent, sample} from 'effector';
 
 import {$notifications} from '~/entities/wallet';
 
 import {notificationsApiClient} from '~/shared/api/roketo-client';
 
-export const markAllReadFx = attach({
+export const dropdownClosed = createEvent();
+
+const markAllReadFx = attach({
   source: $notifications,
   async effect(notifications) {
     if (notifications.length !== 0) {
@@ -12,3 +14,14 @@ export const markAllReadFx = attach({
     }
   },
 });
+
+sample({
+  clock: dropdownClosed,
+  target: markAllReadFx,
+});
+
+$notifications.on(dropdownClosed, (notifications) =>
+  notifications.map((notification) =>
+    notification.isRead ? notification : {...notification, isRead: true},
+  ),
+);

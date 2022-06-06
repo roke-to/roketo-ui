@@ -5,6 +5,7 @@ import React from 'react';
 import {$accountStreams} from '~/entities/wallet';
 
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
+import {useRerender} from '~/shared/hooks/useRerender';
 
 import {Button} from '@ui/components/Button';
 import {Spinner} from '@ui/components/Spinner';
@@ -31,6 +32,8 @@ export const StreamsList = ({className, displayingStreams, onCreateStreamClick}:
   }));
 
   const hasDisplayedStreams = (displayingStreams?.length ?? 0) > 0;
+
+  useRerender(1000, hasDisplayedStreams);
 
   if (loading) {
     return (

@@ -1,5 +1,7 @@
-import {useStore} from 'effector-react';
+import {useStore, useStoreMap} from 'effector-react';
 import React from 'react';
+
+import {$accountStreams} from '~/entities/wallet';
 
 import {testIds} from '~/shared/constants';
 import {TokenImage} from '~/shared/kit/TokenImage';
@@ -11,7 +13,14 @@ import {$tokenData, triggerWithdrawAll} from './model';
 import styles from './styles.module.scss';
 
 export function WithdrawAllButton() {
+  const areStreamsLoaded = useStoreMap({
+    store: $accountStreams,
+    keys: [],
+    fn: ({streamsLoaded}) => streamsLoaded,
+  });
+
   const preparedTokenData = useStore($tokenData);
+
   return (
     <Tooltip
       placement="bottom"
@@ -21,6 +30,12 @@ export function WithdrawAllButton() {
           <p className={styles.description}>Move all received tokens to your wallet.</p>
 
           <div className={styles.preparedTokensWrapper} data-testid={testIds.withdrawTooltip}>
+            {!areStreamsLoaded && (
+              <p className={styles.description} data-testid={testIds.withdrawLoadingCaption}>
+                Loading...
+              </p>
+            )}
+
             {preparedTokenData.length !== 0 &&
               preparedTokenData.map((data) => (
                 <div key={data.tokenAccountId} className={styles.preparedToken}>
@@ -33,7 +48,7 @@ export function WithdrawAllButton() {
                 </div>
               ))}
 
-            {preparedTokenData.length === 0 && (
+            {areStreamsLoaded && preparedTokenData.length === 0 && (
               <p className={styles.description}>You have nothing to withdraw</p>
             )}
           </div>
