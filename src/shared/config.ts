@@ -10,7 +10,7 @@ type EnvType = {
   WNEAR_ID: string;
   WEB_API_URL: string;
   COMMIT_HASH: string;
-  BUILD_TIME: string | null;
+  BUILD_TIME: string;
 };
 
 export const env: EnvType = {
@@ -24,8 +24,8 @@ export const env: EnvType = {
   PRICE_ORACLE_SOURCE_ID: import.meta.env.VITE_PRICE_ORACLE_SOURCE_ID,
   WNEAR_ID: import.meta.env.VITE_WNEAR_ID,
   WEB_API_URL: import.meta.env.VITE_WEB_API_URL,
-  COMMIT_HASH: import.meta.env.COMMIT_HASH ?? 'development',
-  BUILD_TIME: import.meta.env.BUILD_TIME ?? null,
+  COMMIT_HASH: import.meta.env.VITE_COMMIT_HASH,
+  BUILD_TIME: import.meta.env.VITE_BUILD_TIME,
 };
 
 export const GAS_SIZE = '200000000000000';
