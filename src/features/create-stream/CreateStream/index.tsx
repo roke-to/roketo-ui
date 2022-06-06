@@ -16,7 +16,7 @@ import {Button, DisplayMode as ButtonDisplayMode, ButtonType} from '@ui/componen
 import {ErrorSign} from '@ui/icons/ErrorSign';
 
 import {CliffPeriodPicker} from '../CliffPeriodPicker';
-import {COMMENT_TEXT_LIMIT, INITIAL_FORM_VALUES, StreamColor} from '../constants';
+import {COMMENT_TEXT_LIMIT, INITIAL_FORM_VALUES, StreamColor, FormValues} from '../constants';
 import {StreamSpeedCalcField} from '../StreamSpeedCalcField';
 import {TokenSelector} from '../TokenSelector';
 import {ColorPicker} from '../ColorPicker';
@@ -26,19 +26,6 @@ import styles from './styles.module.scss';
 const Row = ({children, className}: {children: React.ReactNode; className?: string}) => (
   <div className={cn(styles.row, className)}>{children}</div>
 );
-
-export type FormValues = {
-  receiver: string;
-  streamName: string;
-  delayed: boolean;
-  comment: string;
-  deposit: number;
-  speed: number;
-  token: string;
-  isLocked: boolean;
-  cliffDateTime: Date | null;
-  color: StreamColor;
-};
 
 type CreateStreamProps = {
   onFormSubmit: (values: FormValues) => Promise<void>;

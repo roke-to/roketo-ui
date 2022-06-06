@@ -1,7 +1,7 @@
 import {env} from '~/shared/config';
 
 export type StreamColor = 'none' | 'red' | 'blue' | 'orange' | 'purple' | 'green';
-export type ColorDescription = {label: string; color: string};
+type ColorDescription = {label: string; color: string};
 export const streamColors: StreamColor[] = ['none', 'red', 'blue', 'orange', 'purple', 'green'];
 export const colorDescriptions: Record<StreamColor, ColorDescription> = {
   none: {
@@ -32,7 +32,20 @@ export const colorDescriptions: Record<StreamColor, ColorDescription> = {
 
 export const COMMENT_TEXT_LIMIT = 80;
 
-export const INITIAL_FORM_VALUES = {
+export type FormValues = {
+  receiver: string;
+  streamName: string;
+  delayed: boolean;
+  comment: string;
+  deposit: number;
+  speed: number;
+  token: string;
+  isLocked: boolean;
+  cliffDateTime: Date | null;
+  color: StreamColor;
+};
+
+export const INITIAL_FORM_VALUES: FormValues = {
   receiver: '',
   streamName: '',
   token: env.WNEAR_ID,
@@ -42,5 +55,5 @@ export const INITIAL_FORM_VALUES = {
   comment: '',
   isLocked: false,
   cliffDateTime: null,
-  color: 'none' as StreamColor,
+  color: 'none',
 };

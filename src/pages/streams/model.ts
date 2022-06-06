@@ -2,7 +2,7 @@ import {attach} from 'effector';
 import {generatePath} from 'react-router-dom';
 
 import {colorDescriptions} from '~/features/create-stream/constants';
-import type {FormValues} from '~/features/create-stream/CreateStream';
+import type {FormValues} from '~/features/create-stream/constants';
 
 import {$roketoWallet} from '~/entities/wallet';
 
