@@ -14,6 +14,7 @@ import {WithdrawButton} from '~/features/stream-control/WithdrawButton';
 
 import {$tokens} from '~/entities/wallet';
 
+import {TokenFormatter} from '~/shared/api/ft/token-formatter';
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {getAvailableToWithdraw} from '~/shared/api/roketo/lib';
@@ -36,28 +37,104 @@ import {BreadcrumbIcon} from './BreadcrumbIcon';
 import {$loading, $pageError, $stream, pageGate} from './model';
 import styles from './styles.module.scss';
 
+export function StreamPage() {
+  const {id} = useParams() as {id: string};
+  useGate(pageGate, id);
+  const loading = useStore($loading);
+  const stream = useStore($stream);
+  const pageError = useStore($pageError);
+  return (
+    <div className={styles.root}>
+      <Layout>
+        <div className={styles.breadbrumbs}>
+          <Link to={ROUTES_MAP.streams.path} className={styles.streamsLink}>
+            Streams
+          </Link>
+          <BreadcrumbIcon className={styles.breadbrumb} />
+          <span className={styles.id}>{id}</span>
+        </div>
+        {pageError && (
+          <PageError className="max-w-2xl mx-auto py-32" message={pageError} onRetry={() => {}} />
+        )}
+        {loading && <div className="py-32 text-center text-gray text-2xl">Loading...</div>}
+
+        {!pageError && stream && (
+          <main className={styles.stream}>
+            <div className={styles.left}>
+              <div className={classNames(styles.tile, styles.remaining)}>
+                <span className={styles.blockTitle}>Remaining</span>
+                <span>{streamViewData(stream).timeLeft || 'Finished'}</span>
+              </div>
+              <div className={classNames(styles.tile, styles.main)}>
+                {stream.is_locked && (
+                  <Badge isOrange className={styles.closeBadge}>
+                    Locked
+                  </Badge>
+                )}
+                <StreamProgress stream={stream} />
+                <StreamButtons stream={stream} />
+                <StreamSpeed stream={stream} />
+                <div className={styles.divider} />
+                <StreamComment stream={stream} />
+                <StreamCopyUrlBlock stream={stream} />
+              </div>
+            </div>
+            <div className={styles.right}>
+              <StreamData stream={stream} />
+            </div>
+          </main>
+        )}
+      </Layout>
+    </div>
+  );
+}
+
 function StreamProgress({stream}: {stream: RoketoStream}) {
   const tokens = useStore($tokens);
 
   const {meta, formatter} = tokens[stream.token_account_id];
-  const {
-    progress: {streamed, withdrawn, full},
-    percentages,
-  } = streamViewData(stream);
+  const {progress, percentages} = streamViewData(stream);
+
+  const streamed = Number(formatter.toHumanReadableValue(progress.streamed, 3));
+  const withdrawn = Number(formatter.toHumanReadableValue(progress.withdrawn, 3));
+  const streamedText = TokenFormatter.formatSmartly(streamed);
+  const withdrawnText = TokenFormatter.formatSmartly(withdrawn);
+  const streamedPercentage = getRoundedPercentageRatio(progress.streamed, progress.full, 1);
+  const withdrawnPercentage = getRoundedPercentageRatio(progress.withdrawn, progress.streamed, 1);
+
+  const progressText = `${meta.symbol} ${formatter.amount(progress.streamed)} of ${formatter.amount(
+    progress.full,
+  )}`;
 
   return (
     <div>
       <div className={styles.numericProgress}>
         <TokenImage tokenAccountId={stream.token_account_id} className={styles.tokenIcon} />
-        <span>{`${meta.symbol} ${formatter.amount(streamed)} of ${formatter.amount(full)}`}</span>
+        <span>{progressText}</span>
       </div>
       <ProgressBar
-        total={full}
-        streamed={streamed}
-        withdrawn={withdrawn}
+        className={styles.progressBar}
+        total={progress.full}
+        streamed={progress.streamed}
+        withdrawn={progress.withdrawn}
         cliffPercent={percentages.cliff}
         withBigCliffMark
       />
+      <div className={styles.streamLegend}>
+        <div className={classNames(styles.progress, styles.streamed)}>
+          Streamed: {streamedText}{' '}
+          <span
+            className={classNames(styles.grey, styles.smaller)}
+          >{`${streamedPercentage}%`}</span>
+        </div>
+
+        <div className={classNames(styles.progress, styles.withdrawn)}>
+          Withdrawn: {withdrawnText}{' '}
+          <span
+            className={classNames(styles.grey, styles.smaller)}
+          >{`${withdrawnPercentage}%`}</span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -345,58 +422,6 @@ function StreamData({stream}: {stream: RoketoStream}) {
           </InfoRow>
         </>
       )}
-    </div>
-  );
-}
-
-export function StreamPage() {
-  const {id} = useParams() as {id: string};
-  useGate(pageGate, id);
-  const loading = useStore($loading);
-  const stream = useStore($stream);
-  const pageError = useStore($pageError);
-  return (
-    <div className={styles.root}>
-      <Layout>
-        <div className={styles.breadbrumbs}>
-          <Link to={ROUTES_MAP.streams.path} className={styles.streamsLink}>
-            Streams
-          </Link>
-          <BreadcrumbIcon className={styles.breadbrumb} />
-          <span className={styles.id}>{id}</span>
-        </div>
-        {pageError && (
-          <PageError className="max-w-2xl mx-auto py-32" message={pageError} onRetry={() => {}} />
-        )}
-        {loading && <div className="py-32 text-center text-gray text-2xl">Loading...</div>}
-
-        {!pageError && stream && (
-          <main className={styles.stream}>
-            <div className={styles.left}>
-              <div className={classNames(styles.tile, styles.remaining)}>
-                <span className={styles.blockTitle}>Remaining</span>
-                <span>{streamViewData(stream).timeLeft || 'Finished'}</span>
-              </div>
-              <div className={classNames(styles.tile, styles.main)}>
-                {stream.is_locked && (
-                  <Badge isOrange className={styles.closeBadge}>
-                    Locked
-                  </Badge>
-                )}
-                <StreamProgress stream={stream} />
-                <StreamButtons stream={stream} />
-                <StreamSpeed stream={stream} />
-                <div className={styles.divider} />
-                <StreamComment stream={stream} />
-                <StreamCopyUrlBlock stream={stream} />
-              </div>
-            </div>
-            <div className={styles.right}>
-              <StreamData stream={stream} />
-            </div>
-          </main>
-        )}
-      </Layout>
     </div>
   );
 }

@@ -99,6 +99,37 @@
   }
 }
 
+.progressBar {
+  margin-bottom: 12px;
+}
+
+.streamLegend {
+  display: flex;
+}
+
+.streamed {
+  margin-right: 12px;
+}
+
+.streamed::before {
+  background-color: $purple;
+}
+
+.withdrawn::before {
+  background-color: $orange;
+}
+
+.streamed::before,
+.withdrawn::before {
+  content: '';
+  width: 5px;
+  display: inline-block;
+  height: 5px;
+  border-radius: 50%;
+  margin-right: 6px;
+  margin-bottom: 2px;
+}
+
 .numericProgress {
   @extend .centeredFlex;
   margin-bottom: 6px;

@@ -52,7 +52,8 @@
         "react/no-unescaped-entities": "warn",
         "react/prop-types": "warn",
         "react/react-in-jsx-scope": "off",
-        "react/require-default-props": "off"
+        "react/require-default-props": "off",
+        "@typescript-eslint/no-use-before-define": ["error", {"functions": false}]
       }
     },
     {
