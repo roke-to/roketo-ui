@@ -173,7 +173,7 @@ function StreamSpeed({stream}: {stream: RoketoStream}) {
 }
 
 function StreamComment({stream}: {stream: RoketoStream}) {
-  let comment = '';
+  let comment: string | void;
 
   try {
     const parsedDescription = JSON.parse(stream.description);
@@ -182,7 +182,7 @@ function StreamComment({stream}: {stream: RoketoStream}) {
     comment = stream.description;
   }
 
-  if (comment === '') {
+  if (!comment) {
     return null;
   }
 
