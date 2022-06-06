@@ -4,6 +4,7 @@ import {generatePath, Link} from 'react-router-dom';
 
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
+import {ColorDot} from '~/shared/kit/ColorDot';
 import {ROUTES_MAP} from '~/shared/lib/routing';
 
 import {Controls} from '../Controls';
@@ -20,10 +21,12 @@ export const StreamCard = ({stream, className}: StreamCardProps) => {
   const {id, description} = stream;
 
   let comment = '';
+  let color = 'transparent';
 
   try {
     const parsedDescription = JSON.parse(description);
     comment = parsedDescription.comment ?? parsedDescription.c;
+    color = parsedDescription.col;
   } catch {
     comment = description;
   }
@@ -37,6 +40,7 @@ export const StreamCard = ({stream, className}: StreamCardProps) => {
   return (
     <div className={cn(styles.root, className)}>
       <Link to={streamPageLink} className={styles.name}>
+        <ColorDot color={color} size={10} className={styles.colorDot} />
         <Name name={name} isOutgoing={!isIncomingStream} isLocked={stream.is_locked} />
       </Link>
 
