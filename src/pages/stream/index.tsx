@@ -36,6 +36,58 @@ import {BreadcrumbIcon} from './BreadcrumbIcon';
 import {$loading, $pageError, $stream, pageGate} from './model';
 import styles from './styles.module.scss';
 
+export function StreamPage() {
+  const {id} = useParams() as {id: string};
+  useGate(pageGate, id);
+  const loading = useStore($loading);
+  const stream = useStore($stream);
+  const pageError = useStore($pageError);
+  return (
+    <div className={styles.root}>
+      <Layout>
+        <div className={styles.breadbrumbs}>
+          <Link to={ROUTES_MAP.streams.path} className={styles.streamsLink}>
+            Streams
+          </Link>
+          <BreadcrumbIcon className={styles.breadbrumb} />
+          <span className={styles.id}>{id}</span>
+        </div>
+        {pageError && (
+          <PageError className="max-w-2xl mx-auto py-32" message={pageError} onRetry={() => {}} />
+        )}
+        {loading && <div className="py-32 text-center text-gray text-2xl">Loading...</div>}
+
+        {!pageError && stream && (
+          <main className={styles.stream}>
+            <div className={styles.left}>
+              <div className={classNames(styles.tile, styles.remaining)}>
+                <span className={styles.blockTitle}>Remaining</span>
+                <span>{streamViewData(stream).timeLeft || 'Finished'}</span>
+              </div>
+              <div className={classNames(styles.tile, styles.main)}>
+                {stream.is_locked && (
+                  <Badge isOrange className={styles.closeBadge}>
+                    Locked
+                  </Badge>
+                )}
+                <StreamProgress stream={stream} />
+                <StreamButtons stream={stream} />
+                <StreamSpeed stream={stream} />
+                <div className={styles.divider} />
+                <StreamComment stream={stream} />
+                <StreamCopyUrlBlock stream={stream} />
+              </div>
+            </div>
+            <div className={styles.right}>
+              <StreamData stream={stream} />
+            </div>
+          </main>
+        )}
+      </Layout>
+    </div>
+  );
+}
+
 function StreamProgress({stream}: {stream: RoketoStream}) {
   const tokens = useStore($tokens);
 
@@ -345,58 +397,6 @@ function StreamData({stream}: {stream: RoketoStream}) {
           </InfoRow>
         </>
       )}
-    </div>
-  );
-}
-
-export function StreamPage() {
-  const {id} = useParams() as {id: string};
-  useGate(pageGate, id);
-  const loading = useStore($loading);
-  const stream = useStore($stream);
-  const pageError = useStore($pageError);
-  return (
-    <div className={styles.root}>
-      <Layout>
-        <div className={styles.breadbrumbs}>
-          <Link to={ROUTES_MAP.streams.path} className={styles.streamsLink}>
-            Streams
-          </Link>
-          <BreadcrumbIcon className={styles.breadbrumb} />
-          <span className={styles.id}>{id}</span>
-        </div>
-        {pageError && (
-          <PageError className="max-w-2xl mx-auto py-32" message={pageError} onRetry={() => {}} />
-        )}
-        {loading && <div className="py-32 text-center text-gray text-2xl">Loading...</div>}
-
-        {!pageError && stream && (
-          <main className={styles.stream}>
-            <div className={styles.left}>
-              <div className={classNames(styles.tile, styles.remaining)}>
-                <span className={styles.blockTitle}>Remaining</span>
-                <span>{streamViewData(stream).timeLeft || 'Finished'}</span>
-              </div>
-              <div className={classNames(styles.tile, styles.main)}>
-                {stream.is_locked && (
-                  <Badge isOrange className={styles.closeBadge}>
-                    Locked
-                  </Badge>
-                )}
-                <StreamProgress stream={stream} />
-                <StreamButtons stream={stream} />
-                <StreamSpeed stream={stream} />
-                <div className={styles.divider} />
-                <StreamComment stream={stream} />
-                <StreamCopyUrlBlock stream={stream} />
-              </div>
-            </div>
-            <div className={styles.right}>
-              <StreamData stream={stream} />
-            </div>
-          </main>
-        )}
-      </Layout>
     </div>
   );
 }
