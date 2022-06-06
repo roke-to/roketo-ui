@@ -21,6 +21,7 @@ import {Badge} from '~/shared/components/Badge';
 import {PageError} from '~/shared/components/PageError';
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 import {useRerender} from '~/shared/hooks/useRerender';
+import {ColorDot} from '~/shared/kit/ColorDot';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 import {TokenImage} from '~/shared/kit/TokenImage';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
@@ -31,7 +32,7 @@ import {ProgressBar} from '@ui/components/ProgressBar';
 import {LinkIcon} from '@ui/icons/Link';
 
 import {BreadcrumbIcon} from './BreadcrumbIcon';
-import {$loading, $pageError, $stream, pageGate} from './model';
+import {$color, $loading, $pageError, $stream, pageGate} from './model';
 import styles from './styles.module.scss';
 
 export function StreamPage() {
@@ -40,6 +41,7 @@ export function StreamPage() {
   const loading = useStore($loading);
   const stream = useStore($stream);
   const pageError = useStore($pageError);
+  const streamColor = useStore($color);
 
   const isStreamTicking = Boolean(
     stream && !isIdling(stream) && streamViewData(stream).percentages.left > 0,
@@ -55,6 +57,7 @@ export function StreamPage() {
             Streams
           </Link>
           <BreadcrumbIcon className={styles.breadbrumb} />
+          {streamColor && <ColorDot color={streamColor} size={14} className={styles.colorDot} />}
           <span className={styles.id}>{id}</span>
         </div>
         {pageError && (

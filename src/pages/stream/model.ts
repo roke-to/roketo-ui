@@ -15,6 +15,16 @@ const requestStreamFx = attach({
   },
 });
 export const $loading = combine($stream, $pageError, (stream, error) => !stream && !error);
+export const $color = $stream.map((stream): string | null => {
+  const description = stream?.description;
+  if (!description) return null;
+  try {
+    const parsed = JSON.parse(description);
+    return parsed.col ?? null;
+  } catch {
+    return null;
+  }
+});
 
 const streamRevalidationTimerFx = createEffect(
   () =>
