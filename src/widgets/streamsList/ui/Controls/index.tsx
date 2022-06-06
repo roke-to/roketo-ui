@@ -2,6 +2,7 @@ import cn from 'classnames';
 import copy from 'clipboard-copy';
 import React, {useCallback} from 'react';
 
+import {AddFunds, useShouldShowAddFundsButton} from '~/features/add-funds';
 import {StreamControls} from '~/features/stream-control/StreamControls';
 import {WithdrawButton} from '~/features/stream-control/WithdrawButton';
 
@@ -39,11 +40,14 @@ export const Controls = ({className, stream}: Props) => {
     [streamId],
   );
 
+  const shouldShowAddFundsButton = useShouldShowAddFundsButton(stream);
+
   const direction = useGetStreamDirection(stream);
   const showWithdraw = direction === STREAM_DIRECTION.IN && isActiveStream(stream);
 
   return (
     <div className={cn(styles.root, className)}>
+      {shouldShowAddFundsButton && <AddFunds small stream={stream} />}
       {showWithdraw && <WithdrawButton stream={stream} small />}
 
       <StreamControls stream={stream} />

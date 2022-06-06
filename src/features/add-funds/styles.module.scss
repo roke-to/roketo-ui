@@ -1,0 +1,84 @@
+@import 'src/shared/ui/palette';
+
+.modalContent {
+  padding: 24px;
+  max-width: 480px;
+  width: 100%;
+  border-radius: 8px;
+  background-color: white;
+  color: $light-black;
+}
+
+.modalOverlay {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  overflow: auto;
+  padding: 5vh 0;
+  flex-direction: column;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+  z-index: 1000;
+}
+
+.modalHeader {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.modalButtons {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+
+  > button:not(:last-child) {
+    margin-right: 16px;
+  }
+}
+
+.modalButton {
+  height: 48px;
+  border-radius: 8px;
+  padding: 0 20px;
+}
+
+.modalButton[disabled] {
+  background-color: $light-grey;
+  border-color: $light-grey;
+  cursor: not-allowed;
+}
+
+.modalSecondary {
+  color: $blue;
+  border: 2px solid $blue;
+}
+
+.caption {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  visibility: hidden;
+
+  &.visible {
+    visibility: visible;
+  }
+}
+
+.label {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 15px;
+  color: $bluish-grey;
+
+  &.bold {
+    font-weight: 600;
+    color: unset;
+  }
+
+  &.red {
+    color: $danger;
+  }
+}

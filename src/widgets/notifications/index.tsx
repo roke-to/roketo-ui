@@ -7,11 +7,12 @@ import {generatePath, Link} from 'react-router-dom';
 
 import {streamViewData} from '~/features/roketo-resource';
 
-import {$notifications, $tokens} from '~/entities/wallet';
+import {$notifications} from '~/entities/wallet';
 
 import {testIds} from '~/shared/constants';
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
+import {useToken} from '~/shared/hooks/useToken';
 import {DropdownMenu} from '~/shared/kit/DropdownMenu';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 import {ROUTES_MAP} from '~/shared/lib/routing';
@@ -39,6 +40,8 @@ function NotificationIcon({type}: {type: NotificationType}) {
         return StartIcon;
       case 'StreamCliffPassed':
         return BangIcon;
+      case 'StreamFundsAdded':
+        return BangIcon;
       default:
         throw new Error('This should never happen');
     }
@@ -65,8 +68,9 @@ function SecondaryText({children}: {children: React.ReactNode}) {
   );
 }
 
-function NotificationBody({notification: {type, payload: stream}}: {notification: Notification}) {
-  const tokens = useStore($tokens);
+function NotificationBody({notification: {type, payload}}: {notification: Notification}) {
+  const stream = 'stream' in payload ? payload.stream : payload;
+
   const direction = useGetStreamDirection(stream);
   const {
     progress: {full, streamed, left},
@@ -76,7 +80,7 @@ function NotificationBody({notification: {type, payload: stream}}: {notification
   const {
     meta: {symbol},
     formatter,
-  } = tokens[stream.token_account_id];
+  } = useToken(stream.token_account_id);
 
   switch (type) {
     case 'StreamStarted':
@@ -204,6 +208,24 @@ function NotificationBody({notification: {type, payload: stream}}: {notification
           </SecondaryText>
         </div>
       );
+    case 'StreamFundsAdded':
+      return (
+        <div className={styles.notificationBody}>
+          <PrimaryText>
+            <strong>The funds were added</strong> to the stream{' '}
+            {direction === STREAM_DIRECTION.IN
+              ? `from ${stream.owner_id}`
+              : `to ${stream.receiver_id}`}{' '}
+            .
+          </PrimaryText>
+          <SecondaryText>
+            Added amount:{' '}
+            <strong>
+              {formatter.amount(payload.fundsAdded)}&nbsp;{symbol}
+            </strong>
+          </SecondaryText>
+        </div>
+      );
     default:
       throw new Error('This should never happen');
   }
@@ -261,7 +283,12 @@ export function Notifications() {
                 </div>
               )}
               <Link
-                to={generatePath(ROUTES_MAP.stream.path, {id: notification.payload.id})}
+                to={generatePath(ROUTES_MAP.stream.path, {
+                  id:
+                    'stream' in notification.payload
+                      ? notification.payload.stream.id
+                      : notification.payload.id,
+                })}
                 className={classNames(styles.notification, !notification.isRead && styles.unread)}
                 onClick={closeDropdown}
                 data-testid={testIds.notificationElement}
