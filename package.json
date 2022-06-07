@@ -30,7 +30,6 @@
     "effector-react": "^22.0.6",
     "error-polyfill": "^0.1.3",
     "formik": "^2.2.9",
-    "json-bigint": "^1.0.0",
     "near-api-js": "^0.44.2",
     "numbro": "^2.3.5",
     "patronum": "^1.8.2",
