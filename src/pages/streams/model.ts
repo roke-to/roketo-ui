@@ -1,7 +1,8 @@
 import {attach} from 'effector';
 import {generatePath} from 'react-router-dom';
 
-import type {FormValues} from '~/features/create-stream/CreateStream';
+import {colorDescriptions} from '~/features/create-stream/constants';
+import type {FormValues} from '~/features/create-stream/constants';
 
 import {$roketoWallet} from '~/entities/wallet';
 
@@ -15,7 +16,8 @@ export const handleCreateStreamFx = attach({
   async effect(wallet, values: FormValues) {
     if (!wallet) throw Error('no roketo wallet exists');
     const {roketo, tokens} = wallet;
-    const {receiver, delayed, comment, deposit, speed, token, isLocked, cliffDateTime} = values;
+    const {receiver, delayed, comment, deposit, speed, token, isLocked, cliffDateTime, color} =
+      values;
 
     const {formatter, api, roketoMeta} = tokens[token];
 
@@ -33,6 +35,7 @@ export const handleCreateStreamFx = attach({
       cliffPeriodSec: cliffDateTime
         ? Math.floor((cliffDateTime.getTime() - Date.now()) / 1000)
         : undefined,
+      color: color === 'none' ? null : colorDescriptions[color].color,
     });
   },
 });

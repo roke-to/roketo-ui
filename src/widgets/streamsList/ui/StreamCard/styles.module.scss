@@ -1,5 +1,9 @@
 @import 'src/shared/ui/palette';
 
+.colorDot {
+  margin-right: 3px;
+}
+
 .root {
   border-top: 1px solid $light-grey;
   align-items: center;

@@ -16,27 +16,16 @@ import {Button, DisplayMode as ButtonDisplayMode, ButtonType} from '@ui/componen
 import {ErrorSign} from '@ui/icons/ErrorSign';
 
 import {CliffPeriodPicker} from '../CliffPeriodPicker';
-import {COMMENT_TEXT_LIMIT, INITIAL_FORM_VALUES} from '../constants';
+import {COMMENT_TEXT_LIMIT, INITIAL_FORM_VALUES, StreamColor, FormValues} from '../constants';
 import {StreamSpeedCalcField} from '../StreamSpeedCalcField';
 import {TokenSelector} from '../TokenSelector';
+import {ColorPicker} from '../ColorPicker';
 import {formValidationSchema} from './model';
 import styles from './styles.module.scss';
 
 const Row = ({children, className}: {children: React.ReactNode; className?: string}) => (
   <div className={cn(styles.row, className)}>{children}</div>
 );
-
-export type FormValues = {
-  receiver: string;
-  streamName: string;
-  delayed: boolean;
-  comment: string;
-  deposit: number;
-  speed: number;
-  token: string;
-  isLocked: boolean;
-  cliffDateTime: Date | null;
-};
 
 type CreateStreamProps = {
   onFormSubmit: (values: FormValues) => Promise<void>;
@@ -91,6 +80,12 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
 
           const {meta: tokenMeta, formatter, roketoMeta} = tokens[activeTokenAccountId];
 
+          const onChoose = async (fieldName: string, value: any) => {
+            await setFieldValue(fieldName, value, false);
+            await setFieldTouched(fieldName, true, false);
+            validateField(fieldName);
+          };
+
           return (
             <form onSubmit={handleSubmit} className={styles.form}>
               <Row>
@@ -109,13 +104,16 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   name="token"
                   label="Token"
                   activeTokenAccountId={values.token}
-                  onTokenChoose={async (tokenAccountId: string) => {
-                    await setFieldValue('token', tokenAccountId, false);
-                    await setFieldTouched('token', true, false);
-                    validateField('token');
-                  }}
+                  onTokenChoose={(tokenAccountId: string) => onChoose('token', tokenAccountId)}
                   component={TokenSelector}
                   className={styles.rowItem}
+                />
+                <Field
+                  name="color"
+                  label="Color:"
+                  component={ColorPicker}
+                  className={styles.rowItem}
+                  onChoose={(color: StreamColor) => onChoose('color', color)}
                 />
               </Row>
 
@@ -137,11 +135,9 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   name="cliffDateTime"
                   label="Cliff period"
                   component={CliffPeriodPicker}
-                  onCliffDateTimeChange={async (cliffDateTime: Date | null) => {
-                    await setFieldValue('cliffDateTime', cliffDateTime, false);
-                    await setFieldTouched('cliffDateTime', true, false);
-                    validateField('cliffDateTime');
-                  }}
+                  onCliffDateTimeChange={(cliffDateTime: Date | null) =>
+                    onChoose('cliffDateTime', cliffDateTime)
+                  }
                   className={styles.rowItem}
                 />
               </Row>
@@ -154,11 +150,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   label="Stream duration:"
                   deposit={values.deposit}
                   component={StreamSpeedCalcField}
-                  onSpeedChange={async (speed: number) => {
-                    await setFieldValue('speed', speed, false);
-                    await setFieldTouched('speed', true, false);
-                    validateField('speed');
-                  }}
+                  onSpeedChange={(speed: number) => onChoose('speed', speed)}
                   className={styles.rowItem}
                 />
               </Row>

@@ -98,7 +98,7 @@ export type RoketoStats = {
 };
 
 export type RoketoCreateRequest = {
-  description: string;
+  description?: string;
   owner_id: string;
   receiver_id: string;
   balance: string;

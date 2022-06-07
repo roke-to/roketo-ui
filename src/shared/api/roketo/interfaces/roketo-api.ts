@@ -16,6 +16,7 @@ export type CreateStreamApiProps = {
   isLocked?: boolean;
   callbackUrl?: string;
   handleTransferStream: FTApi['transfer'];
+  color: string | null;
 };
 
 export type StreamsProps = {from: number; limit: number};

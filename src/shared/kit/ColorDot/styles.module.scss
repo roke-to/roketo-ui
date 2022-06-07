@@ -1,0 +1,10 @@
+.colorDot {
+  --size-px: calc(var(--size) * 1px);
+  display: block;
+  width: var(--size-px);
+  height: var(--size-px);
+  border-radius: calc(var(--size-px) / 2);
+  background-color: var(--color, transparent);
+  align-self: center;
+  flex-shrink: 0;
+}
