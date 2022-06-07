@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js';
-import JSONbig from 'json-bigint';
 import {Account, Contract, transactions, utils} from 'near-api-js';
 
 import {env} from '~/shared/config';
@@ -112,11 +111,7 @@ export class FTApi {
           receiver_id: env.ROKETO_CONTRACT_NAME,
           amount: new BigNumber(amount).toFixed(),
           memo: 'Roketo transfer',
-          msg: JSONbig.stringify({
-            Create: {
-              request: payload,
-            },
-          }),
+          msg: stringifyCreateStreamPayload(payload),
         },
         '100000000000000',
         1,
@@ -172,4 +167,20 @@ export class FTApi {
 
     return res;
   };
+}
+
+function stringifyCreateStreamPayload(payload: RoketoCreateRequest) {
+  const withSafeField = {
+    ...payload,
+    tokens_per_sec: '',
+  };
+  const payloadString = JSON.stringify({
+    Create: {
+      request: withSafeField,
+    },
+  });
+  return payloadString.replace(
+    '"tokens_per_sec":""',
+    `"tokens_per_sec":${payload.tokens_per_sec.toString()}`,
+  );
 }
