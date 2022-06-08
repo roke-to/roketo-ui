@@ -13,5 +13,7 @@ jobs:
           wait-on-timeout: 120
           record: false
           parallel: false
-          start: yarn start --port 3000
+          start: |
+            yarn build
+            yarn preview
           wait-on: 'http://localhost:3000'
