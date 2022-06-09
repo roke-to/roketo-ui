@@ -16,16 +16,13 @@ import {Button, DisplayMode as ButtonDisplayMode, ButtonType} from '@ui/componen
 import {ErrorSign} from '@ui/icons/ErrorSign';
 
 import {CliffPeriodPicker} from '../CliffPeriodPicker';
-import {COMMENT_TEXT_LIMIT, INITIAL_FORM_VALUES, StreamColor, FormValues} from '../constants';
+import {ColorPicker} from '../ColorPicker';
+import {COMMENT_TEXT_LIMIT, FormValues, INITIAL_FORM_VALUES, StreamColor} from '../constants';
+import {getStreamingSpeed} from '../lib';
 import {StreamSpeedCalcField} from '../StreamSpeedCalcField';
 import {TokenSelector} from '../TokenSelector';
-import {ColorPicker} from '../ColorPicker';
 import {formValidationSchema} from './model';
 import styles from './styles.module.scss';
-
-const Row = ({children, className}: {children: React.ReactNode; className?: string}) => (
-  <div className={cn(styles.row, className)}>{children}</div>
-);
 
 type CreateStreamProps = {
   onFormSubmit: (values: FormValues) => Promise<void>;
@@ -77,8 +74,8 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
       >
         {({values, handleSubmit, setFieldValue, setFieldTouched, validateField}) => {
           const activeTokenAccountId = values.token;
-
-          const {meta: tokenMeta, formatter, roketoMeta} = tokens[activeTokenAccountId];
+          const token = tokens[activeTokenAccountId];
+          const {meta: tokenMeta, formatter, roketoMeta} = token;
 
           const onChoose = async (fieldName: string, value: any) => {
             await setFieldValue(fieldName, value, false);
@@ -86,117 +83,106 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
             validateField(fieldName);
           };
 
+          const meaningfulSpeed = getStreamingSpeed(values.speed, token);
+
           return (
             <form onSubmit={handleSubmit} className={styles.form}>
-              <Row>
-                <Field
-                  isRequired
-                  name="receiver"
-                  label="Receiver:"
-                  component={FormikInput}
-                  placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
-                  className={styles.rowItem}
-                  data-testid={testIds.createStreamReceiverInput}
-                />
+              <Field
+                isRequired
+                name="receiver"
+                label="Receiver:"
+                component={FormikInput}
+                placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
+                className={cn(styles.formBlock, styles.receiver)}
+                data-testid={testIds.createStreamReceiverInput}
+              />
 
-                <Field
-                  isRequired
-                  name="token"
-                  label="Token"
-                  activeTokenAccountId={values.token}
-                  onTokenChoose={(tokenAccountId: string) => onChoose('token', tokenAccountId)}
-                  component={TokenSelector}
-                  className={styles.rowItem}
-                />
-                <Field
-                  name="color"
-                  label="Color:"
-                  component={ColorPicker}
-                  className={styles.rowItem}
-                  onChoose={(color: StreamColor) => onChoose('color', color)}
-                />
-              </Row>
+              <Field
+                isRequired
+                name="token"
+                label="Token"
+                activeTokenAccountId={values.token}
+                onTokenChoose={(tokenAccountId: string) => onChoose('token', tokenAccountId)}
+                component={TokenSelector}
+                className={cn(styles.formBlock, styles.token)}
+              />
+              <Field
+                name="color"
+                label="Color:"
+                component={ColorPicker}
+                className={cn(styles.formBlock, styles.color)}
+                onChoose={(color: StreamColor) => onChoose('color', color)}
+              />
+              <Field
+                isRequired
+                name="deposit"
+                label="Amount to stream:"
+                component={FormikInput}
+                placeholder="Amount to stream"
+                className={cn(styles.formBlock, styles.deposit)}
+                description={
+                  <Balance tokenAccountId={activeTokenAccountId} mode={DisplayMode.CRYPTO} />
+                }
+                data-testid={testIds.createStreamAmountInput}
+              />
+              <Field
+                name="cliffDateTime"
+                label="Cliff period"
+                component={CliffPeriodPicker}
+                onCliffDateTimeChange={(cliffDateTime: Date | null) =>
+                  onChoose('cliffDateTime', cliffDateTime)
+                }
+                className={cn(styles.formBlock, styles.cliff)}
+              />
+              <Field
+                tokenAccountId={activeTokenAccountId}
+                isRequired
+                name="speed"
+                label="Stream duration:"
+                deposit={values.deposit}
+                component={StreamSpeedCalcField}
+                onSpeedChange={(speed: number) => onChoose('speed', speed)}
+                className={cn(styles.formBlock, styles.duration)}
+              />
+              <Field
+                maxLength={COMMENT_TEXT_LIMIT}
+                name="comment"
+                label="Comment:"
+                placeholder="Enter comment"
+                component={FormikTextArea}
+                className={cn(styles.formBlock, styles.comment)}
+                data-testid={testIds.createStreamCommentInput}
+              />
 
-              <Row className={styles.amount}>
-                <Field
-                  isRequired
-                  name="deposit"
-                  label="Amount to stream:"
-                  component={FormikInput}
-                  placeholder="Amount to stream"
-                  className={styles.rowItem}
-                  description={
-                    <Balance tokenAccountId={activeTokenAccountId} mode={DisplayMode.CRYPTO} />
-                  }
-                  data-testid={testIds.createStreamAmountInput}
-                />
+              <Field
+                name="delayed"
+                disabled={Boolean(values.cliffDateTime)}
+                description={DELAYED_DESCRIPTION}
+                type="checkbox"
+                component={FormikCheckbox}
+                data-testid={testIds.createStreamDelayedCheckbox}
+                className={cn(styles.formBlock, styles.delayed)}
+              />
 
-                <Field
-                  name="cliffDateTime"
-                  label="Cliff period"
-                  component={CliffPeriodPicker}
-                  onCliffDateTimeChange={(cliffDateTime: Date | null) =>
-                    onChoose('cliffDateTime', cliffDateTime)
-                  }
-                  className={styles.rowItem}
-                />
-              </Row>
-
-              <Row>
-                <Field
-                  tokenAccountId={activeTokenAccountId}
-                  isRequired
-                  name="speed"
-                  label="Stream duration:"
-                  deposit={values.deposit}
-                  component={StreamSpeedCalcField}
-                  onSpeedChange={(speed: number) => onChoose('speed', speed)}
-                  className={styles.rowItem}
-                />
-              </Row>
-
-              <Row>
-                <Field
-                  maxLength={COMMENT_TEXT_LIMIT}
-                  name="comment"
-                  label="Comment:"
-                  placeholder="Enter comment"
-                  component={FormikTextArea}
-                  className={styles.rowItem}
-                  data-testid={testIds.createStreamCommentInput}
-                />
-              </Row>
-
-              <Row className={styles.checkboxes}>
-                <Field
-                  name="delayed"
-                  disabled={Boolean(values.cliffDateTime)}
-                  description={DELAYED_DESCRIPTION}
-                  type="checkbox"
-                  component={FormikCheckbox}
-                  data-testid={testIds.createStreamDelayedCheckbox}
-                />
-
-                <Field
-                  name="isLocked"
-                  description={LOCK_DESCRIPTION}
-                  type="checkbox"
-                  component={FormikCheckbox}
-                  data-testid={testIds.createStreamLockedCheckbox}
-                />
-              </Row>
-
-              <Row>
-                {tokenMeta && (
-                  <div className={styles.feeDisclaimer}>
-                    {`You will be charged 
-                      ${formatter.amount(roketoMeta.commission_on_create)} 
-                      ${tokenMeta.symbol} fee for the stream`}
-                  </div>
-                )}
-              </Row>
-
-              <div className={styles.actionButtonsWrapper}>
+              <Field
+                name="isLocked"
+                description={LOCK_DESCRIPTION}
+                type="checkbox"
+                component={FormikCheckbox}
+                data-testid={testIds.createStreamLockedCheckbox}
+                className={cn(styles.formBlock, styles.isLocked)}
+              />
+              <div className={cn(styles.formBlock, styles.meaningfulSpeed)}>
+                Streaming speed: {meaningfulSpeed}
+              </div>
+              {tokenMeta && (
+                <div className={styles.feeDisclaimer}>
+                  {`You will be charged
+                    ${formatter.amount(roketoMeta.commission_on_create)}
+                    ${tokenMeta.symbol} fee for the stream`}
+                </div>
+              )}
+              <div className={cn(styles.formBlock, styles.actionButtonsWrapper)}>
                 {submitError && (
                   <div className={styles.submitError}>
                     <ErrorSign />

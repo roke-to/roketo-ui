@@ -25,26 +25,6 @@
   color: $bluish-grey;
 }
 
-.formLabel {
-  position: relative;
-}
-
-.formField {
-  & > :first-child {
-    width: 100%;
-  }
-}
-
-.speed {
-  position: absolute;
-  top: 0;
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  width: max-content;
-}
-
 /* Extra small - xs */
 @media (max-width: 767px) {
   .wrapper {

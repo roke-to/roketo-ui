@@ -12,7 +12,7 @@ import {isLikeNumber} from '~/shared/lib/validation';
 import {FormField} from '@ui/components/FormField';
 import {Input} from '@ui/components/Input';
 
-import {getDurationInSeconds, getStreamingSpeed, getTokensPerSecondCount} from '../lib';
+import {getDurationInSeconds, getTokensPerSecondCount} from '../lib';
 import styles from './styles.module.scss';
 
 type SpeedInputProps = {
@@ -69,7 +69,6 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
   const {formatter} = token;
 
   const error = form.errors[field.name];
-  const {value: currentStreamingSpeed} = field;
 
   const [months, setMonths] = useState(0);
   const [days, setDays] = useState(0);
@@ -99,22 +98,12 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
       }
     };
 
-  const meaningfulSpeed = getStreamingSpeed(currentStreamingSpeed, token);
-  const labelWithStreamingSpeed = (
-    <div className={styles.formLabel}>
-      {label}
-      <span className={cn(styles.speed, styles.label)}>
-        {`Streaming speed: ${meaningfulSpeed}`}
-      </span>
-    </div>
-  );
-
   return (
     <FormField
       isRequired={isRequired}
       className={cn(styles.formField, className)}
       description={description}
-      label={labelWithStreamingSpeed}
+      label={label}
       error={error}
     >
       <div className={styles.wrapper}>
