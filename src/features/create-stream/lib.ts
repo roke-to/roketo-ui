@@ -24,8 +24,8 @@ export const getTokensPerSecondCount = (depositInYocto: string, durationInSecond
   return value !== 'Infinity' && value !== 'NaN' ? value : '0';
 };
 
-export const getStreamingSpeed = (speedInSeconds: number, token: RichToken): string => {
-  if (speedInSeconds <= 0) {
+export const getStreamingSpeed = (speedInSeconds: number | string, token: RichToken): string => {
+  if (Number(speedInSeconds) <= 0) {
     return 'none';
   }
 

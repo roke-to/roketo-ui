@@ -141,7 +141,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                 label="Stream duration:"
                 deposit={values.deposit}
                 component={StreamSpeedCalcField}
-                onSpeedChange={(speed: number) => onChoose('speed', speed)}
+                onSpeedChange={(speed: string) => onChoose('speed', speed)}
                 className={cn(styles.formBlock, styles.duration)}
               />
               <Field

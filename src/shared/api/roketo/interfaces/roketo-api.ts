@@ -8,7 +8,7 @@ export type CreateStreamApiProps = {
   commissionOnCreate: string;
   receiverId: string;
   tokenAccountId: string;
-  tokensPerSec: number;
+  tokensPerSec: string;
   name?: string;
   cliffPeriodSec?: number;
   delayed?: boolean;

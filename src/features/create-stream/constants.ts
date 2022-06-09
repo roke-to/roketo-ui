@@ -38,7 +38,7 @@ export type FormValues = {
   delayed: boolean;
   comment: string;
   deposit: number;
-  speed: number;
+  speed: string;
   token: string;
   isLocked: boolean;
   cliffDateTime: Date | null;
@@ -49,7 +49,7 @@ export const INITIAL_FORM_VALUES: FormValues = {
   receiver: '',
   streamName: '',
   token: env.WNEAR_ID,
-  speed: 0,
+  speed: '0',
   deposit: 0,
   delayed: false,
   comment: '',
