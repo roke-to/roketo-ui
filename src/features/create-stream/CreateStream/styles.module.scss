@@ -24,36 +24,45 @@
 }
 
 .form {
-  display: flex;
-  flex-direction: column;
-
-  & > :not(:last-child) {
-    margin-bottom: 32px;
-  }
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-flow: dense;
+  gap: 24px;
 }
 
-.row {
-  display: flex;
-
-  justify-content: space-around;
-
-  gap: 25px;
-
-  &Item {
-    flex: 1;
-  }
+.receiver,
+.token,
+.color {
+  grid-column: auto / span 2;
 }
 
-.checkboxes {
-  justify-content: flex-start;
-  gap: 50px;
+.deposit,
+.cliff {
+  grid-column: auto / span 3;
 }
 
-@media (max-width: 767px) {
-  .checkboxes {
-    flex-direction: column;
-  }
+.comment,
+.duration {
+  grid-column: 1 / -1;
 }
+
+.meaningfulSpeed {
+  grid-column: 1 / -1;
+
+  color: $bluish-grey;
+
+  text-align: center;
+
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.delayed,
+.isLocked {
+  grid-column: auto / span 3;
+}
+
 .submitError {
   display: flex;
 
@@ -70,6 +79,7 @@
 }
 
 .actionButtonsWrapper {
+  grid-column: 1 / -1;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -78,9 +88,10 @@
 }
 
 .feeDisclaimer {
+  grid-column: 1 / -1;
   color: $bluish-grey;
 
-  text-align: left;
+  text-align: center;
 
   font-weight: 400;
   font-size: 14px;
@@ -91,28 +102,69 @@
   }
 }
 
-/* Medium size */
+/* Laptop */
 @media (max-width: 1199px) {
   .root {
     min-width: auto;
   }
 }
 
-/* Small - sm */
-@media (max-width: 991px) {
-  .amount {
-    flex-direction: column;
-
-    gap: 15px;
+/* Tablet */
+@media (max-width: 991px) and (min-width: 768px) {
+  .receiver,
+  .token {
+    grid-column-end: span 3;
   }
-
+  .color {
+    grid-column: 3 / span 1;
+  }
+  .deposit {
+    grid-column-end: span 2;
+  }
+  .cliff {
+    grid-column-end: span 3;
+  }
+}
+@media (max-width: 991px) {
+  .form {
+    gap: 16px;
+  }
   .actionButtonsWrapper {
     justify-content: center;
   }
 }
 
-/* Extra small - xs */
+/* Phone, landscape */
+@media (max-width: 767px) and (min-width: 576px) {
+  .form {
+    grid-template-columns: 1fr 1fr;
+  }
+  .deposit {
+    grid-column-end: span 1;
+  }
+  .color {
+    grid-column: 2 / span 1;
+  }
+  .cliff,
+  .isLocked,
+  .delayed {
+    grid-column-end: span 2;
+  }
+}
 @media (max-width: 767px) {
+  .form {
+    gap: 12px;
+  }
+}
+
+/* Phone, portrait */
+@media (max-width: 575px) {
+  .form {
+    grid-template-columns: 1fr;
+  }
+  .formBlock {
+    grid-column-end: span 1;
+  }
 }
 
 .subDescription {
