@@ -100,7 +100,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
               <Field
                 isRequired
                 name="token"
-                label="Token"
+                label="Token:"
                 activeTokenAccountId={values.token}
                 onTokenChoose={(tokenAccountId: string) => onChoose('token', tokenAccountId)}
                 component={TokenSelector}
@@ -127,7 +127,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
               />
               <Field
                 name="cliffDateTime"
-                label="Cliff period"
+                label="Cliff period:"
                 component={CliffPeriodPicker}
                 onCliffDateTimeChange={(cliffDateTime: Date | null) =>
                   onChoose('cliffDateTime', cliffDateTime)
