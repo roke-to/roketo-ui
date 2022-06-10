@@ -26,7 +26,7 @@ export function hasPassedCliff(stream: RoketoStream) {
 }
 
 export function getAvailableToWithdraw(stream: RoketoStream): BigNumber {
-  if (isIdling(stream) || !hasPassedCliff(stream)) {
+  if (isIdling(stream)) {
     return new BigNumber(0);
   }
 

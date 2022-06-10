@@ -3,7 +3,7 @@ import {attach, createEvent, createStore, sample} from 'effector';
 
 import {$accountStreams, $roketoWallet, $tokens} from '~/entities/wallet';
 
-import {getAvailableToWithdraw, isActiveStream} from '~/shared/api/roketo/lib';
+import {getAvailableToWithdraw, hasPassedCliff, isActiveStream} from '~/shared/api/roketo/lib';
 
 export const triggerWithdrawAll = createEvent();
 
@@ -56,6 +56,10 @@ sample({
 
     // eslint-disable-next-line no-restricted-syntax
     for (const stream of activeInputs) {
+      if (!hasPassedCliff(stream)) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
       const tokenAccountId = stream.token_account_id;
       const available = getAvailableToWithdraw(stream);
 

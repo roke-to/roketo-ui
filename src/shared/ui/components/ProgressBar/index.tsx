@@ -38,7 +38,11 @@ export const ProgressBar = ({
         />
       </div>
       {typeof cliffPercent === 'number' && (
-        <div title="Cliff" className={styles.cliffMarkContainer} style={{left: `${cliffPercent}%`}}>
+        <div
+          title="Cliff"
+          className={styles.cliffMarkContainer}
+          style={{left: `${Math.min(cliffPercent, 100)}%`}}
+        >
           <div
             className={cn(styles.cliffMark, {
               [styles.cliffMarkBig]: withBigCliffMark,

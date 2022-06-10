@@ -56,9 +56,9 @@ context('Notifications', () => {
     const notif = new Notification();
 
     notif.openNotifications();
-    notif.checkReceiver('start', 3, sender.accountId);
-    notif.checkReceiver('pause', 2, sender.accountId);
-    notif.checkReceiver('restart', 1, sender.accountId);
-    notif.checkReceiver('stop', 0, sender.accountId);
+    notif.checkReceiver('start', sender.accountId);
+    notif.checkReceiver('pause', sender.accountId);
+    notif.checkReceiver('restart', sender.accountId);
+    notif.checkReceiver('stop', sender.accountId);
   });
 });

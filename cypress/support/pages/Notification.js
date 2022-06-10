@@ -18,14 +18,10 @@ class Notifications {
       stop: `The stream to ${receiverId} has ended.`,
     }[type];
 
-    cy.get(testSelectors.notificationElement)
-      .eq(0)
-      .find(testSelectors.notificationPrimaryCaption)
-      .eq(0)
-      .contains(text);
+    cy.get(testSelectors.notificationPrimaryCaption).contains(text);
   }
 
-  checkReceiver(type, order, senderId) {
+  checkReceiver(type, senderId) {
     const text = {
       start: `${senderId} started a stream for you to receive.`,
       pause: `The stream from ${senderId} is paused.`,
@@ -33,11 +29,7 @@ class Notifications {
       stop: `The stream from ${senderId} has ended.`,
     }[type];
 
-    cy.get(testSelectors.notificationElement)
-      .eq(order)
-      .find(testSelectors.notificationPrimaryCaption)
-      .eq(0)
-      .contains(text);
+    cy.get(testSelectors.notificationPrimaryCaption).contains(text);
   }
 }
 
