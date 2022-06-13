@@ -8,14 +8,13 @@
   width: 300px;
   color: $light-black;
 
-  & > :not(:last-child) {
-    margin-bottom: 24px;
+  & > :not(:first-child) {
+    margin-top: 24px;
   }
 }
 
 .loaderWrapper {
   content: '';
-  z-index: 1;
 
   position: absolute;
 

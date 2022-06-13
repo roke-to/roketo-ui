@@ -15,10 +15,11 @@
   padding: 16px;
 
   z-index: 2;
+}
 
-  & > :not(:last-child) {
-    margin-bottom: 12px;
-  }
+.menuItem:not(:last-child),
+.menuDivider:not(:last-child) {
+  margin-bottom: 12px;
 }
 
 .menuDivider {
