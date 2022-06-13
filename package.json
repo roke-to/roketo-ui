@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@effector/reflect": "^7.1.1",
-    "@roketo/api-client": "roke-to/roketo-api-client#v0.0.24",
+    "@roketo/api-client": "roke-to/roketo-api-client#v0.0.31",
     "bignumber.js": "^9.0.2",
     "classnames": "^2.3.1",
     "clipboard-copy": "^4.0.1",
