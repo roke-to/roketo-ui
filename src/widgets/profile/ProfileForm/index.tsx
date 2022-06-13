@@ -10,9 +10,6 @@ import {Spinner} from '@ui/components/Spinner';
 
 import styles from './index.module.scss';
 
-const NAME_INPUT = 'nameInput';
-const EMAIL_INPUT = 'emailInput';
-
 export function ProfileForm() {
   const user = useStore($user);
   const [name, setName] = useState('');
@@ -33,8 +30,8 @@ export function ProfileForm() {
         onSubmit={(e) => {
           e.preventDefault();
           updateUserFx({
-            name: formRef.current?.[NAME_INPUT].value,
-            email: formRef.current?.[EMAIL_INPUT].value,
+            name,
+            email,
           });
         }}
         ref={formRef}
@@ -42,7 +39,6 @@ export function ProfileForm() {
         <FormField label="User name">
           <Input
             placeholder="Name"
-            name={NAME_INPUT}
             value={name}
             onChange={(e) => setName(e.target.value)}
             disabled={isMutating}
@@ -52,7 +48,6 @@ export function ProfileForm() {
         <FormField label="Email" description="Email address is used for notifications">
           <Input
             placeholder="Email"
-            name={EMAIL_INPUT}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isMutating}
