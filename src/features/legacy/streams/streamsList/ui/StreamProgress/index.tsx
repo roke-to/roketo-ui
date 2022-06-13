@@ -32,9 +32,9 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
 
   const formatter = useTokenFormatter(tokenId);
 
-  const streamed = Number(formatter.amount(progress.streamed));
-  const withdrawn = Number(formatter.amount(progress.withdrawn));
-  const total = Number(formatter.amount(progress.full));
+  const streamed = Number(formatter.toHumanReadableValue(progress.streamed));
+  const withdrawn = Number(formatter.toHumanReadableValue(progress.withdrawn));
+  const total = Number(formatter.toHumanReadableValue(progress.full));
 
   const streamedText = TokenFormatter.formatSmartly(streamed);
   const withdrawnText = TokenFormatter.formatSmartly(withdrawn);
