@@ -27,42 +27,43 @@ export function ProfileForm() {
   const formRef = useRef<HTMLFormElement | null>(null);
 
   return (
-    <form
-      className={styles.profileForm}
-      onSubmit={(e) => {
-        e.preventDefault();
-        updateUserFx({
-          name: formRef.current?.[NAME_INPUT].value,
-          email: formRef.current?.[EMAIL_INPUT].value,
-        });
-      }}
-      ref={formRef}
-    >
+    <>
+      <form
+        className={styles.profileForm}
+        onSubmit={(e) => {
+          e.preventDefault();
+          updateUserFx({
+            name: formRef.current?.[NAME_INPUT].value,
+            email: formRef.current?.[EMAIL_INPUT].value,
+          });
+        }}
+        ref={formRef}
+      >
+        <FormField label="User name">
+          <Input
+            placeholder="Name"
+            name={NAME_INPUT}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            disabled={isMutating}
+          />
+        </FormField>
+
+        <FormField label="Email" description="Email address is used for notifications">
+          <Input
+            placeholder="Email"
+            name={EMAIL_INPUT}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isMutating}
+          />
+        </FormField>
+
+        <Button type={ButtonType.submit} disabled={isMutating}>
+          Save
+        </Button>
+      </form>
       {isMutating && <Spinner wrapperClassName={styles.loaderWrapper} />}
-
-      <FormField label="User name">
-        <Input
-          placeholder="Name"
-          name={NAME_INPUT}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          disabled={isMutating}
-        />
-      </FormField>
-
-      <FormField label="Email" description="Email address is used for notifications">
-        <Input
-          placeholder="Email"
-          name={EMAIL_INPUT}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={isMutating}
-        />
-      </FormField>
-
-      <Button type={ButtonType.submit} disabled={isMutating}>
-        Save
-      </Button>
-    </form>
+    </>
   );
 }
