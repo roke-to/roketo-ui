@@ -87,21 +87,29 @@ const getNotificationsFx = createEffect(async () => {
   });
 });
 
+function onlyChanged<F extends Record<string, unknown>, T extends F>(
+  fields: F,
+  source: T,
+): Partial<F> {
+  const changedFields: Partial<F> = {...fields};
+
+  Object.keys(changedFields).forEach((key: keyof typeof changedFields) => {
+    if (changedFields[key] === source[key]) {
+      delete changedFields[key];
+    }
+  });
+
+  return changedFields;
+}
+
 export const updateUserFx = attach({
   source: [$user, $accountId],
-  async effect(
-    [user, accountId],
-    {name, email, allowNotifications}: {name: string; email: string; allowNotifications: boolean},
-  ) {
+  async effect([user, accountId], nextUser: Partial<UpdateUserDto>) {
     if (accountId) {
-      const updateUserDto: UpdateUserDto = {
-        ...(name !== user.name && {name}),
-        ...(email !== user.email && {email}),
-        ...(allowNotifications !== user.allowNotifications && {allowNotifications}),
-      };
+      const updateUserDto: Partial<UpdateUserDto> = onlyChanged(nextUser, user);
 
       if (Object.keys(updateUserDto).length !== 0) {
-        return usersApiClient.update(accountId, {name, email, allowNotifications});
+        return usersApiClient.update(accountId, updateUserDto);
       }
     }
   },
