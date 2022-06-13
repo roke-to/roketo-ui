@@ -190,6 +190,11 @@ sample({
 
 sample({
   clock: [getUserFx.doneData, updateUserFx.done.map(({params}) => params)],
+  source: $user,
+  fn: (user, nextUser) => ({
+    ...user,
+    ...nextUser,
+  }),
   target: $user,
 });
 sample({
