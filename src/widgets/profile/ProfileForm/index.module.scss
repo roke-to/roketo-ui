@@ -28,6 +28,21 @@
   border-radius: 16px;
 
   cursor: progress;
+
+  opacity: 0;
+  animation-duration: 0.25s;
+  animation-name: fadeIn;
+  animation-delay: 0.25s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .label {
