@@ -39,3 +39,8 @@
   font-size: 12px;
   margin-bottom: 6px;
 }
+
+.buttonDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

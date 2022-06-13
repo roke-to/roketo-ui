@@ -1,4 +1,4 @@
-import type {Notification} from '@roketo/api-client';
+import type {Notification, User} from '@roketo/api-client';
 import {attach, createEffect, createEvent, createStore, sample} from 'effector';
 import {ConnectedWalletAccount, Near, WalletConnection} from 'near-api-js';
 
@@ -54,9 +54,10 @@ export const $isSignedIn = $nearWallet.map((wallet) => wallet?.auth.signedIn ?? 
 
 export const $accountId = $nearWallet.map((wallet) => wallet?.auth.accountId ?? null);
 
-export const $user = createStore<{name: string | null; email: string | null}>({
-  name: null,
-  email: null,
+export const $user = createStore<Partial<User>>({
+  name: '',
+  email: '',
+  isEmailVerified: false,
 });
 
 export const $notifications = createStore<Notification[]>([]);
@@ -88,9 +89,12 @@ const getNotificationsFx = createEffect(async () => {
 
 export const updateUserFx = attach({
   source: $accountId,
-  async effect(accountId, {name, email}: {name: string; email: string}) {
+  async effect(
+    accountId,
+    {name, email, allowNotifications}: {name: string; email: string; allowNotifications: boolean},
+  ) {
     if (!accountId) return;
-    await usersApiClient.update(accountId, {name, email});
+    await usersApiClient.update(accountId, {name, email, allowNotifications});
   },
 });
 
@@ -203,7 +207,7 @@ sample({
 sample({
   clock: $accountId,
   filter: (id: string | null): id is null => !id,
-  fn: () => ({name: null, email: null}),
+  fn: () => ({name: '', email: '', isEmailVerified: false}),
   target: $user,
 });
 /** clear notifications when there is no account id */
