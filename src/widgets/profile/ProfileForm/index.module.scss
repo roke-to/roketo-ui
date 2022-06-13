@@ -50,9 +50,40 @@
   flex-direction: column;
 }
 
+.green {
+  color: #1eba52;
+}
+
+.red {
+  color: #d80a1f;
+}
+
 .inputName {
   font-size: 12px;
   margin-bottom: 6px;
+}
+
+.resend {
+  background-color: $light-blue;
+  border: 1px solid $blue;
+  border-radius: 6px;
+  display: flex;
+  padding: 16px;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.infoIcon {
+  flex-shrink: 0;
+}
+
+.resendButton {
+  text-decoration: underline;
+  color: $blue;
+  cursor: pointer;
+  text-align: left;
 }
 
 .buttonDisabled {

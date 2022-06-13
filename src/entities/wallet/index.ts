@@ -107,6 +107,15 @@ export const updateUserFx = attach({
   },
 });
 
+export const resendVerificationEmailFx = attach({
+  source: $accountId,
+  async effect(accountId) {
+    if (accountId) {
+      return usersApiClient.resendVerificationEmail(accountId);
+    }
+  },
+});
+
 export const lastCreatedStreamUpdated = createEvent<string>();
 
 const createNearWalletFx = createEffect(async () => {

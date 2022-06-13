@@ -2,7 +2,9 @@ import classNames from 'classnames';
 import {useStore} from 'effector-react';
 import {useEffect, useRef, useState} from 'react';
 
-import {$user, updateUserFx} from '~/entities/wallet';
+import {InfoIcon} from '~/widgets/profile/ProfileForm/InfoIcon';
+
+import {$user, resendVerificationEmailFx, updateUserFx} from '~/entities/wallet';
 
 import {Button, ButtonType} from '@ui/components/Button';
 import {Checkbox} from '@ui/components/Checkbox';
@@ -18,7 +20,11 @@ export function ProfileForm() {
   const [email, setEmail] = useState('');
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [allowNotifications, setAllowNotifications] = useState(false);
-  const isMutating = useStore(updateUserFx.pending);
+  const isUserUpdating = useStore(updateUserFx.pending);
+  const isEmailBeingResent = useStore(resendVerificationEmailFx.pending);
+  const [resentVerificationEmail, setResentVerificationEmail] = useState(false);
+
+  const isMutating = isUserUpdating || isEmailBeingResent;
 
   useEffect(() => {
     setName(user.name ?? '');
@@ -80,6 +86,33 @@ export function ProfileForm() {
           onChange={(e) => setAllowNotifications(e.target.checked)}
           disabled={!email || isMutating}
         />
+        {email && email === user.email && !isEmailVerified && (
+          <div className={styles.resend}>
+            <InfoIcon className={styles.infoIcon} />
+            <div>
+              <span>
+                If you can't find a verification link in your mailbox, please check "Spam" folder
+                {!resentVerificationEmail && (
+                  <span>
+                    {' '}
+                    or{' '}
+                    <button
+                      type="button"
+                      className={styles.resendButton}
+                      onClick={() => {
+                        setResentVerificationEmail(true);
+                        resendVerificationEmailFx();
+                      }}
+                    >
+                      resend a verification email
+                    </button>
+                  </span>
+                )}
+                .
+              </span>
+            </div>
+          </div>
+        )}
 
         <Button
           className={classNames((isMutating || !changes) && styles.buttonDisabled)}
