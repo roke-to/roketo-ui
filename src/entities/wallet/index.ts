@@ -1,4 +1,4 @@
-import type {Notification, User} from '@roketo/api-client';
+import type {Notification, UpdateUserDto, User} from '@roketo/api-client';
 import {attach, createEffect, createEvent, createStore, sample} from 'effector';
 import {ConnectedWalletAccount, Near, WalletConnection} from 'near-api-js';
 
@@ -88,13 +88,22 @@ const getNotificationsFx = createEffect(async () => {
 });
 
 export const updateUserFx = attach({
-  source: $accountId,
+  source: [$user, $accountId],
   async effect(
-    accountId,
+    [user, accountId],
     {name, email, allowNotifications}: {name: string; email: string; allowNotifications: boolean},
   ) {
-    if (!accountId) return;
-    await usersApiClient.update(accountId, {name, email, allowNotifications});
+    if (accountId) {
+      const updateUserDto: UpdateUserDto = {
+        ...(name !== user.name && {name}),
+        ...(email !== user.email && {email}),
+        ...(allowNotifications !== user.allowNotifications && {allowNotifications}),
+      };
+
+      if (Object.keys(updateUserDto).length !== 0) {
+        return usersApiClient.update(accountId, {name, email, allowNotifications});
+      }
+    }
   },
 });
 
