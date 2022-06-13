@@ -7,6 +7,7 @@ type FormFieldProps = {
   children: React.ReactNode;
 
   label?: React.ReactNode;
+  rightLabel?: React.ReactNode;
   description?: React.ReactNode;
 
   isRequired?: boolean;
@@ -19,13 +20,22 @@ export const FormField = ({
   children,
   isRequired = false,
   label,
+  rightLabel,
   description,
   error,
   className,
   ...rest
 }: FormFieldProps) => (
   <div className={cn(styles.root, className)} {...rest}>
-    {label && <label className={cn(styles.label, {[styles.required]: isRequired})}>{label}</label>}
+    {(label || rightLabel) && (
+      <div className={styles.labelContainer}>
+        {label && (
+          <label className={cn(styles.label, {[styles.required]: isRequired})}>{label}</label>
+        )}
+        <div className={styles.divider} />
+        {rightLabel && <label className={styles.label}>{rightLabel}</label>}
+      </div>
+    )}
 
     {children}
 
