@@ -40,7 +40,7 @@ export const $totalUSDAmountPerHour = combine(
     }
     return {
       [StreamType.income]: calculateTotalAmount(StreamType.income),
-      [StreamType.outcome]: calculateTotalAmount(StreamType.income),
+      [StreamType.outcome]: calculateTotalAmount(StreamType.outcome),
     };
   },
 );
