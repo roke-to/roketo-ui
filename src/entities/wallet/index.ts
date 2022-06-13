@@ -194,6 +194,7 @@ sample({
   fn: (user, nextUser) => ({
     ...user,
     ...nextUser,
+    ...(user.email && nextUser.email !== user.email && {isEmailVerified: false}),
   }),
   target: $user,
 });
