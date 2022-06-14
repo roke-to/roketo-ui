@@ -47,9 +47,7 @@ export const testIds = {
   createStreamSubmitButton: 'createStreamSubmitButton',
   openNotificationsButton: 'openNotificationsButton',
   notificationsLoader: 'notificationsLoader',
-  notificationElement: 'notificationElement',
-  notificationPrimaryCaption: 'notificationPrimaryCaption',
-  notificationSecondaryCaption: 'notificationSecondaryCaption',
+  notificationsContainer: 'notificationsContainer',
 } as const;
 
 const testIdsKeys = Object.keys(testIds) as Array<keyof typeof testIds>;
