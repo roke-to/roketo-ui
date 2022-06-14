@@ -11,8 +11,8 @@ function NearTokenImage(props: NearTokenImageProps) {
     <svg
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
-      width="20pt"
-      height="20pt"
+      width="20"
+      height="20"
       viewBox="0 0 864.000000 864.000000"
       preserveAspectRatio="xMidYMid meet"
       {...props}
@@ -37,8 +37,8 @@ function FallbackTokenImage(props: FallbackTokenImageProps) {
     <svg
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
-      width="20pt"
-      height="20pt"
+      width="20"
+      height="20"
       viewBox="0 0 864.000000 864.000000"
       preserveAspectRatio="xMidYMid meet"
       {...props}

@@ -8,8 +8,8 @@
   min-width: 100%;
 
   background-color: $white;
-  filter: drop-shadow(2px 2px 17px rgba(138, 150, 168, 0.12))
-    drop-shadow(-2px -3px 21px rgba(138, 150, 168, 0.12));
+
+  box-shadow: 0 0 20px rgba(138, 150, 168, 0.24);
 
   border-radius: 16px;
   padding: 16px;

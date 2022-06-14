@@ -3,6 +3,8 @@ import React from 'react';
 
 import {TokenIcon} from '~/shared/ui/icons/Tokens';
 
+import styles from './styles.module.scss';
+
 type TokenImageProps = {
   tokenAccountId: string;
   size?: number;
@@ -18,7 +20,10 @@ export function TokenImage({tokenAccountId, size = 8, className}: TokenImageProp
         className,
       )}
     >
-      <TokenIcon className="w-full h-full rounded-full" tokenAccountId={tokenAccountId} />
+      <TokenIcon
+        className={classNames('rounded-full', styles.tokenImage)}
+        tokenAccountId={tokenAccountId}
+      />
     </div>
   );
 }
