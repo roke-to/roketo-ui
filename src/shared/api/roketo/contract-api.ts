@@ -101,7 +101,7 @@ export class RoketoContractApi implements RoketoApi {
       owner_id: this.account.accountId,
       receiver_id: receiverId,
       token_name: tokenAccountId,
-      tokens_per_sec: BigInt(tokensPerSec),
+      tokens_per_sec: tokensPerSec,
       cliff_period_sec: cliffPeriodSec,
       is_locked: isLocked,
       is_auto_start_enabled: !delayed,

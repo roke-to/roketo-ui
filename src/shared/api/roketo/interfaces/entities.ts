@@ -102,7 +102,7 @@ export type RoketoCreateRequest = {
   owner_id: string;
   receiver_id: string;
   balance: string;
-  tokens_per_sec: BigInt;
+  tokens_per_sec: string;
   cliff_period_sec?: number;
   is_auto_start_enabled?: boolean;
   is_expirable?: boolean;

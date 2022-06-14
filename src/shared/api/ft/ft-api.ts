@@ -111,7 +111,11 @@ export class FTApi {
           receiver_id: env.ROKETO_CONTRACT_NAME,
           amount: new BigNumber(amount).toFixed(),
           memo: 'Roketo transfer',
-          msg: stringifyCreateStreamPayload(payload),
+          msg: JSON.stringify({
+            Create: {
+              request: payload,
+            },
+          }),
         },
         '100000000000000',
         1,
@@ -167,20 +171,4 @@ export class FTApi {
 
     return res;
   };
-}
-
-function stringifyCreateStreamPayload(payload: RoketoCreateRequest) {
-  const withSafeField = {
-    ...payload,
-    tokens_per_sec: '',
-  };
-  const payloadString = JSON.stringify({
-    Create: {
-      request: withSafeField,
-    },
-  });
-  return payloadString.replace(
-    '"tokens_per_sec":""',
-    `"tokens_per_sec":${payload.tokens_per_sec.toString()}`,
-  );
 }
