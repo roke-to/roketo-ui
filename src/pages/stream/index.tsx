@@ -16,7 +16,7 @@ import {$tokens} from '~/entities/wallet';
 import {TokenFormatter} from '~/shared/api/ft/token-formatter';
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {getAvailableToWithdraw, isDead, isIdling} from '~/shared/api/roketo/lib';
+import {getAvailableToWithdraw, hasPassedCliff, isDead, isIdling} from '~/shared/api/roketo/lib';
 import {Badge} from '~/shared/components/Badge';
 import {PageError} from '~/shared/components/PageError';
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
@@ -334,7 +334,7 @@ function StreamData({stream}: {stream: RoketoStream}) {
           </InfoRow>
           <InfoRow title="Tokens Available">
             <span className={styles.font14}>
-              {formatter.amount(available)}&nbsp;
+              {hasPassedCliff(stream) ? formatter.amount(available) : '0'}&nbsp;
               <span className={styles.font12}>{meta.symbol}</span>
             </span>
           </InfoRow>
