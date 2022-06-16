@@ -53,19 +53,11 @@ function NotificationIcon({type}: {type: NotificationType}) {
 const WITHOUT_EXTRAPOLATION = false;
 
 function PrimaryText({children}: {children: React.ReactNode}) {
-  return (
-    <div className={styles.primaryText} data-testid={testIds.notificationPrimaryCaption}>
-      {children}
-    </div>
-  );
+  return <div className={styles.primaryText}>{children}</div>;
 }
 
 function SecondaryText({children}: {children: React.ReactNode}) {
-  return (
-    <div className={styles.secondaryText} data-testid={testIds.notificationSecondaryCaption}>
-      {children}
-    </div>
-  );
+  return <div className={styles.secondaryText}>{children}</div>;
 }
 
 function NotificationBody({notification: {type, payload}}: {notification: Notification}) {
@@ -260,7 +252,7 @@ export function Notifications() {
         onClose={closeDropdown}
         className={classNames(styles.dropdownMenu, compact && styles.compact)}
       >
-        <div className={styles.container}>
+        <div className={styles.container} data-testid={testIds.notificationsContainer}>
           <header className={styles.header}>Notifications</header>
 
           {notifications.length === 0 && (
@@ -291,7 +283,6 @@ export function Notifications() {
                 })}
                 className={classNames(styles.notification, !notification.isRead && styles.unread)}
                 onClick={closeDropdown}
-                data-testid={testIds.notificationElement}
               >
                 <NotificationIcon type={notification.type} />
                 <NotificationBody notification={notification} />

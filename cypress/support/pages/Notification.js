@@ -18,7 +18,7 @@ class Notifications {
       stop: `The stream to ${receiverId} has ended.`,
     }[type];
 
-    cy.get(testSelectors.notificationPrimaryCaption).contains(text);
+    cy.get(testSelectors.notificationsContainer).contains(text);
   }
 
   checkReceiver(type, senderId) {
@@ -29,7 +29,7 @@ class Notifications {
       stop: `The stream from ${senderId} has ended.`,
     }[type];
 
-    cy.get(testSelectors.notificationPrimaryCaption).contains(text);
+    cy.get(testSelectors.notificationsContainer).contains(text);
   }
 }
 
