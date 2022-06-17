@@ -1,7 +1,7 @@
 import cx from 'classnames';
 import React, {useState} from 'react';
 
-import {DropdownMenu} from '../DropdownMenu';
+import {DropdownMenu, DropdownMenuItem} from '../DropdownMenu';
 import {DropdownOpener} from '../DropdownOpener';
 import {RadioButton} from '../RadioButton';
 import styles from './styles.module.scss';
@@ -68,13 +68,14 @@ export function Filter<T extends string | FilterOption>({
           }}
         >
           {options.map((option) => (
-            <RadioButton
-              key={JSON.stringify(option)}
-              label={renderOption ? renderOption(option, active === option) : option}
-              active={active === option}
-              value={option}
-              onChange={onChange}
-            />
+            <DropdownMenuItem key={JSON.stringify(option)}>
+              <RadioButton
+                label={renderOption ? renderOption(option, active === option) : option}
+                active={active === option}
+                value={option}
+                onChange={onChange}
+              />
+            </DropdownMenuItem>
           ))}
         </DropdownMenu>
       </div>

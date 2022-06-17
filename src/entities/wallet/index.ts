@@ -1,4 +1,4 @@
-import type {Notification} from '@roketo/api-client';
+import type {Notification, UpdateUserDto, User} from '@roketo/api-client';
 import {attach, createEffect, createEvent, createStore, sample} from 'effector';
 import {ConnectedWalletAccount, Near, WalletConnection} from 'near-api-js';
 
@@ -54,9 +54,10 @@ export const $isSignedIn = $nearWallet.map((wallet) => wallet?.auth.signedIn ?? 
 
 export const $accountId = $nearWallet.map((wallet) => wallet?.auth.accountId ?? null);
 
-export const $user = createStore<{name: string | null; email: string | null}>({
-  name: null,
-  email: null,
+export const $user = createStore<Partial<User>>({
+  name: '',
+  email: '',
+  isEmailVerified: false,
 });
 
 export const $notifications = createStore<Notification[]>([]);
@@ -86,11 +87,40 @@ const getNotificationsFx = createEffect(async () => {
   });
 });
 
+function onlyChanged<F extends Record<string, unknown>, T extends F>(
+  fields: F,
+  source: T,
+): Partial<F> {
+  const changedFields: Partial<F> = {...fields};
+
+  Object.keys(changedFields).forEach((key: keyof typeof changedFields) => {
+    if (changedFields[key] === source[key]) {
+      delete changedFields[key];
+    }
+  });
+
+  return changedFields;
+}
+
 export const updateUserFx = attach({
+  source: [$user, $accountId],
+  async effect([user, accountId], nextUser: Partial<UpdateUserDto>) {
+    if (accountId) {
+      const updateUserDto: Partial<UpdateUserDto> = onlyChanged(nextUser, user);
+
+      if (Object.keys(updateUserDto).length !== 0) {
+        return usersApiClient.update(accountId, updateUserDto);
+      }
+    }
+  },
+});
+
+export const resendVerificationEmailFx = attach({
   source: $accountId,
-  async effect(accountId, {name, email}: {name: string; email: string}) {
-    if (!accountId) return;
-    await usersApiClient.update(accountId, {name, email});
+  async effect(accountId) {
+    if (accountId) {
+      return usersApiClient.resendVerificationEmail(accountId);
+    }
   },
 });
 
@@ -177,6 +207,12 @@ sample({
 
 sample({
   clock: [getUserFx.doneData, updateUserFx.done.map(({params}) => params)],
+  source: $user,
+  fn: (user, nextUser) => ({
+    ...user,
+    ...nextUser,
+    ...(user.email && nextUser.email !== user.email && {isEmailVerified: false}),
+  }),
   target: $user,
 });
 sample({
@@ -203,7 +239,7 @@ sample({
 sample({
   clock: $accountId,
   filter: (id: string | null): id is null => !id,
-  fn: () => ({name: null, email: null}),
+  fn: () => ({name: '', email: '', isEmailVerified: false}),
   target: $user,
 });
 /** clear notifications when there is no account id */

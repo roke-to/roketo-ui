@@ -162,6 +162,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                 component={FormikCheckbox}
                 data-testid={testIds.createStreamDelayedCheckbox}
                 className={cn(styles.formBlock, styles.delayed)}
+                checked={values.cliffDateTime ? false : values.delayed}
               />
 
               <Field

@@ -8,14 +8,13 @@
   width: 300px;
   color: $light-black;
 
-  & > :not(:last-child) {
-    margin-bottom: 24px;
+  & > :not(:first-child) {
+    margin-top: 24px;
   }
 }
 
 .loaderWrapper {
   content: '';
-  z-index: 1;
 
   position: absolute;
 
@@ -29,6 +28,21 @@
   border-radius: 16px;
 
   cursor: progress;
+
+  opacity: 0;
+  animation-duration: 0.25s;
+  animation-name: fadeIn;
+  animation-delay: 0.25s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .label {
@@ -36,7 +50,43 @@
   flex-direction: column;
 }
 
+.green {
+  color: #1eba52;
+}
+
+.red {
+  color: #d80a1f;
+}
+
 .inputName {
   font-size: 12px;
   margin-bottom: 6px;
+}
+
+.resend {
+  background-color: $light-blue;
+  border: 1px solid $blue;
+  border-radius: 6px;
+  display: flex;
+  padding: 16px;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.infoIcon {
+  flex-shrink: 0;
+}
+
+.resendButton {
+  text-decoration: underline;
+  color: $blue;
+  cursor: pointer;
+  text-align: left;
+}
+
+.buttonDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

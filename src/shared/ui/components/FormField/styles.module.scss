@@ -10,12 +10,21 @@
   }
 }
 
+.labelContainer {
+  display: flex;
+  width: 100%;
+}
+
 .label {
   font-size: 12px;
   line-height: 15px;
   font-weight: 500;
 
   position: relative;
+}
+
+.divider {
+  flex: 1;
 }
 
 .description {

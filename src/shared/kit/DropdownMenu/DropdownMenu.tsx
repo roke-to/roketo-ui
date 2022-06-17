@@ -12,7 +12,7 @@ type DropdownMenuProps = {
   onClose: () => void;
 };
 
-export function DropdownMenu({opened, children, className, onClose}: DropdownMenuProps) {
+function DropdownMenuContent({opened, children, className, onClose}: DropdownMenuProps) {
   const ref = React.useRef<HTMLInputElement | null>(null);
 
   useOutsideClick(ref, () => {
@@ -22,10 +22,15 @@ export function DropdownMenu({opened, children, className, onClose}: DropdownMen
   });
 
   return (
-    <div ref={ref} className={classNames(styles.menu, {[styles.hidden]: !opened}, className)}>
+    <div ref={ref} className={classNames(styles.menu, className)}>
       {children}
     </div>
   );
+}
+
+export function DropdownMenu(props: DropdownMenuProps) {
+  // eslint-disable-next-line react/destructuring-assignment
+  return props.opened ? <DropdownMenuContent {...props} /> : null;
 }
 
 type DropdownMenuItemProps = {
@@ -35,7 +40,7 @@ type DropdownMenuItemProps = {
 
 export function DropdownMenuItem({children, className, ...rest}: DropdownMenuItemProps) {
   return (
-    <div className={className} {...rest}>
+    <div className={classNames(styles.menuItem, className)} {...rest}>
       {children}
     </div>
   );

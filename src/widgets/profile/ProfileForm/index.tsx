@@ -1,68 +1,128 @@
+import classNames from 'classnames';
 import {useStore} from 'effector-react';
 import {useEffect, useRef, useState} from 'react';
 
-import {$user, updateUserFx} from '~/entities/wallet';
+import {InfoIcon} from '~/widgets/profile/ProfileForm/InfoIcon';
+
+import {$user, resendVerificationEmailFx, updateUserFx} from '~/entities/wallet';
 
 import {Button, ButtonType} from '@ui/components/Button';
+import {Checkbox} from '@ui/components/Checkbox';
 import {FormField} from '@ui/components/FormField';
 import {Input} from '@ui/components/Input';
 import {Spinner} from '@ui/components/Spinner';
 
 import styles from './index.module.scss';
 
-const NAME_INPUT = 'nameInput';
-const EMAIL_INPUT = 'emailInput';
-
 export function ProfileForm() {
   const user = useStore($user);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const isMutating = useStore(updateUserFx.pending);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [allowNotifications, setAllowNotifications] = useState(false);
+  const isUserUpdating = useStore(updateUserFx.pending);
+  const isEmailBeingResent = useStore(resendVerificationEmailFx.pending);
+  const [resentVerificationEmail, setResentVerificationEmail] = useState(false);
+
+  const isMutating = isUserUpdating || isEmailBeingResent;
 
   useEffect(() => {
     setName(user.name ?? '');
     setEmail(user.email ?? '');
+    setIsEmailVerified(user.isEmailVerified ?? false);
+    setAllowNotifications(user.allowNotifications ?? false);
   }, [user]);
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
+  const changes =
+    name !== user.name || email !== user.email || allowNotifications !== user.allowNotifications;
+
   return (
-    <form
-      className={styles.profileForm}
-      onSubmit={(e) => {
-        e.preventDefault();
-        updateUserFx({
-          name: formRef.current?.[NAME_INPUT].value,
-          email: formRef.current?.[EMAIL_INPUT].value,
-        });
-      }}
-      ref={formRef}
-    >
+    <>
+      <form
+        className={styles.profileForm}
+        onSubmit={(e) => {
+          e.preventDefault();
+          updateUserFx({
+            name,
+            email,
+            allowNotifications,
+          });
+        }}
+        ref={formRef}
+      >
+        <FormField label="User name">
+          <Input
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            disabled={isMutating}
+          />
+        </FormField>
+
+        <FormField
+          label="Email"
+          rightLabel={
+            email &&
+            email === user.email && (
+              <span className={isEmailVerified ? styles.green : styles.red}>
+                {isEmailVerified ? 'verified' : 'unverified'}
+              </span>
+            )
+          }
+        >
+          <Input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isMutating}
+          />
+        </FormField>
+
+        <Checkbox
+          description="Receive notifications"
+          checked={allowNotifications}
+          onChange={(e) => setAllowNotifications(e.target.checked)}
+          disabled={!email || isMutating}
+        />
+        {email && email === user.email && !isEmailVerified && (
+          <div className={styles.resend}>
+            <InfoIcon className={styles.infoIcon} />
+            <div>
+              <span>
+                If you can't find a verification link in your mailbox, please check "Spam" folder
+                {!resentVerificationEmail && (
+                  <span>
+                    {' '}
+                    or{' '}
+                    <button
+                      type="button"
+                      className={styles.resendButton}
+                      onClick={() => {
+                        setResentVerificationEmail(true);
+                        resendVerificationEmailFx();
+                      }}
+                    >
+                      resend a verification email
+                    </button>
+                  </span>
+                )}
+                .
+              </span>
+            </div>
+          </div>
+        )}
+
+        <Button
+          className={classNames((isMutating || !changes) && styles.buttonDisabled)}
+          type={ButtonType.submit}
+          disabled={isMutating || !changes}
+        >
+          Save
+        </Button>
+      </form>
       {isMutating && <Spinner wrapperClassName={styles.loaderWrapper} />}
-
-      <FormField label="User name">
-        <Input
-          placeholder="Name"
-          name={NAME_INPUT}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          disabled={isMutating}
-        />
-      </FormField>
-
-      <FormField label="Email" description="Email address is used for notifications">
-        <Input
-          placeholder="Email"
-          name={EMAIL_INPUT}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={isMutating}
-        />
-      </FormField>
-
-      <Button type={ButtonType.submit} disabled={isMutating}>
-        Save
-      </Button>
-    </form>
+    </>
   );
 }
