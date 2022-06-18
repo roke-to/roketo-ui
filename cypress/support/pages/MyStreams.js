@@ -12,6 +12,7 @@ class MyStreams {
   }
 
   changeStatus(value) {
+    cy.get(testSelectors.streamControlsDropdown).eq(0).click({force: true});
     if (value === 'start') {
       cy.get(testSelectors.streamStartButton).eq(0).click({force: true});
     }
