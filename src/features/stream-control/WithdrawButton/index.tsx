@@ -4,7 +4,7 @@ import React from 'react';
 
 import {streamViewData} from '~/features/roketo-resource';
 
-import {$tokens} from '~/entities/wallet';
+import {$roketoWallet, $tokens} from '~/entities/wallet';
 
 import {formatAmount} from '~/shared/api/ft/token-formatter';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
@@ -14,7 +14,6 @@ import {Tooltip} from '~/shared/kit/Tooltip';
 
 import {Button, ButtonType, DisplayMode} from '@ui/components/Button';
 
-import {withdrawAllFx} from '../WithdrawAllButton/model';
 import styles from './styles.module.scss';
 
 type WithdrawButtonProps = {
@@ -24,6 +23,7 @@ type WithdrawButtonProps = {
 
 export function WithdrawButton({stream, small = false, ...rest}: WithdrawButtonProps) {
   const tokens = useStore($tokens);
+  const wallet = useStore($roketoWallet);
   const available = getAvailableToWithdraw(stream);
   const {
     percentages: {cliff, streamed},
@@ -36,7 +36,7 @@ export function WithdrawButton({stream, small = false, ...rest}: WithdrawButtonP
 
   const handleWithdraw = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    withdrawAllFx([stream.id]);
+    wallet?.roketo.api.withdraw({streamIds: [stream.id]});
   };
 
   const hasPassedCliff = !cliff || streamed > cliff;

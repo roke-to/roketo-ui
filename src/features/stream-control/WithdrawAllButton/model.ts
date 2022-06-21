@@ -1,19 +1,17 @@
 import type BigNumber from 'bignumber.js';
-import {createEvent, createStore, sample} from 'effector';
+import {attach, createEvent, createStore, sample} from 'effector';
 
 import {$accountStreams, $roketoWallet, $tokens} from '~/entities/wallet';
 
 import {formatAmount} from '~/shared/api/ft/token-formatter';
-import {withdrawStreams} from '~/shared/api/methods';
 import {getAvailableToWithdraw, hasPassedCliff, isActiveStream} from '~/shared/api/roketo/lib';
-import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 
 export const triggerWithdrawAll = createEvent();
 
-export const withdrawAllFx = createProtectedEffect({
+const withdrawAllFx = attach({
   source: $roketoWallet,
-  async fn({contract}, streamIds: string[]) {
-    await withdrawStreams({streamIds, contract});
+  async effect(wallet, streamIds: string[]) {
+    await wallet?.roketo.api.withdraw({streamIds});
   },
 });
 
