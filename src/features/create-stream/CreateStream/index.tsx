@@ -75,6 +75,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
         {({values, handleSubmit, setFieldValue, setFieldTouched, validateField}) => {
           const activeTokenAccountId = values.token;
           const token = tokens[activeTokenAccountId];
+          if (!token) return null;
           const {meta: tokenMeta, formatter, roketoMeta} = token;
 
           const onChoose = async (fieldName: string, value: any) => {

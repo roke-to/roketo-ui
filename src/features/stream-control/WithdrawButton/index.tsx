@@ -28,7 +28,9 @@ export function WithdrawButton({stream, small = false, ...rest}: WithdrawButtonP
     percentages: {cliff, streamed},
   } = streamViewData(stream);
   const tokenAccountId = stream.token_account_id;
-  const {formatter} = tokens[tokenAccountId];
+  const token = tokens[tokenAccountId];
+  if (!token) return null;
+  const {formatter} = token;
   const amount = formatter.amount(available.toFixed());
 
   const handleWithdraw = (e: React.SyntheticEvent) => {

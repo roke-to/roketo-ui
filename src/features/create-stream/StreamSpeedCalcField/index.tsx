@@ -66,7 +66,6 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
 
   const tokens = useStore($tokens);
   const token = tokens[tokenAccountId];
-  const {formatter} = token;
 
   const error = form.errors[field.name];
 
@@ -75,7 +74,7 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
   const [minutes, setMinutes] = useState(0);
   const [hours, setHours] = useState(0);
 
-  const depositInYocto = formatter.toYocto(deposit);
+  const depositInYocto = token?.formatter.toYocto(deposit) ?? '0';
   const durationInSeconds = getDurationInSeconds(months, days, hours, minutes);
   const tokensPerSec = getTokensPerSecondCount(depositInYocto, durationInSeconds);
   const prevSpeed = usePrev(tokensPerSec);

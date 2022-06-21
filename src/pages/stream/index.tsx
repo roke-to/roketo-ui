@@ -99,7 +99,9 @@ export function StreamPage() {
 function StreamProgress({stream}: {stream: RoketoStream}) {
   const tokens = useStore($tokens);
 
-  const {meta, formatter} = tokens[stream.token_account_id];
+  const token = tokens[stream.token_account_id];
+  if (!token) return null;
+  const {meta, formatter} = token;
   const {progress, percentages} = streamViewData(stream);
 
   const streamed = Number(formatter.toHumanReadableValue(progress.streamed, 3));
@@ -165,12 +167,13 @@ function StreamButtons({stream}: {stream: RoketoStream}) {
 function StreamSpeed({stream}: {stream: RoketoStream}) {
   const tokens = useStore($tokens);
 
+  const token = tokens[stream.token_account_id];
+  if (!token) return null;
+
   return (
     <div>
       <span className={styles.blockTitle}>Speed</span>
-      <div className={styles.speed}>
-        {getStreamingSpeed(Number(stream.tokens_per_sec), tokens[stream.token_account_id])}
-      </div>
+      <div className={styles.speed}>{getStreamingSpeed(Number(stream.tokens_per_sec), token)}</div>
     </div>
   );
 }
@@ -240,10 +243,10 @@ function StreamData({stream}: {stream: RoketoStream}) {
   const streamedToTotalPercentageRatio = getRoundedPercentageRatio(streamed, full).toNumber();
   const leftToTotalPercentageRatio = getRoundedPercentageRatio(left, full).toNumber();
   const available = getAvailableToWithdraw(stream).toNumber();
-
-  const {meta, formatter} = tokens[stream.token_account_id];
-
   const [showOtherInfo, setShowOtherInfo] = useState(false);
+  const token = tokens[stream.token_account_id];
+  if (!token) return null;
+  const {meta, formatter} = token;
 
   return (
     <div className={classNames(styles.tile, styles.infoTile)}>

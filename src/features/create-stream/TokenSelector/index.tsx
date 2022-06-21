@@ -75,6 +75,7 @@ export const TokenSelector = (props: TokenSelectorProps) => {
 
   const allAvailableTokens = Object.values(tokens);
   const activeToken = tokens[activeTokenAccountId];
+  if (!activeToken) return null;
 
   const handleChooseTokenOptions = (token: RichToken) => {
     setIsDropdownOpened(false);

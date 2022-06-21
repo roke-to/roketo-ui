@@ -29,10 +29,12 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
 
   const {progress, timeLeft, percentages} = streamViewData(stream);
 
+  const token = useToken(tokenId);
+  if (!token) return null;
   const {
     formatter,
     meta: {symbol},
-  } = useToken(tokenId);
+  } = token;
 
   const streamed = Number(formatter.toHumanReadableValue(progress.streamed, 3));
   const withdrawn = Number(formatter.toHumanReadableValue(progress.withdrawn, 3));

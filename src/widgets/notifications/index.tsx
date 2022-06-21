@@ -69,10 +69,12 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
     timeLeft,
   } = streamViewData(stream, WITHOUT_EXTRAPOLATION);
 
+  const token = useToken(stream.token_account_id);
+  if (!token) return null;
   const {
     meta: {symbol},
     formatter,
-  } = useToken(stream.token_account_id);
+  } = token;
 
   switch (type) {
     case 'StreamStarted':
