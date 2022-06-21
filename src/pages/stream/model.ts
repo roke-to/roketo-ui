@@ -1,17 +1,19 @@
-import {attach, combine, createEffect, createStore, sample} from 'effector';
+import {combine, createEffect, createStore, sample} from 'effector';
 import {createGate} from 'effector-react';
 
 import {$roketoWallet, lastCreatedStreamUpdated} from '~/entities/wallet';
 
+import {getStream} from '~/shared/api/methods';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
+import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 
 export const pageGate = createGate<string | null>({defaultState: null});
 export const $stream = createStore<RoketoStream | null>(null);
 export const $pageError = createStore<string | null>(null);
-const requestStreamFx = attach({
+const requestStreamFx = createProtectedEffect({
   source: $roketoWallet,
-  async effect(wallet, streamId: string | null) {
-    return streamId && wallet?.roketo.api.getStream({streamId});
+  async fn({contract}, streamId: string | null) {
+    return streamId && getStream({streamId, contract});
   },
 });
 export const $loading = combine($stream, $pageError, (stream, error) => !stream && !error);

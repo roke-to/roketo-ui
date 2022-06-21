@@ -5,7 +5,7 @@ import React, {useState} from 'react';
 
 import {$tokens} from '~/entities/wallet';
 
-import type {RichToken} from '~/shared/api/ft';
+import type {RichToken} from '~/shared/api/types';
 import {DropdownMenu} from '~/shared/kit/DropdownMenu';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 import {TokenImage} from '~/shared/kit/TokenImage';

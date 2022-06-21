@@ -69,7 +69,7 @@ class TokenProvider {
   }
 
   private async getAccountIdAndNear() {
-    const near = await createNearInstance();
+    const {near} = await createNearInstance();
     const walletConnection = new WalletConnection(near, env.ROKETO_CONTRACT_NAME);
     const accountId = walletConnection.getAccountId();
 

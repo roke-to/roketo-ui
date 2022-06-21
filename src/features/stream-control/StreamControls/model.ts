@@ -1,21 +1,25 @@
-import {attach} from 'effector';
-
 import {$roketoWallet} from '~/entities/wallet';
 
-const modifyStreamFx = attach({
+import {
+  pauseStream as pauseStreamFn,
+  startStream as startStreamFn,
+  stopStream as stopStreamFn,
+} from '~/shared/api/methods';
+import {createProtectedEffect} from '~/shared/lib/protectedEffect';
+
+const modifyStreamFx = createProtectedEffect({
   source: $roketoWallet,
-  async effect(
-    wallet,
+  async fn(
+    {contract},
     {command, streamId}: {command: 'start' | 'stop' | 'pause'; streamId: string},
   ) {
-    if (!wallet) return null;
     switch (command) {
       case 'start':
-        return wallet.roketo.api.startStream({streamId});
+        return startStreamFn({contract, streamId});
       case 'pause':
-        return wallet.roketo.api.pauseStream({streamId});
+        return pauseStreamFn({contract, streamId});
       case 'stop':
-        return wallet.roketo.api.stopStream({streamId});
+        return stopStreamFn({contract, streamId});
       default:
         return null;
     }

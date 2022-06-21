@@ -1,7 +1,7 @@
 import senderIcon from '@near-wallet-selector/sender/assets/sender-icon.png';
 import {useStore} from 'effector-react';
 
-import {$isSignedIn, $nearWallet} from '~/entities/wallet';
+import {$isSignedIn, loginFx, logoutFx} from '~/entities/wallet';
 
 import {testIds} from '~/shared/constants';
 
@@ -12,14 +12,13 @@ import styles from './index.module.scss';
 import nearIcon from './near-wallet-icon.png';
 
 export const Authorization = () => {
-  const nearWallet = useStore($nearWallet);
   const signedIn = useStore($isSignedIn);
 
   if (!signedIn) {
     return (
       <>
         <Button
-          onClick={nearWallet?.auth.login}
+          onClick={() => loginFx('near')}
           className={styles.root}
           testId={testIds.signInButton}
         >
@@ -28,7 +27,7 @@ export const Authorization = () => {
           <LogoutIcon />
         </Button>
         <Button
-          onClick={nearWallet?.auth.login}
+          onClick={() => loginFx('sender')}
           className={styles.root}
           testId={testIds.signInButton}
         >
@@ -43,7 +42,7 @@ export const Authorization = () => {
   return (
     <button
       type="button"
-      onClick={nearWallet?.auth.logout}
+      onClick={() => logoutFx()}
       className={styles.logoutButton}
       data-testid={testIds.signOutButton}
     >

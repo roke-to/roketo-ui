@@ -1,16 +1,16 @@
 import {Account} from 'near-api-js';
+import {SignAndSendTransactionOptions} from 'near-api-js/lib/account';
 
 import {TokenFormatter} from '~/features/legacy/ft-tokens/token-formatter';
 
 import {RoketoDao, RoketoTokenMeta} from '~/shared/api/roketo/interfaces/entities';
 
+import {TokenMetadata} from '../types';
 import {FTApi} from './ft-api';
-import {TokenMetadata} from './types';
 
 export type RichToken = {
   api: FTApi;
   roketoMeta: RoketoTokenMeta;
-  formatter: TokenFormatter;
   meta: TokenMetadata;
   balance: string;
 };
@@ -22,20 +22,19 @@ export type RichTokens = {
 type InitFRProps = {
   account: Account;
   tokens: RoketoDao['tokens'];
+  signAndSendTransaction: (params: SignAndSendTransactionOptions) => Promise<unknown>;
 };
 
-export async function initFT({account, tokens}: InitFRProps) {
+export async function initFT({account, tokens, signAndSendTransaction}: InitFRProps) {
   const richTokens: RichTokens = {};
 
   await Promise.all(
     Object.keys(tokens).map(async (tokenAccountId: string) => {
-      const api = new FTApi(account, tokenAccountId);
+      const api = new FTApi(account, tokenAccountId, signAndSendTransaction);
       const [meta, balance] = await Promise.all([api.getMetadata(), api.getBalance()]);
-      const formatter = new TokenFormatter(meta.decimals);
 
       richTokens[tokenAccountId] = {
         api,
-        formatter,
         roketoMeta: tokens[tokenAccountId],
         meta,
         balance,

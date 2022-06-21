@@ -17,6 +17,7 @@ import {useToken} from '~/shared/hooks/useToken';
 import {Button, ButtonType, DisplayMode} from '@ui/components/Button';
 import {Input} from '@ui/components/Input';
 
+import {addFundsFx} from './model';
 import styles from './styles.module.scss';
 
 export function useShouldShowAddFundsButton(stream: RoketoStream) {
@@ -72,13 +73,12 @@ export function AddFunds({stream, small}: AddFundsProps) {
             autoComplete="off"
             onSubmit={(e) => {
               e.preventDefault();
-
-              if (!hasValidAdditionalFunds) {
-                return;
-              }
-
-              const amount = toYocto(token.meta.decimals, deposit);
-              token.api.addFunds(amount, stream.id, window.location.href);
+              return addFundsFx({
+                streamId: stream.id,
+                hasValidAdditionalFunds,
+                tokenAccountId: stream.token_account_id,
+                deposit,
+              });
             }}
           >
             <h2 className={styles.modalHeader}>Amount to deposit</h2>

@@ -1,32 +1,12 @@
 import BigNumber from 'bignumber.js';
 import {Account, Contract, transactions, utils} from 'near-api-js';
+import type {SignAndSendTransactionOptions} from 'near-api-js/lib/account';
 
 import {env} from '~/shared/config';
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 
 import {RoketoCreateRequest} from '../roketo/interfaces/entities';
-import {TokenMetadata} from './types';
-
-type FTContract = Contract & {
-  ft_balance_of: (options: {account_id: string}) => Promise<string>;
-  storage_balance_of: (options: {
-    account_id: string;
-  }) => Promise<{total: string; available: string}>;
-  ft_metadata: () => Promise<TokenMetadata>;
-  near_deposit: (options: {}, gas: string, deposit: string) => Promise<never>;
-  storage_deposit: (options: {}, gas: string, deposit: string | null) => Promise<never>;
-  ft_transfer_call: ({
-    args,
-    gas,
-    callbackUrl,
-    amount,
-  }: {
-    args: any;
-    gas: string;
-    callbackUrl: string;
-    amount: number;
-  }) => Promise<never>;
-};
+import type {FTContract, TokenMetadata} from '../types';
 
 export class FTApi {
   contract: FTContract;
@@ -35,7 +15,13 @@ export class FTApi {
 
   account: Account;
 
-  constructor(account: Account, tokenAccountId: string) {
+  signAndSendTransaction: (params: SignAndSendTransactionOptions) => Promise<unknown>;
+
+  constructor(
+    account: Account,
+    tokenAccountId: string,
+    signAndSendTransaction: (params: SignAndSendTransactionOptions) => Promise<unknown>,
+  ) {
     this.tokenAccountId = tokenAccountId;
     this.account = account;
 
@@ -43,6 +29,8 @@ export class FTApi {
       viewMethods: ['ft_balance_of', 'ft_metadata', 'storage_balance_of'],
       changeMethods: ['ft_transfer_call', 'storage_deposit', 'near_deposit'],
     }) as FTContract;
+
+    this.signAndSendTransaction = signAndSendTransaction;
   }
 
   async getMetadata(): Promise<TokenMetadata> {
@@ -90,8 +78,7 @@ export class FTApi {
         transactions.functionCall('near_deposit', {}, '30000000000000', amountInYocto),
       );
     }
-    // @ts-expect-error signAndSendTransaction is protected
-    this.account.signAndSendTransaction({
+    this.signAndSendTransaction({
       receiverId: this.tokenAccountId,
       walletCallbackUrl: callbackUrl,
       actions,
@@ -162,8 +149,7 @@ export class FTApi {
       );
     }
 
-    // @ts-ignore
-    const res = this.account.signAndSendTransaction({
+    const res = this.signAndSendTransaction({
       receiverId: this.tokenAccountId,
       walletCallbackUrl: callbackUrl,
       actions,
