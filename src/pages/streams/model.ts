@@ -1,4 +1,3 @@
-import {attach} from 'effector';
 import {generatePath} from 'react-router-dom';
 
 import {colorDescriptions} from '~/features/create-stream/constants';
@@ -7,16 +6,15 @@ import type {FormValues} from '~/features/create-stream/constants';
 import {$roketoWallet} from '~/entities/wallet';
 
 import {toYocto} from '~/shared/api/ft/token-formatter';
+import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 import {ROUTES_MAP} from '~/shared/lib/routing';
 
 const redirectUrl = generatePath(ROUTES_MAP.streams.path);
 const returnPath = `${window.location.origin}/#${redirectUrl}`;
 
-export const handleCreateStreamFx = attach({
+export const handleCreateStreamFx = createProtectedEffect({
   source: $roketoWallet,
-  async effect(wallet, values: FormValues) {
-    if (!wallet) throw Error('no roketo wallet exists');
-    const {roketo, tokens} = wallet;
+  async fn({tokens, roketo}, values: FormValues) {
     const {receiver, delayed, comment, deposit, speed, token, isLocked, cliffDateTime, color} =
       values;
 
