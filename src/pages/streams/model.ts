@@ -6,6 +6,7 @@ import type {FormValues} from '~/features/create-stream/constants';
 
 import {$roketoWallet} from '~/entities/wallet';
 
+import {toYocto} from '~/shared/api/ft/token-formatter';
 import {ROUTES_MAP} from '~/shared/lib/routing';
 
 const redirectUrl = generatePath(ROUTES_MAP.streams.path);
@@ -19,10 +20,10 @@ export const handleCreateStreamFx = attach({
     const {receiver, delayed, comment, deposit, speed, token, isLocked, cliffDateTime, color} =
       values;
 
-    const {formatter, api, roketoMeta} = tokens[token];
+    const {api, roketoMeta, meta} = tokens[token];
 
     await roketo.api.createStream({
-      deposit: formatter.toYocto(deposit),
+      deposit: toYocto(meta.decimals, deposit),
       comment,
       receiverId: receiver,
       tokenAccountId: token,

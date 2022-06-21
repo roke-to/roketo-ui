@@ -1,6 +1,6 @@
 type EnvType = {
   ACCOUNT_SUFFIX: string;
-  NEAR_NETWORK_ID: string;
+  NEAR_NETWORK_ID: 'mainnet' | 'testnet';
   NEAR_NODE_URL: string;
   ROKETO_CONTRACT_NAME: string;
   WALLET_URL: string;

@@ -4,8 +4,7 @@ import {format, isPast} from 'date-fns';
 import React, {useState} from 'react';
 import {Link, useParams} from 'react-router-dom';
 
-import {getStreamingSpeed} from '~/features/create-stream/lib';
-
+import {tokensPerMeaningfulPeriod} from '~/shared/api/ft/token-formatter';
 import {PageError} from '~/shared/components/PageError';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 import {TokenImage} from '~/shared/kit/TokenImage';
@@ -28,6 +27,17 @@ import {StreamControls} from '../stream-control/StreamControls';
 import {WithdrawAllButton} from '../stream-control/WithdrawAllButton';
 import {BreadcrumbIcon} from './BreadcrumbIcon';
 import styles from './styles.module.scss';
+
+const getStreamingSpeed = (speedInSeconds: number | string, token: RichToken): string => {
+  if (Number(speedInSeconds) <= 0) {
+    return 'none';
+  }
+
+  const {meta} = token;
+  const {formattedValue, unit} = tokensPerMeaningfulPeriod(meta.decimals, speedInSeconds);
+
+  return `${formattedValue} ${meta.symbol} / ${unit}`;
+};
 
 function StreamProgress({stream}: {stream: LegacyRoketoStream}) {
   const formatter = useTokenFormatter(stream.ticker);

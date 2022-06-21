@@ -2,7 +2,7 @@ import cn from 'classnames';
 import RCTooltip from 'rc-tooltip';
 import React from 'react';
 
-import {TokenFormatter} from '~/shared/api/ft/token-formatter';
+import {TokenFormatter} from '~/features/legacy/ft-tokens/token-formatter';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
 import {ProgressBar} from '~/shared/ui/components/ProgressBar';
 import {ClockIcon} from '~/shared/ui/icons/Clock';

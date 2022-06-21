@@ -9,102 +9,100 @@ import {
   SECONDS_IN_YEAR,
 } from '~/shared/constants';
 
-export class TokenFormatter {
-  tokenDecimals: number;
-
-  MP: number;
-
-  constructor(tokenDecimals: number) {
-    this.tokenDecimals = tokenDecimals;
-    this.MP = 10 ** tokenDecimals;
+export function formatSmartly(value: number) {
+  if (value === 0) {
+    return '0';
   }
 
-  static formatSmartly(value: number) {
-    if (value === 0) {
-      return '0';
-    }
-
-    if (value < 0.001) {
-      return '<0.001';
-    }
-
-    return numbro(value).format({
-      mantissa: 3,
-      trimMantissa: true,
-      optionalMantissa: true,
-      average: true,
-    });
+  if (value < 0.001) {
+    return '<0.001';
   }
 
-  // for display purposes, converts from yocto values
-  amount(amount: number | string) {
-    const value = numbro(amount).divide(this.MP).value();
+  return numbro(value).format({
+    mantissa: 3,
+    trimMantissa: true,
+    optionalMantissa: true,
+    average: true,
+  });
+}
 
-    const formatted = numbro(value).format({
-      mantissa: 3,
-      trimMantissa: true,
-      optionalMantissa: true,
-      average: true,
-    });
+/** for display purposes, converts from yocto values */
+export function formatAmount(tokenDecimals: number, amount: number | string) {
+  const MP = 10 ** tokenDecimals;
+  const value = numbro(amount).divide(MP).value();
+  const formatted = numbro(value).format({
+    mantissa: 3,
+    trimMantissa: true,
+    optionalMantissa: true,
+    average: true,
+  });
 
-    if (value === 0) {
-      return '0';
-    }
-
-    if (amount !== 0 && value < 0.001) {
-      return '<0.001';
-    }
-
-    return formatted;
+  if (value === 0) {
+    return '0';
   }
 
-  toYocto(value: number | string) {
-    return numbro(value).multiply(this.MP).format({mantissa: 0});
+  if (amount !== 0 && value < 0.001) {
+    return '<0.001';
   }
 
-  toHumanReadableValue(amount: number | string, decimals: number = 0): string {
-    return numbro(amount).divide(this.MP).format({
-      mantissa: decimals,
-      trimMantissa: true,
-      optionalMantissa: true,
-    });
-  }
+  return formatted;
+}
 
-  // tries to find the best interval for display
-  // to avoid 0.0000000000000000000000000009839248 tokens per sec
-  tokensPerMeaningfulPeriod(tokensPerSec: number | string) {
-    const multipliers = [
-      1,
-      SECONDS_IN_MINUTE,
-      SECONDS_IN_HOUR,
-      SECONDS_IN_DAY,
-      SECONDS_IN_WEEK,
-      SECONDS_IN_MONTH,
-      SECONDS_IN_YEAR,
-    ];
-    const unit = {
-      1: 'second',
-      [SECONDS_IN_MINUTE]: 'minute',
-      [SECONDS_IN_HOUR]: 'hour',
-      [SECONDS_IN_DAY]: 'day',
-      [SECONDS_IN_WEEK]: 'week',
-      [SECONDS_IN_MONTH]: 'month',
-      [SECONDS_IN_YEAR]: 'year',
-    };
+export function toYocto(tokenDecimals: number, value: number | string) {
+  const MP = 10 ** tokenDecimals;
+  return numbro(value).multiply(MP).format({mantissa: 0});
+}
 
-    const firstGoodLookingMultiplier =
-      multipliers.find((multiplier) => {
-        const value = numbro(tokensPerSec).multiply(multiplier).divide(this.MP).value();
+export function toHumanReadableValue(
+  tokenDecimals: number,
+  amount: number | string,
+  decimals: number = 0,
+) {
+  const MP = 10 ** tokenDecimals;
+  return numbro(amount).divide(MP).format({
+    mantissa: decimals,
+    trimMantissa: true,
+    optionalMantissa: true,
+  });
+}
 
-        const isOk = value > 0.1;
-        return isOk;
-      }) || SECONDS_IN_YEAR;
+/**
+ * tries to find the best interval for display
+ * to avoid 0.0000000000000000000000000009839248 tokens per sec
+ */
+export function tokensPerMeaningfulPeriod(tokenDecimals: number, tokensPerSec: number | string) {
+  const MP = 10 ** tokenDecimals;
+  const multipliers = [
+    1,
+    SECONDS_IN_MINUTE,
+    SECONDS_IN_HOUR,
+    SECONDS_IN_DAY,
+    SECONDS_IN_WEEK,
+    SECONDS_IN_MONTH,
+    SECONDS_IN_YEAR,
+  ];
+  const unit = {
+    1: 'second',
+    [SECONDS_IN_MINUTE]: 'minute',
+    [SECONDS_IN_HOUR]: 'hour',
+    [SECONDS_IN_DAY]: 'day',
+    [SECONDS_IN_WEEK]: 'week',
+    [SECONDS_IN_MONTH]: 'month',
+    [SECONDS_IN_YEAR]: 'year',
+  };
 
-    const value = numbro(tokensPerSec).multiply(firstGoodLookingMultiplier).divide(this.MP).value();
+  const firstGoodLookingMultiplier =
+    multipliers.find((multiplier) => {
+      const value = numbro(tokensPerSec).multiply(multiplier).divide(MP).value();
 
-    return {
-      formattedValue: TokenFormatter.formatSmartly(value),
-      unit: unit[firstGoodLookingMultiplier],
-    };
-  }
+      const isOk = value > 0.1;
+      return isOk;
+    }) || SECONDS_IN_YEAR;
+
+  const value = numbro(tokensPerSec).multiply(firstGoodLookingMultiplier).divide(MP).value();
+
+  return {
+    formattedValue: formatSmartly(value),
+    unit: unit[firstGoodLookingMultiplier],
+  };
 }

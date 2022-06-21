@@ -3,6 +3,7 @@ import React from 'react';
 
 import {$nearWallet, $priceOracle} from '~/entities/wallet';
 
+import {formatAmount} from '~/shared/api/ft/token-formatter';
 import {useToken} from '~/shared/hooks/useToken';
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 
@@ -14,7 +15,7 @@ export function useBalanceForToken(tokenId: string) {
     ? nearWallet?.auth.balance?.available ?? '0'
     : token?.balance ?? '0';
 
-  return formatter.amount(actualCryptoBalance);
+  return formatAmount(token?.meta.decimals ?? 0, actualCryptoBalance);
 }
 
 export enum DisplayMode {

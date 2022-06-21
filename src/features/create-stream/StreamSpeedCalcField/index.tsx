@@ -5,6 +5,7 @@ import React, {ChangeEvent, Dispatch, SetStateAction, useEffect, useState} from 
 
 import {$tokens} from '~/entities/wallet';
 
+import {toYocto} from '~/shared/api/ft/token-formatter';
 import {testIds} from '~/shared/constants';
 import {usePrev} from '~/shared/hooks/usePrev';
 import {isLikeNumber} from '~/shared/lib/validation';
@@ -74,7 +75,7 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
   const [minutes, setMinutes] = useState(0);
   const [hours, setHours] = useState(0);
 
-  const depositInYocto = token?.formatter.toYocto(deposit) ?? '0';
+  const depositInYocto = token ? toYocto(token.meta.decimals, deposit) : '0';
   const durationInSeconds = getDurationInSeconds(months, days, hours, minutes);
   const tokensPerSec = getTokensPerSecondCount(depositInYocto, durationInSeconds);
   const prevSpeed = usePrev(tokensPerSec);

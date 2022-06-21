@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 
 import {streamViewData} from '~/features/roketo-resource';
 
+import {toHumanReadableValue} from '~/shared/api/ft/token-formatter';
 import {RichTokens} from '~/shared/api/ft';
 import {PriceOracle} from '~/shared/api/price-oracle';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
@@ -17,10 +18,10 @@ export const countTotalUSDWithdrawal = (
 ) => {
   const availableForWithdrawal = streams.reduce((withdrawalSum, inputStream) => {
     const tokenAccountId = inputStream.token_account_id;
-    const {formatter} = tokens[tokenAccountId];
+    const {meta} = tokens[tokenAccountId];
 
     const withdrawal = getAvailableToWithdraw(inputStream).toFixed();
-    const amountForDisplay = formatter.toHumanReadableValue(withdrawal, MANTISSA);
+    const amountForDisplay = toHumanReadableValue(meta.decimals, withdrawal, MANTISSA);
 
     const amountInUSD = priceOracle.getPriceInUsd(tokenAccountId, amountForDisplay);
 
@@ -39,17 +40,25 @@ export const collectTotalFinancialAmountInfo = (
 
   const totalFinancialInfo = streams.reduce((financialInfoAccumulator, stream) => {
     const tokenAccountId = stream.token_account_id;
-    const {formatter} = tokens[tokenAccountId];
+    const {meta} = tokens[tokenAccountId];
 
     const {progress} = streamViewData(stream);
 
-    const streamedAmountForDisplay = formatter.toHumanReadableValue(progress.streamed, MANTISSA);
+    const streamedAmountForDisplay = toHumanReadableValue(
+      meta.decimals,
+      progress.streamed,
+      MANTISSA,
+    );
     const streamedUSD = priceOracle.getPriceInUsd(tokenAccountId, streamedAmountForDisplay);
 
-    const fullAmountForDisplay = formatter.toHumanReadableValue(progress.full, MANTISSA);
+    const fullAmountForDisplay = toHumanReadableValue(meta.decimals, progress.full, MANTISSA);
     const fullUSD = priceOracle.getPriceInUsd(tokenAccountId, fullAmountForDisplay);
 
-    const withdrawnAmountForDisplay = formatter.toHumanReadableValue(progress.withdrawn, MANTISSA);
+    const withdrawnAmountForDisplay = toHumanReadableValue(
+      meta.decimals,
+      progress.withdrawn,
+      MANTISSA,
+    );
     const withdrawnUSD = priceOracle.getPriceInUsd(tokenAccountId, withdrawnAmountForDisplay);
 
     return {
