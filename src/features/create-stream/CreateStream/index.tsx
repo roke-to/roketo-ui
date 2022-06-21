@@ -28,6 +28,7 @@ import styles from './styles.module.scss';
 type CreateStreamProps = {
   onFormSubmit: (values: FormValues) => Promise<void>;
   onFormCancel: () => void;
+  submitting: boolean;
 };
 
 const DELAYED_DESCRIPTION = (
@@ -54,7 +55,7 @@ const LOCK_DESCRIPTION = (
   </div>
 );
 
-export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) => {
+export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStreamProps) => {
   const tokens = useStore($tokens);
   const [submitError, setError] = useState<Error | null>(null);
 
@@ -197,6 +198,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   displayMode={ButtonDisplayMode.simple}
                   onClick={onFormCancel}
                   testId={testIds.createStreamCancelButton}
+                  disabled={submitting}
                 >
                   Cancel
                 </Button>
@@ -205,8 +207,9 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   type={ButtonType.submit}
                   displayMode={ButtonDisplayMode.action}
                   testId={testIds.createStreamSubmitButton}
+                  disabled={submitting}
                 >
-                  Create
+                  {submitting ? 'Creating...' : 'Create'}
                 </Button>
               </div>
             </form>

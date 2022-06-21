@@ -322,9 +322,9 @@ sample({
   clock: [loginFx.doneData, logoutFx.doneData],
   target: initWallets,
 });
-$nearWallet.reset([loginFx.done, logoutFx.done]);
-$roketoWallet.reset([loginFx.done, logoutFx.done]);
-$user.reset([loginFx.done, logoutFx.done]);
-$tokens.reset([loginFx.done, logoutFx.done]);
-$priceOracle.reset([loginFx.done, logoutFx.done]);
-$accountStreams.reset([loginFx.done, logoutFx.done]);
+$nearWallet.reset([logoutFx.done]);
+$roketoWallet.reset([logoutFx.done]);
+$user.reset([logoutFx.done]);
+$tokens.reset([logoutFx.done]);
+$priceOracle.reset([logoutFx.done]);
+$accountStreams.reset([logoutFx.done]);

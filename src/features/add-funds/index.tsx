@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import {format} from 'date-fns';
+import {useStore} from 'effector-react';
 import React, {useState} from 'react';
 import Modal from 'react-modal';
 
@@ -49,6 +50,7 @@ export function AddFunds({stream, small}: AddFundsProps) {
   const shouldShowAddFundsButton = !isStreamEnded && hasPassedCliff(stream);
 
   const token = useToken(stream.token_account_id);
+  const submitting = useStore(addFundsFx.pending);
 
   let dueDate: string | null = null;
   if (hasValidAdditionalFunds && streamEndTimestamp) {
@@ -71,14 +73,15 @@ export function AddFunds({stream, small}: AddFundsProps) {
         >
           <form
             autoComplete="off"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              return addFundsFx({
+              await addFundsFx({
                 streamId: stream.id,
                 hasValidAdditionalFunds,
                 tokenAccountId: stream.token_account_id,
                 deposit,
               });
+              addFundsModal.turnOff();
             }}
           >
             <h2 className={styles.modalHeader}>Amount to deposit</h2>
@@ -111,15 +114,16 @@ export function AddFunds({stream, small}: AddFundsProps) {
                 type="button"
                 onClick={addFundsModal.turnOff}
                 className={classNames(styles.modalButton, styles.modalSecondary)}
+                disabled={submitting}
               >
                 Cancel
               </button>
               <Button
                 type={ButtonType.submit}
                 className={styles.modalButton}
-                disabled={!hasValidAdditionalFunds || isStreamEnded}
+                disabled={!hasValidAdditionalFunds || isStreamEnded || submitting}
               >
-                Add funds
+                {submitting ? 'Adding...' : 'Add funds'}
               </Button>
             </div>
           </form>

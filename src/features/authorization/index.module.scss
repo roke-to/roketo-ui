@@ -1,8 +1,16 @@
+@import 'src/shared/ui/palette';
+
 .root {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+}
+
+.root[disabled] {
+  background-color: $light-grey;
+  border-color: $light-grey;
+  cursor: not-allowed;
 }
 
 .root:not(:last-of-type) {
@@ -20,10 +28,7 @@
   font-size: 16px;
   line-height: 24px;
 
-  white-space: nowrap;
-  overflow: hidden;
   display: inline-block;
-  text-overflow: ellipsis;
 }
 
 /* Phone, portrait */

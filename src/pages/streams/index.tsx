@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import {useStoreMap} from 'effector-react';
+import {useStore, useStoreMap} from 'effector-react';
 import {useCallback, useState} from 'react';
 
 import {FinancialStatus} from '~/widgets/financialStatus';
@@ -35,6 +35,8 @@ export const StreamsPage = () => {
     [setIsModalOpened, isModalOpened],
   );
 
+  const submitting = useStore(handleCreateStreamFx.pending);
+
   return (
     <div className={styles.root}>
       <Layout>
@@ -48,7 +50,13 @@ export const StreamsPage = () => {
               Create a stream
             </Button>
             <Modal isOpen={isModalOpened} onCloseModal={toggleModal}>
-              <CreateStream onFormCancel={toggleModal} onFormSubmit={handleCreateStreamFx} />
+              <CreateStream
+                onFormCancel={toggleModal}
+                onFormSubmit={(values) =>
+                  handleCreateStreamFx(values).then(() => setIsModalOpened(false))
+                }
+                submitting={submitting}
+              />
             </Modal>
           </div>
         </section>
