@@ -26,11 +26,7 @@ export const Authorization = () => {
           <span className={styles.name}>Sign in with NEAR Wallet</span>
           <LogoutIcon />
         </Button>
-        <Button
-          onClick={() => loginFx('sender')}
-          className={styles.root}
-          testId={testIds.signInButton}
-        >
+        <Button onClick={() => loginFx('sender')} className={styles.root}>
           <img src={senderIcon} alt="Sender Wallet" className={styles.logo} />
           <span className={styles.name}>Sign in with Sender Wallet</span>
           <LogoutIcon />
