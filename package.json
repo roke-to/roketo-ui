@@ -21,6 +21,9 @@
   },
   "dependencies": {
     "@effector/reflect": "^7.1.1",
+    "@near-wallet-selector/core": "^4.0.0",
+    "@near-wallet-selector/sender": "^4.0.0",
+    "@near-wallet-selector/wallet-utils": "^4.1.0",
     "@roketo/api-client": "roke-to/roketo-api-client#v0.0.31",
     "bignumber.js": "^9.0.2",
     "classnames": "^2.3.1",
@@ -30,7 +33,7 @@
     "effector-react": "^22.0.6",
     "error-polyfill": "^0.1.3",
     "formik": "^2.2.9",
-    "near-api-js": "^0.44.2",
+    "near-api-js": "^0.45.1",
     "numbro": "^2.3.5",
     "patronum": "^1.8.2",
     "rc-tooltip": "^5.1.1",
