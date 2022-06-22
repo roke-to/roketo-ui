@@ -4,7 +4,8 @@ import {format, isPast} from 'date-fns';
 import React, {useState} from 'react';
 import {Link, useParams} from 'react-router-dom';
 
-import {tokensPerMeaningfulPeriod} from '~/shared/api/ft/token-formatter';
+import {tokensPerMeaningfulPeriod} from '~/shared/api/token-formatter';
+import {RichToken} from '~/shared/api/types';
 import {PageError} from '~/shared/components/PageError';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 import {TokenImage} from '~/shared/kit/TokenImage';
@@ -14,7 +15,6 @@ import {Layout} from '@ui/components/Layout';
 import {ProgressBar} from '@ui/components/ProgressBar';
 import {LinkIcon} from '@ui/icons/Link';
 
-import {RichToken} from '../../../shared/api/ft';
 import {TICK_TO_S} from '../api/roketo/config';
 import {STREAM_STATUS} from '../api/roketo/constants';
 import type {LegacyRoketoStream} from '../api/roketo/interfaces/entities';

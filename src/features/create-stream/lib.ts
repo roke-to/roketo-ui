@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import {addMonths, differenceInDays} from 'date-fns';
 
-import {tokensPerMeaningfulPeriod} from '~/shared/api/ft/token-formatter';
+import {tokensPerMeaningfulPeriod} from '~/shared/api/token-formatter';
 import type {RichToken} from '~/shared/api/types';
 import {SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE} from '~/shared/constants';
 

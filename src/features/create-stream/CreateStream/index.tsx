@@ -5,7 +5,7 @@ import React, {useState} from 'react';
 
 import {$tokens} from '~/entities/wallet';
 
-import {formatAmount} from '~/shared/api/ft/token-formatter';
+import {formatAmount} from '~/shared/api/token-formatter';
 import {Balance, DisplayMode} from '~/shared/components/Balance';
 import {FormikCheckbox} from '~/shared/components/FormikCheckbox';
 import {FormikInput} from '~/shared/components/FormikInput';

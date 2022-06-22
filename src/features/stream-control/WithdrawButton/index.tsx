@@ -6,9 +6,9 @@ import {streamViewData} from '~/features/roketo-resource';
 
 import {$tokens} from '~/entities/wallet';
 
-import {formatAmount} from '~/shared/api/ft/token-formatter';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {getAvailableToWithdraw} from '~/shared/api/roketo/lib';
+import {formatAmount} from '~/shared/api/token-formatter';
 import {testIds} from '~/shared/constants';
 import {Tooltip} from '~/shared/kit/Tooltip';
 

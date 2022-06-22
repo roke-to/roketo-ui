@@ -2,10 +2,10 @@ import BigNumber from 'bignumber.js';
 
 import {streamViewData} from '~/features/roketo-resource';
 
-import {toHumanReadableValue} from '~/shared/api/ft/token-formatter';
 import type {PriceOracle} from '~/shared/api/price-oracle';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {getAvailableToWithdraw} from '~/shared/api/roketo/lib';
+import {toHumanReadableValue} from '~/shared/api/token-formatter';
 import type {RichToken} from '~/shared/api/types';
 
 const INITIAL_VALUE = new BigNumber(0);

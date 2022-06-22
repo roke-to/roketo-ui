@@ -5,7 +5,7 @@ import React, {ChangeEvent, Dispatch, SetStateAction, useEffect, useState} from 
 
 import {$tokens} from '~/entities/wallet';
 
-import {toYocto} from '~/shared/api/ft/token-formatter';
+import {toYocto} from '~/shared/api/token-formatter';
 import {testIds} from '~/shared/constants';
 import {usePrev} from '~/shared/hooks/usePrev';
 import {isLikeNumber} from '~/shared/lib/validation';

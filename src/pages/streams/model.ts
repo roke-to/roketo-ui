@@ -5,8 +5,8 @@ import type {FormValues} from '~/features/create-stream/constants';
 
 import {$roketoWallet} from '~/entities/wallet';
 
-import {toYocto} from '~/shared/api/ft/token-formatter';
 import {createStream} from '~/shared/api/methods';
+import {toYocto} from '~/shared/api/token-formatter';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 import {ROUTES_MAP} from '~/shared/lib/routing';
 

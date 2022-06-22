@@ -7,9 +7,9 @@ import Modal from 'react-modal';
 
 import {streamViewData} from '~/features/roketo-resource';
 
-import {toYocto} from '~/shared/api/ft/token-formatter';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {hasPassedCliff, isLocked} from '~/shared/api/roketo/lib';
+import {toYocto} from '~/shared/api/token-formatter';
 import {Balance, useBalanceForToken} from '~/shared/components/Balance';
 import {useBool} from '~/shared/hooks/useBool';
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';

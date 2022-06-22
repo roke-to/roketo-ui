@@ -3,9 +3,9 @@ import {createEvent, createStore, sample} from 'effector';
 
 import {$accountStreams, $roketoWallet, $tokens} from '~/entities/wallet';
 
-import {formatAmount} from '~/shared/api/ft/token-formatter';
 import {withdrawStreams} from '~/shared/api/methods';
 import {getAvailableToWithdraw, hasPassedCliff, isActiveStream} from '~/shared/api/roketo/lib';
+import {formatAmount} from '~/shared/api/token-formatter';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 
 export const triggerWithdrawAll = createEvent();

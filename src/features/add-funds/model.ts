@@ -1,7 +1,7 @@
 import {$roketoWallet} from '~/entities/wallet';
 
-import {toYocto} from '~/shared/api/ft/token-formatter';
 import {addFunds} from '~/shared/api/methods';
+import {toYocto} from '~/shared/api/token-formatter';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 
 export const addFundsFx = createProtectedEffect({
