@@ -5,6 +5,7 @@ import React, {useState} from 'react';
 
 import {$tokens} from '~/entities/wallet';
 
+import {formatAmount} from '~/shared/api/ft/token-formatter';
 import {Balance, DisplayMode} from '~/shared/components/Balance';
 import {FormikCheckbox} from '~/shared/components/FormikCheckbox';
 import {FormikInput} from '~/shared/components/FormikInput';
@@ -75,7 +76,8 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
         {({values, handleSubmit, setFieldValue, setFieldTouched, validateField}) => {
           const activeTokenAccountId = values.token;
           const token = tokens[activeTokenAccountId];
-          const {meta: tokenMeta, formatter, roketoMeta} = token;
+          if (!token) return null;
+          const {meta: tokenMeta, roketoMeta} = token;
 
           const onChoose = async (fieldName: string, value: any) => {
             await setFieldValue(fieldName, value, false);
@@ -179,7 +181,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
               {tokenMeta && (
                 <div className={styles.feeDisclaimer}>
                   {`You will be charged
-                    ${formatter.amount(roketoMeta.commission_on_create)}
+                    ${formatAmount(tokenMeta.decimals, roketoMeta.commission_on_create)}
                     ${tokenMeta.symbol} fee for the stream`}
                 </div>
               )}

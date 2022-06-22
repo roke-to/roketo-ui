@@ -4,7 +4,11 @@ import React from 'react';
 
 import {streamViewData} from '~/features/roketo-resource';
 
-import {TokenFormatter} from '~/shared/api/ft/token-formatter';
+import {
+  formatSmartly,
+  toHumanReadableValue,
+  tokensPerMeaningfulPeriod,
+} from '~/shared/api/ft/token-formatter';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {testIds} from '~/shared/constants';
 import {useToken} from '~/shared/hooks/useToken';
@@ -29,25 +33,28 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
 
   const {progress, timeLeft, percentages} = streamViewData(stream);
 
+  const token = useToken(tokenId);
+  if (!token) return null;
   const {
-    formatter,
-    meta: {symbol},
-  } = useToken(tokenId);
+    meta: {symbol, decimals},
+  } = token;
 
-  const streamed = Number(formatter.toHumanReadableValue(progress.streamed, 3));
-  const withdrawn = Number(formatter.toHumanReadableValue(progress.withdrawn, 3));
-  const total = Number(formatter.toHumanReadableValue(progress.full, 3));
+  const streamed = Number(toHumanReadableValue(decimals, progress.streamed, 3));
+  const withdrawn = Number(toHumanReadableValue(decimals, progress.withdrawn, 3));
+  const total = Number(toHumanReadableValue(decimals, progress.full, 3));
 
-  const streamedText = TokenFormatter.formatSmartly(streamed);
-  const withdrawnText = TokenFormatter.formatSmartly(withdrawn);
+  const streamedText = formatSmartly(streamed);
+  const withdrawnText = formatSmartly(withdrawn);
 
   const streamedPercentage = getRoundedPercentageRatio(progress.streamed, progress.full, 1);
   const withdrawnPercentage = getRoundedPercentageRatio(progress.withdrawn, progress.streamed, 1);
 
   const progressText = `${streamedText} of ${total}`;
 
-  const {formattedValue: speedFormattedValue, unit: speedUnit} =
-    formatter.tokensPerMeaningfulPeriod(tokensPerSec);
+  const {formattedValue: speedFormattedValue, unit: speedUnit} = tokensPerMeaningfulPeriod(
+    decimals,
+    tokensPerSec,
+  );
 
   return (
     <RCTooltip

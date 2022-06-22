@@ -6,6 +6,7 @@ import Modal from 'react-modal';
 
 import {streamViewData} from '~/features/roketo-resource';
 
+import {toYocto} from '~/shared/api/ft/token-formatter';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {hasPassedCliff, isLocked} from '~/shared/api/roketo/lib';
 import {Balance, useBalanceForToken} from '~/shared/components/Balance';
@@ -50,7 +51,7 @@ export function AddFunds({stream, small}: AddFundsProps) {
 
   let dueDate: string | null = null;
   if (hasValidAdditionalFunds && streamEndTimestamp) {
-    const resultTime = new BigNumber(token.formatter.toYocto(deposit))
+    const resultTime = new BigNumber(toYocto(token.meta.decimals, deposit))
       .dividedBy(stream.tokens_per_sec)
       .multipliedBy(1000)
       .plus(streamEndTimestamp)
@@ -76,7 +77,7 @@ export function AddFunds({stream, small}: AddFundsProps) {
                 return;
               }
 
-              const amount = token.formatter.toYocto(deposit);
+              const amount = toYocto(token.meta.decimals, deposit);
               token.api.addFunds(amount, stream.id, window.location.href);
             }}
           >

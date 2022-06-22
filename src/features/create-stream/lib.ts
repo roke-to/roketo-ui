@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import {addMonths, differenceInDays} from 'date-fns';
 
+import {tokensPerMeaningfulPeriod} from '~/shared/api/ft/token-formatter';
 import type {RichToken} from '~/shared/api/ft';
 import {SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE} from '~/shared/constants';
 
@@ -29,8 +30,8 @@ export const getStreamingSpeed = (speedInSeconds: number | string, token: RichTo
     return 'none';
   }
 
-  const {formatter, meta} = token;
-  const {formattedValue, unit} = formatter.tokensPerMeaningfulPeriod(speedInSeconds);
+  const {meta} = token;
+  const {formattedValue, unit} = tokensPerMeaningfulPeriod(meta.decimals, speedInSeconds);
 
   return `${formattedValue} ${meta.symbol} / ${unit}`;
 };

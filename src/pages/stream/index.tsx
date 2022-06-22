@@ -13,7 +13,7 @@ import {WithdrawButton} from '~/features/stream-control/WithdrawButton';
 
 import {$tokens} from '~/entities/wallet';
 
-import {TokenFormatter} from '~/shared/api/ft/token-formatter';
+import {formatAmount, formatSmartly, toHumanReadableValue} from '~/shared/api/ft/token-formatter';
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {getAvailableToWithdraw, hasPassedCliff, isDead, isIdling} from '~/shared/api/roketo/lib';
@@ -99,19 +99,22 @@ export function StreamPage() {
 function StreamProgress({stream}: {stream: RoketoStream}) {
   const tokens = useStore($tokens);
 
-  const {meta, formatter} = tokens[stream.token_account_id];
+  const token = tokens[stream.token_account_id];
+  if (!token) return null;
+  const {meta} = token;
   const {progress, percentages} = streamViewData(stream);
 
-  const streamed = Number(formatter.toHumanReadableValue(progress.streamed, 3));
-  const withdrawn = Number(formatter.toHumanReadableValue(progress.withdrawn, 3));
-  const streamedText = TokenFormatter.formatSmartly(streamed);
-  const withdrawnText = TokenFormatter.formatSmartly(withdrawn);
+  const streamed = Number(toHumanReadableValue(meta.decimals, progress.streamed, 3));
+  const withdrawn = Number(toHumanReadableValue(meta.decimals, progress.withdrawn, 3));
+  const streamedText = formatSmartly(streamed);
+  const withdrawnText = formatSmartly(withdrawn);
   const streamedPercentage = getRoundedPercentageRatio(progress.streamed, progress.full, 1);
   const withdrawnPercentage = getRoundedPercentageRatio(progress.withdrawn, progress.streamed, 1);
 
-  const progressText = `${meta.symbol} ${formatter.amount(progress.streamed)} of ${formatter.amount(
-    progress.full,
-  )}`;
+  const progressText = `${meta.symbol} ${formatAmount(
+    meta.decimals,
+    progress.streamed,
+  )} of ${formatAmount(meta.decimals, progress.full)}`;
 
   return (
     <div>
@@ -165,12 +168,13 @@ function StreamButtons({stream}: {stream: RoketoStream}) {
 function StreamSpeed({stream}: {stream: RoketoStream}) {
   const tokens = useStore($tokens);
 
+  const token = tokens[stream.token_account_id];
+  if (!token) return null;
+
   return (
     <div>
       <span className={styles.blockTitle}>Speed</span>
-      <div className={styles.speed}>
-        {getStreamingSpeed(Number(stream.tokens_per_sec), tokens[stream.token_account_id])}
-      </div>
+      <div className={styles.speed}>{getStreamingSpeed(Number(stream.tokens_per_sec), token)}</div>
     </div>
   );
 }
@@ -240,10 +244,10 @@ function StreamData({stream}: {stream: RoketoStream}) {
   const streamedToTotalPercentageRatio = getRoundedPercentageRatio(streamed, full).toNumber();
   const leftToTotalPercentageRatio = getRoundedPercentageRatio(left, full).toNumber();
   const available = getAvailableToWithdraw(stream).toNumber();
-
-  const {meta, formatter} = tokens[stream.token_account_id];
-
   const [showOtherInfo, setShowOtherInfo] = useState(false);
+  const token = tokens[stream.token_account_id];
+  if (!token) return null;
+  const {meta} = token;
 
   return (
     <div className={classNames(styles.tile, styles.infoTile)}>
@@ -260,7 +264,7 @@ function StreamData({stream}: {stream: RoketoStream}) {
       </InfoRow>
       <InfoRow title="Amount">
         <span className={styles.font14}>
-          {formatter.amount(full)}&nbsp;
+          {formatAmount(meta.decimals, full)}&nbsp;
           <span className={styles.font12}>{meta.symbol}</span>
         </span>
       </InfoRow>
@@ -310,7 +314,7 @@ function StreamData({stream}: {stream: RoketoStream}) {
           </InfoRow>
           <InfoRow title="Tokens Transferred">
             <span className={styles.font14}>
-              {formatter.amount(streamed)}&nbsp;
+              {formatAmount(meta.decimals, streamed)}&nbsp;
               <span className={styles.font12}>
                 {meta.symbol}{' '}
                 <span className={styles.grey}>({streamedToTotalPercentageRatio}%)</span>
@@ -326,7 +330,7 @@ function StreamData({stream}: {stream: RoketoStream}) {
           )}
           <InfoRow title="Tokens Left">
             <span className={styles.font14}>
-              {formatter.amount(left)}&nbsp;
+              {formatAmount(meta.decimals, left)}&nbsp;
               <span className={styles.font12}>
                 {meta.symbol} <span className={styles.grey}>({leftToTotalPercentageRatio}%)</span>
               </span>
@@ -334,7 +338,7 @@ function StreamData({stream}: {stream: RoketoStream}) {
           </InfoRow>
           <InfoRow title="Tokens Available">
             <span className={styles.font14}>
-              {hasPassedCliff(stream) ? formatter.amount(available) : '0'}&nbsp;
+              {hasPassedCliff(stream) ? formatAmount(meta.decimals, available) : '0'}&nbsp;
               <span className={styles.font12}>{meta.symbol}</span>
             </span>
           </InfoRow>

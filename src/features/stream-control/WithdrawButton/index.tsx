@@ -6,6 +6,7 @@ import {streamViewData} from '~/features/roketo-resource';
 
 import {$roketoWallet, $tokens} from '~/entities/wallet';
 
+import {formatAmount} from '~/shared/api/ft/token-formatter';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {getAvailableToWithdraw} from '~/shared/api/roketo/lib';
 import {testIds} from '~/shared/constants';
@@ -28,8 +29,10 @@ export function WithdrawButton({stream, small = false, ...rest}: WithdrawButtonP
     percentages: {cliff, streamed},
   } = streamViewData(stream);
   const tokenAccountId = stream.token_account_id;
-  const {formatter} = tokens[tokenAccountId];
-  const amount = formatter.amount(available.toFixed());
+  const token = tokens[tokenAccountId];
+  if (!token) return null;
+  const {meta} = token;
+  const amount = formatAmount(meta.decimals, available.toFixed());
 
   const handleWithdraw = (e: React.SyntheticEvent) => {
     e.preventDefault();

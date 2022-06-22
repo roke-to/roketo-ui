@@ -3,6 +3,7 @@ import {attach, createEvent, createStore, sample} from 'effector';
 
 import {$accountStreams, $roketoWallet, $tokens} from '~/entities/wallet';
 
+import {formatAmount} from '~/shared/api/ft/token-formatter';
 import {getAvailableToWithdraw, hasPassedCliff, isActiveStream} from '~/shared/api/roketo/lib';
 
 export const triggerWithdrawAll = createEvent();
@@ -78,11 +79,11 @@ sample({
     }
     return {
       tokenData: Object.values(tokensData).map((value) => {
-        const token = tokens[value.tokenAccountId];
+        const {meta} = tokens[value.tokenAccountId];
         return {
           tokenAccountId: value.tokenAccountId,
-          amount: token.formatter.amount(value.available.toFixed()),
-          symbol: token.meta.symbol,
+          amount: formatAmount(meta.decimals, value.available.toFixed()),
+          symbol: meta.symbol,
         };
       }),
       streamIds,

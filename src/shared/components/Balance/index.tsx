@@ -3,18 +3,19 @@ import React from 'react';
 
 import {$nearWallet, $priceOracle} from '~/entities/wallet';
 
+import {formatAmount} from '~/shared/api/ft/token-formatter';
 import {useToken} from '~/shared/hooks/useToken';
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 
 export function useBalanceForToken(tokenId: string) {
   const nearWallet = useStore($nearWallet);
-  const {balance, formatter} = useToken(tokenId);
+  const token = useToken(tokenId);
 
   const actualCryptoBalance = isWNearTokenId(tokenId)
     ? nearWallet?.auth.balance?.available ?? '0'
-    : balance;
+    : token?.balance ?? '0';
 
-  return formatter.amount(actualCryptoBalance);
+  return formatAmount(token?.meta.decimals ?? 0, actualCryptoBalance);
 }
 
 export enum DisplayMode {
@@ -33,7 +34,7 @@ type BalanceProps = {
 export function Balance({tokenAccountId, className, mode = DisplayMode.CRYPTO}: BalanceProps) {
   const priceOracle = useStore($priceOracle);
 
-  const {meta} = useToken(tokenAccountId);
+  const token = useToken(tokenAccountId);
 
   const displayedCryptoAmount = useBalanceForToken(tokenAccountId);
 
@@ -42,7 +43,7 @@ export function Balance({tokenAccountId, className, mode = DisplayMode.CRYPTO}: 
   const amount = showInUSD
     ? priceOracle.getPriceInUsd(tokenAccountId, displayedCryptoAmount) ?? 0
     : displayedCryptoAmount;
-  const currencySymbol = showInUSD ? '$' : meta.symbol;
+  const currencySymbol = showInUSD ? '$' : token?.meta.symbol ?? '$';
 
   return <span className={className}>{`Balance: ${currencySymbol} ${amount}`}</span>;
 }

@@ -9,6 +9,7 @@ import {streamViewData} from '~/features/roketo-resource';
 
 import {$notifications} from '~/entities/wallet';
 
+import {formatAmount} from '~/shared/api/ft/token-formatter';
 import {testIds} from '~/shared/constants';
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
@@ -69,11 +70,11 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
     timeLeft,
   } = streamViewData(stream, WITHOUT_EXTRAPOLATION);
 
+  const token = useToken(stream.token_account_id);
+  if (!token) return null;
   const {
-    meta: {symbol},
-    formatter,
-  } = useToken(stream.token_account_id);
-
+    meta: {symbol, decimals},
+  } = token;
   switch (type) {
     case 'StreamStarted':
       return (
@@ -92,7 +93,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
           <SecondaryText>
             Total streaming amount:{' '}
             <strong>
-              {formatter.amount(full)}&nbsp;{symbol}
+              {formatAmount(decimals, full)}&nbsp;{symbol}
             </strong>
           </SecondaryText>
           <SecondaryText>
@@ -114,13 +115,13 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
           <SecondaryText>
             Already streamed:{' '}
             <strong>
-              {formatter.amount(streamed)}&nbsp;{symbol}
+              {formatAmount(decimals, streamed)}&nbsp;{symbol}
             </strong>
           </SecondaryText>
           <SecondaryText>
             Amount left:{' '}
             <strong>
-              {formatter.amount(left)}&nbsp;{symbol}
+              {formatAmount(decimals, left)}&nbsp;{symbol}
             </strong>
           </SecondaryText>
         </div>
@@ -138,7 +139,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
           <SecondaryText>
             Total amount streamed:{' '}
             <strong>
-              {formatter.amount(full)}&nbsp;{symbol}
+              {formatAmount(decimals, full)}&nbsp;{symbol}
             </strong>
           </SecondaryText>
         </div>
@@ -152,7 +153,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
           <SecondaryText>
             Available for withdrawal:{' '}
             <strong>
-              {formatter.amount(left)}&nbsp;{symbol}
+              {formatAmount(decimals, left)}&nbsp;{symbol}
             </strong>
           </SecondaryText>
         </div>
@@ -174,7 +175,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
           <SecondaryText>
             Amount left:{' '}
             <strong>
-              {formatter.amount(left)}&nbsp;{symbol}
+              {formatAmount(decimals, left)}&nbsp;{symbol}
             </strong>
           </SecondaryText>
           <SecondaryText>
@@ -195,7 +196,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
           <SecondaryText>
             Available for withdrawal:{' '}
             <strong>
-              {formatter.amount(left)}&nbsp;{symbol}
+              {formatAmount(decimals, left)}&nbsp;{symbol}
             </strong>
           </SecondaryText>
         </div>
@@ -213,7 +214,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
           <SecondaryText>
             Added amount:{' '}
             <strong>
-              {formatter.amount(payload.fundsAdded)}&nbsp;{symbol}
+              {formatAmount(decimals, payload.fundsAdded)}&nbsp;{symbol}
             </strong>
           </SecondaryText>
         </div>

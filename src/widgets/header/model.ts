@@ -2,6 +2,7 @@ import {combine} from 'effector';
 
 import {$priceOracle, $roketoWallet} from '~/entities/wallet';
 
+import {toHumanReadableValue} from '~/shared/api/ft/token-formatter';
 import {TimePeriod} from '~/shared/constants';
 import {getBalancePerDesiredPeriod} from '~/shared/lib/speed';
 
@@ -11,7 +12,7 @@ export const $totalUSDAmountPerHour = combine(
   $roketoWallet,
   $priceOracle,
   (wallet, priceOracle) => {
-    if (!wallet || !priceOracle)
+    if (!wallet)
       return {
         [StreamType.income]: 0,
         [StreamType.outcome]: 0,
@@ -23,7 +24,7 @@ export const $totalUSDAmountPerHour = combine(
       const tokenAccountIds = Object.keys(tokensBalanceMap);
 
       return tokenAccountIds.reduce((total, tokenAccountId) => {
-        const {formatter} = tokens[tokenAccountId];
+        const {meta} = tokens[tokenAccountId];
 
         const balancePerSec = tokensBalanceMap[tokenAccountId];
 
@@ -31,7 +32,7 @@ export const $totalUSDAmountPerHour = combine(
           balancePerSec,
           TimePeriod.Hour,
         ).toFixed();
-        const formattedBalance = formatter.toHumanReadableValue(balancePerDesiredPeriod, 3);
+        const formattedBalance = toHumanReadableValue(meta.decimals, balancePerDesiredPeriod, 3);
 
         const usdAmount = getPriceInUsd(tokenAccountId, formattedBalance);
 
