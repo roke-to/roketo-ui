@@ -1,6 +1,6 @@
 import type {Action as SelectorAction} from '@near-wallet-selector/core';
 import type {Account, ConnectedWalletAccount, Contract} from 'near-api-js';
-import type {AccountBalance, SignAndSendTransactionOptions} from 'near-api-js/lib/account';
+import type {AccountBalance} from 'near-api-js/lib/account';
 import type {Action as NearAction} from 'near-api-js/lib/transaction';
 
 import type {RoketoContract} from './roketo/interfaces/contracts';
@@ -53,10 +53,6 @@ export type NearAuth = {
   accountId: string;
   login: () => void;
   logout: () => void;
-  /**
-   * @deprecated
-   */
-  signAndSendTransaction: (params: SignAndSendTransactionOptions) => Promise<unknown>;
   transactionMediator: TransactionMediator;
 };
 

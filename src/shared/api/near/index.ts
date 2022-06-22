@@ -65,17 +65,6 @@ async function createSenderWalletInstance(): Promise<{
         async logout() {
           await sdrWallet.signOut();
         },
-        signAndSendTransaction({receiverId, actions, walletCallbackUrl}) {
-          return sdrWallet.signAndSendTransaction({
-            receiverId,
-            // @ts-expect-error
-            walletCallbackUrl,
-            actions: actions.map((action) => ({
-              type: 'FunctionCall',
-              params: action.functionCall,
-            })),
-          });
-        },
         transactionMediator: senderTransactionMediator,
       },
       // @ts-expect-error sender near object is not fully typed
@@ -130,10 +119,6 @@ async function createNearWalletInstance(): Promise<{
       },
       async logout() {
         await walletConnection.signOut();
-      },
-      signAndSendTransaction(params) {
-        // @ts-expect-error signAndSendTransaction is protected
-        return account.signAndSendTransaction(params);
       },
       transactionMediator: nearTransactionMediator,
     },
