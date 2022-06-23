@@ -18,9 +18,13 @@ import {useToken} from '~/shared/hooks/useToken';
 import {DropdownMenu} from '~/shared/kit/DropdownMenu';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 
-import {BangIcon} from './BangIcon';
 import {BellIcon} from './BellIcon';
-import {FinishIcon} from './FinishIcon';
+import streamCliffPassedIcon from './icons/streamCliffPassed.svg';
+import streamEndedIcon from './icons/streamEnded.svg';
+import streamFundsAddedIcon from './icons/streamFundsAdded.svg';
+import streamIsDueIcon from './icons/streamIsDue.svg';
+import streamPausedIcon from './icons/streamPaused.svg';
+import streamStartedIcon from './icons/streamStarted.svg';
 import {
   $hasUnreadNotifications,
   $notificationsContent,
@@ -28,33 +32,19 @@ import {
   closePanel,
   setPanelVisibility,
 } from './model';
-import {PauseIcon} from './PauseIcon';
-import {StartIcon} from './StartIcon';
 import styles from './styles.module.scss';
 
 function NotificationIcon({type}: {type: NotificationType}) {
-  const IconComponent = (() => {
-    switch (type) {
-      case 'StreamStarted':
-        return StartIcon;
-      case 'StreamPaused':
-        return PauseIcon;
-      case 'StreamFinished':
-        return FinishIcon;
-      case 'StreamIsDue':
-        return BangIcon;
-      case 'StreamContinued':
-        return StartIcon;
-      case 'StreamCliffPassed':
-        return BangIcon;
-      case 'StreamFundsAdded':
-        return BangIcon;
-      default:
-        throw new Error('This should never happen');
-    }
-  })();
-
-  return <IconComponent className={styles.icon} />;
+  const iconUrls = {
+    StreamStarted: streamStartedIcon,
+    StreamPaused: streamPausedIcon,
+    StreamFinished: streamEndedIcon,
+    StreamIsDue: streamIsDueIcon,
+    StreamContinued: streamStartedIcon,
+    StreamCliffPassed: streamCliffPassedIcon,
+    StreamFundsAdded: streamFundsAddedIcon,
+  } as const;
+  return <img className={styles.icon} src={iconUrls[type]} alt="notification icon" />;
 }
 
 const WITHOUT_EXTRAPOLATION = false;
