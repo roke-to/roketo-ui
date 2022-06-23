@@ -1,6 +1,6 @@
 import type {Notification, NotificationTypeEnum as NotificationType} from '@roketo/api-client';
 import classNames from 'classnames';
-import {format, isSameDay, isToday, isYesterday} from 'date-fns';
+import {format, isToday, isYesterday} from 'date-fns';
 import {useStore} from 'effector-react';
 import React, {useCallback, useState} from 'react';
 import {generatePath, Link} from 'react-router-dom';
@@ -12,7 +12,6 @@ import {$notifications} from '~/entities/wallet';
 import {formatAmount} from '~/shared/api/ft/token-formatter';
 import {testIds} from '~/shared/constants';
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
-import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
 import {useToken} from '~/shared/hooks/useToken';
 import {DropdownMenu} from '~/shared/kit/DropdownMenu';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
@@ -78,15 +77,15 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
   switch (type) {
     case 'StreamStarted':
       return (
-        <div className={styles.notificationBody}>
+        <>
           <PrimaryText>
             {direction === STREAM_DIRECTION.IN ? (
               <>
-                {stream.owner_id} <strong>started</strong> a stream for you to receive.
+                {stream.owner_id} <strong>started</strong> a stream for you to receive
               </>
             ) : (
               <>
-                You’ve successfully <strong>started</strong> a stream to {stream.receiver_id}.
+                You’ve successfully <strong>started</strong> a stream to {stream.receiver_id}
               </>
             )}
           </PrimaryText>
@@ -99,17 +98,17 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
           <SecondaryText>
             Stream duration: <strong>{timeLeft}</strong>
           </SecondaryText>
-        </div>
+        </>
       );
     case 'StreamPaused':
       return (
-        <div className={styles.notificationBody}>
+        <>
           <PrimaryText>
             The stream{' '}
             {direction === STREAM_DIRECTION.IN
               ? `from ${stream.owner_id}`
               : `to ${stream.receiver_id}`}{' '}
-            is <strong>paused</strong>.
+            is <strong>paused</strong>
           </PrimaryText>
 
           <SecondaryText>
@@ -124,11 +123,11 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
               {formatAmount(decimals, left)}&nbsp;{symbol}
             </strong>
           </SecondaryText>
-        </div>
+        </>
       );
     case 'StreamFinished':
       return (
-        <div className={styles.notificationBody}>
+        <>
           <PrimaryText>
             The stream{' '}
             {direction === STREAM_DIRECTION.IN
@@ -142,13 +141,13 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
               {formatAmount(decimals, full)}&nbsp;{symbol}
             </strong>
           </SecondaryText>
-        </div>
+        </>
       );
     case 'StreamIsDue':
       return (
-        <div className={styles.notificationBody}>
+        <>
           <PrimaryText>
-            The stream from {stream.owner_id} is <strong>due</strong>.
+            The stream from {stream.owner_id} is <strong>due</strong>
           </PrimaryText>
           <SecondaryText>
             Available for withdrawal:{' '}
@@ -156,19 +155,19 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
               {formatAmount(decimals, left)}&nbsp;{symbol}
             </strong>
           </SecondaryText>
-        </div>
+        </>
       );
     case 'StreamContinued':
       return (
-        <div className={styles.notificationBody}>
+        <>
           <PrimaryText>
             {direction === STREAM_DIRECTION.IN ? (
               <>
-                {stream.owner_id} has <strong>continued</strong> the stream.
+                {stream.owner_id} has <strong>continued</strong> the stream
               </>
             ) : (
               <>
-                The stream to {stream.receiver_id} was <strong>continued</strong>.
+                The stream to {stream.receiver_id} was <strong>continued</strong>
               </>
             )}
           </PrimaryText>
@@ -181,17 +180,17 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
           <SecondaryText>
             Time left: <strong>{timeLeft}</strong>
           </SecondaryText>
-        </div>
+        </>
       );
     case 'StreamCliffPassed':
       return (
-        <div className={styles.notificationBody}>
+        <>
           <PrimaryText>
             The stream{' '}
             {direction === STREAM_DIRECTION.IN
               ? `from ${stream.owner_id}`
               : `to ${stream.receiver_id}`}{' '}
-            has <strong>passed the cliff period</strong>.
+            has <strong>passed the cliff period</strong>
           </PrimaryText>
           <SecondaryText>
             Available for withdrawal:{' '}
@@ -199,17 +198,16 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
               {formatAmount(decimals, left)}&nbsp;{symbol}
             </strong>
           </SecondaryText>
-        </div>
+        </>
       );
     case 'StreamFundsAdded':
       return (
-        <div className={styles.notificationBody}>
+        <>
           <PrimaryText>
             <strong>The funds were added</strong> to the stream{' '}
             {direction === STREAM_DIRECTION.IN
               ? `from ${stream.owner_id}`
-              : `to ${stream.receiver_id}`}{' '}
-            .
+              : `to ${stream.receiver_id}`}
           </PrimaryText>
           <SecondaryText>
             Added amount:{' '}
@@ -217,7 +215,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
               {formatAmount(decimals, payload.fundsAdded)}&nbsp;{symbol}
             </strong>
           </SecondaryText>
-        </div>
+        </>
       );
     default:
       throw new Error('This should never happen');
@@ -225,8 +223,6 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
 }
 
 export function Notifications() {
-  const compact = useMediaQuery('(max-width: 645px)');
-
   const [isDropdownOpened, setIsDropdownOpened] = useState(false);
   const notifications = useStore($notifications);
 
@@ -251,48 +247,46 @@ export function Notifications() {
       <DropdownMenu
         opened={isDropdownOpened}
         onClose={closeDropdown}
-        className={classNames(styles.dropdownMenu, compact && styles.compact)}
+        className={styles.dropdownMenu}
       >
         <div className={styles.container} data-testid={testIds.notificationsContainer}>
           <header className={styles.header}>Notifications</header>
 
           {notifications.length === 0 && (
             <h3 className="text-3xl text-center my-12 mx-auto">
-              Your notifications will be displayed here.
+              Your notifications will be displayed here
             </h3>
           )}
 
-          {notifications.map((notification, index) => (
-            <React.Fragment key={notification.id}>
-              {index !== 0 && <div className={styles.divider} />}
-              {(index === 0 ||
-                !isSameDay(notifications[index - 1].createdAt, notification.createdAt)) && (
-                <div className={styles.date}>
-                  {isToday(notification.createdAt)
-                    ? 'Today'
-                    : isYesterday(notification.createdAt)
-                    ? 'Yesterday'
-                    : format(notification.createdAt, 'PP')}
-                </div>
-              )}
-              <Link
-                to={generatePath(ROUTES_MAP.stream.path, {
-                  id:
-                    'stream' in notification.payload
-                      ? notification.payload.stream.id
-                      : notification.payload.id,
-                })}
-                className={classNames(styles.notification, !notification.isRead && styles.unread)}
-                onClick={closeDropdown}
-              >
-                <NotificationIcon type={notification.type} />
-                <NotificationBody notification={notification} />
-                <div className={styles.time}>
-                  {format(new Date(notification.createdAt), 'HH:mm')}
-                </div>
-              </Link>
-            </React.Fragment>
-          ))}
+          {notifications.map((notification, index) => {
+            const dateText = isToday(notification.createdAt)
+              ? 'Today'
+              : isYesterday(notification.createdAt)
+              ? 'Yesterday'
+              : format(notification.createdAt, 'PP');
+            const timeText = format(new Date(notification.createdAt), 'HH:mm');
+            return (
+              <React.Fragment key={notification.id}>
+                {index !== 0 && <div className={styles.divider} />}
+                <Link
+                  to={generatePath(ROUTES_MAP.stream.path, {
+                    id:
+                      'stream' in notification.payload
+                        ? notification.payload.stream.id
+                        : notification.payload.id,
+                  })}
+                  className={classNames(styles.notification, !notification.isRead && styles.unread)}
+                  onClick={closeDropdown}
+                >
+                  <NotificationIcon type={notification.type} />
+                  <NotificationBody notification={notification} />
+                  <div className={styles.time}>
+                    {dateText} {timeText}
+                  </div>
+                </Link>
+              </React.Fragment>
+            );
+          })}
         </div>
       </DropdownMenu>
     </div>
