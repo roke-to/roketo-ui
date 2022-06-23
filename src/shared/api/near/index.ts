@@ -60,7 +60,11 @@ async function createSenderWalletInstance(): Promise<{
         signedIn: !!accountIdSnd,
         accountId: accountIdSnd ?? '',
         async login() {
-          await sdrWallet.signIn({contractId: env.ROKETO_CONTRACT_NAME, derivationPaths: []});
+          await sdrWallet.signIn({
+            contractId: env.ROKETO_CONTRACT_NAME,
+            derivationPaths: [],
+            methodNames: ['start_stream', 'pause_stream', 'stop_stream', 'withdraw'],
+          });
         },
         async logout() {
           await sdrWallet.signOut();

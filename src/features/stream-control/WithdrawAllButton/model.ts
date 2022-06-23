@@ -12,8 +12,8 @@ export const triggerWithdrawAll = createEvent();
 
 export const withdrawAllFx = createProtectedEffect({
   source: $roketoWallet,
-  async fn({contract}, streamIds: string[]) {
-    await withdrawStreams({streamIds, contract});
+  fn({transactionMediator}, streamIds: string[]) {
+    return withdrawStreams({streamIds, transactionMediator});
   },
 });
 

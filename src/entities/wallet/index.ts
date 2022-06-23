@@ -319,7 +319,7 @@ sample({
 });
 
 sample({
-  clock: [loginFx.doneData, logoutFx.doneData],
+  clock: [loginFx.doneData],
   target: initWallets,
 });
 $nearWallet.reset([logoutFx.done]);
