@@ -1,9 +1,8 @@
 import type {Notification, NotificationTypeEnum as NotificationType} from '@roketo/api-client';
 import classNames from 'classnames';
-import {format, isToday, isYesterday} from 'date-fns';
-import {useStore} from 'effector-react';
-import React, {useCallback, useState} from 'react';
-import {generatePath, Link} from 'react-router-dom';
+import {useList, useStore, useStoreMap} from 'effector-react';
+import React from 'react';
+import {Link} from 'react-router-dom';
 
 import {streamViewData} from '~/features/roketo-resource';
 
@@ -15,12 +14,17 @@ import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStre
 import {useToken} from '~/shared/hooks/useToken';
 import {DropdownMenu} from '~/shared/kit/DropdownMenu';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
-import {ROUTES_MAP} from '~/shared/lib/routing';
 
 import {BangIcon} from './BangIcon';
 import {BellIcon} from './BellIcon';
 import {FinishIcon} from './FinishIcon';
-import {dropdownClosed} from './model';
+import {
+  $hasUnreadNotifications,
+  $notificationsContent,
+  $panelIsVisible,
+  closePanel,
+  setPanelVisibility,
+} from './model';
 import {PauseIcon} from './PauseIcon';
 import {StartIcon} from './StartIcon';
 import styles from './styles.module.scss';
@@ -222,72 +226,58 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
   }
 }
 
+function Filler() {
+  const hasNotifications = useStoreMap($notifications, (items) => items.length > 0);
+  return hasNotifications ? null : (
+    <h3 className="text-3xl text-center my-12 mx-auto">
+      Your notifications will be displayed here
+    </h3>
+  );
+}
+function NotificationsList() {
+  return (
+    <div className={styles.container} data-testid={testIds.notificationsContainer}>
+      <header className={styles.header}>Notifications</header>
+      <Filler />
+      {useList($notificationsContent, {
+        getKey: ({notification}) => notification.id,
+        // eslint-disable-next-line react/no-unstable-nested-components
+        fn: ({notification, needDivider, link, dateTime}) => (
+          <>
+            {needDivider && <div className={styles.divider} />}
+            <Link
+              to={link}
+              className={classNames(styles.notification, !notification.isRead && styles.unread)}
+              onClick={closePanel}
+            >
+              <NotificationIcon type={notification.type} />
+              <NotificationBody notification={notification} />
+              <div className={styles.time}>{dateTime}</div>
+            </Link>
+          </>
+        ),
+      })}
+    </div>
+  );
+}
+
 export function Notifications() {
-  const [isDropdownOpened, setIsDropdownOpened] = useState(false);
-  const notifications = useStore($notifications);
-
-  const closeDropdown = useCallback(() => {
-    setIsDropdownOpened(false);
-    dropdownClosed();
-  }, []);
-
-  const hasUnreadNotifications = notifications.some(({isRead}) => !isRead) ?? false;
+  const isPanelVisible = useStore($panelIsVisible);
+  const hasUnreadNotifications = useStore($hasUnreadNotifications);
 
   return (
     <div className={styles.root}>
       <DropdownOpener
-        onChange={setIsDropdownOpened}
+        onChange={setPanelVisibility}
         className={styles.dropdownOpener}
-        opened={isDropdownOpened}
+        opened={isPanelVisible}
         testId={testIds.openNotificationsButton}
       >
         <BellIcon withBadge={hasUnreadNotifications} />
       </DropdownOpener>
 
-      <DropdownMenu
-        opened={isDropdownOpened}
-        onClose={closeDropdown}
-        className={styles.dropdownMenu}
-      >
-        <div className={styles.container} data-testid={testIds.notificationsContainer}>
-          <header className={styles.header}>Notifications</header>
-
-          {notifications.length === 0 && (
-            <h3 className="text-3xl text-center my-12 mx-auto">
-              Your notifications will be displayed here
-            </h3>
-          )}
-
-          {notifications.map((notification, index) => {
-            const dateText = isToday(notification.createdAt)
-              ? 'Today'
-              : isYesterday(notification.createdAt)
-              ? 'Yesterday'
-              : format(notification.createdAt, 'PP');
-            const timeText = format(new Date(notification.createdAt), 'HH:mm');
-            return (
-              <React.Fragment key={notification.id}>
-                {index !== 0 && <div className={styles.divider} />}
-                <Link
-                  to={generatePath(ROUTES_MAP.stream.path, {
-                    id:
-                      'stream' in notification.payload
-                        ? notification.payload.stream.id
-                        : notification.payload.id,
-                  })}
-                  className={classNames(styles.notification, !notification.isRead && styles.unread)}
-                  onClick={closeDropdown}
-                >
-                  <NotificationIcon type={notification.type} />
-                  <NotificationBody notification={notification} />
-                  <div className={styles.time}>
-                    {dateText} {timeText}
-                  </div>
-                </Link>
-              </React.Fragment>
-            );
-          })}
-        </div>
+      <DropdownMenu opened={isPanelVisible} onClose={closePanel} className={styles.dropdownMenu}>
+        <NotificationsList />
       </DropdownMenu>
     </div>
   );
