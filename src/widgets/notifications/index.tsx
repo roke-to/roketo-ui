@@ -1,12 +1,13 @@
 import type {Notification, NotificationTypeEnum as NotificationType} from '@roketo/api-client';
 import classNames from 'classnames';
-import {useList, useStore, useStoreMap} from 'effector-react';
+import {useGate, useList, useStore, useStoreMap} from 'effector-react';
 import React from 'react';
 import Modal from 'react-modal';
 import {Link} from 'react-router-dom';
 
 import {streamViewData} from '~/features/roketo-resource';
 
+import {blurGate} from '~/entities/blur';
 import {$notifications} from '~/entities/wallet';
 
 import {formatAmount} from '~/shared/api/ft/token-formatter';
@@ -239,7 +240,6 @@ function Filler() {
 function NotificationsList() {
   return (
     <div className={styles.container} data-testid={testIds.notificationsContainer}>
-      <header className={styles.header}>Notifications</header>
       <Filler />
       {useList($notificationsContent, {
         getKey: ({notification}) => notification.id,
@@ -267,6 +267,7 @@ export function Notifications() {
   const isPanelVisible = useStore($panelIsVisible);
   const hasUnreadNotifications = useStore($hasUnreadNotifications);
   const compact = useMediaQuery('(max-width: 767px)');
+  useGate(blurGate, compact && isPanelVisible);
   return (
     <div className={styles.root}>
       <DropdownOpener

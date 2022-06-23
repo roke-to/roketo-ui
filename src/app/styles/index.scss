@@ -17,6 +17,9 @@ body > #root {
   background-color: #fdfdfd;
   display: flex;
   flex-direction: column;
+  &[data-blur] {
+    filter: blur(5px);
+  }
 }
 
 * {

@@ -37,22 +37,6 @@
   min-height: 100px;
 }
 
-.header {
-  padding: 16px;
-  color: $light-black;
-  font-size: 18px;
-  line-height: 24px;
-  font-weight: 600;
-  background-color: $background-secondary;
-  border-bottom: 1px solid $tertiary;
-  width: 100%;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-}
-
 .divider {
   width: 100%;
   border-bottom: 1px solid #eee;
@@ -109,7 +93,7 @@
   display: flex;
   align-items: center;
   overflow: auto;
-  padding: 5vh 0;
+  padding: 15vh 0 10vh;
   flex-direction: column;
   top: 0;
   right: 0;
@@ -117,20 +101,25 @@
   left: 0;
   background-color: rgba(0, 0, 0, 0.4);
   z-index: 1000;
+
+  &::before {
+    content: '╳';
+    color: white;
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    font-size: 48px;
+    right: 6vw;
+    top: 5vh;
+    display: block;
+    position: absolute;
+  }
 }
 
 /* Phone, landscape */
 @media (max-width: 767px) {
   .container {
-    max-height: 100vh;
-  }
-  .dropdownPanel {
-    max-width: calc(100vw - 32px);
-    right: -28px;
-  }
-  .header {
-    font-size: 14px;
-    line-height: 17px;
+    max-height: 75vh;
   }
   .notification {
     --icon-width: 36px;
