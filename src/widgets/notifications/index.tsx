@@ -2,6 +2,7 @@ import type {Notification, NotificationTypeEnum as NotificationType} from '@roke
 import classNames from 'classnames';
 import {useList, useStore, useStoreMap} from 'effector-react';
 import React from 'react';
+import Modal from 'react-modal';
 import {Link} from 'react-router-dom';
 
 import {streamViewData} from '~/features/roketo-resource';
@@ -11,6 +12,7 @@ import {$notifications} from '~/entities/wallet';
 import {formatAmount} from '~/shared/api/ft/token-formatter';
 import {testIds} from '~/shared/constants';
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
+import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
 import {useToken} from '~/shared/hooks/useToken';
 import {DropdownMenu} from '~/shared/kit/DropdownMenu';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
@@ -264,7 +266,7 @@ function NotificationsList() {
 export function Notifications() {
   const isPanelVisible = useStore($panelIsVisible);
   const hasUnreadNotifications = useStore($hasUnreadNotifications);
-
+  const compact = useMediaQuery('(max-width: 767px)');
   return (
     <div className={styles.root}>
       <DropdownOpener
@@ -275,10 +277,24 @@ export function Notifications() {
       >
         <BellIcon withBadge={hasUnreadNotifications} />
       </DropdownOpener>
-
-      <DropdownMenu opened={isPanelVisible} onClose={closePanel} className={styles.dropdownMenu}>
-        <NotificationsList />
-      </DropdownMenu>
+      {compact ? (
+        <Modal
+          isOpen={isPanelVisible}
+          onRequestClose={closePanel}
+          className={styles.panel}
+          overlayClassName={styles.modalOverlay}
+        >
+          <NotificationsList />
+        </Modal>
+      ) : (
+        <DropdownMenu
+          opened={isPanelVisible}
+          onClose={closePanel}
+          className={classNames(styles.panel, styles.dropdownPanel)}
+        >
+          <NotificationsList />
+        </DropdownMenu>
+      )}
     </div>
   );
 }
