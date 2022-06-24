@@ -86,6 +86,8 @@
 }
 
 .modalOverlay {
+  pointer-events: auto;
+  user-select: text;
   position: fixed;
   display: flex;
   align-items: center;
