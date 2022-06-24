@@ -14,7 +14,7 @@ export const $notificationsContent = $notifications.map((items) =>
   items.map((notification, index) => {
     // eslint-disable-next-line no-nested-ternary
     const dateText = isToday(notification.createdAt)
-      ? 'Today'
+      ? ''
       : isYesterday(notification.createdAt)
       ? 'Yesterday'
       : format(notification.createdAt, 'PP');
@@ -23,17 +23,14 @@ export const $notificationsContent = $notifications.map((items) =>
       notification,
       needDivider: index !== 0,
       link: generatePath(ROUTES_MAP.stream.path, {
-        id:
-          'stream' in notification.payload
-            ? notification.payload.stream.id
-            : notification.payload.id,
+        id: notification.payload.stream.id,
       }),
       dateTime: `${dateText} ${timeText}`,
     };
   }),
 );
-export const $hasUnreadNotifications = $notifications.map(
-  (items) => items.some(({isRead}) => !isRead) ?? false,
+export const $hasUnreadNotifications = $notifications.map((items) =>
+  items.some(({isRead}) => !isRead),
 );
 
 const markAllReadFx = attach({

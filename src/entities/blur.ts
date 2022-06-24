@@ -6,9 +6,9 @@ export const blurGate = createGate({defaultState: false});
 const setBlurFx = createEffect((blur: boolean) => {
   const el = document.getElementById('root')!;
   if (blur) {
-    el.dataset.blur = 'blur';
+    el.classList.add('root-blur');
   } else {
-    delete el.dataset.blur;
+    el.classList.remove('root-blur');
   }
 });
 

@@ -12,7 +12,7 @@ class Notifications {
 
   checknew(type, receiverId) {
     const text = {
-      start: `You’ve successfully started a stream to ${receiverId}`,
+      start: `You've successfully started a stream to ${receiverId}`,
       pause: `The stream to ${receiverId} is paused`,
       restart: `The stream to ${receiverId} was continued`,
       stop: `The stream to ${receiverId} has ended`,

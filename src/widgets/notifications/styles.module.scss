@@ -11,7 +11,7 @@
 
 .panel {
   padding: 0;
-  width: min(550px, 90vw);
+  width: min(550px, 100vw - 30px);
   flex-direction: row;
 }
 
@@ -26,7 +26,6 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-height: min(98vh - 135px, 70vh);
   overflow-x: hidden;
   overflow-y: auto;
   border-radius: 16px;
@@ -118,9 +117,6 @@
 
 /* Phone, landscape */
 @media (max-width: 767px) {
-  .container {
-    max-height: 75vh;
-  }
   .notification {
     --icon-width: 36px;
     padding-bottom: 16px;
