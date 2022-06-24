@@ -82,7 +82,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
               </>
             ) : (
               <>
-                You’ve successfully <strong>started</strong> a stream to {stream.receiver_id}
+                You've successfully <strong>started</strong> a stream to {stream.receiver_id}
               </>
             )}
           </PrimaryText>
