@@ -234,19 +234,16 @@ function NotificationsList() {
       {useList($notificationsContent, {
         getKey: ({notification}) => notification.id,
         // eslint-disable-next-line react/no-unstable-nested-components
-        fn: ({notification, needDivider, link, dateTime}) => (
-          <>
-            {needDivider && <div className={styles.divider} />}
-            <Link
-              to={link}
-              className={classNames(styles.notification, !notification.isRead && styles.unread)}
-              onClick={closePanel}
-            >
-              <NotificationIcon type={notification.type} />
-              <NotificationBody notification={notification} />
-              <div className={styles.time}>{dateTime}</div>
-            </Link>
-          </>
+        fn: ({notification, link, dateTime}) => (
+          <Link
+            to={link}
+            className={classNames(styles.notification, !notification.isRead && styles.unread)}
+            onClick={closePanel}
+          >
+            <NotificationIcon type={notification.type} />
+            <NotificationBody notification={notification} />
+            <div className={styles.time}>{dateTime}</div>
+          </Link>
         ),
       })}
     </div>

@@ -11,7 +11,7 @@ export const $panelIsVisible = createStore(false);
 export const setPanelVisibility = createEvent<boolean>();
 export const closePanel = setPanelVisibility.prepend<any>(() => false);
 export const $notificationsContent = $notifications.map((items) =>
-  items.map((notification, index) => {
+  items.map((notification) => {
     // eslint-disable-next-line no-nested-ternary
     const dateText = isToday(notification.createdAt)
       ? ''
@@ -21,7 +21,6 @@ export const $notificationsContent = $notifications.map((items) =>
     const timeText = format(new Date(notification.createdAt), 'HH:mm');
     return {
       notification,
-      needDivider: index !== 0,
       link: generatePath(ROUTES_MAP.stream.path, {
         id: notification.payload.stream.id,
       }),
