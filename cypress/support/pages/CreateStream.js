@@ -51,6 +51,10 @@ class CreateStream {
   submit() {
     cy.get(testSelectors.createStreamSubmitButton).click();
   }
+  
+    uneditable() {
+    cy.get(testSelectors.createStreamLockedCheckbox).click();
+  }
 }
 
 export default CreateStream;
