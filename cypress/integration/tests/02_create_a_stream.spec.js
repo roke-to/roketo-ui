@@ -11,7 +11,21 @@ context('Stream creation', () => {
     cy.viewport(1536, 960);
     
   });
-
+  it('Create uneditable stream', () => {
+    login(account.seedPhrase);
+    const stream = new CreateStream();
+    stream.createStream();
+    stream.inputReceiver('delusion.testnet');
+    stream.inputDeposit('1');
+    stream.inputPeriod('1000', '10', '10', '10');
+    stream.uneditable();
+    stream.submit();
+    const transaction = new Transaction();
+    transaction.approve();
+    const mystreams = new MyStreams();
+    mystreams.locked();
+  });
+  
   it('Create a delayed stream', () => {
     login(account.seedPhrase);
     const stream = new CreateStream();
