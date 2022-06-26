@@ -69,7 +69,11 @@ class MyStreams {
       .eq(0)
       .contains(/\b1 of 1\b/, {timeout: 60000});
   }
-
+  
+  locked() {
+    cy.get(testSelectors.streamControlsDropdown).should('not.exist');
+  }
+  
   withdrawFirst() {
     cy.get(testSelectors.withdrawButton).eq(0).click({force: true});
 
