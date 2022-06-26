@@ -83,6 +83,14 @@ class MyStreams {
 
     cy.url().should('contains', 'http://localhost:3000/#/streams');
   }
+  addFunds(value) {
+    cy.get('button').contains('Add funds').eq(0).click();
+    cy.get('[name="deposit"]').click().type(' {backspace}').type(value);
+    cy.get('[type="submit"]').click();
+  }
+  checkAddFunds(){
+    cy.get(testSelectors.streamProgressCaption).eq(0).contains("0 of 2");
+  }
 }
 
 export default MyStreams;
