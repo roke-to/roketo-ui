@@ -30,6 +30,16 @@ class CreateStream {
     cy.get(testSelectors.createStreamMinutesInput).click().type(' {backspace}').type(mins);
   }
 
+  inputCliffPeriod(month, days, hours, mins, sec, period){
+    cy.get('[aria-label="Month"]').click().type(month);
+    cy.get('[aria-label="Day"]').click().type(days);
+    cy.get('[aria-label="Year"]').click().type(' {backspace}').type(2022);
+    cy.get('[aria-label="Hour"]').click().type(hours);
+    cy.get('[aria-label="Minute"]').click().type(mins);
+    cy.get('[aria-label="Second"]').click().type(' {backspace}').type(sec);
+    cy.get('[aria-label="Select AM/PM"]').select(period);
+  }
+
   inputComments(value) {
     cy.get(testSelectors.createStreamCommentInput).click().type(value);
   }
