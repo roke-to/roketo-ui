@@ -29,10 +29,10 @@ export const StreamsPage = () => {
   });
 
   const [filteredItems, setFiltered] = useState<RoketoStream[] | undefined>([]);
-  const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
-  const toggleModal = useCallback(
-    () => setIsModalOpened(!isModalOpened),
-    [setIsModalOpened, isModalOpened],
+  const [isStreamCreationModalOpened, setIsStreamCreationModalOpened] = useState(false);
+  const toggleStreamCreationModal = useCallback(
+    () => setIsStreamCreationModalOpened((value) => !value),
+    [],
   );
 
   return (
@@ -44,11 +44,17 @@ export const StreamsPage = () => {
           <div className={cn(styles.flex, styles.buttonsWrapper)}>
             <WithdrawAllButton />
 
-            <Button onClick={toggleModal} testId={testIds.createStreamButton}>
+            <Button onClick={toggleStreamCreationModal} testId={testIds.createStreamButton}>
               Create a stream
             </Button>
-            <LegacyModal isOpen={isModalOpened} onCloseModal={toggleModal}>
-              <CreateStream onFormCancel={toggleModal} onFormSubmit={handleCreateStreamFx} />
+            <LegacyModal
+              isOpen={isStreamCreationModalOpened}
+              onCloseModal={toggleStreamCreationModal}
+            >
+              <CreateStream
+                onFormCancel={toggleStreamCreationModal}
+                onFormSubmit={handleCreateStreamFx}
+              />
             </LegacyModal>
           </div>
         </section>
@@ -64,7 +70,7 @@ export const StreamsPage = () => {
         <StreamsList
           displayingStreams={filteredItems}
           className={styles.section}
-          onCreateStreamClick={toggleModal}
+          onCreateStreamClick={toggleStreamCreationModal}
         />
       </Layout>
     </div>
