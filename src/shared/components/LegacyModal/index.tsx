@@ -12,7 +12,7 @@ type Props = {
 };
 
 // eslint-disable-next-line react/prefer-stateless-function
-export const Modal = (props: Props) => {
+export const LegacyModal = (props: Props) => {
   const {title, children, isOpen = true, onCloseModal} = props;
 
   return (
