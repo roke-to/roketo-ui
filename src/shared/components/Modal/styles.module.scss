@@ -1,0 +1,114 @@
+@import 'src/shared/ui/palette';
+
+.overlay {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  overflow: auto;
+  padding: 25px 0;
+  flex-direction: column;
+
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  background-color: rgba(0, 0, 0, 0.4);
+
+  z-index: 1000;
+  pointer-events: auto;
+  user-select: text;
+}
+
+.mobile {
+  padding: 84px 0;
+
+  &::before {
+    content: '╳';
+    color: white;
+    width: 40px;
+    height: 40px;
+    line-height: 30px;
+    font-size: 40px;
+    right: 19px;
+    top: 29px;
+    display: block;
+    position: absolute;
+  }
+}
+
+.bodyWithModal {
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+
+  > :global(#root) {
+    filter: blur(5px);
+  }
+}
+
+.content {
+  position: relative;
+
+  max-width: calc(100vw - 32px);
+
+  border-radius: 12px;
+
+  background-color: $white;
+  outline-color: $white;
+  color: $light-black;
+  margin: auto 0;
+
+  padding: 32px;
+}
+
+.close {
+  cursor: pointer;
+
+  position: absolute;
+
+  top: 32px;
+  right: 32px;
+
+  width: 18px;
+  height: 18px;
+
+  transition: 100ms ease;
+
+  &:after,
+  &:before {
+    content: '';
+
+    position: absolute;
+    top: 50%;
+
+    height: 2px;
+    width: 100%;
+
+    background: $bluish-grey;
+
+    border-radius: 40px;
+  }
+
+  &:before {
+    transform: rotate(45deg);
+  }
+
+  &:after {
+    transform: rotate(-45deg);
+  }
+
+  &:hover {
+    &:after,
+    &:before {
+      background-color: $light-black;
+    }
+  }
+}
+
+.title {
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 28px;
+  margin-bottom: 24px;
+}
