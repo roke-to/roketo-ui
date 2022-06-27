@@ -17,8 +17,8 @@ import {testIds} from '~/shared/constants';
 import {Button, DisplayMode as ButtonDisplayMode, ButtonType} from '@ui/components/Button';
 import {ErrorSign} from '@ui/icons/ErrorSign';
 
-import {ColorPicker} from '../ColorPicker';
 import {COMMENT_TEXT_LIMIT, FormValues, INITIAL_FORM_VALUES, StreamColor} from '../constants';
+import {LegacyColorPicker} from '../LegacyColorPicker';
 import {getStreamingSpeed, getTokensPerSecondCount} from '../lib';
 import {StreamDurationCalcField} from '../StreamDurationCalcField';
 import {TokenSelector} from '../TokenSelector';
@@ -117,7 +117,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
               <Field
                 name="color"
                 label="Color:"
-                component={ColorPicker}
+                component={LegacyColorPicker}
                 className={cn(styles.formBlock, styles.color)}
                 onChoose={(color: StreamColor) => onChoose('color', color)}
               />

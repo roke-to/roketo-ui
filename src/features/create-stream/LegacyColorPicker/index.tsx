@@ -28,7 +28,7 @@ function Option({color, onClick}: {color: StreamColor; onClick: (color: StreamCo
   );
 }
 
-export function ColorPicker({
+export function LegacyColorPicker({
   form,
   className,
   label,
