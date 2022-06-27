@@ -8,6 +8,7 @@ import {$tokens} from '~/entities/wallet';
 import {formatAmount} from '~/shared/api/ft/token-formatter';
 import {Balance, DisplayMode} from '~/shared/components/Balance';
 import {FormikCheckbox} from '~/shared/components/FormikCheckbox';
+import {FormikDateTimePicker} from '~/shared/components/FormikDateTimePicker';
 import {FormikInput} from '~/shared/components/FormikInput';
 import {FormikTextArea} from '~/shared/components/FormikTextArea';
 import {env} from '~/shared/config';
@@ -16,7 +17,6 @@ import {testIds} from '~/shared/constants';
 import {Button, DisplayMode as ButtonDisplayMode, ButtonType} from '@ui/components/Button';
 import {ErrorSign} from '@ui/icons/ErrorSign';
 
-import {CliffPeriodPicker} from '../CliffPeriodPicker';
 import {ColorPicker} from '../ColorPicker';
 import {COMMENT_TEXT_LIMIT, FormValues, INITIAL_FORM_VALUES, StreamColor} from '../constants';
 import {getStreamingSpeed, getTokensPerSecondCount} from '../lib';
@@ -138,10 +138,8 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
               <Field
                 name="cliffDateTime"
                 label="Cliff period:"
-                component={CliffPeriodPicker}
-                onCliffDateTimeChange={(cliffDateTime: Date | null) =>
-                  onChoose('cliffDateTime', cliffDateTime)
-                }
+                component={FormikDateTimePicker}
+                onChange={(cliffDateTime: Date | null) => onChoose('cliffDateTime', cliffDateTime)}
                 className={cn(styles.formBlock, styles.cliff)}
               />
 
