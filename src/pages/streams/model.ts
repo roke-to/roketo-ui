@@ -3,6 +3,7 @@ import {generatePath} from 'react-router-dom';
 
 import {colorDescriptions} from '~/features/create-stream/constants';
 import type {FormValues} from '~/features/create-stream/constants';
+import {getTokensPerSecondCount} from '~/features/create-stream/lib';
 
 import {$roketoWallet} from '~/entities/wallet';
 
@@ -17,10 +18,11 @@ export const handleCreateStreamFx = attach({
   async effect(wallet, values: FormValues) {
     if (!wallet) throw Error('no roketo wallet exists');
     const {roketo, tokens} = wallet;
-    const {receiver, delayed, comment, deposit, speed, token, isLocked, cliffDateTime, color} =
+    const {receiver, delayed, comment, deposit, duration, token, isLocked, cliffDateTime, color} =
       values;
 
     const {api, roketoMeta, meta} = tokens[token];
+    const tokensPerSec = getTokensPerSecondCount(meta, deposit, duration);
 
     await roketo.api.createStream({
       deposit: toYocto(meta.decimals, deposit),
@@ -28,7 +30,7 @@ export const handleCreateStreamFx = attach({
       receiverId: receiver,
       tokenAccountId: token,
       commissionOnCreate: roketoMeta.commission_on_create,
-      tokensPerSec: speed,
+      tokensPerSec,
       delayed,
       callbackUrl: returnPath,
       handleTransferStream: api.transfer,

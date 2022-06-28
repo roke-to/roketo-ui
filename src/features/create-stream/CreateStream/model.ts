@@ -41,12 +41,19 @@ export const formValidationSchema = Yup.object().shape({
   deposit: Yup.number()
     .required('Deposit is required')
     .moreThan(0, 'Deposit should be more than 0'),
-  speed: Yup.number().required('Stream duration is required').moreThan(0, 'Choose stream duration'),
+  duration: Yup.number()
+    .required('Stream duration is required')
+    .moreThan(0, 'Choose stream duration'),
   autoStart: Yup.boolean(),
   comment: Yup.string().max(COMMENT_TEXT_LIMIT),
   isLocked: Yup.boolean(),
   color: Yup.string(),
   cliffDateTime: Yup.date()
     .nullable()
-    .test('futureDate', 'Date cannot be in the past', (value) => !value || value > new Date()),
+    .test('futureDate', 'Date cannot be in the past', (value) => !value || value > new Date())
+    .test(
+      'overCliff',
+      'Cliff period cannot be longer than stream duration',
+      (value, {parent}) => !value || value.getTime() < Date.now() + parent.duration * 1000,
+    ),
 });
