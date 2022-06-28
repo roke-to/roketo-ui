@@ -2,8 +2,9 @@ import BigNumber from 'bignumber.js';
 import {addMonths, differenceInDays} from 'date-fns';
 
 import type {RichToken} from '~/shared/api/ft';
-import {tokensPerMeaningfulPeriod} from '~/shared/api/ft/token-formatter';
+import {tokensPerMeaningfulPeriod, toYocto} from '~/shared/api/ft/token-formatter';
 import {SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE} from '~/shared/constants';
+import {TokenMetadata} from '~/shared/api/ft/types';
 
 export const getDurationInSeconds = (
   months: number,
@@ -19,7 +20,12 @@ export const getDurationInSeconds = (
   return durationInSeconds;
 };
 
-export const getTokensPerSecondCount = (depositInYocto: string, durationInSeconds: number) => {
+export const getTokensPerSecondCount = (
+  meta: TokenMetadata,
+  deposit: number,
+  durationInSeconds: number,
+) => {
+  const depositInYocto = toYocto(meta.decimals, deposit);
   const value = new BigNumber(depositInYocto).dividedToIntegerBy(durationInSeconds).toFixed();
 
   return value !== 'Infinity' && value !== 'NaN' ? value : '0';

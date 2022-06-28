@@ -19,8 +19,8 @@ import {ErrorSign} from '@ui/icons/ErrorSign';
 import {CliffPeriodPicker} from '../CliffPeriodPicker';
 import {ColorPicker} from '../ColorPicker';
 import {COMMENT_TEXT_LIMIT, FormValues, INITIAL_FORM_VALUES, StreamColor} from '../constants';
-import {getStreamingSpeed} from '../lib';
-import {StreamSpeedCalcField} from '../StreamSpeedCalcField';
+import {getStreamingSpeed, getTokensPerSecondCount} from '../lib';
+import {StreamDurationCalcField} from '../StreamDurationCalcField';
 import {TokenSelector} from '../TokenSelector';
 import {formValidationSchema} from './model';
 import styles from './styles.module.scss';
@@ -85,7 +85,12 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
             validateField(fieldName);
           };
 
-          const meaningfulSpeed = getStreamingSpeed(values.speed, token);
+          const rawSpeed = getTokensPerSecondCount(
+            tokenMeta,
+            values.deposit,
+            values.duration,
+          );
+          const meaningfulSpeed = getStreamingSpeed(rawSpeed, token);
 
           return (
             <form onSubmit={handleSubmit} className={styles.form}>
@@ -108,6 +113,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                 component={TokenSelector}
                 className={cn(styles.formBlock, styles.token)}
               />
+
               <Field
                 name="color"
                 label="Color:"
@@ -115,6 +121,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                 className={cn(styles.formBlock, styles.color)}
                 onChoose={(color: StreamColor) => onChoose('color', color)}
               />
+
               <Field
                 isRequired
                 name="deposit"
@@ -127,6 +134,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                 }
                 data-testid={testIds.createStreamAmountInput}
               />
+
               <Field
                 name="cliffDateTime"
                 label="Cliff period:"
@@ -136,14 +144,13 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                 }
                 className={cn(styles.formBlock, styles.cliff)}
               />
+
               <Field
-                tokenAccountId={activeTokenAccountId}
                 isRequired
-                name="speed"
+                name="duration"
                 label="Stream duration:"
-                deposit={values.deposit}
-                component={StreamSpeedCalcField}
-                onSpeedChange={(speed: string) => onChoose('speed', speed)}
+                component={StreamDurationCalcField}
+                onDurationChange={(duration: number) => onChoose('duration', duration)}
                 className={cn(styles.formBlock, styles.duration)}
               />
               <Field
