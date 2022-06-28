@@ -27,6 +27,7 @@ body > #root {
 
 .root-blur {
   filter: blur(5px);
+  overflow-x: clip;
 }
 
 * {
