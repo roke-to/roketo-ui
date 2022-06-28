@@ -50,5 +50,10 @@ export const formValidationSchema = Yup.object().shape({
   color: Yup.string(),
   cliffDateTime: Yup.date()
     .nullable()
-    .test('futureDate', 'Date cannot be in the past', (value) => !value || value > new Date()),
+    .test('futureDate', 'Date cannot be in the past', (value) => !value || value > new Date())
+    .test(
+      'overCliff',
+      'Cliff period cannot be longer than stream duration',
+      (value, {parent}) => !value || value.getTime() < Date.now() + parent.duration * 1000,
+    ),
 });
