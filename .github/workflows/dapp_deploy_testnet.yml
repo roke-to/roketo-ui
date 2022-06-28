@@ -1,7 +1,12 @@
-name: Build and deploy
-on: push
+name: Build and deploy Testnet
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - '**'
 jobs:
-  build-and-deploy:
+  build-and-deploy-testnet:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️

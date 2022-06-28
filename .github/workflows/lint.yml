@@ -1,27 +1,49 @@
 name: CI
-on: push
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - '**'
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  lint:
+    runs-on:
+      - ubuntu-latest
+
+    container:
+      image: node:lts-gallium
+      # https://github.com/actions/runner/issues/691
+      options: --user 1000
+
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - name: Get and set yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Global yarn cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-lint-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-lint
+      - name: Node modules root cache
+        uses: actions/cache@v3
+        with:
+          path: 'node_modules'
+          key: ${{ runner.os }}-yarn-lint-modules-${{ hashFiles('yarn.lock') }}
+      - name: Install dependencies
+        run: yarn
+      - name: Check code formatting with Prettier
+        run: yarn prettier:check
+      - name: Check code with ESLint
+        run: yarn lint:check
+  success:
+    needs:
+      - lint
 
-    - name: Set up Node.js ⚙️
-      uses: actions/setup-node@v2
-      with:
-        node-version: '18.x'
-        cache: 'yarn'
-        cache-dependency-path: yarn.lock
+    runs-on:
+      - Linux
 
-    - name: Set up SSH client 🔒
-      uses: webfactory/ssh-agent@v0.5.4
-      with:
-        ssh-private-key: ${{ secrets.API_CLIENT_KEY }}
-
-    - name: Install 🔧
-      working-directory: .
-      run: yarn
-
-    - name: Run ESLint 🌸
-      working-directory: .
-      run: yarn lint
+    steps:
+      - run: echo "Done"
