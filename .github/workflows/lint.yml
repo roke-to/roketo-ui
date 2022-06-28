@@ -32,8 +32,8 @@ jobs:
           key: ${{ runner.os }}-yarn-lint-modules-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies
         run: yarn
-      - name: Check code formatting with Prettier
-        run: yarn prettier:check
+      # - name: Check code formatting with Prettier
+      #   run: yarn prettier:check
       - name: Check code with ESLint
         run: yarn lint:check
   success:
