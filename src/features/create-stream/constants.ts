@@ -57,3 +57,21 @@ export const INITIAL_FORM_VALUES: FormValues = {
   cliffDateTime: null,
   color: 'none',
 };
+
+export type MassStreamingFormValues = {
+  receiversAndAmounts: string;
+  token: string;
+  isLocked: boolean;
+  color: StreamColor;
+  streamEndDateTime: Date | null;
+  cliffDateTime: Date | null;
+};
+
+export const MASS_STREAMING_INITIAL_FORM_VALUES: MassStreamingFormValues = {
+  receiversAndAmounts: '',
+  token: env.WNEAR_ID,
+  isLocked: false,
+  color: 'none',
+  streamEndDateTime: null,
+  cliffDateTime: null,
+};

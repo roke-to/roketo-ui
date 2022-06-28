@@ -1,0 +1,47 @@
+@import 'src/shared/ui/palette';
+
+.dropdownWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.dropdownOpener {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background-color: $white;
+  border: 1px solid $grey;
+
+  border-radius: 8px;
+  height: 50px;
+}
+
+.pickerOption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 8px;
+
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 30px;
+
+  & > :not(:last-child) {
+    margin-right: 6px;
+  }
+  &:hover {
+    background-color: #fbfcff;
+  }
+}
+
+.dropdownMenu {
+  margin-top: 10px;
+  position: absolute;
+
+  right: 50%;
+  transform: translateX(50%);
+  padding: 8px 16px;
+}

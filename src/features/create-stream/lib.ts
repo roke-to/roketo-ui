@@ -1,10 +1,13 @@
 import BigNumber from 'bignumber.js';
 import {addMonths, differenceInDays} from 'date-fns';
+import {attach} from 'effector';
+
+import {$accountId, $nearWallet} from '~/entities/wallet';
 
 import type {RichToken} from '~/shared/api/ft';
 import {tokensPerMeaningfulPeriod, toYocto} from '~/shared/api/ft/token-formatter';
-import {SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE} from '~/shared/constants';
 import {TokenMetadata} from '~/shared/api/ft/types';
+import {SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE} from '~/shared/constants';
 
 export const getDurationInSeconds = (
   months: number,
@@ -41,3 +44,25 @@ export const getStreamingSpeed = (speedInSeconds: number | string, token: RichTo
 
   return `${formattedValue} ${meta.symbol} / ${unit}`;
 };
+
+export const isReceiverNotEqualOwnerFx = attach({
+  source: $accountId,
+  effect: (accountId, value: string | undefined) => !!accountId && value !== accountId,
+});
+
+export const isAddressExistsFx = attach({
+  source: $nearWallet,
+  async effect(wallet, value: string | undefined) {
+    if (!wallet || !value) return false;
+    try {
+      const result = await wallet.near.connection.provider.query({
+        request_type: 'view_account',
+        finality: 'final',
+        account_id: value,
+      });
+      return Boolean(result);
+    } catch {
+      return false;
+    }
+  },
+});

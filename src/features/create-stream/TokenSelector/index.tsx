@@ -26,23 +26,26 @@ type TokenSelectorProps = {
 
   isRequired?: boolean;
   className?: string;
+  withNameOnly?: boolean;
 };
 
 const TokenOption = ({
   token,
   onClick,
   className,
+  withNameOnly,
 }: {
   token: RichToken;
   className?: string;
   onClick?: () => void;
+  withNameOnly: boolean;
 }) => {
   const classNames = cn(styles.tokenOption, className);
 
   const content = (
     <>
       <TokenImage tokenAccountId={token.roketoMeta.account_id} />
-      <span>{`${token.meta.name}, ${token.meta.symbol}`}</span>
+      <span>{withNameOnly ? token.meta.symbol : `${token.meta.name}, ${token.meta.symbol}`}</span>
     </>
   );
 
@@ -67,6 +70,7 @@ export const TokenSelector = (props: TokenSelectorProps) => {
     description,
     onTokenChoose,
     activeTokenAccountId,
+    withNameOnly = false,
   } = props;
 
   const tokens = useStore($tokens);
@@ -99,7 +103,7 @@ export const TokenSelector = (props: TokenSelectorProps) => {
           className={styles.dropdownOpener}
           opened={isDropdownOpened}
         >
-          <TokenOption token={activeToken} />
+          <TokenOption token={activeToken} withNameOnly={withNameOnly} />
         </DropdownOpener>
 
         <DropdownMenu
@@ -113,6 +117,7 @@ export const TokenSelector = (props: TokenSelectorProps) => {
               token={token}
               onClick={() => handleChooseTokenOptions(token)}
               className={styles.withHover}
+              withNameOnly={withNameOnly}
             />
           ))}
         </DropdownMenu>

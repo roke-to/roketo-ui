@@ -5,6 +5,7 @@
   height: var(--size-px);
   border-radius: calc(var(--size-px) / 2);
   background-color: var(--color, transparent);
+  border: calc(var(--border) * 1px) solid #a0c2f8;
   align-self: center;
   flex-shrink: 0;
 }

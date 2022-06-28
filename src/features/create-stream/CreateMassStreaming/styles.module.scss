@@ -1,0 +1,110 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  display: flex;
+
+  min-width: 1000px;
+
+  flex-direction: column;
+}
+
+.description {
+  font-size: 16px;
+  line-height: 24px;
+
+  margin-bottom: 25px;
+}
+
+.color {
+  max-width: 72px;
+}
+
+.meaningfulSpeed {
+  color: $bluish-grey;
+
+  text-align: center;
+
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.submitError {
+  display: flex;
+
+  align-items: center;
+
+  span {
+    color: $danger;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+
+    margin-left: 8px;
+  }
+}
+
+.feeDisclaimer {
+  margin-top: 48px;
+  color: $bluish-grey;
+
+  text-align: center;
+
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.limitationsDisclaimer {
+  margin-top: 48px;
+  color: $bluish-grey;
+
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.actionButtonsWrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 24px;
+
+  > :not(:first-child) {
+    margin-left: 16px;
+  }
+}
+
+.horizontalRow {
+  display: flex;
+  align-items: center;
+
+  > * {
+    margin-bottom: 24px;
+
+    &:not(:first-child) {
+      margin-left: 24px;
+    }
+  }
+}
+
+.withAllFlexy {
+  align-items: unset;
+
+  > * {
+    flex: 1;
+  }
+}
+
+.spaceBetween {
+  justify-content: space-between;
+}
+
+.verticalRow {
+  flex-direction: column;
+  align-items: unset;
+
+  > :not(:first-child) {
+    margin-left: unset;
+  }
+}

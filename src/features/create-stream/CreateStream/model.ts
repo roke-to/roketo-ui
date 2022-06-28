@@ -1,31 +1,8 @@
 import * as Yup from 'yup';
-import {attach} from 'effector';
 
-import {$accountId, $nearWallet} from '~/entities/wallet';
+import {isAddressExistsFx, isReceiverNotEqualOwnerFx} from '~/features/create-stream/lib';
 
 import {COMMENT_TEXT_LIMIT} from '../constants';
-
-const isReceiverNotEqualOwnerFx = attach({
-  source: $accountId,
-  effect: (accountId, value: string | undefined) => !!accountId && value !== accountId,
-});
-
-const isAddressExistsFx = attach({
-  source: $nearWallet,
-  async effect(wallet, value: string | undefined) {
-    if (!wallet || !value) return false;
-    try {
-      const result = await wallet.near.connection.provider.query({
-        request_type: 'view_account',
-        finality: 'final',
-        account_id: value,
-      });
-      return Boolean(result);
-    } catch {
-      return false;
-    }
-  },
-});
 
 export const formValidationSchema = Yup.object().shape({
   receiver: Yup.string()

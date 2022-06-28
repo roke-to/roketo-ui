@@ -85,11 +85,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
             validateField(fieldName);
           };
 
-          const rawSpeed = getTokensPerSecondCount(
-            tokenMeta,
-            values.deposit,
-            values.duration,
-          );
+          const rawSpeed = getTokensPerSecondCount(tokenMeta, values.deposit, values.duration);
           const meaningfulSpeed = getStreamingSpeed(rawSpeed, token);
 
           return (

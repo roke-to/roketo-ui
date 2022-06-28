@@ -15,7 +15,7 @@ export function ColorDot({
   return (
     <span
       className={cx(styles.colorDot, className)}
-      style={{'--color': color, '--size': size} as any}
+      style={{'--color': color, '--size': size, '--border': color === 'transparent' ? 2 : 0} as any}
     />
   );
 }
