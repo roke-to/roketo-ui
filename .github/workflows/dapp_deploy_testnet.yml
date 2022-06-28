@@ -1,10 +1,9 @@
 name: Build and deploy Testnet
 on:
-  push:
-    branches:
-      - '**'
-    tags:
-      - '**'
+  workflow_run:
+    workflows: ["CI tests"]
+    types:
+      - completed
 jobs:
   build-and-deploy-testnet:
     runs-on: ubuntu-latest

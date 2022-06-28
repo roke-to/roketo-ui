@@ -1,5 +1,9 @@
-name: tests
-on: [push]
+name: CI tests
+on:
+  workflow_run:
+    workflows: ["CI lint"]
+    types:
+      - completed
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
@@ -17,3 +21,13 @@ jobs:
             yarn build
             yarn preview
           wait-on: 'http://localhost:3000'
+
+  success:
+    needs:
+      - lint
+
+    runs-on:
+      - Linux
+
+    steps:
+      - run: echo "Done"

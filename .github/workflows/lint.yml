@@ -1,4 +1,4 @@
-name: CI
+name: CI lint
 on:
   push:
     branches:
@@ -12,8 +12,6 @@ jobs:
 
     container:
       image: node:lts-gallium
-      # https://github.com/actions/runner/issues/691
-      options: --user 1000
 
     steps:
       - uses: actions/checkout@v2
