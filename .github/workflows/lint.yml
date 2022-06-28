@@ -41,7 +41,7 @@ jobs:
       - lint
 
     runs-on:
-      - Linux
+      - ubuntu-latest
 
     steps:
       - run: echo "Done"
