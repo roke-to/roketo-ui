@@ -10,7 +10,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+      - run: git branch
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
