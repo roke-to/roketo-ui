@@ -2,8 +2,8 @@ import BigNumber from 'bignumber.js';
 
 import {streamViewData} from '~/features/roketo-resource';
 
-import {toHumanReadableValue} from '~/shared/api/ft/token-formatter';
 import {RichTokens} from '~/shared/api/ft';
+import {toHumanReadableValue} from '~/shared/api/ft/token-formatter';
 import {PriceOracle} from '~/shared/api/price-oracle';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {getAvailableToWithdraw} from '~/shared/api/roketo/lib';
