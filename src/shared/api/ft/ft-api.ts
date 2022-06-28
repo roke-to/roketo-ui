@@ -123,7 +123,7 @@ export class FTApi {
     ];
 
     let depositSumm = new BigNumber(0);
-    const depositAmmount = utils.format.parseNearAmount('0.00125') as string; // account creation costs 0.00125 NEAR for storage
+    const depositAmmount = utils.format.parseNearAmount('0.0025') as string; // account creation costs 0.0025 NEAR for storage
 
     if (!isRegisteredSender) {
       actions.unshift(
