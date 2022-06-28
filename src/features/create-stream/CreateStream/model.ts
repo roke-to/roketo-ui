@@ -10,7 +10,7 @@ const isReceiverNotEqualOwnerFx = attach({
   effect: (accountId, value: string | undefined) => !!accountId && value !== accountId,
 });
 
-const isAddressNotExistsFx = attach({
+const isAddressExistsFx = attach({
   source: $nearWallet,
   async effect(wallet, value: string | undefined) {
     if (!wallet || !value) return false;
@@ -35,7 +35,7 @@ export const formValidationSchema = Yup.object().shape({
       'Receiver can not be the same as the owner',
       isReceiverNotEqualOwnerFx,
     )
-    .test('receiver-is-valida-address', 'Address does not exists', isAddressNotExistsFx),
+    .test('receiver-is-valida-address', 'Address does not exists', isAddressExistsFx),
   streamName: Yup.string().max(100, 'Stream name must be less or equal 100 symbols'),
   token: Yup.string().required(),
   deposit: Yup.number()
