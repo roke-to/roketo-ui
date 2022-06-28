@@ -4,7 +4,7 @@ import {Account} from 'near-api-js';
 import {GAS_SIZE} from '~/shared/config';
 
 import {RoketoContract} from './interfaces/contracts';
-import {RoketoAccount, RoketoStream} from './interfaces/entities';
+import {FTTransferParams, RoketoAccount, RoketoStream} from './interfaces/entities';
 import {CreateStreamApiProps, RoketoApi, StreamsProps} from './interfaces/roketo-api';
 import {getEmptyAccount} from './lib';
 
@@ -80,7 +80,7 @@ export class RoketoContractApi implements RoketoApi {
     return res;
   }
 
-  async createStream({
+  createFTTransferParams({
     comment,
     deposit,
     receiverId,
@@ -91,12 +91,11 @@ export class RoketoContractApi implements RoketoApi {
     delayed = false,
     isExpirable,
     isLocked,
-    callbackUrl,
-    handleTransferStream,
     color,
-  }: CreateStreamApiProps) {
-    const totalAmount = new BigNumber(deposit).plus(commissionOnCreate).toFixed();
-    const transferPayload = {
+  }: CreateStreamApiProps): FTTransferParams {
+    const amount = new BigNumber(deposit).plus(commissionOnCreate).toFixed();
+
+    const payload = {
       balance: deposit,
       owner_id: this.account.accountId,
       receiver_id: receiverId,
@@ -112,10 +111,10 @@ export class RoketoContractApi implements RoketoApi {
       if (color) description.col = color;
       if (comment.length > 0) description.c = comment;
       // @ts-expect-error
-      transferPayload.description = JSON.stringify(description);
+      payload.description = JSON.stringify(description);
     }
 
-    return handleTransferStream(transferPayload, totalAmount, callbackUrl);
+    return {payload, amount};
   }
 
   async startStream({streamId}: {streamId: string}) {

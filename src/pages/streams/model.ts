@@ -24,7 +24,7 @@ export const handleCreateStreamFx = attach({
     const {api, roketoMeta, meta} = tokens[token];
     const tokensPerSec = getTokensPerSecondCount(meta, deposit, duration);
 
-    await roketo.api.createStream({
+    const ftTransferParams = roketo.api.createFTTransferParams({
       deposit: toYocto(meta.decimals, deposit),
       comment,
       receiverId: receiver,
@@ -32,13 +32,13 @@ export const handleCreateStreamFx = attach({
       commissionOnCreate: roketoMeta.commission_on_create,
       tokensPerSec,
       delayed,
-      callbackUrl: returnPath,
-      handleTransferStream: api.transfer,
       isLocked,
       cliffPeriodSec: cliffDateTime
         ? Math.floor((cliffDateTime.getTime() - Date.now()) / 1000)
         : undefined,
       color: color === 'none' ? null : colorDescriptions[color].color,
     });
+
+    await api.transferMany([ftTransferParams], returnPath);
   },
 });

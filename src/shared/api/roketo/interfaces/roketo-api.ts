@@ -1,5 +1,3 @@
-import {FTApi} from '~/shared/api/ft/ft-api';
-
 import {RoketoAccount, RoketoDao, RoketoStream} from './entities';
 
 export type CreateStreamApiProps = {
@@ -14,8 +12,6 @@ export type CreateStreamApiProps = {
   delayed?: boolean;
   isExpirable?: boolean;
   isLocked?: boolean;
-  callbackUrl?: string;
-  handleTransferStream: FTApi['transfer'];
   color: string | null;
 };
 

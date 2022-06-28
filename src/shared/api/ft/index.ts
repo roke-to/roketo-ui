@@ -1,4 +1,4 @@
-import {Account} from 'near-api-js';
+import {ConnectedWalletAccount} from 'near-api-js';
 
 import {TokenFormatter} from '~/features/legacy/ft-tokens/token-formatter';
 
@@ -20,7 +20,7 @@ export type RichTokens = {
 };
 
 type InitFRProps = {
-  account: Account;
+  account: ConnectedWalletAccount;
   tokens: RoketoDao['tokens'];
 };
 

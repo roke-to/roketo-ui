@@ -1,10 +1,12 @@
 import BigNumber from 'bignumber.js';
-import {Account, Contract, transactions, utils} from 'near-api-js';
+import {ConnectedWalletAccount, Contract, providers, transactions, utils} from 'near-api-js';
+import {AccessKeyView} from 'near-api-js/lib/providers/provider';
+import {Transaction} from 'near-api-js/lib/transaction';
 
 import {env} from '~/shared/config';
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 
-import {RoketoCreateRequest} from '../roketo/interfaces/entities';
+import {FTTransferParams} from '../roketo/interfaces/entities';
 import {TokenMetadata} from './types';
 
 type FTContract = Contract & {
@@ -33,9 +35,9 @@ export class FTApi {
 
   tokenAccountId: string;
 
-  account: Account;
+  account: ConnectedWalletAccount;
 
-  constructor(account: Account, tokenAccountId: string) {
+  constructor(account: ConnectedWalletAccount, tokenAccountId: string) {
     this.tokenAccountId = tokenAccountId;
     this.account = account;
 
@@ -98,77 +100,110 @@ export class FTApi {
     });
   };
 
-  transfer = async (payload: RoketoCreateRequest, amount: string, callbackUrl?: string) => {
-    const [isRegisteredSender, isRegisteredReceiver] = await Promise.all([
-      this.getIsRegistered(payload.owner_id),
-      this.getIsRegistered(payload.receiver_id),
-    ]);
-
-    const actions = [
-      transactions.functionCall(
-        'ft_transfer_call',
-        {
-          receiver_id: env.ROKETO_CONTRACT_NAME,
-          amount: new BigNumber(amount).toFixed(),
-          memo: 'Roketo transfer',
-          msg: JSON.stringify({
-            Create: {
-              request: payload,
-            },
-          }),
-        },
-        '100000000000000',
-        1,
-      ),
+  transferMany = async (transferParamsArray: FTTransferParams[], callbackUrl?: string) => {
+    const allAccountIds = [
+      transferParamsArray[0].payload.owner_id,
+      ...new Set(transferParamsArray.map(({payload}) => payload.receiver_id)),
     ];
 
-    let depositSumm = new BigNumber(0);
-    const depositAmmount = utils.format.parseNearAmount('0.00125') as string; // account creation costs 0.00125 NEAR for storage
+    const areAccountIdsRegistered = await Promise.all(
+      allAccountIds.map((accountId) => this.getIsRegistered(accountId)),
+    );
 
-    if (!isRegisteredSender) {
-      actions.unshift(
+    const registeredAccountIdsSet = new Set(
+      allAccountIds.filter((accountId, index) => areAccountIdsRegistered[index]),
+    );
+
+    const actionsArray = transferParamsArray.map(({payload, amount}) => {
+      const actions = [
         transactions.functionCall(
-          'storage_deposit',
-          {account_id: payload.owner_id},
-          '30000000000000',
-          depositAmmount,
+          'ft_transfer_call',
+          {
+            receiver_id: env.ROKETO_CONTRACT_NAME,
+            amount: new BigNumber(amount).toFixed(),
+            memo: 'Roketo transfer',
+            msg: JSON.stringify({
+              Create: {
+                request: payload,
+              },
+            }),
+          },
+          '100000000000000',
+          1,
         ),
-      );
+      ];
 
-      depositSumm = depositSumm.plus(depositAmmount);
-    }
+      let depositSum = new BigNumber(0);
+      const depositAmount = utils.format.parseNearAmount('0.00125') as string; // account creation costs 0.00125 NEAR for storage
 
-    if (!isRegisteredReceiver) {
-      actions.unshift(
-        transactions.functionCall(
-          'storage_deposit',
-          {account_id: payload.receiver_id},
-          '30000000000000',
-          depositAmmount,
-        ),
-      );
+      if (!registeredAccountIdsSet.has(payload.owner_id)) {
+        registeredAccountIdsSet.add(payload.owner_id);
 
-      depositSumm = depositSumm.plus(depositAmmount);
-    }
+        actions.unshift(
+          transactions.functionCall(
+            'storage_deposit',
+            {account_id: payload.owner_id},
+            '30000000000000',
+            depositAmount,
+          ),
+        );
 
-    if (isWNearTokenId(this.tokenAccountId)) {
-      actions.unshift(
-        transactions.functionCall(
-          'near_deposit',
-          {},
-          '30000000000000',
-          new BigNumber(amount).plus(depositSumm).toFixed(),
-        ),
-      );
-    }
+        depositSum = depositSum.plus(depositAmount);
+      }
 
-    // @ts-ignore
-    const res = this.account.signAndSendTransaction({
-      receiverId: this.tokenAccountId,
-      walletCallbackUrl: callbackUrl,
-      actions,
+      if (!registeredAccountIdsSet.has(payload.receiver_id)) {
+        registeredAccountIdsSet.add(payload.receiver_id);
+
+        actions.unshift(
+          transactions.functionCall(
+            'storage_deposit',
+            {account_id: payload.receiver_id},
+            '30000000000000',
+            depositAmount,
+          ),
+        );
+
+        depositSum = depositSum.plus(depositAmount);
+      }
+
+      if (isWNearTokenId(this.tokenAccountId)) {
+        actions.unshift(
+          transactions.functionCall(
+            'near_deposit',
+            {},
+            '30000000000000',
+            new BigNumber(amount).plus(depositSum).toFixed(),
+          ),
+        );
+      }
+
+      return actions;
     });
 
-    return res;
+    const keyPair = await this.account.walletConnection._keyStore.getKey(
+      env.NEAR_NETWORK_ID,
+      this.account.accountId,
+    );
+    const publicKey = keyPair.getPublicKey();
+
+    const accessKey = await new providers.JsonRpcProvider(env.NEAR_NODE_URL).query<AccessKeyView>(
+      `access_key/${this.account.accountId}/${publicKey.toString()}`,
+      '',
+    );
+
+    return this.account.walletConnection.requestSignTransactions({
+      transactions: actionsArray.map(
+        (actions, index) =>
+          new Transaction({
+            signerId: this.account.accountId,
+            publicKey,
+            nonce: accessKey.nonce + index + 1,
+            receiverId: this.tokenAccountId,
+            actions,
+            blockHash: utils.serialize.base_decode(accessKey.block_hash),
+          }),
+      ),
+      callbackUrl,
+    });
   };
 }

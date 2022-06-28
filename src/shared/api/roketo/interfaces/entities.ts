@@ -108,3 +108,8 @@ export type RoketoCreateRequest = {
   is_expirable?: boolean;
   is_locked?: boolean;
 };
+
+export type FTTransferParams = {
+  payload: RoketoCreateRequest;
+  amount: string;
+};
