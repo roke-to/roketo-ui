@@ -26,6 +26,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  max-height: min(100vh - 150px, 70vh);
   overflow-x: hidden;
   overflow-y: auto;
   border-radius: 16px;
@@ -121,5 +122,8 @@
     --icon-width: 36px;
     padding-bottom: 16px;
     column-gap: 12px;
+  }
+  .container {
+    max-height: unset;
   }
 }
