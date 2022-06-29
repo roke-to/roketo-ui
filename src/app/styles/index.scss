@@ -12,11 +12,22 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.body-blur {
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
 body > #root {
   min-height: 100vh;
   background-color: #fdfdfd;
   display: flex;
   flex-direction: column;
+}
+
+.root-blur {
+  filter: blur(5px);
+  overflow-x: clip;
 }
 
 * {
