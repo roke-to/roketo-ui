@@ -3,6 +3,7 @@ import {generatePath} from 'react-router-dom';
 
 import {colorDescriptions} from '~/features/create-stream/constants';
 import type {FormValues} from '~/features/create-stream/constants';
+import {getTokensPerSecondCount} from '~/features/create-stream/lib';
 
 import {$nearWallet, $roketoWallet} from '~/entities/wallet';
 
@@ -19,9 +20,10 @@ export const handleCreateStreamFx = createProtectedEffect({
     !!roketo && !!near ? {roketo, near} : null,
   ),
   async fn({roketo: {tokens, transactionMediator, accountId}, near: {auth}}, values: FormValues) {
-    const {receiver, delayed, comment, deposit, speed, token, isLocked, cliffDateTime, color} =
+    const {receiver, delayed, comment, deposit, duration, token, isLocked, cliffDateTime, color} =
       values;
     const {roketoMeta, tokenContract, meta} = tokens[token];
+    const tokensPerSec = getTokensPerSecondCount(meta, deposit, duration);
     const creator = () =>
       createStream({
         deposit: toYocto(meta.decimals, deposit),
@@ -29,7 +31,7 @@ export const handleCreateStreamFx = createProtectedEffect({
         receiverId: receiver,
         tokenAccountId: token,
         commissionOnCreate: roketoMeta.commission_on_create,
-        tokensPerSec: speed,
+        tokensPerSec,
         delayed,
         callbackUrl: returnPath,
         isLocked,

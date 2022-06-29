@@ -194,8 +194,8 @@ export async function transfer({
   ];
 
   let depositSumm = new BigNumber(0);
-  /** account creation costs 0.00125 NEAR for storage */
-  const depositAmmount = utils.format.parseNearAmount('0.00125')!;
+  /** account creation costs 0.0025 NEAR for storage */
+  const depositAmmount = utils.format.parseNearAmount('0.0025')!;
 
   if (!isRegisteredSender) {
     actions.unshift(

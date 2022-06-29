@@ -1,11 +1,7 @@
 import cn from 'classnames';
-import {useStore} from 'effector-react';
 import {FieldInputProps, FormikState} from 'formik';
 import React, {ChangeEvent, Dispatch, SetStateAction, useEffect, useState} from 'react';
 
-import {$tokens} from '~/entities/wallet';
-
-import {toYocto} from '~/shared/api/token-formatter';
 import {testIds} from '~/shared/constants';
 import {usePrev} from '~/shared/hooks/usePrev';
 import {isLikeNumber} from '~/shared/lib/validation';
@@ -13,10 +9,10 @@ import {isLikeNumber} from '~/shared/lib/validation';
 import {FormField} from '@ui/components/FormField';
 import {Input} from '@ui/components/Input';
 
-import {getDurationInSeconds, getTokensPerSecondCount} from '../lib';
+import {getDurationInSeconds} from '../lib';
 import styles from './styles.module.scss';
 
-type SpeedInputProps = {
+type DurationInputProps = {
   label: string;
   value: number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -24,8 +20,8 @@ type SpeedInputProps = {
   testId: string;
 };
 
-const SpeedInput = ({className, value, onChange, label, testId}: SpeedInputProps) => (
-  <div className={cn(styles.speedInput, className)}>
+const DurationInput = ({className, value, onChange, label, testId}: DurationInputProps) => (
+  <div className={cn(styles.durationInput, className)}>
     <Input
       placeholder="0"
       value={value}
@@ -37,10 +33,8 @@ const SpeedInput = ({className, value, onChange, label, testId}: SpeedInputProps
   </div>
 );
 
-type StreamSpeedCalcFieldProps = {
-  deposit: number;
-  tokenAccountId: string;
-  onSpeedChange: (speed: string) => void;
+type StreamDurationCalcFieldProps = {
+  onDurationChange: (duration: number) => void;
 
   field: FieldInputProps<any>;
   form: FormikState<any>;
@@ -52,21 +46,8 @@ type StreamSpeedCalcFieldProps = {
   className?: string;
 };
 
-export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
-  const {
-    form,
-    field,
-    label,
-    deposit,
-    className,
-    isRequired,
-    description,
-    onSpeedChange,
-    tokenAccountId,
-  } = props;
-
-  const tokens = useStore($tokens);
-  const token = tokens[tokenAccountId];
+export const StreamDurationCalcField = (props: StreamDurationCalcFieldProps) => {
+  const {form, field, label, className, isRequired, description, onDurationChange} = props;
 
   const error = form.errors[field.name];
 
@@ -75,16 +56,14 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
   const [minutes, setMinutes] = useState(0);
   const [hours, setHours] = useState(0);
 
-  const depositInYocto = token ? toYocto(token.meta.decimals, deposit) : '0';
   const durationInSeconds = getDurationInSeconds(months, days, hours, minutes);
-  const tokensPerSec = getTokensPerSecondCount(depositInYocto, durationInSeconds);
-  const prevSpeed = usePrev(tokensPerSec);
+  const prevDuration = usePrev(durationInSeconds);
 
   useEffect(() => {
-    if (prevSpeed !== tokensPerSec) {
-      onSpeedChange(tokensPerSec);
+    if (prevDuration !== durationInSeconds) {
+      onDurationChange(durationInSeconds);
     }
-  }, [tokensPerSec, onSpeedChange, prevSpeed]);
+  }, [durationInSeconds, onDurationChange, prevDuration]);
 
   const handleInputChangeFactory =
     (setValue: Dispatch<SetStateAction<number>>, valueLimit: number) =>
@@ -107,25 +86,25 @@ export const StreamSpeedCalcField = (props: StreamSpeedCalcFieldProps) => {
       error={error}
     >
       <div className={styles.wrapper}>
-        <SpeedInput
+        <DurationInput
           value={months}
           onChange={handleInputChangeFactory(setMonths, 12)}
           label="Months, max: 12"
           testId={testIds.createStreamMonthsInput}
         />
-        <SpeedInput
+        <DurationInput
           value={days}
           onChange={handleInputChangeFactory(setDays, 31)}
           label="Days, max: 31"
           testId={testIds.createStreamDaysInput}
         />
-        <SpeedInput
+        <DurationInput
           value={hours}
           onChange={handleInputChangeFactory(setHours, 24)}
           label="Hours, max: 24"
           testId={testIds.createStreamHoursInput}
         />
-        <SpeedInput
+        <DurationInput
           value={minutes}
           onChange={handleInputChangeFactory(setMinutes, 60)}
           label="Minutes, max: 60"
