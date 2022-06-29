@@ -65,8 +65,10 @@ async function createSenderWalletInstance(): Promise<{
             derivationPaths: [],
             methodNames: ['start_stream', 'pause_stream', 'stop_stream', 'withdraw'],
           });
+          localStorage.setItem('profileType', 'sender');
         },
         async logout() {
+          localStorage.setItem('profileType', 'none');
           await sdrWallet.signOut();
         },
         transactionMediator: senderTransactionMediator,
@@ -118,10 +120,12 @@ async function createNearWalletInstance(): Promise<{
       signedIn: !!accountId,
       accountId,
       async login() {
+        localStorage.setItem('profileType', 'near');
         const appTitle = 'Roketo Token Streaming Service';
         await walletConnection.requestSignIn(env.ROKETO_CONTRACT_NAME, appTitle);
       },
       async logout() {
+        localStorage.setItem('profileType', 'none');
         await walletConnection.signOut();
       },
       transactionMediator: nearTransactionMediator,
@@ -134,18 +138,39 @@ export async function createNearInstance(walletType: 'any' | 'near' | 'sender' =
     case 'sender': {
       const result = await createSenderWalletInstance();
       if (!result) throw Error('Sender wallet is not installed');
+      localStorage.setItem('profileType', 'sender');
       return result;
     }
-    case 'near':
+    case 'near': {
+      localStorage.setItem('profileType', 'near');
       return createNearWalletInstance();
+    }
     case 'any':
     default: {
-      const nearWallet = await createNearWalletInstance();
-      if (!nearWallet.auth.signedIn) {
-        const senderWallet = await createSenderWalletInstance();
-        return senderWallet ?? nearWallet;
+      let profileType = localStorage.getItem('profileType');
+      if (!profileType) {
+        profileType = 'none';
+        localStorage.setItem('profileType', 'none');
       }
-      return nearWallet;
+      switch (profileType) {
+        case 'sender': {
+          const senderWallet = await createSenderWalletInstance();
+          if (senderWallet) return senderWallet;
+          const nearWallet = await createNearWalletInstance();
+          localStorage.setItem('profileType', nearWallet.auth.signedIn ? 'near' : 'none');
+          return nearWallet;
+        }
+        case 'near':
+          return createNearWalletInstance();
+        case 'none':
+        default: {
+          const nearWallet = await createNearWalletInstance();
+          if (nearWallet.auth.signedIn) {
+            localStorage.setItem('profileType', 'near');
+          }
+          return nearWallet;
+        }
+      }
     }
   }
 }
