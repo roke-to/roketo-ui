@@ -15,7 +15,7 @@ const isAddressNotExistsFx = attach({
   async effect(wallet, value: string | undefined) {
     if (!wallet || !value) return false;
     try {
-      const result = await wallet.near.connection.provider.query({
+      const result = await wallet.auth.account.connection.provider.query({
         request_type: 'view_account',
         finality: 'final',
         account_id: value,

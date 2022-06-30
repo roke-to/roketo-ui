@@ -3,7 +3,7 @@ import React from 'react';
 
 import {$nearWallet, $priceOracle} from '~/entities/wallet';
 
-import {formatAmount} from '~/shared/api/ft/token-formatter';
+import {formatAmount} from '~/shared/api/token-formatter';
 import {useToken} from '~/shared/hooks/useToken';
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 

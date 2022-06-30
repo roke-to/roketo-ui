@@ -5,7 +5,7 @@ import React, {useState} from 'react';
 
 import {$tokens} from '~/entities/wallet';
 
-import {formatAmount} from '~/shared/api/ft/token-formatter';
+import {formatAmount} from '~/shared/api/token-formatter';
 import {Balance, DisplayMode} from '~/shared/components/Balance';
 import {FormikCheckbox} from '~/shared/components/FormikCheckbox';
 import {FormikInput} from '~/shared/components/FormikInput';
@@ -28,6 +28,7 @@ import styles from './styles.module.scss';
 type CreateStreamProps = {
   onFormSubmit: (values: FormValues) => Promise<void>;
   onFormCancel: () => void;
+  submitting: boolean;
 };
 
 const DELAYED_DESCRIPTION = (
@@ -54,7 +55,7 @@ const LOCK_DESCRIPTION = (
   </div>
 );
 
-export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) => {
+export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStreamProps) => {
   const tokens = useStore($tokens);
   const [submitError, setError] = useState<Error | null>(null);
 
@@ -85,11 +86,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
             validateField(fieldName);
           };
 
-          const rawSpeed = getTokensPerSecondCount(
-            tokenMeta,
-            values.deposit,
-            values.duration,
-          );
+          const rawSpeed = getTokensPerSecondCount(tokenMeta, values.deposit, values.duration);
           const meaningfulSpeed = getStreamingSpeed(rawSpeed, token);
 
           return (
@@ -204,6 +201,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   displayMode={ButtonDisplayMode.simple}
                   onClick={onFormCancel}
                   testId={testIds.createStreamCancelButton}
+                  disabled={submitting}
                 >
                   Cancel
                 </Button>
@@ -212,8 +210,9 @@ export const CreateStream = ({onFormCancel, onFormSubmit}: CreateStreamProps) =>
                   type={ButtonType.submit}
                   displayMode={ButtonDisplayMode.action}
                   testId={testIds.createStreamSubmitButton}
+                  disabled={submitting}
                 >
-                  Create
+                  {submitting ? 'Creating...' : 'Create'}
                 </Button>
               </div>
             </form>

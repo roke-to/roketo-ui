@@ -4,12 +4,12 @@ import React from 'react';
 
 import {streamViewData} from '~/features/roketo-resource';
 
+import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {
   formatSmartly,
   toHumanReadableValue,
   tokensPerMeaningfulPeriod,
-} from '~/shared/api/ft/token-formatter';
-import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
+} from '~/shared/api/token-formatter';
 import {testIds} from '~/shared/constants';
 import {useToken} from '~/shared/hooks/useToken';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';

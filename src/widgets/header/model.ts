@@ -2,7 +2,7 @@ import {combine} from 'effector';
 
 import {$priceOracle, $roketoWallet} from '~/entities/wallet';
 
-import {toHumanReadableValue} from '~/shared/api/ft/token-formatter';
+import {toHumanReadableValue} from '~/shared/api/token-formatter';
 import {TimePeriod} from '~/shared/constants';
 import {getBalancePerDesiredPeriod} from '~/shared/lib/speed';
 
@@ -17,10 +17,10 @@ export const $totalUSDAmountPerHour = combine(
         [StreamType.income]: 0,
         [StreamType.outcome]: 0,
       };
-    const {roketo, tokens} = wallet;
+    const {roketoAccount, tokens} = wallet;
     const {getPriceInUsd} = priceOracle;
     function calculateTotalAmount(type: StreamType) {
-      const tokensBalanceMap = roketo.account[type];
+      const tokensBalanceMap = roketoAccount[type];
       const tokenAccountIds = Object.keys(tokensBalanceMap);
 
       return tokenAccountIds.reduce((total, tokenAccountId) => {

@@ -1,6 +1,24 @@
+@import 'src/shared/ui/palette';
+
 .root {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.root[disabled] {
+  background-color: $light-grey;
+  border-color: $light-grey;
+  cursor: not-allowed;
+}
+
+.root:not(:last-of-type) {
+  margin-bottom: 16px;
+}
+
+.logo {
+  width: 24px;
 }
 
 .name {
@@ -9,12 +27,15 @@
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
-  margin-right: 12px;
 
-  white-space: nowrap;
-  overflow: hidden;
   display: inline-block;
-  text-overflow: ellipsis;
+}
+
+/* Phone, portrait */
+@media (max-width: 575px) {
+  .name {
+    font-size: 16px;
+  }
 }
 
 .logoutButton {

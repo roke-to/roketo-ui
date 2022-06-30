@@ -1,14 +1,15 @@
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import {format} from 'date-fns';
+import {useStore} from 'effector-react';
 import React, {useState} from 'react';
 import Modal from 'react-modal';
 
 import {streamViewData} from '~/features/roketo-resource';
 
-import {toYocto} from '~/shared/api/ft/token-formatter';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {hasPassedCliff, isLocked} from '~/shared/api/roketo/lib';
+import {toYocto} from '~/shared/api/token-formatter';
 import {Balance, useBalanceForToken} from '~/shared/components/Balance';
 import {useBool} from '~/shared/hooks/useBool';
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
@@ -17,6 +18,7 @@ import {useToken} from '~/shared/hooks/useToken';
 import {Button, ButtonType, DisplayMode} from '@ui/components/Button';
 import {Input} from '@ui/components/Input';
 
+import {addFundsFx} from './model';
 import styles from './styles.module.scss';
 
 export function useShouldShowAddFundsButton(stream: RoketoStream) {
@@ -48,6 +50,7 @@ export function AddFunds({stream, small}: AddFundsProps) {
   const shouldShowAddFundsButton = !isStreamEnded && hasPassedCliff(stream);
 
   const token = useToken(stream.token_account_id);
+  const submitting = useStore(addFundsFx.pending);
 
   let dueDate: string | null = null;
   if (hasValidAdditionalFunds && streamEndTimestamp) {
@@ -70,15 +73,15 @@ export function AddFunds({stream, small}: AddFundsProps) {
         >
           <form
             autoComplete="off"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-
-              if (!hasValidAdditionalFunds) {
-                return;
-              }
-
-              const amount = toYocto(token.meta.decimals, deposit);
-              token.api.addFunds(amount, stream.id, window.location.href);
+              await addFundsFx({
+                streamId: stream.id,
+                hasValidAdditionalFunds,
+                tokenAccountId: stream.token_account_id,
+                deposit,
+              });
+              addFundsModal.turnOff();
             }}
           >
             <h2 className={styles.modalHeader}>Amount to deposit</h2>
@@ -111,15 +114,16 @@ export function AddFunds({stream, small}: AddFundsProps) {
                 type="button"
                 onClick={addFundsModal.turnOff}
                 className={classNames(styles.modalButton, styles.modalSecondary)}
+                disabled={submitting}
               >
                 Cancel
               </button>
               <Button
                 type={ButtonType.submit}
                 className={styles.modalButton}
-                disabled={!hasValidAdditionalFunds || isStreamEnded}
+                disabled={!hasValidAdditionalFunds || isStreamEnded || submitting}
               >
-                Add funds
+                {submitting ? 'Adding...' : 'Add funds'}
               </Button>
             </div>
           </form>

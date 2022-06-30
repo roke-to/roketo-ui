@@ -2,18 +2,18 @@ import BigNumber from 'bignumber.js';
 
 import {streamViewData} from '~/features/roketo-resource';
 
-import {RichTokens} from '~/shared/api/ft';
-import {toHumanReadableValue} from '~/shared/api/ft/token-formatter';
-import {PriceOracle} from '~/shared/api/price-oracle';
-import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
+import type {PriceOracle} from '~/shared/api/price-oracle';
+import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {getAvailableToWithdraw} from '~/shared/api/roketo/lib';
+import {toHumanReadableValue} from '~/shared/api/token-formatter';
+import type {RichToken} from '~/shared/api/types';
 
 const INITIAL_VALUE = new BigNumber(0);
 const MANTISSA = 3;
 
 export const countTotalUSDWithdrawal = (
   streams: RoketoStream[],
-  tokens: RichTokens,
+  tokens: Record<string, RichToken>,
   priceOracle: PriceOracle,
 ) => {
   const availableForWithdrawal = streams.reduce((withdrawalSum, inputStream) => {
@@ -33,7 +33,7 @@ export const countTotalUSDWithdrawal = (
 
 export const collectTotalFinancialAmountInfo = (
   streams: RoketoStream[],
-  tokens: RichTokens,
+  tokens: Record<string, RichToken>,
   priceOracle: PriceOracle,
 ) => {
   const initialInfo = {total: INITIAL_VALUE, streamed: INITIAL_VALUE, withdrawn: INITIAL_VALUE};

@@ -273,26 +273,81 @@ export function getStream({streamId, contract}: {streamId: string; contract: Rok
   return contract.get_stream({stream_id: streamId});
 }
 
-export function startStream({streamId, contract}: {streamId: string; contract: RoketoContract}) {
-  return contract.start_stream({stream_id: streamId}, GAS_SIZE, '1');
+function createChangeFunctionCall(
+  mediator: TransactionMediator,
+  methodName: string,
+  args: object | Uint8Array,
+  gas: string,
+  deposit: string,
+) {
+  return mediator.signAndSendTransaction({
+    receiverId: env.ROKETO_CONTRACT_NAME,
+    actions: [mediator.functionCall(methodName, args, gas, deposit)],
+  });
 }
 
-export function pauseStream({streamId, contract}: {streamId: string; contract: RoketoContract}) {
-  return contract.pause_stream({stream_id: streamId}, GAS_SIZE, '1');
+export function startStream({
+  streamId,
+  transactionMediator,
+}: {
+  streamId: string;
+  transactionMediator: TransactionMediator;
+}) {
+  return createChangeFunctionCall(
+    transactionMediator,
+    'start_stream',
+    {stream_id: streamId},
+    GAS_SIZE,
+    '1',
+  );
 }
 
-export function stopStream({streamId, contract}: {streamId: string; contract: RoketoContract}) {
-  return contract.stop_stream({stream_id: streamId}, GAS_SIZE, '1');
+export function pauseStream({
+  streamId,
+  transactionMediator,
+}: {
+  streamId: string;
+  transactionMediator: TransactionMediator;
+}) {
+  return createChangeFunctionCall(
+    transactionMediator,
+    'pause_stream',
+    {stream_id: streamId},
+    GAS_SIZE,
+    '1',
+  );
+}
+
+export function stopStream({
+  streamId,
+  transactionMediator,
+}: {
+  streamId: string;
+  transactionMediator: TransactionMediator;
+}) {
+  return createChangeFunctionCall(
+    transactionMediator,
+    'stop_stream',
+    {stream_id: streamId},
+    GAS_SIZE,
+    '1',
+  );
 }
 
 export function withdrawStreams({
   streamIds,
-  contract,
+  transactionMediator,
 }: {
   streamIds: string[];
-  contract: RoketoContract;
+  transactionMediator: TransactionMediator;
 }) {
-  return contract.withdraw({stream_ids: streamIds}, GAS_SIZE, '1');
+  return createChangeFunctionCall(
+    transactionMediator,
+    'withdraw',
+    {stream_ids: streamIds},
+    GAS_SIZE,
+    '1',
+  );
 }
 
 export function createStream({

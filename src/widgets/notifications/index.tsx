@@ -10,7 +10,7 @@ import {streamViewData} from '~/features/roketo-resource';
 import {blurGate} from '~/entities/blur';
 import {$notifications} from '~/entities/wallet';
 
-import {formatAmount} from '~/shared/api/ft/token-formatter';
+import {formatAmount} from '~/shared/api/token-formatter';
 import {testIds} from '~/shared/constants';
 import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
