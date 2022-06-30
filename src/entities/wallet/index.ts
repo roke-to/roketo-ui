@@ -141,6 +141,9 @@ export const loginFx = attach({
       await wallet?.auth.logout();
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       await createNearWalletFx(walletType);
+    } else if (!wallet) {
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      await createNearWalletFx(walletType);
     }
     await loginRawFx();
   },
