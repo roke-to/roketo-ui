@@ -13,13 +13,13 @@ import {WithdrawButton} from '~/features/stream-control/WithdrawButton';
 
 import {$tokens} from '~/entities/wallet';
 
-import {STREAM_STATUS} from '~/shared/api/roketo/constants';
+import {STREAM_DIRECTION, STREAM_STATUS} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {getAvailableToWithdraw, hasPassedCliff, isDead, isIdling} from '~/shared/api/roketo/lib';
 import {formatAmount, formatSmartly, toHumanReadableValue} from '~/shared/api/token-formatter';
 import {Badge} from '~/shared/components/Badge';
 import {PageError} from '~/shared/components/PageError';
-import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
+import {useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 import {useRerender} from '~/shared/hooks/useRerender';
 import {ColorDot} from '~/shared/kit/ColorDot';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';

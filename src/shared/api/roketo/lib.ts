@@ -1,10 +1,10 @@
-import BigNumber from 'bignumber.js';
+import {BigNumber} from 'bignumber.js';
 import {millisecondsToSeconds} from 'date-fns';
 
 import {fromNanosecToSec} from '~/shared/lib/date';
 
-import {STREAM_STATUS} from './constants';
-import {RoketoAccount, RoketoStream} from './interfaces/entities';
+import {STREAM_DIRECTION, STREAM_STATUS} from './constants';
+import type {RoketoStream} from './interfaces/entities';
 
 export const isActiveStream = (stream: RoketoStream) => stream.status === STREAM_STATUS.Active;
 export const isPausedStream = (stream: RoketoStream) => stream.status === STREAM_STATUS.Paused;
@@ -45,16 +45,12 @@ export function wasStartedAndLocked(stream: RoketoStream) {
   return isLocked(stream) && stream.status !== STREAM_STATUS.Initialized;
 }
 
-export const getEmptyAccount = (): RoketoAccount => ({
-  active_incoming_streams: 0,
-  active_outgoing_streams: 0,
-  deposit: '0',
-  inactive_incoming_streams: 0,
-  inactive_outgoing_streams: 0,
-  is_cron_allowed: true,
-  last_created_stream: 'any',
-  stake: '0',
-  total_incoming: {},
-  total_outgoing: {},
-  total_received: {},
-});
+export function getStreamDirection(stream: RoketoStream, accountId: string | null) {
+  if (stream.receiver_id === accountId) {
+    return STREAM_DIRECTION.IN;
+  }
+  if (stream.owner_id === accountId) {
+    return STREAM_DIRECTION.OUT;
+  }
+  return null;
+}
