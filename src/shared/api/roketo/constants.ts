@@ -4,3 +4,8 @@ export const STREAM_STATUS = {
   Paused: 'Paused',
   Finished: 'Finished',
 } as const;
+
+export const STREAM_DIRECTION = {
+  IN: 'in',
+  OUT: 'out',
+} as const;

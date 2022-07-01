@@ -2,8 +2,9 @@ import cn from 'classnames';
 import React, {memo} from 'react';
 import {generatePath, Link} from 'react-router-dom';
 
-import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
+import {STREAM_DIRECTION} from '~/shared/api/roketo/constants';
+import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
+import {useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 import {ColorDot} from '~/shared/kit/ColorDot';
 import {ROUTES_MAP} from '~/shared/lib/routing';
 
