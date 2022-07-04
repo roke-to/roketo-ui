@@ -175,8 +175,8 @@ const createPriceOracleFx = createEffect((account: ConnectedWalletAccount) =>
 const requestAccountStreamsFx = createEffect(
   async ({accountId, contract}: Pick<ApiControl, 'accountId' | 'contract'>) => {
     const [inputs, outputs] = await Promise.all([
-      getIncomingStreams({from: 0, limit: 100, accountId, contract}),
-      getOutgoingStreams({from: 0, limit: 100, accountId, contract}),
+      getIncomingStreams({from: 0, limit: 2000, accountId, contract}),
+      getOutgoingStreams({from: 0, limit: 2000, accountId, contract}),
     ]);
     return {inputs, outputs};
   },
