@@ -7,6 +7,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Install and check testIds 🔧
+        working-directory: .
+        run: |
+          yarn install --frozen-lockfile --silent
+          yarn testIds:check
+
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
