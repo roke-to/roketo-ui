@@ -75,7 +75,8 @@ export function StreamFilters({items, onFilterDone, className}: StreamFiltersPro
         const comment =
           (() => {
             try {
-              return JSON.parse(description).comment;
+              const parsedDescription = JSON.parse(description);
+              return parsedDescription.comment ?? parsedDescription.c;
             } catch {
               return description;
             }
