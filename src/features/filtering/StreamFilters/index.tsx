@@ -86,7 +86,7 @@ export function StreamFilters({items, onFilterDone, className}: StreamFiltersPro
 
         return comment.includes(trimmedFilterText) || counterActor.match(trimmedFilterText);
       }),
-    [filteredItems, filterText],
+    [accountId, filteredItems, filterText],
   );
 
   useEffect(() => {
