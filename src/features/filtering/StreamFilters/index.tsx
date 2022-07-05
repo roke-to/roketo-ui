@@ -132,11 +132,7 @@ export function StreamFilters({items, onFilterDone, className}: StreamFiltersPro
 
   return (
     <div className={classNames(styles.root, className)}>
-      {isSmallForTextFilter && (
-        <div className={styles.smallFilterWrapper}>
-          {textFilter}
-        </div>
-      )}
+      {isSmallForTextFilter && <div className={styles.smallFilterWrapper}>{textFilter}</div>}
 
       <DirectionSorts
         directions={filter.directionFilter.optionsArray}
