@@ -1,92 +1,116 @@
 @import 'src/shared/ui/palette';
 
 .root {
-  padding: 75px 0;
-
-  box-shadow: inset 0px 1px 0px #e9ebf0;
-  background-color: white;
-}
-
-.layout {
   display: flex;
-  align-items: stretch;
-  flex-direction: column;
+  justify-content: center;
+  background-color: $paper-neutral;
+  border-top: 1px solid $paper-border;
 
-  gap: 50px;
-
-  // Divider
-  &::before {
-    content: '';
-    border-top: 1px solid #e9ebf0;
-    border-radius: 3px;
-  }
-}
-
-.section {
-  flex: 1;
-
-  display: flex;
-  justify-content: space-between;
-
+  color: $grey;
   font-size: 14px;
   line-height: 22px;
 
-  color: $grey;
+  padding-top: 24px;
+  padding-bottom: 32px;
+  padding-left: 38px;
+  padding-right: 38px;
 
-  // To make divider appear between two sections
-  &:first-child {
-    order: -1;
+  @media (min-width: 1024px) {
+    padding-top: 48px;
+    padding-bottom: 80px;
+    padding-left: 128px;
+    padding-right: 128px;
   }
 }
 
-.logo {
-  max-width: 55px;
-  color: $light-black;
+.container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto auto;
+  row-gap: 24px;
+  column-gap: 42px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    row-gap: 24px;
+    column-gap: initial;
+  }
 }
 
 .links {
   display: flex;
+  gap: 4px;
+  justify-content: space-between;
+  grid-column: span 2;
 
-  gap: 35px;
+  @media (min-width: 512px) {
+    justify-content: center;
+  }
 
-  & > * {
-    font-weight: 500;
+  @media (min-width: 768px) {
+    grid-column: auto;
+  }
+
+  a {
+    color: $link-color;
+    opacity: 0.6;
+    padding: 0 10px;
 
     &:hover {
-      color: $bluish-grey;
+      opacity: 1;
     }
   }
 }
 
-.legal {
-  display: flex;
-  gap: 25px;
+.logo {
+  order: 1;
 
-  & > * {
-    font-weight: 400;
-    font-size: 12px;
+  @media (min-width: 768px) {
+    order: initial;
+  }
 
-    &:hover {
-      color: $bluish-grey;
-    }
+  .roketo {
+    height: 24px;
+    color: $light-black;
   }
 }
 
 .socials {
   display: flex;
-  gap: 25px;
+  justify-content: flex-start;
+  gap: 24px;
+  order: 2;
 
-  & > * {
-    max-width: 24px;
+  @media (min-width: 512px) {
+    justify-content: end;
+  }
 
-    color: $light-black;
+  @media (min-width: 768px) {
+    order: initial;
+  }
+
+  a {
+    width: 24px;
+    height: 24px;
+
+    color: $icon-color;
+
+    &:hover {
+      color: $light-black;
+    }
   }
 }
 
-.jurInfo {
-  text-align: center;
-  font-weight: 400;
-  font-size: 12px;
+.build {
+  display: flex;
+  order: 3;
+  grid-column: span 2;
+  justify-content: flex-start;
 
-  color: $grey;
+  @media (min-width: 768px) {
+    grid-column: span 3;
+    justify-content: center;
+  }
 }
