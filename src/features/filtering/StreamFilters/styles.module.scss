@@ -23,7 +23,11 @@
     margin-right: 6px;
   }
 }
-
+.smallFilterWrapper {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: center;
+}
 .textFilter {
   min-width: 48px;
   height: 48px;
