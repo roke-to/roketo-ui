@@ -23,3 +23,53 @@
     margin-right: 6px;
   }
 }
+
+.textFilter {
+  min-width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+
+  .textFilterMagnifier {
+    background-color: #f0f6ff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 9px;
+    width: 48px;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .textFilterInput {
+    cursor: pointer;
+    border-radius: 24px;
+    height: 100%;
+    width: 48px;
+    padding-left: 40px;
+  }
+
+  .textFilterClear {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 14px;
+    width: 48px;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  &.withInput .textFilterMagnifier {
+    background-color: unset;
+  }
+
+  &.withInput .textFilterInput {
+    border: 1px solid #a0c2f8;
+    cursor: unset;
+    width: 320px;
+  }
+}
