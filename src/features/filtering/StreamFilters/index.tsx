@@ -133,7 +133,7 @@ export function StreamFilters({items, onFilterDone, className}: StreamFiltersPro
   return (
     <div className={classNames(styles.root, className)}>
       {isSmallForTextFilter && (
-        <div style={{flexBasis: '100%', display: 'flex', justifyContent: 'center'}}>
+        <div className={styles.smallFilterWrapper}>
           {textFilter}
         </div>
       )}
