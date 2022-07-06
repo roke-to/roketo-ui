@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import {useStore} from 'effector-react';
+import {useStore, useStoreMap} from 'effector-react';
 import React, {useEffect, useMemo, useState} from 'react';
 
-import {$accountId} from '~/entities/wallet';
+import {$account, $accountId, $accountStreams} from '~/entities/wallet';
 
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
@@ -11,7 +11,7 @@ import {Filter, FilterOptionWithCounter} from '~/shared/kit/Filter';
 import {OrderType, SortIcon} from '@ui/icons/Sort';
 
 import {DirectionSorts} from '../DirectionSorts';
-import {useStreamFilters} from '../useStreamFilters';
+import {STREAM_TYPE_FILTER, useStreamFilters} from '../useStreamFilters';
 import {ReactComponent as Clear} from './clear.svg';
 import {ReactComponent as Magnifier} from './magnifier.svg';
 import styles from './styles.module.scss';
@@ -55,6 +55,20 @@ export function StreamFilters({items, onFilterDone, className}: StreamFiltersPro
   const filter = useStreamFilters(items);
   const {filteredItems} = filter.result;
   const accountId = useStore($accountId);
+
+  const {
+    active_incoming_streams: totalIncomingStreamsCount = 0,
+    active_outgoing_streams: totalOutgoingStreamsCount = 0,
+  } = useStore($account) ?? {};
+
+  const {incomingStreamsCount, outgoingStreamsCount} = useStoreMap(
+    $accountStreams,
+    ({inputs, outputs}) => ({
+      incomingStreamsCount: inputs.length,
+      outgoingStreamsCount: outputs.length,
+    }),
+  );
+
   const isSmallForTextFilterInput = useMediaQuery('(max-width: 1111px)') && showInput;
   const isSmallForTextFilterButton = useMediaQuery('(max-width: 767px)') && !showInput;
   const isSmallForTextFilter = isSmallForTextFilterInput || isSmallForTextFilterButton;
@@ -103,6 +117,19 @@ export function StreamFilters({items, onFilterDone, className}: StreamFiltersPro
     onFilterDone(sortedStreams);
   }, [filteredItemsByText, onFilterDone, sorting.fn]);
 
+  const isIncomingOnly = filter.directionFilter.option === STREAM_TYPE_FILTER.INCOMING;
+  const isOutgoingOnly = filter.directionFilter.option === STREAM_TYPE_FILTER.OUTGOING;
+
+  const shouldCountIncoming = !isOutgoingOnly;
+  const shouldCountOutgoing = !isIncomingOnly;
+
+  const streamsCount =
+    (shouldCountIncoming ? incomingStreamsCount : 0) +
+    (shouldCountOutgoing ? outgoingStreamsCount : 0);
+  const streamsTotalCount =
+    (shouldCountIncoming ? totalIncomingStreamsCount : 0) +
+    (shouldCountOutgoing ? totalOutgoingStreamsCount : 0);
+
   const textFilter = (
     <div className={classNames(styles.textFilter, showInput && styles.withInput)} key="text-filter">
       <Magnifier className={styles.textFilterMagnifier} />
@@ -126,6 +153,11 @@ export function StreamFilters({items, onFilterDone, className}: StreamFiltersPro
             setFilterText('');
           }}
         />
+      )}
+      {showInput && streamsCount < streamsTotalCount && (
+        <div className={styles.countDisclaimer}>
+          Filtering the first {streamsCount} streams from the total {streamsTotalCount}
+        </div>
       )}
     </div>
   );

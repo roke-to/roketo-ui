@@ -39,7 +39,6 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  overflow: hidden;
 
   .textFilterMagnifier {
     background-color: #f0f6ff;
@@ -50,6 +49,7 @@
     width: 48px;
     height: 100%;
     pointer-events: none;
+    border-radius: 24px;
   }
 
   .textFilterInput {
@@ -68,6 +68,14 @@
     width: 48px;
     height: 100%;
     cursor: pointer;
+  }
+
+  .countDisclaimer {
+    position: absolute;
+    font-size: 12px;
+    line-height: 16px;
+    color: #8a96a8;
+    top: calc(100% + 8px);
   }
 
   &.withInput .textFilterMagnifier {

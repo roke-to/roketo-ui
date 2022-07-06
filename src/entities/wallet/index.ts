@@ -52,6 +52,8 @@ export const $accountStreams = createStore<{
 
 export const $isSignedIn = $nearWallet.map((wallet) => wallet?.auth.signedIn ?? false);
 
+export const $account = $roketoWallet.map((wallet) => wallet?.roketoAccount ?? null);
+
 export const $accountId = $nearWallet.map((wallet) => wallet?.auth.accountId ?? null);
 
 export const $user = createStore<Partial<User>>({
