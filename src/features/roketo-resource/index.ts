@@ -71,7 +71,6 @@ export function streamViewData(stream: RoketoStream, withExtrapolation: boolean 
   const streamed = withdrawn.plus(availableToWithdraw);
 
   const left = full.minus(streamed);
-  const progresses = [withdrawn.dividedBy(full).toNumber(), streamed.dividedBy(full).toNumber()];
 
   const percentages = {
     left: full.minus(streamed).multipliedBy(100).dividedBy(full).toNumber(),
@@ -82,7 +81,6 @@ export function streamViewData(stream: RoketoStream, withExtrapolation: boolean 
   };
 
   return {
-    progresses,
     isDead: isDead(stream),
     percentages,
     timeLeft,

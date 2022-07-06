@@ -6,9 +6,10 @@ import {AddFunds, useShouldShowAddFundsButton} from '~/features/add-funds';
 import {StreamControls} from '~/features/stream-control/StreamControls';
 import {WithdrawButton} from '~/features/stream-control/WithdrawButton';
 
+import {STREAM_DIRECTION} from '~/shared/api/roketo/constants';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {isActiveStream} from '~/shared/api/roketo/lib';
-import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
+import {useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 import {getStreamLink} from '~/shared/lib/routing';
 
 import {LinkIcon} from '@ui/icons/Link';

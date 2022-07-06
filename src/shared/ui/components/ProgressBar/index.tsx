@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import React from 'react';
+import React, {memo} from 'react';
 
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
 
@@ -15,42 +15,38 @@ type Props = {
   className?: string;
 };
 
-export const ProgressBar = ({
-  total,
-  streamed,
-  withdrawn,
-  className,
-  cliffPercent,
-  withBigCliffMark = false,
-}: Props) => {
-  const streamedToTotalPercentageRatio = getRoundedPercentageRatio(streamed, total);
-  const withdrawnToStreamedPercentageRatio = getRoundedPercentageRatio(withdrawn, streamed);
+export const ProgressBar = memo(
+  ({total, streamed, withdrawn, className, cliffPercent, withBigCliffMark = false}: Props) => {
+    const streamedToTotalPercentageRatio = getRoundedPercentageRatio(streamed, total);
+    const withdrawnToStreamedPercentageRatio = getRoundedPercentageRatio(withdrawn, streamed);
 
-  return (
-    <div className={cn(styles.progressBar, className)}>
-      <div
-        className={cn(styles.progress, styles.streamed)}
-        style={{width: `${streamedToTotalPercentageRatio}%`}}
-      >
+    return (
+      <div className={cn(styles.progressBar, className)}>
         <div
-          className={cn(styles.progress, styles.withdrawn)}
-          style={{width: `${withdrawnToStreamedPercentageRatio}%`}}
-        />
-      </div>
-      {typeof cliffPercent === 'number' && (
-        <div
-          title="Cliff"
-          className={styles.cliffMarkContainer}
-          style={{left: `${Math.min(cliffPercent, 100)}%`}}
+          className={cn(styles.progress, styles.streamed)}
+          style={{width: `${streamedToTotalPercentageRatio}%`}}
         >
           <div
-            className={cn(styles.cliffMark, {
-              [styles.cliffMarkBig]: withBigCliffMark,
-              [styles.cliffMarkPassed]: streamedToTotalPercentageRatio.toNumber() > cliffPercent,
-            })}
+            className={cn(styles.progress, styles.withdrawn)}
+            style={{width: `${withdrawnToStreamedPercentageRatio}%`}}
           />
         </div>
-      )}
-    </div>
-  );
-};
+        {typeof cliffPercent === 'number' && (
+          <div
+            title="Cliff"
+            className={styles.cliffMarkContainer}
+            style={{left: `${Math.min(cliffPercent, 100)}%`}}
+          >
+            <div
+              className={cn(styles.cliffMark, {
+                [styles.cliffMarkBig]: withBigCliffMark,
+                [styles.cliffMarkPassed]:
+                  streamedToTotalPercentageRatio.isGreaterThan(cliffPercent),
+              })}
+            />
+          </div>
+        )}
+      </div>
+    );
+  },
+);

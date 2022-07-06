@@ -1,15 +1,15 @@
 import cn from 'classnames';
-import {useStoreMap} from 'effector-react';
+import {useGate, useStoreMap} from 'effector-react';
 import React from 'react';
 
 import {$accountStreams} from '~/entities/wallet';
 
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {useRerender} from '~/shared/hooks/useRerender';
 
 import {Button} from '@ui/components/Button';
 import {Spinner} from '@ui/components/Spinner';
 
+import {filteredStreamsGate} from '../../model';
 import {StreamCard} from '../StreamCard';
 import styles from './styles.module.scss';
 
@@ -33,7 +33,7 @@ export const StreamsList = ({className, displayingStreams, onCreateStreamClick}:
 
   const hasDisplayedStreams = (displayingStreams?.length ?? 0) > 0;
 
-  useRerender(1000, hasDisplayedStreams);
+  useGate(filteredStreamsGate, displayingStreams);
 
   if (loading) {
     return (

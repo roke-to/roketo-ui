@@ -7,12 +7,13 @@ import Modal from 'react-modal';
 
 import {streamViewData} from '~/features/roketo-resource';
 
+import {STREAM_DIRECTION} from '~/shared/api/roketo/constants';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {hasPassedCliff, isLocked} from '~/shared/api/roketo/lib';
 import {toYocto} from '~/shared/api/token-formatter';
 import {Balance, useBalanceForToken} from '~/shared/components/Balance';
 import {useBool} from '~/shared/hooks/useBool';
-import {STREAM_DIRECTION, useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
+import {useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 import {useToken} from '~/shared/hooks/useToken';
 
 import {Button, ButtonType, DisplayMode} from '@ui/components/Button';
