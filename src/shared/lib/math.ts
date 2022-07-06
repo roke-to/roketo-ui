@@ -1,9 +1,12 @@
-import BigNumber from 'bignumber.js';
+import {BigNumber} from 'bignumber.js';
 
 const PERCENTAGE_MULTIPLIER = 100;
 
-// Retrieves a percentage ratio from A/B
-const getExactPercentageRatio = (a: string | number, b: string | number): BigNumber => {
+/** Retrieves a percentage ratio from A/B */
+const getExactPercentageRatio = (
+  a: string | number | BigNumber,
+  b: string | number | BigNumber,
+): BigNumber => {
   const aBN = new BigNumber(a);
   const bBN = new BigNumber(b);
 
@@ -16,9 +19,9 @@ const getExactPercentageRatio = (a: string | number, b: string | number): BigNum
   return ratio.multipliedBy(PERCENTAGE_MULTIPLIER);
 };
 
-// Retrieves a percentage ratio from A/B rounded to an integer
+/** Retrieves a percentage ratio from A/B rounded to an integer */
 export const getRoundedPercentageRatio = (
-  a: string | number,
-  b: string | number,
+  a: string | number | BigNumber,
+  b: string | number | BigNumber,
   roundRatio: number = 0,
 ): BigNumber => getExactPercentageRatio(a, b).dp(roundRatio);

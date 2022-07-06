@@ -1,13 +1,12 @@
 import cn from 'classnames';
+import {useStoreMap} from 'effector-react';
 import React, {memo} from 'react';
-import {generatePath, Link} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 
-import {STREAM_DIRECTION} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 import {ColorDot} from '~/shared/kit/ColorDot';
-import {ROUTES_MAP} from '~/shared/lib/routing';
 
+import {$streamCardsData, streamCardDataDefaults} from '../../model';
 import {Controls} from '../Controls';
 import {Name} from '../Name';
 import {StreamProgress} from '../StreamProgress';
@@ -18,20 +17,12 @@ type StreamCardProps = {
   className?: string;
 };
 
-// eslint-disable-next-line prefer-arrow-callback
-const StreamNameLink = memo(function StreamNameLink({
-  streamPageLink,
-  color,
-  name,
-  isLocked,
-  isIncomingStream,
-}: {
-  streamPageLink: string;
-  color: string;
-  name: string;
-  isLocked: boolean;
-  isIncomingStream: boolean;
-}) {
+const StreamNameLink = memo(({streamId}: {streamId: string}) => {
+  const {streamPageLink, color, name, isIncomingStream, isLocked} = useStoreMap({
+    store: $streamCardsData,
+    keys: [streamId],
+    fn: (items) => items[streamId] ?? streamCardDataDefaults,
+  });
   return (
     <Link to={streamPageLink} className={styles.name}>
       <ColorDot color={color} size={10} className={styles.colorDot} />
@@ -40,14 +31,12 @@ const StreamNameLink = memo(function StreamNameLink({
   );
 });
 
-// eslint-disable-next-line prefer-arrow-callback
-const StreamCommentLink = memo(function StreamCommentLink({
-  streamPageLink,
-  comment,
-}: {
-  streamPageLink: string;
-  comment: string;
-}) {
+const StreamCommentLink = memo(({streamId}: {streamId: string}) => {
+  const {streamPageLink, comment} = useStoreMap({
+    store: $streamCardsData,
+    keys: [streamId],
+    fn: (items) => items[streamId] ?? streamCardDataDefaults,
+  });
   return (
     <Link to={streamPageLink} className="col-span-2 grow-0">
       <p className={styles.comment}>{comment}</p>
@@ -55,41 +44,14 @@ const StreamCommentLink = memo(function StreamCommentLink({
   );
 });
 
-export const StreamCard = ({stream, className}: StreamCardProps) => {
-  const {id, description} = stream;
+export const StreamCard = ({stream, className}: StreamCardProps) => (
+  <div className={cn(styles.root, className)}>
+    <StreamNameLink streamId={stream.id} />
 
-  let comment = '';
-  let color = 'transparent';
+    <StreamProgress streamId={stream.id} className={styles.withMarginRight} />
 
-  try {
-    const parsedDescription = JSON.parse(description);
-    comment = parsedDescription.comment ?? parsedDescription.c;
-    color = parsedDescription.col;
-  } catch {
-    comment = description;
-  }
+    <StreamCommentLink streamId={stream.id} />
 
-  const isIncomingStream = useGetStreamDirection(stream) === STREAM_DIRECTION.IN;
-
-  const name = isIncomingStream ? stream.owner_id : stream.receiver_id;
-
-  const streamPageLink = generatePath(ROUTES_MAP.stream.path, {id});
-
-  return (
-    <div className={cn(styles.root, className)}>
-      <StreamNameLink
-        streamPageLink={streamPageLink}
-        color={color}
-        name={name}
-        isLocked={stream.is_locked}
-        isIncomingStream={isIncomingStream}
-      />
-
-      <StreamProgress stream={stream} className={styles.withMarginRight} />
-
-      <StreamCommentLink streamPageLink={streamPageLink} comment={comment} />
-
-      <Controls stream={stream} className={cn(styles.controls, 'col-span-2 grow-0')} />
-    </div>
-  );
-};
+    <Controls stream={stream} className={cn(styles.controls, 'col-span-2 grow-0')} />
+  </div>
+);
