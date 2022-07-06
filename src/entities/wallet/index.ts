@@ -60,7 +60,7 @@ export const $user = createStore<Partial<User>>({
   isEmailVerified: false,
 });
 
-export const $notifications = createStore<Notification[]>([]);
+export const $notifications = createStore<Notification[] | null>(null);
 
 // eslint-disable-next-line arrow-body-style
 const getUserFx = createEffect(async (accountId: string) => {
