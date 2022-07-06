@@ -84,7 +84,7 @@ export function StreamFilters({items, onFilterDone, className}: StreamFiltersPro
 
         const counterActor = accountId === owner_id ? receiver_id : owner_id;
 
-        return comment.includes(trimmedFilterText) || counterActor.match(trimmedFilterText);
+        return comment.includes(trimmedFilterText) || counterActor.includes(trimmedFilterText);
       }),
     [accountId, filteredItems, filterText],
   );
