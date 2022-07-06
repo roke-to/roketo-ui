@@ -19,6 +19,8 @@ import {useToken} from '~/shared/hooks/useToken';
 import {DropdownMenu} from '~/shared/kit/DropdownMenu';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 
+import {Spinner} from '@ui/components/Spinner';
+
 import {BellIcon} from './BellIcon';
 import streamCliffPassedIcon from './icons/streamCliffPassed.svg';
 import streamEndedIcon from './icons/streamEnded.svg';
@@ -220,18 +222,20 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
   }
 }
 
-function Filler() {
-  const hasNotifications = useStoreMap($notifications, (items) => items.length > 0);
-  return hasNotifications ? null : (
-    <h3 className="text-3xl text-center my-12 mx-auto">
-      Your notifications will be displayed here
-    </h3>
-  );
-}
 function NotificationsList() {
+  const initialLoading = useStoreMap($notifications, (notifications) => notifications === null);
+  const hasNotifications = useStoreMap($notifications, (items) => Boolean(items?.length));
+
   return (
     <div className={styles.container} data-testid={testIds.notificationsContainer}>
-      <Filler />
+      {initialLoading && (
+        <Spinner wrapperClassName={styles.loader} testId={testIds.notificationsLoader} />
+      )}
+      {!initialLoading && !hasNotifications && (
+        <h3 className="text-3xl text-center my-12 mx-auto">
+          Your notifications will be displayed here
+        </h3>
+      )}
       {useList($notificationsContent, {
         getKey: ({notification}) => notification.id,
         // eslint-disable-next-line react/no-unstable-nested-components

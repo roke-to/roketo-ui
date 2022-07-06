@@ -10,32 +10,33 @@ import {ROUTES_MAP} from '~/shared/lib/routing';
 export const $panelIsVisible = createStore(false);
 export const setPanelVisibility = createEvent<boolean>();
 export const closePanel = setPanelVisibility.prepend<any>(() => false);
-export const $notificationsContent = $notifications.map((items) =>
-  items.map((notification) => {
-    // eslint-disable-next-line no-nested-ternary
-    const dateText = isToday(notification.createdAt)
-      ? ''
-      : isYesterday(notification.createdAt)
-      ? 'Yesterday'
-      : format(notification.createdAt, 'PP');
-    const timeText = format(new Date(notification.createdAt), 'HH:mm');
-    return {
-      notification,
-      link: generatePath(ROUTES_MAP.stream.path, {
-        id: notification.payload.stream.id,
-      }),
-      dateTime: `${dateText} ${timeText}`,
-    };
-  }),
+export const $notificationsContent = $notifications.map(
+  (items) =>
+    items?.map((notification) => {
+      // eslint-disable-next-line no-nested-ternary
+      const dateText = isToday(notification.createdAt)
+        ? ''
+        : isYesterday(notification.createdAt)
+        ? 'Yesterday'
+        : format(notification.createdAt, 'PP');
+      const timeText = format(new Date(notification.createdAt), 'HH:mm');
+      return {
+        notification,
+        link: generatePath(ROUTES_MAP.stream.path, {
+          id: notification.payload.stream.id,
+        }),
+        dateTime: `${dateText} ${timeText}`,
+      };
+    }) ?? [],
 );
-export const $hasUnreadNotifications = $notifications.map((items) =>
-  items.some(({isRead}) => !isRead),
+export const $hasUnreadNotifications = $notifications.map(
+  (items) => items?.some(({isRead}) => !isRead) ?? false,
 );
 
 const markAllReadFx = attach({
   source: $notifications,
   async effect(notifications) {
-    if (notifications.length !== 0) {
+    if (notifications) {
       await notificationsApiClient.markAllRead();
     }
   },
@@ -54,8 +55,10 @@ sample({
 
 $notifications.on(setPanelVisibility, (notifications, visible) => {
   if (!visible) {
-    return notifications.map((notification) =>
-      notification.isRead ? notification : {...notification, isRead: true},
+    return (
+      notifications?.map((notification) =>
+        notification.isRead ? notification : {...notification, isRead: true},
+      ) ?? []
     );
   }
 });

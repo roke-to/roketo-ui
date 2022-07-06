@@ -9,6 +9,7 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
+    "testIds:check": "tsc check-testIds.ts --skipLibCheck --module node16 --outDir testIds && node testIds/check-testIds.js && rm -rf testIds",
     "test": "cypress run",
     "lint": "eslint -c .eslintrc src --ext .js,.jsx,.ts,.tsx",
     "deploy": "yarn build && gh-pages -d build",
@@ -67,6 +68,7 @@
     "@vitejs/plugin-react": "^1.3.2",
     "autoprefixer": "^9.8.8",
     "babel-eslint": "^10.1.0",
+    "chalk": "^4",
     "cypress": "^9.5.4",
     "eslint": "^7.10.0",
     "eslint-config-airbnb": "^19.0.4",
@@ -92,7 +94,7 @@
     "sass": "^1.49.9",
     "tailwind-css-variables": "^3.0.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17",
-    "typescript": "^4.6.2",
+    "typescript": "^4.7.4",
     "vite": "^2.9.9",
     "vite-plugin-svgr": "^2.1.0",
     "webpack": "^5.73.0"
