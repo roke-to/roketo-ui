@@ -226,12 +226,11 @@ sample({
 function shallowCompareRecords<T>(a: Record<string, T>, b: Record<string, T>) {
   const aKeys = Object.keys(a);
   const bKeys = Object.keys(b);
-  if (aKeys.length !== bKeys.length) return false;
-  for (let i = 0; i < aKeys.length; i += 1) {
-    const key = aKeys[i];
-    if (bKeys[i] !== key || a[key] !== b[key]) return false;
-  }
-  return true;
+
+  return (
+    aKeys.length === bKeys.length &&
+    aKeys.every((aKey) => bKeys.includes(aKey) && a[aKey] === b[aKey])
+  );
 }
 
 function selectResultRecord<T>(update: T, currentValue: T) {
@@ -240,9 +239,6 @@ function selectResultRecord<T>(update: T, currentValue: T) {
 
 function shallowCompareSameShape<T>(a: T, b: T) {
   if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) return a === b;
-  // eslint-disable-next-line no-restricted-syntax
-  for (const key in a) {
-    if (a[key] !== b[key]) return false;
-  }
-  return true;
+  // @ts-expect-error
+  return Object.keys(a).every((aKey) => a[aKey] === b[aKey]);
 }
