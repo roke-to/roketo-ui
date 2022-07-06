@@ -23,3 +23,68 @@
     margin-right: 6px;
   }
 }
+
+.smallFilterWrapper {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.textFilter {
+  min-width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  .textFilterMagnifier {
+    background-color: #f0f6ff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 9px;
+    width: 48px;
+    height: 100%;
+    pointer-events: none;
+    border-radius: 24px;
+  }
+
+  .textFilterInput {
+    cursor: pointer;
+    border-radius: 24px;
+    height: 100%;
+    width: 48px;
+    padding-left: 40px;
+  }
+
+  .textFilterClear {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 14px;
+    width: 48px;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .countDisclaimer {
+    position: absolute;
+    font-size: 12px;
+    line-height: 16px;
+    color: #8a96a8;
+    top: calc(100% + 8px);
+  }
+
+  &.withInput .textFilterMagnifier {
+    background-color: unset;
+  }
+
+  &.withInput .textFilterInput {
+    border: 1px solid #a0c2f8;
+    cursor: unset;
+    width: 320px;
+  }
+}
