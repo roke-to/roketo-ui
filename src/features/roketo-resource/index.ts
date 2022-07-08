@@ -45,6 +45,14 @@ function calculateCliffPercent(stream: RoketoStream) {
   return (cliffDurationMs / streamDurationMs) * 100;
 }
 
+export function formatTimeLeft(millisecondsLeft: number) {
+  const duration = intervalToDuration({start: 0, end: millisecondsLeft});
+  if (duration.days || duration.weeks || duration.months || duration.years) {
+    duration.seconds = 0;
+  }
+  return formatDuration(duration, {locale: shortEnLocale});
+}
+
 export function streamViewData(stream: RoketoStream, withExtrapolation: boolean = true) {
   const MAX_SEC = SECONDS_IN_YEAR * 1000;
 
@@ -57,15 +65,7 @@ export function streamViewData(stream: RoketoStream, withExtrapolation: boolean 
     balance.minus(availableToWithdraw).dividedBy(stream.tokens_per_sec).toFixed(),
   ).toNumber();
 
-  const duration = intervalToDuration({start: 0, end: secondsLeft * 1000});
-
-  if (duration.days || duration.weeks || duration.months || duration.years) {
-    duration.seconds = 0;
-  }
-
-  const timeLeft = formatDuration(duration, {locale: shortEnLocale});
-
-  // progress bar calculations
+  /** progress bar calculations */
   const full = balance.plus(stream.tokens_total_withdrawn);
   const withdrawn = new BigNumber(stream.tokens_total_withdrawn);
   const streamed = withdrawn.plus(availableToWithdraw);
@@ -83,7 +83,7 @@ export function streamViewData(stream: RoketoStream, withExtrapolation: boolean 
   return {
     isDead: isDead(stream),
     percentages,
-    timeLeft,
+    timeLeft: formatTimeLeft(secondsLeft * 1000),
     streamEndTimestamp: calculateEndTimestamp(stream),
     cliffEndTimestamp: stream.cliff ? stream.cliff / 1000_000 : null,
     progress: {
