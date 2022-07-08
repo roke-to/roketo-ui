@@ -1,8 +1,9 @@
 import classNames from 'classnames';
-import {useStore, useStoreMap} from 'effector-react';
+import {useGate, useStore, useStoreMap} from 'effector-react';
 import {ReactNode, useState} from 'react';
 import Modal from 'react-modal';
 
+import {blurGate} from '~/entities/blur';
 import {$accountId} from '~/entities/wallet';
 
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
@@ -80,10 +81,16 @@ export function StreamControls({
   stream,
   className,
   openerClassName,
+  additionalControls,
+  openerText,
+  needToUseBlur,
 }: {
   stream: RoketoStream;
   className?: string;
   openerClassName?: string;
+  additionalControls?: ReactNode;
+  openerText?: ReactNode;
+  needToUseBlur?: boolean;
 }) {
   const pauseModalControl = useBool(false);
   const stopModalControl = useBool(false);
@@ -100,9 +107,8 @@ export function StreamControls({
     },
   });
 
-  if (isDead(stream) || isExternal) {
-    return <StreamStatus className={className} status={stream.status} />;
-  }
+  const showStatusOnly = isDead(stream) || isExternal;
+  const isStartedAndLocked = wasStartedAndLocked(stream);
 
   const onClickPause = () => {
     setMenuOpened(false);
@@ -120,6 +126,11 @@ export function StreamControls({
 
   const opened = menuOpened && !loading;
 
+  useGate(blurGate, {
+    modalId: `stream controls ${stream.id}`,
+    active: !!needToUseBlur && !showStatusOnly && !isStartedAndLocked && opened,
+  });
+
   const shouldShowStartButton = stream.status !== STREAM_STATUS.Active && isOutgoing;
   const shouldShowPauseButton = stream.status === STREAM_STATUS.Active && !isWithCliff(stream);
 
@@ -129,7 +140,11 @@ export function StreamControls({
     [styles.stop]: isDead(stream),
   };
 
-  if (wasStartedAndLocked(stream)) {
+  if (showStatusOnly) {
+    return <StreamStatus className={className} status={stream.status} />;
+  }
+
+  if (isStartedAndLocked) {
     return (
       <div className={classNames(styles.relative, className)}>
         <button
@@ -141,6 +156,56 @@ export function StreamControls({
       </div>
     );
   }
+
+  const content = (
+    <>
+      {additionalControls && (
+        <DropdownMenuItem className={styles.additionalControl}>
+          {additionalControls}
+        </DropdownMenuItem>
+      )}
+      {shouldShowStartButton && (
+        <DropdownMenuItem>
+          <button
+            type="button"
+            onClick={() => startStream(stream.id)}
+            className={classNames(styles.controlButton, styles.start)}
+            data-testid={testIds.streamStartButton}
+          >
+            <StartIcon />
+            <span>Start</span>{' '}
+          </button>
+        </DropdownMenuItem>
+      )}
+
+      {shouldShowPauseButton && (
+        <DropdownMenuItem>
+          <button
+            type="button"
+            onClick={onClickPause}
+            className={classNames(styles.controlButton, styles.pause)}
+            data-testid={testIds.streamPauseButton}
+          >
+            <PauseIcon />
+            <span>Pause</span>
+          </button>
+        </DropdownMenuItem>
+      )}
+
+      {(shouldShowStartButton || shouldShowPauseButton) && <DropdownMenuDivider />}
+      <DropdownMenuItem>
+        <button
+          type="button"
+          onClick={onClickStop}
+          className={classNames(styles.controlButton, styles.stop)}
+          data-testid={testIds.streamStopButton}
+        >
+          <StopIcon />
+          <span>Stop</span>
+        </button>
+      </DropdownMenuItem>
+    </>
+  );
 
   return (
     <div className={classNames(styles.relative, className)}>
@@ -170,59 +235,28 @@ export function StreamControls({
         className={classNames(styles.dropdownOpener, openerClassName, statusClassName)}
         testId={testIds.streamControlsDropdown}
       >
-        {loading ? (
-          'Loading...'
-        ) : (
-          <StreamStatus status={stream.status} className={styles.statusPadded} />
-        )}
+        {loading
+          ? 'Loading...'
+          : openerText || <StreamStatus status={stream.status} className={styles.statusPadded} />}
       </DropdownOpener>
-
-      <DropdownMenu
-        onClose={() => setMenuOpened(false)}
-        opened={opened}
-        className={styles.controlsMenu}
-      >
-        {shouldShowStartButton && (
-          <DropdownMenuItem>
-            <button
-              type="button"
-              onClick={() => startStream(stream.id)}
-              className={classNames(styles.controlButton, styles.start)}
-              data-testid={testIds.streamStartButton}
-            >
-              <StartIcon />
-              <span>Start</span>{' '}
-            </button>
-          </DropdownMenuItem>
-        )}
-
-        {shouldShowPauseButton && (
-          <DropdownMenuItem>
-            <button
-              type="button"
-              onClick={onClickPause}
-              className={classNames(styles.controlButton, styles.pause)}
-              data-testid={testIds.streamPauseButton}
-            >
-              <PauseIcon />
-              <span>Pause</span>
-            </button>
-          </DropdownMenuItem>
-        )}
-
-        {(shouldShowStartButton || shouldShowPauseButton) && <DropdownMenuDivider />}
-        <DropdownMenuItem>
-          <button
-            type="button"
-            onClick={onClickStop}
-            className={classNames(styles.controlButton, styles.stop)}
-            data-testid={testIds.streamStopButton}
-          >
-            <StopIcon />
-            <span>Stop</span>
-          </button>
-        </DropdownMenuItem>
-      </DropdownMenu>
+      {needToUseBlur ? (
+        <Modal
+          isOpen={opened}
+          onRequestClose={() => setMenuOpened(false)}
+          className={styles.modalContent}
+          overlayClassName={styles.modalOverlay}
+        >
+          {content}
+        </Modal>
+      ) : (
+        <DropdownMenu
+          onClose={() => setMenuOpened(false)}
+          opened={opened}
+          className={styles.controlsMenu}
+        >
+          {content}
+        </DropdownMenu>
+      )}
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {WithdrawButton} from '~/features/stream-control/WithdrawButton';
 
 import {Badge} from '~/shared/components/Badge';
 import {PageError} from '~/shared/components/PageError';
+import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
 import {ColorDot} from '~/shared/kit/ColorDot';
 import {ROUTES_MAP} from '~/shared/lib/routing';
 
@@ -53,8 +54,24 @@ export function StreamPage() {
     showWithdrawButton,
     subheader,
   } = useStore($streamInfo);
+  const compact = useMediaQuery('(max-width: 767px)');
   if (!active) return null;
-
+  const addWithdrawControls = stream && (
+    <>
+      {showAddFundsButton && (
+        <AddFunds
+          stream={stream}
+          className={cn(styles.button, styles.buttonPrimary, styles.addFundsButton)}
+        />
+      )}
+      {showWithdrawButton && (
+        <WithdrawButton
+          stream={stream}
+          className={cn(styles.button, styles.buttonPrimary, styles.withdrawButton)}
+        />
+      )}
+    </>
+  );
   return (
     <div className={styles.root}>
       <Layout>
@@ -71,7 +88,10 @@ export function StreamPage() {
         {loading && <div className="py-32 text-center text-gray text-2xl">Loading...</div>}
 
         {!pageError && stream && (
-          <main className={styles.stream}>
+          <main
+            className={styles.stream}
+            style={{'--controls-column': compact ? '1 / span 2' : 2} as any}
+          >
             {isLocked && (
               <Badge isOrange className={styles.closeBadge}>
                 Locked
@@ -94,22 +114,14 @@ export function StreamPage() {
               />
               {showControls && (
                 <>
-                  {showAddFundsButton && (
-                    <AddFunds
-                      stream={stream}
-                      className={cn(styles.button, styles.buttonPrimary, styles.addFundsButton)}
-                    />
-                  )}
-                  {showWithdrawButton && (
-                    <WithdrawButton
-                      stream={stream}
-                      className={cn(styles.button, styles.buttonPrimary, styles.withdrawButton)}
-                    />
-                  )}
+                  {!compact && addWithdrawControls}
                   <StreamControls
                     stream={stream}
                     className={styles.streamControls}
-                    openerClassName={styles.button}
+                    openerClassName={cn(styles.button, compact && styles.buttonPrimary)}
+                    additionalControls={compact && addWithdrawControls}
+                    openerText={compact && <span>Stream actions</span>}
+                    needToUseBlur={compact}
                   />
                 </>
               )}
