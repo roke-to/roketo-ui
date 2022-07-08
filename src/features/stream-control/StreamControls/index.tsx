@@ -76,7 +76,15 @@ function ConfirmModal({
   );
 }
 
-export function StreamControls({stream, className}: {stream: RoketoStream; className?: string}) {
+export function StreamControls({
+  stream,
+  className,
+  openerClassName,
+}: {
+  stream: RoketoStream;
+  className?: string;
+  openerClassName?: string;
+}) {
   const pauseModalControl = useBool(false);
   const stopModalControl = useBool(false);
   const loading = useStore($loading);
@@ -124,7 +132,10 @@ export function StreamControls({stream, className}: {stream: RoketoStream; class
   if (wasStartedAndLocked(stream)) {
     return (
       <div className={classNames(styles.relative, className)}>
-        <button type="button" className={classNames(styles.dropdownOpener, styles.notAllowed)}>
+        <button
+          type="button"
+          className={classNames(styles.dropdownOpener, openerClassName, styles.notAllowed)}
+        >
           <StreamStatus stream={stream} />
         </button>
       </div>
@@ -156,7 +167,7 @@ export function StreamControls({stream, className}: {stream: RoketoStream; class
       <DropdownOpener
         opened={opened}
         onChange={setMenuOpened}
-        className={classNames(styles.dropdownOpener, statusClassName)}
+        className={classNames(styles.dropdownOpener, openerClassName, statusClassName)}
         testId={testIds.streamControlsDropdown}
       >
         {loading ? 'Loading...' : <StreamStatus stream={stream} className={styles.statusPadded} />}

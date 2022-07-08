@@ -20,9 +20,10 @@ import styles from './styles.module.scss';
 type WithdrawButtonProps = {
   stream: RoketoStream;
   small?: boolean;
+  className?: string;
 } & Omit<React.ComponentProps<'button'>, 'type'>;
 
-export function WithdrawButton({stream, small = false, ...rest}: WithdrawButtonProps) {
+export function WithdrawButton({stream, small = false, className, ...rest}: WithdrawButtonProps) {
   const tokens = useStore($tokens);
   const available = getAvailableToWithdraw(stream);
   const {
@@ -46,7 +47,10 @@ export function WithdrawButton({stream, small = false, ...rest}: WithdrawButtonP
       disabled={Number(amount) === 0}
       type={ButtonType.button}
       displayMode={hasPassedCliff ? DisplayMode.primary : DisplayMode.secondary}
-      className={classNames({[styles.notAllowed]: !hasPassedCliff, [styles.small]: small})}
+      className={classNames(
+        {[styles.notAllowed]: !hasPassedCliff, [styles.small]: small},
+        className,
+      )}
       onClick={hasPassedCliff ? handleWithdraw : undefined}
       testId={testIds.withdrawButton}
       {...rest}

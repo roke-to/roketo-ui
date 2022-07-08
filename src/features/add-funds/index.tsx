@@ -29,12 +29,15 @@ export function useShouldShowAddFundsButton(stream: RoketoStream) {
   return isOutgoingStream && !isLocked(stream);
 }
 
-type AddFundsProps = {
+export function AddFunds({
+  stream,
+  small,
+  className,
+}: {
   stream: RoketoStream;
   small?: boolean;
-};
-
-export function AddFunds({stream, small}: AddFundsProps) {
+  className?: string;
+}) {
   const addFundsModal = useBool(false);
 
   const {
@@ -134,6 +137,7 @@ export function AddFunds({stream, small}: AddFundsProps) {
         <Button
           onClick={addFundsModal.turnOn}
           displayMode={small ? DisplayMode.primary : undefined}
+          className={className}
         >
           Add funds
         </Button>
