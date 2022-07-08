@@ -52,6 +52,8 @@ export const $accountStreams = createStore<{
 
 export const $isSignedIn = $nearWallet.map((wallet) => wallet?.auth.signedIn ?? false);
 
+export const $account = $roketoWallet.map((wallet) => wallet?.roketoAccount ?? null);
+
 export const $accountId = $nearWallet.map((wallet) => wallet?.auth.accountId ?? null);
 
 export const $user = createStore<Partial<User>>({
@@ -60,7 +62,7 @@ export const $user = createStore<Partial<User>>({
   isEmailVerified: false,
 });
 
-export const $notifications = createStore<Notification[]>([]);
+export const $notifications = createStore<Notification[] | null>(null);
 
 // eslint-disable-next-line arrow-body-style
 const getUserFx = createEffect(async (accountId: string) => {
@@ -175,8 +177,8 @@ const createPriceOracleFx = createEffect((account: ConnectedWalletAccount) =>
 const requestAccountStreamsFx = createEffect(
   async ({accountId, contract}: Pick<ApiControl, 'accountId' | 'contract'>) => {
     const [inputs, outputs] = await Promise.all([
-      getIncomingStreams({from: 0, limit: 100, accountId, contract}),
-      getOutgoingStreams({from: 0, limit: 100, accountId, contract}),
+      getIncomingStreams({from: 0, limit: 500, accountId, contract}),
+      getOutgoingStreams({from: 0, limit: 500, accountId, contract}),
     ]);
     return {inputs, outputs};
   },

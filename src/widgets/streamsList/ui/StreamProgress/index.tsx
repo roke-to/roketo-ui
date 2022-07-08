@@ -1,21 +1,13 @@
 import cn from 'classnames';
+import {useStoreMap} from 'effector-react';
 import RCTooltip from 'rc-tooltip';
 import React from 'react';
 
-import {streamViewData} from '~/features/roketo-resource';
-
-import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {
-  formatSmartly,
-  toHumanReadableValue,
-  tokensPerMeaningfulPeriod,
-} from '~/shared/api/token-formatter';
 import {testIds} from '~/shared/constants';
-import {useToken} from '~/shared/hooks/useToken';
-import {getRoundedPercentageRatio} from '~/shared/lib/math';
 import {ProgressBar} from '~/shared/ui/components/ProgressBar';
 import {ClockIcon} from '~/shared/ui/icons/Clock';
 
+import {$streamsProgress, streamProgressDataDefaults} from '../../model';
 import styles from './styles.module.scss';
 
 const TOOLTIP_ALIGN = {
@@ -23,39 +15,26 @@ const TOOLTIP_ALIGN = {
   offset: [-24, 10],
 };
 
-type StreamStatusProps = {
-  stream: RoketoStream;
-  className?: string;
-};
-
-export const StreamProgress = ({stream, className}: StreamStatusProps) => {
-  const {token_account_id: tokenId, tokens_per_sec: tokensPerSec} = stream;
-
-  const {progress, timeLeft, percentages} = streamViewData(stream);
-
-  const token = useToken(tokenId);
-  if (!token) return null;
+export const StreamProgress = ({streamId, className}: {streamId: string; className: string}) => {
   const {
-    meta: {symbol, decimals},
-  } = token;
-
-  const streamed = Number(toHumanReadableValue(decimals, progress.streamed, 3));
-  const withdrawn = Number(toHumanReadableValue(decimals, progress.withdrawn, 3));
-  const total = Number(toHumanReadableValue(decimals, progress.full, 3));
-
-  const streamedText = formatSmartly(streamed);
-  const withdrawnText = formatSmartly(withdrawn);
-
-  const streamedPercentage = getRoundedPercentageRatio(progress.streamed, progress.full, 1);
-  const withdrawnPercentage = getRoundedPercentageRatio(progress.withdrawn, progress.streamed, 1);
-
-  const progressText = `${streamedText} of ${total}`;
-
-  const {formattedValue: speedFormattedValue, unit: speedUnit} = tokensPerMeaningfulPeriod(
-    decimals,
-    tokensPerSec,
-  );
-
+    progressText,
+    symbol,
+    progressFull,
+    progressStreamed,
+    progressWithdrawn,
+    cliffPercent,
+    speedFormattedValue,
+    speedUnit,
+    timeLeft,
+    streamedText,
+    streamedPercentage,
+    withdrawnText,
+    withdrawnPercentage,
+  } = useStoreMap({
+    store: $streamsProgress,
+    keys: [streamId],
+    fn: (items) => items[streamId] ?? streamProgressDataDefaults,
+  });
   return (
     <RCTooltip
       overlayClassName={styles.overlay}
@@ -70,10 +49,10 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
           </div>
 
           <ProgressBar
-            total={progress.full}
-            streamed={progress.streamed}
-            withdrawn={progress.withdrawn}
-            cliffPercent={percentages.cliff}
+            total={progressFull}
+            streamed={progressStreamed}
+            withdrawn={progressWithdrawn}
+            cliffPercent={cliffPercent}
           />
 
           <div className={cn(styles.status, styles.speed)}>
@@ -109,10 +88,10 @@ export const StreamProgress = ({stream, className}: StreamStatusProps) => {
         </div>
 
         <ProgressBar
-          total={progress.full}
-          streamed={progress.streamed}
-          withdrawn={progress.withdrawn}
-          cliffPercent={percentages.cliff}
+          total={progressFull}
+          streamed={progressStreamed}
+          withdrawn={progressWithdrawn}
+          cliffPercent={cliffPercent}
         />
       </div>
     </RCTooltip>

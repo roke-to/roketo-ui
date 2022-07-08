@@ -17,7 +17,10 @@ export async function initApiControl({
 }): Promise<ApiControl> {
   const {accountId} = account;
   const contract = createRoketoContract({account});
-  const [roketoAccount, dao] = await Promise.all([getAccount({contract}), getDao({contract})]);
+  const [roketoAccount, dao] = await Promise.all([
+    getAccount({contract, accountId}),
+    getDao({contract}),
+  ]);
   const richTokens = Object.fromEntries(
     await Promise.all(
       Object.entries(dao.tokens).map(async ([tokenAccountId, roketoMeta]) => {
