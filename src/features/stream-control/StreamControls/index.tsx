@@ -17,7 +17,8 @@ import {
 } from '~/shared/api/roketo/lib';
 import {testIds} from '~/shared/constants';
 import {BooleanControl, useBool} from '~/shared/hooks/useBool';
-import {DropdownMenu, DropdownMenuDivider, DropdownMenuItem} from '~/shared/kit/DropdownMenu';
+import {AdaptiveModal} from '~/shared/kit/AdaptiveModal';
+import {DropdownMenuDivider, DropdownMenuItem} from '~/shared/kit/DropdownMenu';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 
 import {StreamStatus} from '../StreamStatus';
@@ -157,56 +158,6 @@ export function StreamControls({
     );
   }
 
-  const content = (
-    <>
-      {additionalControls && (
-        <DropdownMenuItem className={styles.additionalControl}>
-          {additionalControls}
-        </DropdownMenuItem>
-      )}
-      {shouldShowStartButton && (
-        <DropdownMenuItem>
-          <button
-            type="button"
-            onClick={() => startStream(stream.id)}
-            className={classNames(styles.controlButton, styles.start)}
-            data-testid={testIds.streamStartButton}
-          >
-            <StartIcon />
-            <span>Start</span>{' '}
-          </button>
-        </DropdownMenuItem>
-      )}
-
-      {shouldShowPauseButton && (
-        <DropdownMenuItem>
-          <button
-            type="button"
-            onClick={onClickPause}
-            className={classNames(styles.controlButton, styles.pause)}
-            data-testid={testIds.streamPauseButton}
-          >
-            <PauseIcon />
-            <span>Pause</span>
-          </button>
-        </DropdownMenuItem>
-      )}
-
-      {(shouldShowStartButton || shouldShowPauseButton) && <DropdownMenuDivider />}
-      <DropdownMenuItem>
-        <button
-          type="button"
-          onClick={onClickStop}
-          className={classNames(styles.controlButton, styles.stop)}
-          data-testid={testIds.streamStopButton}
-        >
-          <StopIcon />
-          <span>Stop</span>
-        </button>
-      </DropdownMenuItem>
-    </>
-  );
-
   return (
     <div className={classNames(styles.relative, className)}>
       <ConfirmModal
@@ -239,24 +190,59 @@ export function StreamControls({
           ? 'Loading...'
           : openerText || <StreamStatus status={stream.status} className={styles.statusPadded} />}
       </DropdownOpener>
-      {needToUseBlur ? (
-        <Modal
-          isOpen={opened}
-          onRequestClose={() => setMenuOpened(false)}
-          className={styles.modalContent}
-          overlayClassName={styles.modalOverlay}
-        >
-          {content}
-        </Modal>
-      ) : (
-        <DropdownMenu
-          onClose={() => setMenuOpened(false)}
-          opened={opened}
-          className={styles.controlsMenu}
-        >
-          {content}
-        </DropdownMenu>
-      )}
+      <AdaptiveModal
+        compact={needToUseBlur}
+        isOpen={opened}
+        onClose={() => setMenuOpened(false)}
+        modalClassName={styles.modalContent}
+        dropdownClassName={styles.controlsMenu}
+      >
+        {additionalControls && (
+          <DropdownMenuItem className={styles.additionalControl}>
+            {additionalControls}
+          </DropdownMenuItem>
+        )}
+        {shouldShowStartButton && (
+          <DropdownMenuItem>
+            <button
+              type="button"
+              onClick={() => startStream(stream.id)}
+              className={classNames(styles.controlButton, styles.start)}
+              data-testid={testIds.streamStartButton}
+            >
+              <StartIcon />
+              <span>Start</span>{' '}
+            </button>
+          </DropdownMenuItem>
+        )}
+
+        {shouldShowPauseButton && (
+          <DropdownMenuItem>
+            <button
+              type="button"
+              onClick={onClickPause}
+              className={classNames(styles.controlButton, styles.pause)}
+              data-testid={testIds.streamPauseButton}
+            >
+              <PauseIcon />
+              <span>Pause</span>
+            </button>
+          </DropdownMenuItem>
+        )}
+
+        {(shouldShowStartButton || shouldShowPauseButton) && <DropdownMenuDivider />}
+        <DropdownMenuItem>
+          <button
+            type="button"
+            onClick={onClickStop}
+            className={classNames(styles.controlButton, styles.stop)}
+            data-testid={testIds.streamStopButton}
+          >
+            <StopIcon />
+            <span>Stop</span>
+          </button>
+        </DropdownMenuItem>
+      </AdaptiveModal>
     </div>
   );
 }

@@ -1,0 +1,35 @@
+.modalOverlay {
+  pointer-events: auto;
+  user-select: text;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  overflow: auto;
+  padding: 15vh 0 10vh;
+  flex-direction: column;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+
+  &::before {
+    content: '╳';
+    color: white;
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    font-size: 48px;
+    right: 6vw;
+    top: 5vh;
+    display: block;
+    position: absolute;
+  }
+}
+
+.modalContent {
+  width: min(550px, 100vw - 30px);
+  border-radius: 24px;
+  background-color: white;
+}
