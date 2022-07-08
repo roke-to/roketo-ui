@@ -259,7 +259,10 @@ export function Notifications() {
   const isPanelVisible = useStore($panelIsVisible);
   const hasUnreadNotifications = useStore($hasUnreadNotifications);
   const compact = useMediaQuery('(max-width: 767px)');
-  useGate(blurGate, compact && isPanelVisible);
+  useGate(blurGate, {
+    modalId: 'notifications',
+    active: compact && isPanelVisible,
+  });
   return (
     <div className={styles.root}>
       <DropdownOpener
