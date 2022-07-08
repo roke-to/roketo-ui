@@ -9,7 +9,7 @@ export function ColorDot({
   className,
 }: {
   color?: string | null;
-  size: number;
+  size?: number;
   className?: string;
 }) {
   return (
