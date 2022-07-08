@@ -7,7 +7,7 @@ import {streamViewData} from '~/features/roketo-resource';
 
 import {$accountId, $tokens} from '~/entities/wallet';
 
-import {STREAM_DIRECTION} from '~/shared/api/roketo/constants';
+import {STREAM_DIRECTION, StreamDirection} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {getStreamDirection} from '~/shared/api/roketo/lib';
 import {
@@ -60,6 +60,7 @@ type StreamProgressData = {
   streamedPercentage: BigNumber;
   withdrawnText: string;
   withdrawnPercentage: BigNumber;
+  direction: StreamDirection | null;
 };
 
 export const streamCardDataDefaults: StreamCardData = {
@@ -85,6 +86,7 @@ export const streamProgressDataDefaults: StreamProgressData = {
   streamedPercentage: new BigNumber(0),
   withdrawnText: '',
   withdrawnPercentage: new BigNumber(0),
+  direction: null,
 };
 
 export const $streamCardsData = createStore<Record<string, StreamCardData>>(
@@ -129,8 +131,8 @@ sample({
 
 sample({
   clock: [dataUpdated, drawRetriggered],
-  source: $streamsProgress,
-  fn(oldData, {streams, tokens}) {
+  source: {oldData: $streamsProgress, accountId: $accountId},
+  fn({oldData, accountId}, {streams, tokens}) {
     const result = {} as unknown as Record<string, StreamProgressData>;
     // eslint-disable-next-line no-restricted-syntax
     for (const stream of streams) {
@@ -176,6 +178,7 @@ sample({
           streamedPercentage,
           withdrawnText,
           withdrawnPercentage,
+          direction: getStreamDirection(stream, accountId),
         },
         oldData[id],
       );

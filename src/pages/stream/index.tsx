@@ -53,6 +53,7 @@ export function StreamPage() {
     showAddFundsButton,
     showWithdrawButton,
     subheader,
+    direction,
   } = useStore($streamInfo);
   const compact = useMediaQuery('(max-width: 767px)');
   if (!active) return null;
@@ -111,6 +112,7 @@ export function StreamPage() {
                 cliffPercent={cliffPercent}
                 withBigCliffMark
                 className={styles.progressBar}
+                direction={direction}
               />
               {showControls && (
                 <>

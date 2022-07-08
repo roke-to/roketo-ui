@@ -14,7 +14,7 @@ import {
 } from '~/entities/wallet';
 
 import {getStream} from '~/shared/api/methods';
-import {STREAM_DIRECTION, STREAM_STATUS} from '~/shared/api/roketo/constants';
+import {STREAM_DIRECTION, STREAM_STATUS, StreamDirection} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {
   getAvailableToWithdraw,
@@ -76,6 +76,7 @@ export const $streamInfo = createStore({
   showAddFundsButton: false,
   showWithdrawButton: false,
   subheader: '',
+  direction: null as StreamDirection | null,
 });
 
 const progressRedrawTimerFx = createEffect(
@@ -228,6 +229,7 @@ sample({
       showWithdrawButton:
         direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.Active,
       subheader,
+      direction,
     };
   },
   target: $streamInfo,
