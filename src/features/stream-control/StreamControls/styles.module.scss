@@ -7,11 +7,12 @@
 .controlButton {
   display: flex;
   align-items: center;
-  height: 32px;
-  font-size: 12px;
-  width: 117px;
-  border-radius: 6px;
-  padding-left: 18px;
+  height: 48px;
+  font-size: 16px;
+  width: 200px;
+  border-radius: 24px;
+  font-weight: 500;
+  justify-content: center;
 
   > svg {
     margin-right: 8px;
@@ -92,7 +93,7 @@
   padding: 14px;
   min-width: unset;
   position: absolute;
-  border-radius: 12px;
+  border-radius: 24px;
   margin-top: 6px;
   left: 50%;
   transform: translateX(-50%);

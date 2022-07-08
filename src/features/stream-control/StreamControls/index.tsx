@@ -101,7 +101,7 @@ export function StreamControls({
   });
 
   if (isDead(stream) || isExternal) {
-    return <StreamStatus className={className} stream={stream} />;
+    return <StreamStatus className={className} status={stream.status} />;
   }
 
   const onClickPause = () => {
@@ -136,7 +136,7 @@ export function StreamControls({
           type="button"
           className={classNames(styles.dropdownOpener, openerClassName, styles.notAllowed)}
         >
-          <StreamStatus stream={stream} />
+          <StreamStatus status={stream.status} />
         </button>
       </div>
     );
@@ -170,7 +170,11 @@ export function StreamControls({
         className={classNames(styles.dropdownOpener, openerClassName, statusClassName)}
         testId={testIds.streamControlsDropdown}
       >
-        {loading ? 'Loading...' : <StreamStatus stream={stream} className={styles.statusPadded} />}
+        {loading ? (
+          'Loading...'
+        ) : (
+          <StreamStatus status={stream.status} className={styles.statusPadded} />
+        )}
       </DropdownOpener>
 
       <DropdownMenu

@@ -6,7 +6,7 @@ type AccountId = string;
 
 type SafeFloat = {val: number; pow: number};
 
-type StreamStatus =
+export type StreamStatus =
   | 'Initialized' // stream has been created, but not started, happens if "auto-start" is set to false when stream created
   | 'Active' // stream is all set and money is flowing
   | 'Paused' // stream has been set to pause, it may be started again any time
