@@ -35,12 +35,11 @@ export const ProgressBar = memo(
         <div
           className={cn(styles.progress, styles.streamed)}
           style={{width: `${streamedToTotalPercentageRatio}%`}}
-        >
-          <div
-            className={cn(styles.progress, styles.withdrawn)}
-            style={{width: `${withdrawnToTotalPercentageRatio}%`}}
-          />
-        </div>
+        />
+        <div
+          className={cn(styles.progress, styles.withdrawn)}
+          style={{width: `${withdrawnToTotalPercentageRatio}%`}}
+        />
         {typeof cliffPercent === 'number' && (
           <div
             title="Cliff"
