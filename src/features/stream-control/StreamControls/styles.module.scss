@@ -6,6 +6,7 @@
 
 .additionalControl {
   width: -webkit-fill-available;
+  width: stretch;
 }
 
 .controlButton {
@@ -41,6 +42,7 @@
 
   & .controlButton {
     width: -webkit-fill-available;
+    width: stretch;
   }
 }
 

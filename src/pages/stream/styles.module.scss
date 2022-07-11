@@ -192,6 +192,7 @@
   font-size: 16px;
   line-height: 24px;
   width: -webkit-fill-available;
+  width: stretch;
   justify-content: center;
 }
 
@@ -228,6 +229,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   width: -webkit-fill-available;
+  width: stretch;
 }
 
 /* Tablet, phone */
