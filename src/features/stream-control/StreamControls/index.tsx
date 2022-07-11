@@ -36,6 +36,7 @@ function ConfirmModal({
   className,
   children,
   testId,
+  modalName,
 }: {
   modalControl: BooleanControl;
   onConfirm: () => void;
@@ -44,7 +45,12 @@ function ConfirmModal({
   children: ReactNode;
   className: string;
   testId?: string;
+  modalName: string;
 }) {
+  useGate(blurGate, {
+    modalId: modalName,
+    active: modalControl.on,
+  });
   return (
     <Modal
       isOpen={modalControl.on}
@@ -166,6 +172,7 @@ export function StreamControls({
         header="Are you sure?"
         buttonText="Pause"
         className={styles.modalWarning}
+        modalName={`pause stream ${stream.id}`}
       >
         As a stream receiver, you will not be able to resume stream. Only stream owners can resume
         streams.
@@ -177,6 +184,7 @@ export function StreamControls({
         buttonText="Stop"
         className={styles.modalDanger}
         testId={testIds.streamModalStopButton}
+        modalName={`stop stream ${stream.id}`}
       >
         This action will completely shut down the stream. After that, it can't be turned on.
       </ConfirmModal>
