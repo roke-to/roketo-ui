@@ -33,10 +33,44 @@
 
 .modalContent {
   padding: 24px;
+  max-width: 480px;
+  width: 95vw;
+  border-radius: 8px;
+  background-color: white;
   color: $light-black;
 
   & .controlButton {
     width: -webkit-fill-available;
+  }
+}
+
+.modalOverlay {
+  pointer-events: auto;
+  user-select: text;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  overflow: auto;
+  padding: 15vh 0 10vh;
+  flex-direction: column;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+
+  &::before {
+    content: '╳';
+    color: white;
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    font-size: 48px;
+    right: 6vw;
+    top: 5vh;
+    display: block;
+    position: absolute;
   }
 }
 
