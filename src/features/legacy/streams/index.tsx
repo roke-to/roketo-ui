@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 
 import {Layout} from '@ui/components/Layout';
 
@@ -21,11 +21,6 @@ export const LegacyStreamsPage = () => {
   );
 
   const [filteredItems, setFiltered] = useState<LegacyRoketoStream[] | undefined>([]);
-  const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
-  const toggleModal = useCallback(
-    () => setIsModalOpened(!isModalOpened),
-    [setIsModalOpened, isModalOpened],
-  );
 
   return (
     <div className={styles.root}>
@@ -44,11 +39,7 @@ export const LegacyStreamsPage = () => {
           className={styles.streamFilters}
         />
 
-        <StreamsList
-          displayingStreams={filteredItems}
-          className={styles.section}
-          onCreateStreamClick={toggleModal}
-        />
+        <StreamsList displayingStreams={filteredItems} className={styles.section} />
       </Layout>
     </div>
   );

@@ -1,7 +1,6 @@
 import cn from 'classnames';
 import React from 'react';
 
-import {Button} from '@ui/components/Button';
 import {Spinner} from '@ui/components/Spinner';
 
 import {LegacyRoketoStream} from '../../../../api/roketo/interfaces/entities';
@@ -12,8 +11,6 @@ import styles from './styles.module.scss';
 type Props = {
   displayingStreams: LegacyRoketoStream[] | undefined;
 
-  onCreateStreamClick: () => void;
-
   className?: string;
 };
 
@@ -22,7 +19,7 @@ const EmptyState = ({children}: {children: React.ReactNode}) => (
 );
 
 export const StreamsList = (props: Props) => {
-  const {className, displayingStreams, onCreateStreamClick} = props;
+  const {className, displayingStreams} = props;
 
   const accountSWR = useAccount();
 
@@ -45,8 +42,7 @@ export const StreamsList = (props: Props) => {
   if (streams && allStreamsLength === 0) {
     return (
       <EmptyState>
-        <div>You don't have any streams yet.</div>
-        <Button onClick={onCreateStreamClick}>Create First Stream</Button>
+        <div>You don't have any streams.</div>
       </EmptyState>
     );
   }
