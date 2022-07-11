@@ -31,7 +31,7 @@ export const ProgressBar = memo(
     const withdrawnToStreamedPercentageRatio = getRoundedPercentageRatio(withdrawn, streamed);
 
     return (
-      <div className={cn(styles.progressBar, className)} data-direction={direction ?? 'none'}>
+      <div className={cn(styles.progressBar, className)} data-direction={direction}>
         <div
           className={cn(styles.progress, styles.streamed)}
           style={{width: `${streamedToTotalPercentageRatio}%`}}

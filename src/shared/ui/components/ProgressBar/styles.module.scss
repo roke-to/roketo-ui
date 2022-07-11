@@ -1,6 +1,10 @@
 @import 'src/shared/ui/palette';
 
 .progressBar {
+  --bar-border: #a7b0be;
+  --withdrawn-color: #a7b0be;
+  --streamed-color: #f0f0f0;
+
   &[data-direction='in'] {
     --bar-border: #a0c2f8;
     --withdrawn-color: #a0c2f8;
@@ -10,11 +14,6 @@
     --bar-border: #f8c9a0;
     --withdrawn-color: #f8c9a0;
     --streamed-color: #ffefe0;
-  }
-  &[data-direction='none'] {
-    --bar-border: #a7b0be;
-    --withdrawn-color: #a7b0be;
-    --streamed-color: #f0f0f0;
   }
 
   width: 100%;
