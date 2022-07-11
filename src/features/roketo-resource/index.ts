@@ -47,9 +47,11 @@ function calculateCliffPercent(stream: RoketoStream) {
 
 export function formatTimeLeft(millisecondsLeft: number) {
   const duration = intervalToDuration({start: 0, end: millisecondsLeft});
+
   if (duration.days || duration.weeks || duration.months || duration.years) {
     duration.seconds = 0;
   }
+
   return formatDuration(duration, {locale: shortEnLocale});
 }
 
