@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import {useStore} from 'effector-react';
 import {Link} from 'react-router-dom';
 
@@ -17,6 +18,7 @@ import {Profile} from '../profile';
 import styles from './styles.module.scss';
 import {FinancialActivity} from './ui/FinancialActivity';
 import {PageList} from './ui/PagesList';
+import {ReactComponent as Warning} from './warning.svg';
 
 const ROUTES_TO_DISPLAY = [ROUTES_MAP.streams];
 
@@ -26,43 +28,56 @@ export const Header = () => {
   const showLegacyStreams = useShowLegacyStreams();
 
   return (
-    <>
-      <div className={styles.wrapper}>
-        <Layout className={styles.root}>
-          <div className={styles.left}>
-            <Link to="/" className={styles.unshrinkable}>
-              <Logo className={styles.logo} />
-            </Link>
-            {signedIn && (
-              <PageList
-                pageRoutes={
-                  showLegacyStreams
-                    ? [...ROUTES_TO_DISPLAY, LEGACY_ROUTES_MAP.legacyStreams]
-                    : ROUTES_TO_DISPLAY
-                }
-              />
-            )}
-          </div>
-
-          <div className={styles.right}>
-            {signedIn && !withSecondFloor && <FinancialActivity className={styles.marginRight} />}
-            {signedIn && <Profile />}
-            {signedIn && !withSecondFloor && <Notifications />}
-            {!withSecondFloor && <Authorization />}
-          </div>
-        </Layout>
-      </div>
-      {signedIn && withSecondFloor && (
-        <div className={styles.secondWrapper}>
-          <Layout className={styles.secondRoot}>
-            <FinancialActivity className={styles.marginRight} />
-            <div className={styles.right}>
-              <Notifications />
-              <Authorization />
+    <div className={styles.wrapper}>
+      {showLegacyStreams && (
+        <Link to={LEGACY_ROUTES_MAP.legacyStreams.path}>
+          <Layout className={styles.legacyStreamsBar}>
+            <Warning className={classNames(styles.warningIcon, styles.unshrinkable)} />
+            <div>
+              You can see your previously created streams in the{' '}
+              <span className={styles.tabName}>Streams (legacy)</span> tab now.
+              <br />
+              Stop or re-create your legacy streams with this Roketo version before they will be
+              stopped on August 15.
+              <br />
+              Otherwise all unstreamed funds will be returned to the Sender, and the sent part to
+              the Recipient.
             </div>
           </Layout>
-        </div>
+        </Link>
       )}
-    </>
+      <Layout className={styles.root}>
+        <div className={styles.left}>
+          <Link to="/" className={styles.unshrinkable}>
+            <Logo className={styles.logo} />
+          </Link>
+          {signedIn && (
+            <PageList
+              pageRoutes={
+                showLegacyStreams
+                  ? [...ROUTES_TO_DISPLAY, LEGACY_ROUTES_MAP.legacyStreams]
+                  : ROUTES_TO_DISPLAY
+              }
+            />
+          )}
+        </div>
+
+        <div className={styles.right}>
+          {signedIn && !withSecondFloor && <FinancialActivity className={styles.marginRight} />}
+          {signedIn && <Profile />}
+          {signedIn && !withSecondFloor && <Notifications />}
+          {!withSecondFloor && <Authorization />}
+        </div>
+      </Layout>
+      {signedIn && withSecondFloor && (
+        <Layout className={styles.secondRoot}>
+          <FinancialActivity className={styles.marginRight} />
+          <div className={styles.right}>
+            <Notifications />
+            <Authorization />
+          </div>
+        </Layout>
+      )}
+    </div>
   );
 };
