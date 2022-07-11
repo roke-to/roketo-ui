@@ -98,7 +98,7 @@ export function StreamPage() {
                 Locked
               </Badge>
             )}
-            <div className={cn(styles.progressBlock, styles.blockLarge)}>
+            <div className={cn(styles.blockLarge, styles.progressBlock)}>
               <span className={styles.blockTitle}>{subheader}</span>
               <div className={styles.numericProgress}>
                 <span>{progressText}</span>&nbsp;
@@ -149,35 +149,35 @@ export function StreamPage() {
               </BlockLarge>
             )}
             {color && (
-              <div className={cn(styles.colorBlock, styles.blockLarge)}>
+              <div className={cn(styles.blockLarge, styles.colorBlock)}>
                 <span className={styles.blockTitle}>Tag color</span>
                 <ColorDot color={color} className={styles.blockBody} />
               </div>
             )}
 
             {comment && (
-              <div className={cn(styles.commentBlock, styles.blockLarge)}>
+              <div className={cn(styles.blockLarge, styles.commentBlock)}>
                 <span className={styles.blockTitle}>Comment</span>
                 <div className={styles.blockBody}>{comment}</div>
               </div>
             )}
             {link && (
-              <div className={cn(styles.linkBlock, styles.blockLarge)}>
+              <div className={cn(styles.blockLarge, styles.linkBlock)}>
                 <div className={cn(styles.copyTitle, styles.blockTitle)}>
                   Public link to view the stream
                   <button type="button" className={styles.copyButton} onClick={() => copy(link)}>
                     <LinkIcon className={styles.linkIcon} />
                   </button>
                 </div>
-                <div className={cn(styles.link, styles.blockBody)}>{link}</div>
+                <div className={cn(styles.blockBody, styles.link)}>{link}</div>
               </div>
             )}
 
-            <div className={cn(styles.senderBlock, styles.blockSmall)}>
+            <div className={cn(styles.blockSmall, styles.senderBlock)}>
               <span className={styles.blockTitle}>Sender</span>
               <span className={styles.blockBody}>{sender}</span>
             </div>
-            <div className={cn(styles.receiverBlock, styles.blockSmall)}>
+            <div className={cn(styles.blockSmall, styles.receiverBlock)}>
               <span className={styles.blockTitle}>Receiver</span>
               <span className={styles.blockBody}>{receiver}</span>
             </div>
@@ -198,7 +198,7 @@ function BlockLarge({
   children: ReactNode;
 }) {
   return (
-    <div className={cn(className, styles.blockLarge)}>
+    <div className={cn(styles.blockLarge, className)}>
       <span className={styles.blockTitle}>{title}</span>
       <div className={styles.blockBody}>{children}</div>
     </div>
