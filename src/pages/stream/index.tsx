@@ -19,7 +19,7 @@ import {ProgressBar} from '@ui/components/ProgressBar';
 import {LinkIcon} from '@ui/icons/Link';
 
 import {BreadcrumbIcon} from './BreadcrumbIcon';
-import {$link, $loading, $pageError, $stream, $streamInfo, pageGate} from './model';
+import {$loading, $pageError, $stream, $streamInfo, pageGate} from './model';
 import styles from './styles.module.scss';
 
 export function StreamPage() {
@@ -28,7 +28,6 @@ export function StreamPage() {
   const loading = useStore($loading);
   const stream = useStore($stream);
   const pageError = useStore($pageError);
-  const link = useStore($link);
   const {
     active,
     amount,
@@ -54,6 +53,7 @@ export function StreamPage() {
     showWithdrawButton,
     subheader,
     direction,
+    link,
   } = useStore($streamInfo);
   const compact = useMediaQuery('(max-width: 767px)');
   if (!active) return null;
@@ -161,17 +161,15 @@ export function StreamPage() {
                 <div className={styles.blockBody}>{comment}</div>
               </div>
             )}
-            {link && (
-              <div className={cn(styles.blockLarge, styles.linkBlock)}>
-                <div className={cn(styles.copyTitle, styles.blockTitle)}>
-                  Public link to view the stream
-                  <button type="button" className={styles.copyButton} onClick={() => copy(link)}>
-                    <LinkIcon className={styles.linkIcon} />
-                  </button>
-                </div>
-                <div className={cn(styles.blockBody, styles.link)}>{link}</div>
+            <div className={cn(styles.blockLarge, styles.linkBlock)}>
+              <div className={cn(styles.copyTitle, styles.blockTitle)}>
+                Public link to view the stream
+                <button type="button" className={styles.copyButton} onClick={() => copy(link)}>
+                  <LinkIcon className={styles.linkIcon} />
+                </button>
               </div>
-            )}
+              <div className={cn(styles.blockBody, styles.link)}>{link}</div>
+            </div>
 
             <div className={cn(styles.blockSmall, styles.senderBlock)}>
               <span className={styles.blockTitle}>Sender</span>

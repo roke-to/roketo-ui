@@ -50,8 +50,6 @@ const drawRetriggered = createEvent<{
 }>();
 const noData = createEvent<unknown>();
 
-export const $link = createStore<string | null>(null);
-
 export const $streamInfo = createStore({
   active: false,
   sender: '',
@@ -77,6 +75,7 @@ export const $streamInfo = createStore({
   showWithdrawButton: false,
   subheader: '',
   direction: null as StreamDirection | null,
+  link: '',
 });
 
 const progressRedrawTimerFx = createEffect(
@@ -152,12 +151,6 @@ split({
 });
 
 sample({
-  clock: $stream,
-  fn: (stream) => (stream ? getStreamLink(stream.id) : null),
-  target: $link,
-});
-
-sample({
   clock: [dataUpdated, drawRetriggered],
   source: {accountId: $accountId, oracle: $priceOracle},
   fn({accountId, oracle: {getPriceInUsd: toUsd}}, {stream, token}) {
@@ -230,6 +223,7 @@ sample({
         direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.Active,
       subheader,
       direction,
+      link: getStreamLink(stream.id),
     };
   },
   target: $streamInfo,
