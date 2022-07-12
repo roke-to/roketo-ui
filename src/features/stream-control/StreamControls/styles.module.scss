@@ -4,14 +4,20 @@
   position: relative;
 }
 
+.additionalControl {
+  width: -webkit-fill-available;
+  width: stretch;
+}
+
 .controlButton {
   display: flex;
   align-items: center;
-  height: 32px;
-  font-size: 12px;
-  width: 117px;
-  border-radius: 6px;
-  padding-left: 18px;
+  height: 48px;
+  font-size: 16px;
+  width: 200px;
+  border-radius: 24px;
+  font-weight: 500;
+  justify-content: center;
 
   > svg {
     margin-right: 8px;
@@ -29,26 +35,45 @@
 .modalContent {
   padding: 24px;
   max-width: 480px;
-  width: 100%;
+  width: 95vw;
   border-radius: 8px;
   background-color: white;
   color: $light-black;
+
+  & .controlButton {
+    width: -webkit-fill-available;
+    width: stretch;
+  }
 }
 
 .modalOverlay {
+  pointer-events: auto;
+  user-select: text;
   position: fixed;
   display: flex;
   align-items: center;
   overflow: auto;
-  padding: 5vh 0;
+  padding: 15vh 0 10vh;
   flex-direction: column;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   background-color: rgba(0, 0, 0, 0.4);
-  color: white;
-  z-index: 1000;
+  z-index: 999;
+
+  &::before {
+    content: '╳';
+    color: white;
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    font-size: 48px;
+    right: 6vw;
+    top: 5vh;
+    display: block;
+    position: absolute;
+  }
 }
 
 .modalHeader {
@@ -92,7 +117,7 @@
   padding: 14px;
   min-width: unset;
   position: absolute;
-  border-radius: 12px;
+  border-radius: 24px;
   margin-top: 6px;
   left: 50%;
   transform: translateX(-50%);

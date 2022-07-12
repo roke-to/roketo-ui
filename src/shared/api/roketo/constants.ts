@@ -9,3 +9,5 @@ export const STREAM_DIRECTION = {
   IN: 'in',
   OUT: 'out',
 } as const;
+
+export type StreamDirection = 'in' | 'out';

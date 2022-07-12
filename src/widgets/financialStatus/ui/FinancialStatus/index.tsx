@@ -1,6 +1,7 @@
 import cn from 'classnames';
 import {useStore} from 'effector-react';
 
+import {STREAM_DIRECTION} from '~/shared/api/roketo/constants';
 import {testIds} from '~/shared/constants';
 
 import {FinancialInfo} from '../FinancialInfo';
@@ -17,6 +18,7 @@ export const FinancialStatus = ({className}: {className?: string}) => {
         total={outcomeAmountInfo.total}
         streamed={outcomeAmountInfo.streamed}
         withdrawn={outcomeAmountInfo.withdrawn}
+        direction={STREAM_DIRECTION.OUT}
       />
 
       <FinancialInfo
@@ -24,6 +26,7 @@ export const FinancialStatus = ({className}: {className?: string}) => {
         total={incomeAmountInfo.total}
         streamed={incomeAmountInfo.streamed}
         withdrawn={incomeAmountInfo.withdrawn}
+        direction={STREAM_DIRECTION.IN}
       />
 
       <FinancialInfo

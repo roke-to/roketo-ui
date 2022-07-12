@@ -2,7 +2,6 @@ import type {Notification, NotificationTypeEnum as NotificationType} from '@roke
 import classNames from 'classnames';
 import {useGate, useList, useStore, useStoreMap} from 'effector-react';
 import React from 'react';
-import Modal from 'react-modal';
 import {Link} from 'react-router-dom';
 
 import {streamViewData} from '~/features/roketo-resource';
@@ -16,7 +15,7 @@ import {testIds} from '~/shared/constants';
 import {useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
 import {useToken} from '~/shared/hooks/useToken';
-import {DropdownMenu} from '~/shared/kit/DropdownMenu';
+import {AdaptiveModal} from '~/shared/kit/AdaptiveModal';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 
 import {Spinner} from '@ui/components/Spinner';
@@ -222,44 +221,16 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
   }
 }
 
-function NotificationsList() {
-  const initialLoading = useStoreMap($notifications, (notifications) => notifications === null);
-  const hasNotifications = useStoreMap($notifications, (items) => Boolean(items?.length));
-
-  return (
-    <div className={styles.container} data-testid={testIds.notificationsContainer}>
-      {initialLoading && (
-        <Spinner wrapperClassName={styles.loader} testId={testIds.notificationsLoader} />
-      )}
-      {!initialLoading && !hasNotifications && (
-        <h3 className="text-3xl text-center my-12 mx-auto">
-          Your notifications will be displayed here
-        </h3>
-      )}
-      {useList($notificationsContent, {
-        getKey: ({notification}) => notification.id,
-        // eslint-disable-next-line react/no-unstable-nested-components
-        fn: ({notification, link, dateTime}) => (
-          <Link
-            to={link}
-            className={classNames(styles.notification, !notification.isRead && styles.unread)}
-            onClick={closePanel}
-          >
-            <NotificationIcon type={notification.type} />
-            <NotificationBody notification={notification} />
-            <div className={styles.time}>{dateTime}</div>
-          </Link>
-        ),
-      })}
-    </div>
-  );
-}
-
 export function Notifications() {
   const isPanelVisible = useStore($panelIsVisible);
   const hasUnreadNotifications = useStore($hasUnreadNotifications);
   const compact = useMediaQuery('(max-width: 767px)');
-  useGate(blurGate, compact && isPanelVisible);
+  const initialLoading = useStoreMap($notifications, (notifications) => notifications === null);
+  const hasNotifications = useStoreMap($notifications, (items) => Boolean(items?.length));
+  useGate(blurGate, {
+    modalId: 'notifications',
+    active: compact && isPanelVisible,
+  });
   return (
     <div className={styles.root}>
       <DropdownOpener
@@ -270,24 +241,39 @@ export function Notifications() {
       >
         <BellIcon withBadge={hasUnreadNotifications} />
       </DropdownOpener>
-      {compact ? (
-        <Modal
-          isOpen={isPanelVisible}
-          onRequestClose={closePanel}
-          className={styles.panel}
-          overlayClassName={styles.modalOverlay}
-        >
-          <NotificationsList />
-        </Modal>
-      ) : (
-        <DropdownMenu
-          opened={isPanelVisible}
-          onClose={closePanel}
-          className={classNames(styles.panel, styles.dropdownPanel)}
-        >
-          <NotificationsList />
-        </DropdownMenu>
-      )}
+      <AdaptiveModal
+        compact={compact}
+        isOpen={isPanelVisible}
+        onClose={closePanel}
+        modalClassName={styles.panel}
+        dropdownClassName={classNames(styles.panel, styles.dropdownPanel)}
+      >
+        <div className={styles.container} data-testid={testIds.notificationsContainer}>
+          {initialLoading && (
+            <Spinner wrapperClassName={styles.loader} testId={testIds.notificationsLoader} />
+          )}
+          {!initialLoading && !hasNotifications && (
+            <h3 className="text-3xl text-center my-12 mx-auto">
+              Your notifications will be displayed here
+            </h3>
+          )}
+          {useList($notificationsContent, {
+            getKey: ({notification}) => notification.id,
+            // eslint-disable-next-line react/no-unstable-nested-components
+            fn: ({notification, link, dateTime}) => (
+              <Link
+                to={link}
+                className={classNames(styles.notification, !notification.isRead && styles.unread)}
+                onClick={closePanel}
+              >
+                <NotificationIcon type={notification.type} />
+                <NotificationBody notification={notification} />
+                <div className={styles.time}>{dateTime}</div>
+              </Link>
+            ),
+          })}
+        </div>
+      </AdaptiveModal>
     </div>
   );
 }

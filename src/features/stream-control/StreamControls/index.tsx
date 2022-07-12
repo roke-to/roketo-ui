@@ -1,8 +1,9 @@
 import classNames from 'classnames';
-import {useStore, useStoreMap} from 'effector-react';
+import {useGate, useStore, useStoreMap} from 'effector-react';
 import {ReactNode, useState} from 'react';
 import Modal from 'react-modal';
 
+import {blurGate} from '~/entities/blur';
 import {$accountId} from '~/entities/wallet';
 
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
@@ -16,7 +17,8 @@ import {
 } from '~/shared/api/roketo/lib';
 import {testIds} from '~/shared/constants';
 import {BooleanControl, useBool} from '~/shared/hooks/useBool';
-import {DropdownMenu, DropdownMenuDivider, DropdownMenuItem} from '~/shared/kit/DropdownMenu';
+import {AdaptiveModal} from '~/shared/kit/AdaptiveModal';
+import {DropdownMenuDivider, DropdownMenuItem} from '~/shared/kit/DropdownMenu';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 
 import {StreamStatus} from '../StreamStatus';
@@ -34,6 +36,7 @@ function ConfirmModal({
   className,
   children,
   testId,
+  modalName,
 }: {
   modalControl: BooleanControl;
   onConfirm: () => void;
@@ -42,7 +45,12 @@ function ConfirmModal({
   children: ReactNode;
   className: string;
   testId?: string;
+  modalName: string;
 }) {
+  useGate(blurGate, {
+    modalId: modalName,
+    active: modalControl.on,
+  });
   return (
     <Modal
       isOpen={modalControl.on}
@@ -76,7 +84,21 @@ function ConfirmModal({
   );
 }
 
-export function StreamControls({stream, className}: {stream: RoketoStream; className?: string}) {
+export function StreamControls({
+  stream,
+  className,
+  openerClassName,
+  additionalControls,
+  openerText,
+  needToUseBlur,
+}: {
+  stream: RoketoStream;
+  className?: string;
+  openerClassName?: string;
+  additionalControls?: ReactNode;
+  openerText?: ReactNode;
+  needToUseBlur?: boolean;
+}) {
   const pauseModalControl = useBool(false);
   const stopModalControl = useBool(false);
   const loading = useStore($loading);
@@ -92,9 +114,8 @@ export function StreamControls({stream, className}: {stream: RoketoStream; class
     },
   });
 
-  if (isDead(stream) || isExternal) {
-    return <StreamStatus className={className} stream={stream} />;
-  }
+  const showStatusOnly = isDead(stream) || isExternal;
+  const isStartedAndLocked = wasStartedAndLocked(stream);
 
   const onClickPause = () => {
     setMenuOpened(false);
@@ -112,6 +133,11 @@ export function StreamControls({stream, className}: {stream: RoketoStream; class
 
   const opened = menuOpened && !loading;
 
+  useGate(blurGate, {
+    modalId: `stream controls ${stream.id}`,
+    active: !!needToUseBlur && !showStatusOnly && !isStartedAndLocked && opened,
+  });
+
   const shouldShowStartButton = stream.status !== STREAM_STATUS.Active && isOutgoing;
   const shouldShowPauseButton = stream.status === STREAM_STATUS.Active && !isWithCliff(stream);
 
@@ -121,11 +147,18 @@ export function StreamControls({stream, className}: {stream: RoketoStream; class
     [styles.stop]: isDead(stream),
   };
 
-  if (wasStartedAndLocked(stream)) {
+  if (showStatusOnly) {
+    return <StreamStatus className={className} status={stream.status} />;
+  }
+
+  if (isStartedAndLocked) {
     return (
       <div className={classNames(styles.relative, className)}>
-        <button type="button" className={classNames(styles.dropdownOpener, styles.notAllowed)}>
-          <StreamStatus stream={stream} />
+        <button
+          type="button"
+          className={classNames(styles.dropdownOpener, openerClassName, styles.notAllowed)}
+        >
+          <StreamStatus status={stream.status} />
         </button>
       </div>
     );
@@ -139,6 +172,7 @@ export function StreamControls({stream, className}: {stream: RoketoStream; class
         header="Are you sure?"
         buttonText="Pause"
         className={styles.modalWarning}
+        modalName={`pause stream ${stream.id}`}
       >
         As a stream receiver, you will not be able to resume stream. Only stream owners can resume
         streams.
@@ -150,23 +184,32 @@ export function StreamControls({stream, className}: {stream: RoketoStream; class
         buttonText="Stop"
         className={styles.modalDanger}
         testId={testIds.streamModalStopButton}
+        modalName={`stop stream ${stream.id}`}
       >
         This action will completely shut down the stream. After that, it can't be turned on.
       </ConfirmModal>
       <DropdownOpener
         opened={opened}
         onChange={setMenuOpened}
-        className={classNames(styles.dropdownOpener, statusClassName)}
+        className={classNames(styles.dropdownOpener, openerClassName, statusClassName)}
         testId={testIds.streamControlsDropdown}
       >
-        {loading ? 'Loading...' : <StreamStatus stream={stream} className={styles.statusPadded} />}
+        {loading
+          ? 'Loading...'
+          : openerText || <StreamStatus status={stream.status} className={styles.statusPadded} />}
       </DropdownOpener>
-
-      <DropdownMenu
+      <AdaptiveModal
+        compact={needToUseBlur}
+        isOpen={opened}
         onClose={() => setMenuOpened(false)}
-        opened={opened}
-        className={styles.controlsMenu}
+        modalClassName={styles.modalContent}
+        dropdownClassName={styles.controlsMenu}
       >
+        {additionalControls && (
+          <DropdownMenuItem className={styles.additionalControl}>
+            {additionalControls}
+          </DropdownMenuItem>
+        )}
         {shouldShowStartButton && (
           <DropdownMenuItem>
             <button
@@ -207,7 +250,7 @@ export function StreamControls({stream, className}: {stream: RoketoStream; class
             <span>Stop</span>
           </button>
         </DropdownMenuItem>
-      </DropdownMenu>
+      </AdaptiveModal>
     </div>
   );
 }

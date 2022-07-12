@@ -30,6 +30,7 @@ export const StreamProgress = ({streamId, className}: {streamId: string; classNa
     streamedPercentage,
     withdrawnText,
     withdrawnPercentage,
+    direction,
   } = useStoreMap({
     store: $streamsProgress,
     keys: [streamId],
@@ -53,6 +54,7 @@ export const StreamProgress = ({streamId, className}: {streamId: string; classNa
             streamed={progressStreamed}
             withdrawn={progressWithdrawn}
             cliffPercent={cliffPercent}
+            direction={direction}
           />
 
           <div className={cn(styles.status, styles.speed)}>
@@ -92,6 +94,7 @@ export const StreamProgress = ({streamId, className}: {streamId: string; classNa
           streamed={progressStreamed}
           withdrawn={progressWithdrawn}
           cliffPercent={cliffPercent}
+          direction={direction}
         />
       </div>
     </RCTooltip>

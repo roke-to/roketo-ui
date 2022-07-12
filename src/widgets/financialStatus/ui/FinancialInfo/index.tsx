@@ -1,5 +1,6 @@
 import React from 'react';
 
+import type {StreamDirection} from '~/shared/api/roketo/constants';
 import {ProgressBar} from '~/shared/ui/components/ProgressBar';
 
 import styles from './styles.module.scss';
@@ -11,6 +12,7 @@ type FinancialInfoProps = {
   withdrawn?: number;
   withProgressBar?: boolean;
   testId?: string;
+  direction?: StreamDirection | null;
 };
 
 export const FinancialInfo = ({
@@ -20,6 +22,7 @@ export const FinancialInfo = ({
   withdrawn = 0,
   withProgressBar = true,
   testId,
+  direction = null,
 }: FinancialInfoProps) => {
   const financialContent = streamed ? `$ ${streamed} of ${total}` : `$ ${total}`;
 
@@ -36,6 +39,7 @@ export const FinancialInfo = ({
           total={String(total)}
           streamed={String(streamed)}
           withdrawn={String(withdrawn)}
+          direction={direction}
         />
       )}
     </div>

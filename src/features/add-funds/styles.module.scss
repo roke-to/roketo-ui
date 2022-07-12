@@ -3,13 +3,15 @@
 .modalContent {
   padding: 24px;
   max-width: 480px;
-  width: 100%;
+  width: 95vw;
   border-radius: 8px;
   background-color: white;
   color: $light-black;
 }
 
 .modalOverlay {
+  pointer-events: auto;
+  user-select: text;
   position: fixed;
   display: flex;
   align-items: center;
