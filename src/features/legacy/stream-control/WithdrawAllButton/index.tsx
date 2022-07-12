@@ -147,15 +147,16 @@ export function WithdrawAllButton(props: WithdrawAllButtonProps) {
     </Modal>
   );
 
-  const onClick = loading
-    ? () => {}
-    : () => {
-        if (isSafeToWithdraw) {
-          updateAllAndWithdraw();
-        } else {
-          showNEP141Popup();
-        }
-      };
+  const onClick =
+    loading || balances.every(([, balance]) => balance === 0)
+      ? () => {}
+      : () => {
+          if (isSafeToWithdraw) {
+            updateAllAndWithdraw();
+          } else {
+            showNEP141Popup();
+          }
+        };
 
   return (
     <>
