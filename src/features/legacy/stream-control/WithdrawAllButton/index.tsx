@@ -148,7 +148,7 @@ export function WithdrawAllButton(props: WithdrawAllButtonProps) {
   );
 
   const onClick =
-    loading || balances.length === 0
+    loading || balances.every(([, balance]) => balance === 0)
       ? () => {}
       : () => {
           if (isSafeToWithdraw) {
