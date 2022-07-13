@@ -4,17 +4,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  white-space: nowrap;
+  gap: 8px;
+  &:not(:last-of-type) {
+    margin-right: 16px;
+  }
 }
 
 .root[disabled] {
   background-color: $light-grey;
   border-color: $light-grey;
   cursor: not-allowed;
-}
-
-.root:not(:last-of-type) {
-  margin-bottom: 16px;
 }
 
 .logo {
