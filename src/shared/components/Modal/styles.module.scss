@@ -96,26 +96,30 @@
   margin-bottom: 24px;
 }
 
-// mobile
+// close styles in overlay
+.overlay > .close {
+  display: none;
+
+  width: 30px;
+  height: 30px;
+
+  &:after,
+  &:before {
+    background: white;
+  }
+}
+
+// close visibilty on mobile
 @media (max-width: 767px) {
   .overlay {
     padding: 84px 0;
 
-    &::before {
-      content: '╳';
-      color: white;
-      width: 40px;
-      height: 40px;
-      line-height: 30px;
-      font-size: 40px;
-      right: 19px;
-      top: 29px;
+    > .close {
       display: block;
-      position: absolute;
     }
   }
 
-  .close {
+  .content > .close {
     display: none;
   }
 }

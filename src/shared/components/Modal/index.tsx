@@ -13,10 +13,19 @@ type Props = {
   className?: string;
 };
 
+const renderOverlay = (props: React.ComponentPropsWithRef<'div'>, children: React.ReactElement) => (
+  <div {...props}>
+    {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/control-has-associated-label */}
+    <span className={styles.close} tabIndex={0} role="button" />
+    {children}
+  </div>
+);
+
 export const Modal = ({title, children, isOpen = true, onCloseModal, className}: Props) => (
   <ReactModal
     isOpen={isOpen}
     onRequestClose={onCloseModal}
+    overlayElement={renderOverlay}
     className={classNames(styles.content, className)}
     overlayClassName={styles.overlay}
     bodyOpenClassName={styles.bodyWithModal}
