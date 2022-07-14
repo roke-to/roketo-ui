@@ -1312,10 +1312,10 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@effector/reflect@^7.1.1":
-  version "7.1.1"
-  resolved "https://registry.yarnpkg.com/@effector/reflect/-/reflect-7.1.1.tgz#0808776a7e7e4918817fafe1bd582ed57ed1300a"
-  integrity sha512-GSorX7Vk62whu/4ypUT7ELQsT6MCHZm4uTDLiRUgzWFvKRdCAVWEVhYrId8+vdp8qlKN6hIVoYmSgxG0tz5Y9A==
+"@effector/reflect@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@effector/reflect/-/reflect-8.0.0.tgz#ff248a18f49be8439dd316d316a550aacd34dc12"
+  integrity sha512-roMf2JjIY22OywkO26FRIw9pf/knPvFo0r1f30XbCjWn3fGQik8/vh8Nyz2eUb02yRnSuVi+1nXM1YbDiuGNgQ==
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
@@ -4150,10 +4150,12 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
-effector-react@^22.0.6:
-  version "22.0.6"
-  resolved "https://registry.yarnpkg.com/effector-react/-/effector-react-22.0.6.tgz#e6651febfc124a8adf550deb950fbd03dfb9ec4e"
-  integrity sha512-uzVjrh5S94eMeihu8N8eQvLFnZA56VT00etMVovnSyZxujo0f8gtZZebIYOKyYFkGcYUyfiOHRRzBhYpIfAIhg==
+effector-react@^22.1.2:
+  version "22.1.2"
+  resolved "https://registry.yarnpkg.com/effector-react/-/effector-react-22.1.2.tgz#178c58c9c4b1fdfbf282c0b42e41bbb865700d66"
+  integrity sha512-JPq0fyoJlWM5rKSTm1Vt5pFoWRoaNI3J3eK/5t4PJOeh4ikP0/H+AknsHXx2z0O9Zq2l3LPs86/w9ZrcbFMkPg==
+  dependencies:
+    use-sync-external-store "^1.0.0"
 
 effector@^22.3.0:
   version "22.3.0"
@@ -8074,10 +8076,10 @@ path-type@^4.0.0:
   resolved "https://registry.yarnpkg.com/path-type/-/path-type-4.0.0.tgz#84ed01c0a7ba380afe09d90a8c180dcd9d03043b"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
 
-patronum@^1.8.2:
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/patronum/-/patronum-1.8.2.tgz#f58094c756cef791544bb84cac65d82ca22e6ede"
-  integrity sha512-w0SoP6eFLp41D1v5kCFt0/TRbPI27XYb92GeOQ4i0uuNjbGJSugfL58Cnm+MMQIT7Q0gRqUqIp2HRTnt2B4Qkw==
+patronum@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/patronum/-/patronum-1.9.0.tgz#d30ad231b708a675e66237b94bbd117e76cc1803"
+  integrity sha512-+uaVUFiHCkIvCf7CfM2+bUkqfVcYGdQjgRsbj/+fcw0J5QSdJREMqLfr8ALRkS5DMw1F7B2EJStFZ5xx7Ubv3g==
 
 pbkdf2@^3.0.9:
   version "3.1.2"
@@ -10652,6 +10654,11 @@ usb@^1.7.0:
   dependencies:
     node-addon-api "^4.2.0"
     node-gyp-build "^4.3.0"
+
+use-sync-external-store@^1.0.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz#7dbefd6ef3fe4e767a0cf5d7287aacfb5846928a"
+  integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==
 
 use@^3.1.0:
   version "3.1.1"
