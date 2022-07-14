@@ -12,7 +12,7 @@ import {WithdrawAllButton} from '~/features/stream-control/WithdrawAllButton';
 import {$accountStreams} from '~/entities/wallet';
 
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {LegacyModal} from '~/shared/components/LegacyModal';
+import {Modal} from '~/shared/components/Modal';
 import {testIds} from '~/shared/constants';
 
 import {Button} from '@ui/components/Button';
@@ -49,7 +49,7 @@ export const StreamsPage = () => {
             <Button onClick={toggleModal} testId={testIds.createStreamButton}>
               Create a stream
             </Button>
-            <LegacyModal isOpen={isModalOpened} onCloseModal={toggleModal}>
+            <Modal isOpen={isModalOpened} onCloseModal={toggleModal}>
               <CreateStream
                 onFormCancel={toggleModal}
                 onFormSubmit={(values) =>
@@ -57,7 +57,7 @@ export const StreamsPage = () => {
                 }
                 submitting={submitting}
               />
-            </LegacyModal>
+            </Modal>
           </div>
         </section>
 
