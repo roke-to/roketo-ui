@@ -15,8 +15,8 @@ type Props = {
 
 const renderOverlay = (props: React.ComponentPropsWithRef<'div'>, children: React.ReactElement) => (
   <div {...props}>
-    {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/control-has-associated-label */}
-    <span className={styles.close} tabIndex={0} role="button" />
+    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+    <button type="button" className={styles.close} />
     {children}
   </div>
 );
@@ -30,8 +30,8 @@ export const Modal = ({title, children, isOpen = true, onCloseModal, className}:
     overlayClassName={styles.overlay}
     bodyOpenClassName={styles.bodyWithModal}
   >
-    {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/control-has-associated-label */}
-    <span className={styles.close} tabIndex={0} role="button" onClick={onCloseModal} />
+    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+    <button type="button" className={styles.close} onClick={onCloseModal} />
     {title && <h2 className={styles.title}>{title}</h2>}
     {children}
   </ReactModal>
