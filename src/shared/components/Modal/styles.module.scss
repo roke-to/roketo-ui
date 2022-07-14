@@ -20,23 +20,6 @@
   user-select: text;
 }
 
-.mobile {
-  padding: 84px 0;
-
-  &::before {
-    content: '╳';
-    color: white;
-    width: 40px;
-    height: 40px;
-    line-height: 30px;
-    font-size: 40px;
-    right: 19px;
-    top: 29px;
-    display: block;
-    position: absolute;
-  }
-}
-
 .bodyWithModal {
   overflow: hidden;
   pointer-events: none;
@@ -111,4 +94,28 @@
   font-size: 22px;
   line-height: 28px;
   margin-bottom: 24px;
+}
+
+// mobile
+@media (max-width: 767px) {
+  .overlay {
+    padding: 84px 0;
+
+    &::before {
+      content: '╳';
+      color: white;
+      width: 40px;
+      height: 40px;
+      line-height: 30px;
+      font-size: 40px;
+      right: 19px;
+      top: 29px;
+      display: block;
+      position: absolute;
+    }
+  }
+
+  .close {
+    display: none;
+  }
 }
