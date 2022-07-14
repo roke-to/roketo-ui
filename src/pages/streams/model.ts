@@ -1,16 +1,25 @@
-import {combine} from 'effector';
+import {combine, createStore, sample} from 'effector';
 import {generatePath} from 'react-router-dom';
 
 import {colorDescriptions} from '~/features/create-stream/constants';
 import type {FormValues} from '~/features/create-stream/constants';
 import {getTokensPerSecondCount} from '~/features/create-stream/lib';
 
-import {$nearWallet, $roketoWallet} from '~/entities/wallet';
+import {
+  $accountStreams,
+  $nearWallet,
+  $priceOracle,
+  $roketoWallet,
+  $tokens,
+} from '~/entities/wallet';
 
 import {createStream} from '~/shared/api/methods';
+import {isActiveStream} from '~/shared/api/roketo/lib';
 import {toYocto} from '~/shared/api/token-formatter';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 import {ROUTES_MAP} from '~/shared/lib/routing';
+
+import {collectTotalFinancialAmountInfo, countTotalUSDWithdrawal} from './lib';
 
 const redirectUrl = generatePath(ROUTES_MAP.streams.path);
 const returnPath = `${window.location.origin}/#${redirectUrl}`;
@@ -54,4 +63,36 @@ export const handleCreateStreamFx = createProtectedEffect({
       }
     }
   },
+});
+
+export const $financialStatus = createStore({
+  outcomeAmountInfo: {
+    total: 0,
+    streamed: 0,
+    withdrawn: 0,
+  },
+  incomeAmountInfo: {
+    total: 0,
+    streamed: 0,
+    withdrawn: 0,
+  },
+  availableForWithdrawal: 0,
+});
+
+sample({
+  source: {
+    tokens: $tokens,
+    streams: $accountStreams,
+    priceOracle: $priceOracle,
+  },
+  fn({tokens, streams: {inputs, outputs}, priceOracle}) {
+    const activeInputStreams = inputs.filter(isActiveStream);
+    const activeOutputStreams = outputs.filter(isActiveStream);
+    return {
+      outcomeAmountInfo: collectTotalFinancialAmountInfo(activeOutputStreams, tokens, priceOracle),
+      incomeAmountInfo: collectTotalFinancialAmountInfo(activeInputStreams, tokens, priceOracle),
+      availableForWithdrawal: countTotalUSDWithdrawal(activeInputStreams, tokens, priceOracle),
+    };
+  },
+  target: $financialStatus,
 });
