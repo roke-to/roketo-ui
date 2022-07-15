@@ -43,3 +43,41 @@
 .withMarginRight {
   margin-right: 30px;
 }
+
+.nameBlock {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+
+  :not(:last-child) {
+    margin-right: 6px;
+  }
+}
+
+.nameText {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.controlBlock {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  & > :not(:last-child) {
+    margin-right: 16px;
+  }
+}
+
+.streamLinkButton {
+  padding: 8px 12px;
+
+  border-radius: 6px;
+
+  &:hover {
+    background-color: $background-secondary;
+  }
+}

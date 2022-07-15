@@ -88,3 +88,32 @@
     width: 320px;
   }
 }
+
+.directionSorts {
+  display: flex;
+
+  & > :not(:last-child) {
+    margin-right: 12px;
+  }
+}
+
+.directionSort {
+  padding: 12px;
+
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+
+  color: $grey;
+  background-color: transparent;
+  border: 1px solid transparent;
+
+  &[disabled] {
+    cursor: not-allowed;
+  }
+}
+
+.directionActive:not([disabled]) {
+  background-color: $light-blue;
+  color: $blue;
+}

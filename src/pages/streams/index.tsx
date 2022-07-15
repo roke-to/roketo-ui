@@ -1,17 +1,11 @@
 import cn from 'classnames';
-import {useStore, useStoreMap} from 'effector-react';
+import {useStore} from 'effector-react';
 import {useCallback, useState} from 'react';
 
-import {StreamsList} from '~/widgets/streamsList';
-
 import {CreateStream} from '~/features/create-stream/CreateStream';
-import {StreamFilters} from '~/features/filtering/StreamFilters';
 import {WithdrawAllButton} from '~/features/stream-control/WithdrawAllButton';
 
-import {$accountStreams} from '~/entities/wallet';
-
 import {STREAM_DIRECTION, StreamDirection} from '~/shared/api/roketo/constants';
-import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {Modal} from '~/shared/components/Modal';
 import {testIds} from '~/shared/constants';
 import {ProgressBar} from '~/shared/ui/components/ProgressBar';
@@ -20,6 +14,8 @@ import {Button} from '@ui/components/Button';
 import {Layout} from '@ui/components/Layout';
 
 import {$financialStatus, handleCreateStreamFx} from './model';
+import {StreamFilters} from './StreamFilters';
+import {StreamsList} from './StreamsList';
 import styles from './styles.module.scss';
 
 const FinancialInfo = ({
@@ -58,13 +54,6 @@ const FinancialInfo = ({
 );
 
 export const StreamsPage = () => {
-  const allStreams = useStoreMap({
-    store: $accountStreams,
-    keys: [],
-    fn: ({inputs, outputs}) => [...inputs, ...outputs],
-  });
-
-  const [filteredItems, setFiltered] = useState<RoketoStream[] | undefined>([]);
   const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
   const toggleModal = useCallback(
     () => setIsModalOpened(!isModalOpened),
@@ -124,17 +113,9 @@ export const StreamsPage = () => {
           />
         </section>
 
-        <StreamFilters
-          items={allStreams}
-          onFilterDone={setFiltered}
-          className={styles.streamFilters}
-        />
+        <StreamFilters className={styles.streamFilters} />
 
-        <StreamsList
-          displayingStreams={filteredItems}
-          className={styles.section}
-          onCreateStreamClick={toggleModal}
-        />
+        <StreamsList className={styles.section} onCreateStreamClick={toggleModal} />
       </Layout>
     </div>
   );

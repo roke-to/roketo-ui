@@ -7,7 +7,8 @@ import {testIds} from '~/shared/constants';
 import {ProgressBar} from '~/shared/ui/components/ProgressBar';
 import {ClockIcon} from '~/shared/ui/icons/Clock';
 
-import {$streamsProgress, streamProgressDataDefaults} from '../../model';
+import {streamProgressDataDefaults} from '../constants';
+import {$streamsProgress} from '../model';
 import styles from './styles.module.scss';
 
 const TOOLTIP_ALIGN = {
@@ -34,7 +35,8 @@ export const StreamProgress = ({streamId, className}: {streamId: string; classNa
   } = useStoreMap({
     store: $streamsProgress,
     keys: [streamId],
-    fn: (items) => items[streamId] ?? streamProgressDataDefaults,
+    fn: (items) => items[streamId],
+    defaultValue: streamProgressDataDefaults,
   });
   return (
     <RCTooltip
