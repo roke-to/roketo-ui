@@ -3,7 +3,7 @@ import {combine, createEffect, createEvent, createStore, sample} from 'effector'
 import {createGate} from 'effector-react';
 import {generatePath} from 'react-router-dom';
 
-import {streamViewData} from '~/features/roketo-resource';
+import {parseColor, parseComment, streamViewData} from '~/features/roketo-resource';
 
 import {$accountId, $tokens} from '~/entities/wallet';
 
@@ -39,8 +39,8 @@ const progressRedrawTimerFx = createEffect(
 
 type StreamCardData = {
   streamPageLink: string;
-  comment: string;
-  color: string;
+  comment: string | null;
+  color: string | null;
   name: string;
   isIncomingStream: boolean;
   isLocked: boolean;
@@ -195,16 +195,6 @@ sample({
     Object.fromEntries(
       streams.map((stream) => {
         const {id} = stream;
-        let comment = '';
-        let color = 'transparent';
-
-        try {
-          const parsedDescription = JSON.parse(stream.description);
-          comment = parsedDescription.comment ?? parsedDescription.c;
-          color = parsedDescription.col;
-        } catch {
-          comment = stream.description;
-        }
         const direction = getStreamDirection(stream, accountId);
         const isIncomingStream = direction === STREAM_DIRECTION.IN;
         return [
@@ -212,8 +202,8 @@ sample({
           selectResultRecord(
             {
               streamPageLink: generatePath(ROUTES_MAP.stream.path, {id}),
-              comment,
-              color,
+              comment: parseComment(stream.description),
+              color: parseColor(stream.description),
               name: isIncomingStream ? stream.owner_id : stream.receiver_id,
               isIncomingStream,
               isLocked: stream.is_locked,

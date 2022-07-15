@@ -97,3 +97,28 @@ export function streamViewData(stream: RoketoStream, withExtrapolation: boolean 
     },
   };
 }
+
+export function parseComment(description: string): string | null {
+  let comment = '';
+
+  try {
+    const parsedDescription = JSON.parse(description);
+    comment = parsedDescription.comment ?? parsedDescription.c;
+  } catch {
+    comment = description;
+  }
+
+  return comment ?? null;
+}
+
+export function parseColor(description: string): string | null {
+  let color = 'transparent';
+
+  try {
+    const parsedDescription = JSON.parse(description);
+    color = parsedDescription.col;
+    // eslint-disable-next-line no-empty
+  } catch {}
+
+  return color ?? null;
+}

@@ -3,7 +3,7 @@ import {combine, createEffect, createEvent, createStore, sample, split} from 'ef
 import {createGate} from 'effector-react';
 
 import {getStreamingSpeed} from '~/features/create-stream/lib';
-import {formatTimeLeft, streamViewData} from '~/features/roketo-resource';
+import {formatTimeLeft, parseColor, parseComment, streamViewData} from '~/features/roketo-resource';
 
 import {
   $accountId,
@@ -160,16 +160,8 @@ sample({
     const available = getAvailableToWithdraw(stream).toNumber();
     const direction = getStreamDirection(stream, accountId);
     const isOutgoingStream = direction === STREAM_DIRECTION.OUT;
-    let color: string | null = null;
-    let comment: string | null = null;
-    try {
-      const parsed = JSON.parse(stream.description);
-      color = parsed.col ?? null;
-      comment = parsed.c ?? parsed.comment ?? null;
-    } catch {
-      /** if description is an empty string, use null instead */
-      comment = stream.description || null;
-    }
+    const color = parseColor(stream.description) ?? null;
+    const comment = parseComment(stream.description) ?? null;
     let subheader: string;
     let sign: string;
     switch (direction) {
