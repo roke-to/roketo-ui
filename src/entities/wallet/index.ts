@@ -8,6 +8,7 @@ import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
 import {notificationsApiClient, tokenProvider, usersApiClient} from '~/shared/api/roketo-client';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import type {ApiControl, NearAuth, RichToken, TransactionMediator} from '~/shared/api/types';
+import {getChangedFields} from '~/shared/lib/changeDetection';
 
 async function retry<T>(cb: () => Promise<T>) {
   const retryCount = 3;
@@ -89,26 +90,11 @@ const getNotificationsFx = createEffect(async () => {
   });
 });
 
-function onlyChanged<F extends Record<string, unknown>, T extends F>(
-  fields: F,
-  source: T,
-): Partial<F> {
-  const changedFields: Partial<F> = {...fields};
-
-  Object.keys(changedFields).forEach((key: keyof typeof changedFields) => {
-    if (changedFields[key] === source[key]) {
-      delete changedFields[key];
-    }
-  });
-
-  return changedFields;
-}
-
 export const updateUserFx = attach({
   source: [$user, $accountId],
   async effect([user, accountId], nextUser: Partial<UpdateUserDto>) {
     if (accountId) {
-      const updateUserDto: Partial<UpdateUserDto> = onlyChanged(nextUser, user);
+      const updateUserDto: Partial<UpdateUserDto> = getChangedFields(nextUser, user);
 
       if (Object.keys(updateUserDto).length !== 0) {
         return usersApiClient.update(accountId, updateUserDto);
