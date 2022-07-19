@@ -70,6 +70,10 @@ class MyStreams {
       .contains(/\b1 of 1\b/, {timeout: 60000});
   }
 
+  locked() {
+    cy.get(testSelectors.streamControlsDropdown).should('not.exist');
+  }
+
   withdrawFirst() {
     cy.get(testSelectors.withdrawButton).eq(0).click({force: true});
 
@@ -78,6 +82,14 @@ class MyStreams {
     transaction.approve();
 
     cy.url().should('contains', 'http://localhost:3000/#/streams');
+  }
+  addFunds(value) {
+    cy.get('button').contains('Add funds').eq(0).click({force: true}, {timeout: 60000});
+    cy.get('[name="deposit"]').click().type(' {backspace}').type(value);
+    cy.get('[type="submit"]').click();
+  }
+  checkAddFunds() {
+    cy.get(testSelectors.streamProgressCaption).eq(0).contains('0 of 2');
   }
 }
 

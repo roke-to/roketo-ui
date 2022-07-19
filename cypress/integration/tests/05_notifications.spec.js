@@ -44,6 +44,12 @@ context('Notifications', () => {
     notif.openNotifications();
     notif.checknew('restart', receiver.accountId);
 
+    //add funds
+    mystreams.addFunds(1);
+    transaction.approve();
+    notif.openNotifications();
+    notif.checknew('funds', receiver.accountId);
+
     mystreams.changeStatus('stop');
     transaction.approve();
     notif.openNotifications();
@@ -59,6 +65,7 @@ context('Notifications', () => {
     notif.checkReceiver('start', sender.accountId);
     notif.checkReceiver('pause', sender.accountId);
     notif.checkReceiver('restart', sender.accountId);
+    notif.checknew('funds', sender.accountId);
     notif.checkReceiver('stop', sender.accountId);
   });
 });

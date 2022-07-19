@@ -8,10 +8,24 @@ context('Stream creation', () => {
 
   before(() => {
     cy.task('getAccount', {reuse: true}).then((testAccount) => (account = testAccount));
+    cy.viewport(1536, 960);
+  });
+  it('Create uneditable stream', () => {
+    login(account.seedPhrase);
+    const stream = new CreateStream();
+    stream.createStream();
+    stream.inputReceiver('delusion.testnet');
+    stream.inputDeposit('1');
+    stream.inputPeriod('1000', '10', '10', '10');
+    stream.uneditable();
+    stream.submit();
+    const transaction = new Transaction();
+    transaction.approve();
+    const mystreams = new MyStreams();
+    mystreams.locked();
   });
 
   it('Create a delayed stream', () => {
-    cy.viewport(1536, 960);
     login(account.seedPhrase);
     const stream = new CreateStream();
     stream.createStream();
@@ -28,12 +42,27 @@ context('Stream creation', () => {
   });
 
   it('Create a non-delayed stream', () => {
-    cy.viewport(1536, 960);
     login(account.seedPhrase);
     const stream = new CreateStream();
     stream.createStream();
     stream.inputReceiver('delusion.testnet');
     stream.inputDeposit('1');
+    stream.inputPeriod('1000', '10', '10', '10');
+    // stream.inputComments('comment-comment');
+    stream.submit();
+    const transaction = new Transaction();
+    transaction.approve();
+    const mystreams = new MyStreams();
+    mystreams.checkNewStreamStatus('Active');
+  });
+
+  it('Create a stream with cliff period', () => {
+    login(account.seedPhrase);
+    const stream = new CreateStream();
+    stream.createStream();
+    stream.inputReceiver('delusion.testnet');
+    stream.inputDeposit('1');
+    stream.inputCliffPeriod('10', '10', '10', '10', '00', 'AM');
     stream.inputPeriod('1000', '10', '10', '10');
     // stream.inputComments('comment-comment');
     stream.submit();
