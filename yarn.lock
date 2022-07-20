@@ -4150,10 +4150,10 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
-effector-react@^22.1.2:
-  version "22.1.2"
-  resolved "https://registry.yarnpkg.com/effector-react/-/effector-react-22.1.2.tgz#178c58c9c4b1fdfbf282c0b42e41bbb865700d66"
-  integrity sha512-JPq0fyoJlWM5rKSTm1Vt5pFoWRoaNI3J3eK/5t4PJOeh4ikP0/H+AknsHXx2z0O9Zq2l3LPs86/w9ZrcbFMkPg==
+effector-react@^22.1.4:
+  version "22.1.4"
+  resolved "https://registry.yarnpkg.com/effector-react/-/effector-react-22.1.4.tgz#1d45cb6f05a07f464d3beaebebf709fe326b241e"
+  integrity sha512-8+LpOe91n1oFjfR2Mu1pOtoKQEOVC51jzU3bnkPMG8X0JRFzGVsNuDJppzCI6AZSrvyxqiyCiV8uQwaPcFG1dQ==
   dependencies:
     use-sync-external-store "^1.0.0"
 
