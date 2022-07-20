@@ -1,41 +1,38 @@
 import cn from 'classnames';
-import {useGate, useStoreMap} from 'effector-react';
+import {useList, useStore} from 'effector-react';
 import React from 'react';
-
-import {$accountStreams} from '~/entities/wallet';
-
-import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 
 import {Button} from '@ui/components/Button';
 import {Spinner} from '@ui/components/Spinner';
 
-import {filteredStreamsGate} from '../../model';
+import {$filteredStreams, $streamListData} from '../model';
 import {StreamCard} from '../StreamCard';
 import styles from './styles.module.scss';
-
-type Props = {
-  displayingStreams: RoketoStream[] | undefined;
-
-  onCreateStreamClick: () => void;
-
-  className?: string;
-};
 
 const EmptyState = ({children}: {children: React.ReactNode}) => (
   <div className={styles.emptyState}>{children}</div>
 );
 
-export const StreamsList = ({className, displayingStreams, onCreateStreamClick}: Props) => {
-  const {loading, hasStreams} = useStoreMap($accountStreams, (value) => ({
-    loading: !value.streamsLoaded,
-    hasStreams: value.inputs.length + value.outputs.length > 0,
-  }));
+export const StreamsList = ({
+  onCreateStreamClick,
+  className,
+}: {
+  onCreateStreamClick: () => void;
+  className: string;
+}) => {
+  const {streamsLoading, hasStreams, hasDisplayedStreams} = useStore($streamListData);
 
-  const hasDisplayedStreams = (displayingStreams?.length ?? 0) > 0;
+  const streamCards = useList($filteredStreams, {
+    getKey: ({id}) => id,
+    fn: (stream) => (
+      <StreamCard
+        stream={stream}
+        className={cn(styles.withPaddings, 'grid grid-cols-6 gap-x-10')}
+      />
+    ),
+  });
 
-  useGate(filteredStreamsGate, displayingStreams);
-
-  if (loading) {
+  if (streamsLoading) {
     return (
       <EmptyState>
         <Spinner wrapperClassName={styles.loader} />
@@ -69,13 +66,7 @@ export const StreamsList = ({className, displayingStreams, onCreateStreamClick}:
           <h3 className={styles.title}>Comment</h3>
         </div>
 
-        {displayingStreams?.map((stream) => (
-          <StreamCard
-            stream={stream}
-            key={stream.id}
-            className={cn(styles.withPaddings, 'grid grid-cols-6 gap-x-10')}
-          />
-        ))}
+        {streamCards}
       </section>
     </div>
   );
