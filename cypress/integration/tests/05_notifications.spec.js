@@ -65,7 +65,7 @@ context('Notifications', () => {
     notif.checkReceiver('start', sender.accountId);
     notif.checkReceiver('pause', sender.accountId);
     notif.checkReceiver('restart', sender.accountId);
-    notif.checknew('funds', sender.accountId);
+    notif.checkReceiver('funds', sender.accountId);
     notif.checkReceiver('stop', sender.accountId);
   });
 });
