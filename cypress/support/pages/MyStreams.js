@@ -70,8 +70,9 @@ class MyStreams {
       .contains(/\b1 of 1\b/, {timeout: 60000});
   }
 
-  locked() {
+  checkIfLastStreamLocked() {
     cy.get(testSelectors.streamControlsDropdown).should('not.exist');
+    cy.get('span:contains("Locked")'), {timeout: 60000};
   }
 
   withdrawFirst() {
@@ -89,7 +90,9 @@ class MyStreams {
     cy.get('[type="submit"]').click();
   }
   checkAddFunds() {
-    cy.get(testSelectors.streamProgressCaption).eq(0).contains('0 of 2');
+    cy.get(testSelectors.streamProgressCaption)
+      .eq(0)
+      .contains(/\b0 of 2\b/, {timeout: 60000});
   }
 }
 
