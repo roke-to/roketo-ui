@@ -107,6 +107,7 @@ const StreamCards = ({className}: {className: string}) => (
               <div className={cn(styles.controlCell)}>
                 <StreamControls
                   stream={stream}
+                  dropdownClassName={styles.controlDropdown}
                   additionalControls={
                     <>
                       {showAddFundsButton && (

@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import cn from 'classnames';
 import {useGate, useStore, useStoreMap} from 'effector-react';
 import {ReactNode, useState} from 'react';
 import Modal from 'react-modal';
@@ -64,7 +64,7 @@ function ConfirmModal({
         <button
           type="button"
           onClick={modalControl.turnOff}
-          className={classNames(styles.modalButton, styles.modalSecondary)}
+          className={cn(styles.modalButton, styles.modalSecondary)}
         >
           Cancel
         </button>
@@ -74,7 +74,7 @@ function ConfirmModal({
             modalControl.turnOff();
             onConfirm();
           }}
-          className={classNames(styles.modalButton, className)}
+          className={cn(styles.modalButton, className)}
           data-testid={testId}
         >
           {buttonText}
@@ -88,6 +88,7 @@ export function StreamControls({
   stream,
   className,
   openerClassName,
+  dropdownClassName,
   additionalControls,
   openerText,
   needToUseBlur,
@@ -95,6 +96,7 @@ export function StreamControls({
   stream: RoketoStream;
   className?: string;
   openerClassName?: string;
+  dropdownClassName?: string;
   additionalControls?: ReactNode;
   openerText?: ReactNode;
   needToUseBlur?: boolean;
@@ -153,10 +155,10 @@ export function StreamControls({
 
   if (isStartedAndLocked) {
     return (
-      <div className={classNames(styles.relative, className)}>
+      <div className={cn(styles.relative, className)}>
         <button
           type="button"
-          className={classNames(styles.dropdownOpener, openerClassName, styles.notAllowed)}
+          className={cn(styles.dropdownOpener, openerClassName, styles.notAllowed)}
         >
           <StreamStatus status={stream.status} />
         </button>
@@ -165,7 +167,7 @@ export function StreamControls({
   }
 
   return (
-    <div className={classNames(styles.relative, className)}>
+    <div className={cn(styles.relative, className)}>
       <ConfirmModal
         modalControl={pauseModalControl}
         onConfirm={() => pauseStream(stream.id)}
@@ -191,7 +193,7 @@ export function StreamControls({
       <DropdownOpener
         opened={opened}
         onChange={setMenuOpened}
-        className={classNames(styles.dropdownOpener, openerClassName, statusClassName)}
+        className={cn(styles.dropdownOpener, openerClassName, statusClassName)}
         testId={testIds.streamControlsDropdown}
       >
         {loading
@@ -203,7 +205,7 @@ export function StreamControls({
         isOpen={opened}
         onClose={() => setMenuOpened(false)}
         modalClassName={styles.modalContent}
-        dropdownClassName={styles.controlsMenu}
+        dropdownClassName={cn(styles.controlsMenu, dropdownClassName)}
       >
         {additionalControls && (
           <DropdownMenuItem className={styles.additionalControl}>
@@ -215,7 +217,7 @@ export function StreamControls({
             <button
               type="button"
               onClick={() => startStream(stream.id)}
-              className={classNames(styles.controlButton, styles.start)}
+              className={cn(styles.controlButton, styles.start)}
               data-testid={testIds.streamStartButton}
             >
               <StartIcon />
@@ -229,7 +231,7 @@ export function StreamControls({
             <button
               type="button"
               onClick={onClickPause}
-              className={classNames(styles.controlButton, styles.pause)}
+              className={cn(styles.controlButton, styles.pause)}
               data-testid={testIds.streamPauseButton}
             >
               <PauseIcon />
@@ -243,7 +245,7 @@ export function StreamControls({
           <button
             type="button"
             onClick={onClickStop}
-            className={classNames(styles.controlButton, styles.stop)}
+            className={cn(styles.controlButton, styles.stop)}
             data-testid={testIds.streamStopButton}
           >
             <StopIcon />
