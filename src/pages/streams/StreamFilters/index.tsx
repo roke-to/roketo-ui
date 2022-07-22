@@ -2,6 +2,8 @@ import cn from 'classnames';
 import {useStoreMap, useUnit} from 'effector-react';
 import React, {useState} from 'react';
 
+import {$isSmallScreen} from '~/entities/screen';
+
 import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
 import {Filter, FilterOptionWithCounter} from '~/shared/kit/Filter';
 
@@ -26,16 +28,18 @@ import styles from './styles.module.scss';
 
 export function StreamFilters({className}: {className: string}) {
   const [showInput, setShowInput] = useState(false);
-  const isSmallForTextFilterInput = useMediaQuery('(max-width: 1111px)') && showInput;
-  const isSmallForTextFilterButton = useMediaQuery('(max-width: 767px)') && !showInput;
-  const isSmallForTextFilter = isSmallForTextFilterInput || isSmallForTextFilterButton;
 
   const [
     {streamsCount, streamsTotalCount},
     sorting,
     {direction: activeDirection, status, text: filterText},
     statusFilterCounts,
-  ] = useUnit([$streamsCount, $streamSort, $streamFilter, $statusFilterCounts]);
+    isSmallScreen,
+  ] = useUnit([$streamsCount, $streamSort, $streamFilter, $statusFilterCounts, $isSmallScreen]);
+
+  const isSmallForTextFilterInput = useMediaQuery('(max-width: 1111px)') && showInput;
+  const isSmallForTextFilterButton = isSmallScreen && !showInput;
+  const isSmallForTextFilter = isSmallForTextFilterInput || isSmallForTextFilterButton;
 
   const isEmptyList = useStoreMap($allStreams, (items) => items.length === 0);
 
