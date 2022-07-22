@@ -32,6 +32,7 @@ type FilterProps<T> = {
   active: T;
   onChange: (option: T) => void;
   className?: string;
+  controlClassName?: string;
   isDisabled?: boolean;
 };
 
@@ -43,6 +44,7 @@ export function Filter<T extends string | FilterOption>({
   active,
   onChange,
   className,
+  controlClassName,
   isDisabled,
 }: FilterProps<T>) {
   const [opened, setOpened] = useState(false);
@@ -53,7 +55,11 @@ export function Filter<T extends string | FilterOption>({
 
       <div className={styles.dropdownWrapper}>
         <DropdownOpener
-          className={cx(isDisabled && styles.dropdownInactive, isDisabled && 'text-gray')}
+          className={cx(
+            isDisabled && styles.dropdownInactive,
+            isDisabled && 'text-gray',
+            controlClassName,
+          )}
           opened={!isDisabled && opened}
           onChange={setOpened}
         >

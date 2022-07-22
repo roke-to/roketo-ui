@@ -1,10 +1,10 @@
 @import 'src/shared/ui/palette';
 
 .container {
-  width: calc(100% + 60px);
+  --progress-bar-height: 28px;
+  display: flex;
+  flex-direction: column-reverse;
   overflow-x: auto;
-  margin-bottom: -122px;
-  margin-right: -60px;
   -ms-overflow-style: none; /* Internet Explorer 10+ */
   scrollbar-width: none; /* Firefox */
 
@@ -13,19 +13,26 @@
     height: 0;
     background: transparent;
   }
-}
 
-.flexColumn {
-  min-width: 1280px;
-  display: flex;
-  flex-direction: column;
-  padding-right: 60px;
-
-  &:after {
+  &:before {
     content: '';
     width: 100%;
-    height: 150px;
+    height: 200px;
   }
+}
+
+.streamGrid {
+  max-width: 1280px;
+  display: grid;
+  grid-template-columns:
+    [color-column] 4px
+    [status-column] 48px
+    [bar-column] 200px
+    [address-column] minmax(max-content, 1fr)
+    [comment-column] max-content
+    [control-column] minmax(200px, 1fr);
+  grid-auto-rows: 48px;
+  grid-template-rows: 30px;
 }
 
 @media (max-width: 1024px) {
@@ -33,34 +40,31 @@
     width: calc(100% + 16px);
     margin-right: -16px;
   }
-
-  .flexColumn {
-    padding-right: 16px;
-  }
 }
 
-.withPaddings {
-  padding-right: 22px;
-
-  & > * {
-    padding-top: 16px;
-    padding-bottom: 16px;
-  }
-
-  & > :first-child {
-    background-color: #fdfdfd;
-    padding-left: 22px;
-    position: sticky;
+.leftStickyCell {
+  background-color: #fdfdfd;
+  position: sticky;
+  left: 52px;
+  height: 100%;
+  justify-content: center;
+  &:first-of-type {
     left: 0;
-    z-index: 1;
   }
 }
 
 .title {
-  color: $light-black;
-  font-weight: 600;
+  color: #8a96a8;
+  font-weight: 500;
   font-size: 12px;
   line-height: 16px;
+  grid-row: 1;
+  grid-column: span 1;
+  padding-left: 12px;
+  &:first-of-type {
+    grid-column: span 3;
+    padding-left: 28px;
+  }
 }
 
 .emptyState {
@@ -86,4 +90,121 @@
   width: 100%;
 
   height: 200px;
+}
+
+.colorCell {
+  grid-column: color-column;
+  width: 4px;
+  height: 100%;
+  position: sticky;
+  left: 0;
+  background-color: var(--stream-color, transparent);
+}
+
+.statusCell {
+  grid-column: status-column;
+  position: sticky;
+  left: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progressCell {
+  grid-column: bar-column;
+}
+
+.nameCell {
+  grid-column: address-column;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  overflow: hidden;
+}
+
+.commentCell {
+  grid-column: comment-column;
+  display: flex;
+  align-items: center;
+}
+
+.controlCell {
+  grid-column: control-column;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.statusCell,
+.progressCell,
+.nameCell,
+.commentCell,
+.controlCell {
+  border-top: 1px solid #a0c2f880;
+}
+
+.nameCell,
+.commentCell,
+.controlCell {
+  padding-left: 12px;
+}
+
+.commentBlock {
+  max-width: 300px;
+
+  font-weight: 500;
+  font-size: 14px;
+
+  // TODO: move to UI-kit mixins
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.nameText {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.streamLinkButton {
+  padding: 8px 12px;
+
+  border-radius: 6px;
+
+  &:hover {
+    background-color: $background-secondary;
+  }
+}
+
+.streamActionsButton {
+  padding: 8px 8px;
+  border-radius: 6px;
+
+  &:hover {
+    background-color: $background-secondary;
+  }
+}
+
+.streamActionsIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.streamStatusIcon {
+  width: 28px;
+  height: 28px;
+}
+
+.controlButton {
+  width: -webkit-fill-available;
+  width: stretch;
+  border-radius: 24px;
+  color: #496ef3;
+  border-color: #f0f6ff;
+  background: #f0f6ff;
 }

@@ -7,37 +7,20 @@ import Modal from 'react-modal';
 
 import {streamViewData} from '~/features/roketo-resource';
 
-import {STREAM_DIRECTION} from '~/shared/api/roketo/constants';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {hasPassedCliff, isLocked} from '~/shared/api/roketo/lib';
+import {hasPassedCliff} from '~/shared/api/roketo/lib';
 import {toYocto} from '~/shared/api/token-formatter';
 import {Balance, useBalanceForToken} from '~/shared/components/Balance';
 import {useBool} from '~/shared/hooks/useBool';
-import {useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 import {useToken} from '~/shared/hooks/useToken';
 
-import {Button, ButtonType, DisplayMode} from '@ui/components/Button';
+import {Button, ButtonType} from '@ui/components/Button';
 import {Input} from '@ui/components/Input';
 
 import {addFundsFx} from './model';
 import styles from './styles.module.scss';
 
-export function useShouldShowAddFundsButton(stream: RoketoStream) {
-  const direction = useGetStreamDirection(stream);
-  const isOutgoingStream = direction === STREAM_DIRECTION.OUT;
-
-  return isOutgoingStream && !isLocked(stream);
-}
-
-export function AddFunds({
-  stream,
-  small,
-  className,
-}: {
-  stream: RoketoStream;
-  small?: boolean;
-  className?: string;
-}) {
+export function AddFunds({stream, className}: {stream: RoketoStream; className?: string}) {
   const addFundsModal = useBool(false);
 
   const {
@@ -134,11 +117,7 @@ export function AddFunds({
         </Modal>
       )}
       {shouldShowAddFundsButton && (
-        <Button
-          onClick={addFundsModal.turnOn}
-          displayMode={small ? DisplayMode.primary : undefined}
-          className={className}
-        >
+        <Button onClick={addFundsModal.turnOn} className={className}>
           Add funds
         </Button>
       )}

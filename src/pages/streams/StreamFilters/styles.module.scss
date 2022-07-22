@@ -98,22 +98,34 @@
 }
 
 .directionSort {
-  padding: 12px;
+  border-radius: 24px;
+  padding: 12px 19px;
 
   font-weight: 600;
   font-size: 16px;
   line-height: 24px;
 
   color: $grey;
-  background-color: transparent;
+  background: transparent;
   border: 1px solid transparent;
+  transition: color 100ms ease-in, background-color 100ms ease-out;
 
   &[disabled] {
     cursor: not-allowed;
   }
+  &:not([disabled]):hover {
+    color: #2b313b;
+  }
 }
 
 .directionActive:not([disabled]) {
-  background-color: $light-blue;
-  color: $blue;
+  background-color: #f0f6ff;
+  color: #2b313b;
+  cursor: unset;
+}
+
+.filterControl {
+  background: #f0f6ff;
+  border-radius: 24px;
+  padding: 12px 19px;
 }

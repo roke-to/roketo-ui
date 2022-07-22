@@ -17,12 +17,15 @@ export const streamCardDataDefaults: StreamCardData = {
   comment: '',
   color: '',
   name: '',
-  isIncomingStream: false,
   isLocked: false,
+  showAddFundsButton: false,
+  showWithdrawButton: false,
+  iconType: 'Initialized',
 };
 
 export const streamProgressDataDefaults: StreamProgressData = {
   symbol: '',
+  sign: '',
   progressText: '',
   progressFull: '',
   progressStreamed: '',

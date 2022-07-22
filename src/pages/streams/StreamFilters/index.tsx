@@ -99,6 +99,7 @@ export function StreamFilters({className}: {className: string}) {
           active={status}
           onChange={changeStatusFilter}
           isDisabled={isEmptyList}
+          controlClassName={styles.filterControl}
           renderOption={(option) => (
             <FilterOptionWithCounter
               key={option}
@@ -114,6 +115,7 @@ export function StreamFilters({className}: {className: string}) {
           active={sorting}
           onChange={changeStreamSort}
           isDisabled={isEmptyList}
+          controlClassName={styles.filterControl}
           renderOption={(option) => <span>{option.label}</span>}
           renderActive={(option) => (
             <div className={styles.sortWithOrder}>

@@ -1,16 +1,159 @@
 import cn from 'classnames';
-import {useList, useStore} from 'effector-react';
-import React from 'react';
+import copy from 'clipboard-copy';
+import {useList, useStore, useStoreMap} from 'effector-react';
+import React, {memo} from 'react';
+import {Link} from 'react-router-dom';
+
+import {AddFunds} from '~/features/add-funds';
+import {StreamControls} from '~/features/stream-control/StreamControls';
+import {WithdrawButton} from '~/features/stream-control/WithdrawButton';
+
+import {Badge} from '~/shared/components/Badge';
+import {getStreamLink} from '~/shared/lib/routing';
 
 import {Button} from '@ui/components/Button';
 import {Spinner} from '@ui/components/Spinner';
+import {LinkIcon} from '@ui/icons/Link';
 
-import {$filteredStreams, $streamListData} from '../model';
-import {StreamCard} from '../StreamCard';
+import {streamCardDataDefaults} from '../constants';
+import {$filteredStreams, $streamCardsData, $streamListData} from '../model';
+import {StreamProgress} from '../StreamProgress';
+import activeStreamIcon from './activeStream.svg';
+import finishedStreamIcon from './finishedStream.svg';
+import menuDotsIcon from './menuDots.svg';
+import pausedStreamIcon from './pausedStream.svg';
 import styles from './styles.module.scss';
 
 const EmptyState = ({children}: {children: React.ReactNode}) => (
   <div className={styles.emptyState}>{children}</div>
+);
+
+const StreamNameLink = memo(({streamId}: {streamId: string}) => {
+  const {streamPageLink, name, isLocked} = useStoreMap({
+    store: $streamCardsData,
+    keys: [streamId],
+    fn: (items) => items[streamId],
+    defaultValue: streamCardDataDefaults,
+  });
+  return (
+    <Link to={streamPageLink} className={cn(styles.nameCell)}>
+      <span className={styles.nameText}>{name}</span>
+
+      {isLocked && <Badge isOrange>Locked</Badge>}
+    </Link>
+  );
+});
+
+const StreamCommentLink = memo(({streamId}: {streamId: string}) => {
+  const {streamPageLink, comment} = useStoreMap({
+    store: $streamCardsData,
+    keys: [streamId],
+    fn: (items) => items[streamId],
+    defaultValue: streamCardDataDefaults,
+  });
+  return (
+    <Link to={streamPageLink} className={cn(styles.commentCell)}>
+      <div className={styles.commentBlock}>{comment}</div>
+    </Link>
+  );
+});
+
+const StreamCards = ({className}: {className: string}) => (
+  <div className={cn(styles.container, className)}>
+    <section className={styles.streamGrid}>
+      <h3 className={cn(styles.leftStickyCell, styles.title)}>Amount to stream</h3>
+      <h3 className={styles.title}>Wallet address</h3>
+      <h3 className={styles.title}>Comment</h3>
+
+      {useList($filteredStreams, {
+        getKey: ({id}) => id,
+        fn(stream) {
+          const {id: streamId} = stream;
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const {color, showAddFundsButton, showWithdrawButton, iconType} = useStoreMap({
+            store: $streamCardsData,
+            keys: [streamId],
+            fn: (items) => items[streamId],
+            defaultValue: streamCardDataDefaults,
+          });
+          const statusIconUrl = (() => {
+            switch (iconType) {
+              case 'Active':
+                return activeStreamIcon;
+              case 'Finished':
+                return finishedStreamIcon;
+              case 'Initialized':
+              case 'Paused':
+              default:
+                return pausedStreamIcon;
+            }
+          })();
+          return (
+            <>
+              <div className={styles.colorCell} style={{'--stream-color': color} as any} />
+              <div className={cn(styles.statusCell)}>
+                <img src={statusIconUrl} alt="Stream status" className={styles.streamStatusIcon} />
+              </div>
+
+              <StreamProgress
+                streamId={stream.id}
+                className={cn(styles.progressCell, styles.leftStickyCell)}
+              />
+
+              <StreamNameLink streamId={stream.id} />
+
+              <StreamCommentLink streamId={stream.id} />
+
+              <div className={cn(styles.controlCell)}>
+                <StreamControls
+                  stream={stream}
+                  additionalControls={
+                    <>
+                      {showAddFundsButton && (
+                        <AddFunds stream={stream} className={styles.controlButton} />
+                      )}
+                      {showWithdrawButton && (
+                        <WithdrawButton stream={stream} className={styles.controlButton} />
+                      )}
+                    </>
+                  }
+                />
+
+                <button
+                  className={styles.streamLinkButton}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    copy(getStreamLink(streamId));
+                  }}
+                >
+                  <LinkIcon />
+                </button>
+                <button
+                  className={styles.streamActionsButton}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                  }}
+                >
+                  <img
+                    src={menuDotsIcon}
+                    alt="Open stream actions"
+                    className={styles.streamActionsIcon}
+                  />
+                </button>
+              </div>
+            </>
+          );
+        },
+        placeholder: (
+          <EmptyState>
+            <div>No streams matching your filters. Try selecting different ones</div>
+          </EmptyState>
+        ),
+      })}
+    </section>
+  </div>
 );
 
 export const StreamsList = ({
@@ -20,17 +163,7 @@ export const StreamsList = ({
   onCreateStreamClick: () => void;
   className: string;
 }) => {
-  const {streamsLoading, hasStreams, hasDisplayedStreams} = useStore($streamListData);
-
-  const streamCards = useList($filteredStreams, {
-    getKey: ({id}) => id,
-    fn: (stream) => (
-      <StreamCard
-        stream={stream}
-        className={cn(styles.withPaddings, 'grid grid-cols-6 gap-x-10')}
-      />
-    ),
-  });
+  const {streamsLoading, hasStreams} = useStore($streamListData);
 
   if (streamsLoading) {
     return (
@@ -49,25 +182,5 @@ export const StreamsList = ({
     );
   }
 
-  if (!hasDisplayedStreams) {
-    return (
-      <EmptyState>
-        <div>No streams matching your filters. Try selecting different ones</div>
-      </EmptyState>
-    );
-  }
-
-  return (
-    <div className={cn(styles.container, className)}>
-      <section className={styles.flexColumn}>
-        <div className={cn(styles.withPaddings, 'grid grid-cols-6 gap-x-10')}>
-          <h3 className={styles.title}>Wallet address</h3>
-          <h3 className={styles.title}>Amount to stream</h3>
-          <h3 className={styles.title}>Comment</h3>
-        </div>
-
-        {streamCards}
-      </section>
-    </div>
-  );
+  return <StreamCards className={className} />;
 };

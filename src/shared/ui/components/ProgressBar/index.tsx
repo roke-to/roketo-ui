@@ -13,6 +13,7 @@ type Props = {
   cliffPercent?: number | null;
   withBigCliffMark?: boolean;
   direction?: StreamDirection | null;
+  children?: React.ReactNode;
 
   className?: string;
 };
@@ -26,6 +27,7 @@ export const ProgressBar = memo(
     cliffPercent,
     withBigCliffMark = false,
     direction,
+    children,
   }: Props) => {
     const streamedToTotalPercentageRatio = getRoundedPercentageRatio(streamed, total);
     const withdrawnToTotalPercentageRatio = getRoundedPercentageRatio(withdrawn, total);
@@ -55,6 +57,7 @@ export const ProgressBar = memo(
             />
           </div>
         )}
+        {children}
       </div>
     );
   },

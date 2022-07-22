@@ -20,6 +20,7 @@ export const StreamProgress = ({streamId, className}: {streamId: string; classNa
   const {
     progressText,
     symbol,
+    sign,
     progressFull,
     progressStreamed,
     progressWithdrawn,
@@ -86,18 +87,21 @@ export const StreamProgress = ({streamId, className}: {streamId: string; classNa
       }
     >
       <div className={cn(styles.root, styles.text, className)}>
-        <div className={styles.status}>
-          <span data-testid={testIds.streamProgressCaption}>{progressText}</span>{' '}
-          <span className={styles.grey}>{symbol}</span>
-        </div>
-
         <ProgressBar
           total={progressFull}
           streamed={progressStreamed}
           withdrawn={progressWithdrawn}
           cliffPercent={cliffPercent}
           direction={direction}
-        />
+        >
+          <div className={styles.status}>
+            <span data-testid={testIds.streamProgressCaption}>
+              {sign}
+              {progressText}
+            </span>{' '}
+            <span className={styles.grey}>{symbol}</span>
+          </div>
+        </ProgressBar>
       </div>
     </RCTooltip>
   );
