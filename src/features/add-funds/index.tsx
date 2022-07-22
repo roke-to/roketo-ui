@@ -8,7 +8,6 @@ import Modal from 'react-modal';
 import {streamViewData} from '~/features/roketo-resource';
 
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {hasPassedCliff} from '~/shared/api/roketo/lib';
 import {toYocto} from '~/shared/api/token-formatter';
 import {Balance, useBalanceForToken} from '~/shared/components/Balance';
 import {useBool} from '~/shared/hooks/useBool';
@@ -33,8 +32,6 @@ export function AddFunds({stream, className}: {stream: RoketoStream; className?:
   const hasValidAdditionalFunds = Number(deposit) > 0 && Number(deposit) < Number(currentBalance);
 
   const isStreamEnded = left === 0;
-
-  const shouldShowAddFundsButton = !isStreamEnded && hasPassedCliff(stream);
 
   const token = useToken(stream.token_account_id);
   const submitting = useStore(addFundsFx.pending);
@@ -116,11 +113,9 @@ export function AddFunds({stream, className}: {stream: RoketoStream; className?:
           </form>
         </Modal>
       )}
-      {shouldShowAddFundsButton && (
-        <Button onClick={addFundsModal.turnOn} className={className}>
-          Add funds
-        </Button>
-      )}
+      <Button onClick={addFundsModal.turnOn} className={className}>
+        Add funds
+      </Button>
     </>
   );
 }

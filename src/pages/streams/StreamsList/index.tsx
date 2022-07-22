@@ -4,9 +4,7 @@ import {useList, useStore, useStoreMap} from 'effector-react';
 import React, {memo} from 'react';
 import {Link} from 'react-router-dom';
 
-import {AddFunds} from '~/features/add-funds';
-import {StreamControls} from '~/features/stream-control/StreamControls';
-import {WithdrawButton} from '~/features/stream-control/WithdrawButton';
+import {StreamListControls} from '~/features/stream-control/StreamControls';
 
 import {Badge} from '~/shared/components/Badge';
 import {getStreamLink} from '~/shared/lib/routing';
@@ -105,21 +103,6 @@ const StreamCards = ({className}: {className: string}) => (
               <StreamCommentLink streamId={stream.id} />
 
               <div className={cn(styles.controlCell)}>
-                <StreamControls
-                  stream={stream}
-                  dropdownClassName={styles.controlDropdown}
-                  additionalControls={
-                    <>
-                      {showAddFundsButton && (
-                        <AddFunds stream={stream} className={styles.controlButton} />
-                      )}
-                      {showWithdrawButton && (
-                        <WithdrawButton stream={stream} className={styles.controlButton} />
-                      )}
-                    </>
-                  }
-                />
-
                 <button
                   className={styles.streamLinkButton}
                   type="button"
@@ -130,19 +113,20 @@ const StreamCards = ({className}: {className: string}) => (
                 >
                   <LinkIcon />
                 </button>
-                <button
-                  className={styles.streamActionsButton}
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                  }}
-                >
-                  <img
-                    src={menuDotsIcon}
-                    alt="Open stream actions"
-                    className={styles.streamActionsIcon}
-                  />
-                </button>
+                <StreamListControls
+                  stream={stream}
+                  dropdownClassName={styles.controlDropdown}
+                  showAddFundsButton={showAddFundsButton}
+                  showWithdrawButton={showWithdrawButton}
+                  openerClassName={styles.streamActionsButton}
+                  openerContent={
+                    <img
+                      src={menuDotsIcon}
+                      alt="Open stream actions"
+                      className={styles.streamActionsIcon}
+                    />
+                  }
+                />
               </div>
             </>
           );

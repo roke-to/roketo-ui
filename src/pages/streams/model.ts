@@ -19,7 +19,7 @@ import {
 import {createStream} from '~/shared/api/methods';
 import {STREAM_DIRECTION, STREAM_STATUS} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {getStreamDirection, isActiveStream, isLocked} from '~/shared/api/roketo/lib';
+import {ableToAddFunds, getStreamDirection, isActiveStream} from '~/shared/api/roketo/lib';
 import {
   formatSmartly,
   toHumanReadableValue,
@@ -338,7 +338,6 @@ sample({
     recordUpdater(oldData, streams, (stream, id) => {
       const direction = getStreamDirection(stream, accountId);
       const isIncomingStream = direction === STREAM_DIRECTION.IN;
-      const isOutgoingStream = direction === STREAM_DIRECTION.OUT;
       const iconType: keyof typeof STREAM_STATUS =
         typeof stream.status === 'string' ? stream.status : 'Finished';
       return {
@@ -347,7 +346,7 @@ sample({
         color: parseColor(stream.description),
         name: isIncomingStream ? stream.owner_id : stream.receiver_id,
         isLocked: stream.is_locked,
-        showAddFundsButton: isOutgoingStream && !isLocked(stream),
+        showAddFundsButton: ableToAddFunds(stream, accountId),
         showWithdrawButton: direction === STREAM_DIRECTION.IN && isActiveStream(stream),
         iconType,
       };

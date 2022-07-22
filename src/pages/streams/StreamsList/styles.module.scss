@@ -190,6 +190,7 @@
 .streamActionsButton {
   padding: 8px 8px;
   border-radius: 6px;
+  margin-right: 40px;
 
   &:hover {
     background-color: $background-secondary;
@@ -204,13 +205,4 @@
 .streamStatusIcon {
   width: 28px;
   height: 28px;
-}
-
-.controlButton {
-  width: -webkit-fill-available;
-  width: stretch;
-  border-radius: 24px;
-  color: #496ef3;
-  border-color: #f0f6ff;
-  background: #f0f6ff;
 }

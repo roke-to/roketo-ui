@@ -153,3 +153,21 @@
   background-color: $light-red;
   color: $danger;
 }
+
+.streamListControlButton {
+  width: -webkit-fill-available;
+  width: stretch;
+  border-radius: 24px;
+  color: #496ef3;
+  border-color: #f0f6ff;
+  background: #f0f6ff;
+}
+
+.streamListControlsMenu {
+  padding: 14px;
+  min-width: unset;
+  position: absolute;
+  border-radius: 24px;
+  margin-top: 6px;
+  transform: translateX(-80%);
+}

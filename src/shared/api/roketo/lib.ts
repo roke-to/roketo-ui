@@ -54,3 +54,18 @@ export function getStreamDirection(stream: RoketoStream, accountId: string | nul
   }
   return null;
 }
+
+function getStreamLeftPercent(stream: RoketoStream) {
+  const full = new BigNumber(stream.balance).plus(stream.tokens_total_withdrawn);
+  const availableToWithdraw = getAvailableToWithdraw(stream);
+  const withdrawn = new BigNumber(stream.tokens_total_withdrawn);
+  const streamed = withdrawn.plus(availableToWithdraw);
+  return full.minus(streamed).multipliedBy(100).dividedBy(full).toNumber();
+}
+
+export function ableToAddFunds(stream: RoketoStream, accountId: string | null) {
+  const direction = getStreamDirection(stream, accountId);
+  const isOutgoingStream = direction === STREAM_DIRECTION.OUT;
+  const isStreamEnded = getStreamLeftPercent(stream) === 0;
+  return isOutgoingStream && !isLocked(stream) && !isStreamEnded && hasPassedCliff(stream);
+}
