@@ -85,9 +85,9 @@ class MyStreams {
     cy.url().should('contains', 'http://localhost:3000/#/streams');
   }
   addFunds(value) {
-    cy.get('button').contains('Add funds').eq(0).click({force: true}, {timeout: 60000});
+    cy.get(testSelectors.addFunds).eq(0).click({force: true}, {timeout: 60000});
     cy.get('[name="deposit"]').click().type(' {backspace}').type(value);
-    cy.get('[type="submit"]').click();
+    cy.get(testSelectors.addFundsSubmit).click();
   }
   checkAddFunds() {
     cy.get(testSelectors.streamProgressCaption)
