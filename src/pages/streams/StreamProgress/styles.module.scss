@@ -93,3 +93,34 @@
   margin-right: 6px;
   margin-bottom: 2px;
 }
+
+.streamName {
+  display: none;
+}
+
+.tokenSymbol {
+  color: $grey;
+}
+
+.progressStatus {
+  display: contents;
+}
+
+/* Phone */
+@media (max-width: 767px) {
+  .streamName {
+    display: inline-block;
+    position: relative;
+    width: 30%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .progressStatus {
+    display: inline-block;
+    position: absolute;
+    max-width: 70%;
+    right: 0;
+    top: 0;
+    padding-right: 24px;
+  }
+}

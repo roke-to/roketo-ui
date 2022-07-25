@@ -33,6 +33,7 @@ export const StreamProgress = ({streamId, className}: {streamId: string; classNa
     withdrawnText,
     withdrawnPercentage,
     direction,
+    name,
   } = useStoreMap({
     store: $streamsProgress,
     keys: [streamId],
@@ -95,11 +96,14 @@ export const StreamProgress = ({streamId, className}: {streamId: string; classNa
           direction={direction}
         >
           <div className={styles.status}>
-            <span data-testid={testIds.streamProgressCaption}>
-              {sign}
-              {progressText}
-            </span>{' '}
-            <span className={styles.grey}>{symbol}</span>
+            <span className={styles.streamName}>{name}</span>
+            <div className={styles.progressStatus}>
+              <span data-testid={testIds.streamProgressCaption}>
+                {sign}
+                {progressText}
+              </span>{' '}
+              <span className={styles.tokenSymbol}>{symbol}</span>
+            </div>
           </div>
         </ProgressBar>
       </div>

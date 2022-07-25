@@ -92,3 +92,34 @@
 .progressBar {
   margin-top: 12px;
 }
+
+/* Phone */
+@media (max-width: 767px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding: 24px 8px 28px 8px;
+  }
+  .sendingReceivingStatus {
+    grid-column: 1 / span 1;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, max-content);
+  }
+  .receivingCard {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .createStreamButton {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .withdrawalStatus {
+    grid-column: 1 / span 1;
+  }
+  .streamFilters {
+    grid-column: 1 / span 1;
+    display: none;
+  }
+  .streamListBlock {
+    grid-column: 1 / span 1;
+  }
+}

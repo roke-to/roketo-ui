@@ -29,7 +29,7 @@
   grid-template-rows: 30px;
 }
 
-@media (max-width: 1024px) {
+@media (min-width: 768px) and (max-width: 1024px) {
   .container {
     width: calc(100% + 16px);
     margin-right: -16px;
@@ -207,4 +207,38 @@
 .streamStatusIcon {
   width: 28px;
   height: 28px;
+}
+
+/* Phone */
+@media (max-width: 767px) {
+  .container {
+    overflow-x: unset;
+  }
+  .streamGrid {
+    max-width: unset;
+    grid-template-columns:
+      [color-column] 4px
+      [status-column] 36px
+      [bar-column] minmax(min-content, 1fr);
+  }
+  .statusCell,
+  .progressCell,
+  .nameCell,
+  .commentCell,
+  .controlCell {
+    border-top-color: transparent;
+  }
+  .leftStickyCell,
+  .colorCell,
+  .statusCell {
+    position: unset;
+  }
+  .title {
+    display: none;
+  }
+  .nameCell,
+  .commentCell,
+  .controlCell {
+    display: none;
+  }
 }

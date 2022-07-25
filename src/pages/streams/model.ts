@@ -296,6 +296,7 @@ sample({
         withdrawnPercentage,
         direction,
         sign,
+        name: direction === STREAM_DIRECTION.IN ? stream.owner_id : stream.receiver_id,
       };
     }),
   target: $streamsProgress,

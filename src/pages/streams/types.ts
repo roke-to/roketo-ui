@@ -45,4 +45,5 @@ export type StreamProgressData = {
   withdrawnText: string;
   withdrawnPercentage: BigNumber;
   direction: StreamDirection | null;
+  name: string;
 };

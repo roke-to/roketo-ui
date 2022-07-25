@@ -41,6 +41,7 @@ export const streamProgressDataDefaults: StreamProgressData = {
   withdrawnText: '',
   withdrawnPercentage: new BigNumber(0),
   direction: null,
+  name: '',
 };
 
 export const sorts = {
