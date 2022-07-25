@@ -1,18 +1,10 @@
 @import 'src/shared/ui/palette';
 
 .root {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap-reverse;
-}
-
-.filtersWrapper {
-  display: flex;
-  align-items: center;
-
-  & > :not(:last-child) {
-    margin-right: 20px;
-  }
+  display: grid;
+  grid-auto-flow: dense;
+  gap: 8px;
+  grid-template-columns: repeat(4, max-content);
 }
 
 .sortWithOrder {
@@ -24,14 +16,9 @@
   }
 }
 
-.smallFilterWrapper {
-  flex-basis: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-
 .textFilter {
+  grid-row: 1;
+  grid-column: 2;
   min-width: 48px;
   height: 48px;
   border-radius: 24px;
@@ -39,6 +26,21 @@
   align-items: center;
   justify-content: center;
   position: relative;
+
+  &.withInput {
+    grid-row: 2;
+    grid-column: 2 / span 2;
+
+    & .textFilterMagnifier {
+      background-color: unset;
+    }
+    & .textFilterInput {
+      visibility: visible;
+      border: 1px solid #a0c2f8;
+      cursor: unset;
+      width: -webkit-fill-available;
+    }
+  }
 
   .textFilterMagnifier {
     background-color: #f0f6ff;
@@ -48,7 +50,6 @@
     padding: 9px;
     width: 48px;
     height: 100%;
-    pointer-events: none;
     border-radius: 24px;
   }
 
@@ -58,6 +59,7 @@
     height: 100%;
     width: 48px;
     padding-left: 40px;
+    visibility: hidden;
   }
 
   .textFilterClear {
@@ -68,38 +70,30 @@
     width: 48px;
     height: 100%;
     cursor: pointer;
+    visibility: hidden;
   }
 
-  .countDisclaimer {
-    position: absolute;
-    font-size: 12px;
-    line-height: 16px;
-    color: #8a96a8;
-    top: calc(100% + 8px);
-  }
-
-  &.withInput .textFilterMagnifier {
-    background-color: unset;
-  }
-
-  &.withInput .textFilterInput {
-    border: 1px solid #a0c2f8;
-    cursor: unset;
-    width: 320px;
+  .textFilterInput:not(:placeholder-shown) + .textFilterClear {
+    visibility: visible;
   }
 }
 
-.directionSorts {
-  display: flex;
+.statusBlock {
+  grid-column: 3 / span 1;
+}
 
-  & > :not(:last-child) {
-    margin-right: 12px;
-  }
+.sortBlock {
+  grid-column: 4 / span 1;
+}
+
+.directionSorts {
+  grid-column: 1 / span 1;
+  display: flex;
 }
 
 .directionSort {
   border-radius: 24px;
-  padding: 12px 19px;
+  padding: 12px;
 
   font-weight: 600;
   font-size: 16px;

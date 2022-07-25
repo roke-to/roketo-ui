@@ -2,9 +2,6 @@ import cn from 'classnames';
 import {useStoreMap, useUnit} from 'effector-react';
 import React, {useState} from 'react';
 
-import {$isSmallScreen} from '~/entities/screen';
-
-import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
 import {Filter, FilterOptionWithCounter} from '~/shared/kit/Filter';
 
 import {Button} from '@ui/components/Button';
@@ -15,70 +12,58 @@ import {
   $allStreams,
   $statusFilterCounts,
   $streamFilter,
-  $streamsCount,
   $streamSort,
   changeDirectionFilter,
   changeStatusFilter,
   changeStreamSort,
   changeTextFilter,
 } from '../model';
-import {ReactComponent as Clear} from './clear.svg';
-import {ReactComponent as Magnifier} from './magnifier.svg';
+import clearIcon from './clear.svg';
+import magnifierIcon from './magnifier.svg';
 import styles from './styles.module.scss';
 
 export function StreamFilters({className}: {className: string}) {
   const [showInput, setShowInput] = useState(false);
 
-  const [
-    {streamsCount, streamsTotalCount},
-    sorting,
-    {direction: activeDirection, status, text: filterText},
-    statusFilterCounts,
-    isSmallScreen,
-  ] = useUnit([$streamsCount, $streamSort, $streamFilter, $statusFilterCounts, $isSmallScreen]);
-
-  const isSmallForTextFilterInput = useMediaQuery('(max-width: 1111px)') && showInput;
-  const isSmallForTextFilterButton = isSmallScreen && !showInput;
-  const isSmallForTextFilter = isSmallForTextFilterInput || isSmallForTextFilterButton;
+  const [sorting, {direction: activeDirection, status, text: filterText}, statusFilterCounts] =
+    useUnit([$streamSort, $streamFilter, $statusFilterCounts]);
 
   const isEmptyList = useStoreMap($allStreams, (items) => items.length === 0);
 
-  const textFilter = (
-    <div className={cn(styles.textFilter, showInput && styles.withInput)} key="text-filter">
-      <Magnifier className={styles.textFilterMagnifier} />
-      <input
-        className={styles.textFilterInput}
-        value={filterText}
-        onChange={(e) => changeTextFilter(e.currentTarget.value)}
-        onFocus={() => setShowInput(true)}
-        onBlur={(e) => {
-          const isEmptyInput = e.currentTarget.value.trim() === '';
-          if (isEmptyInput) {
-            setShowInput(false);
-          }
-        }}
-      />
-      {filterText.trim() && (
-        <Clear
-          className={styles.textFilterClear}
-          onClick={() => {
-            setShowInput(false);
-            changeTextFilter('');
-          }}
-        />
-      )}
-      {showInput && streamsCount < streamsTotalCount && (
-        <div className={styles.countDisclaimer}>
-          Filtering the first {streamsCount} streams from the total {streamsTotalCount}
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <div className={cn(styles.root, className)}>
-      {isSmallForTextFilter && <div className={styles.smallFilterWrapper}>{textFilter}</div>}
-
+      <Filter
+        options={statusOptions}
+        label="Status:"
+        active={status}
+        onChange={changeStatusFilter}
+        isDisabled={isEmptyList}
+        className={styles.statusBlock}
+        controlClassName={styles.filterControl}
+        renderOption={(option) => (
+          <FilterOptionWithCounter
+            key={option}
+            option={option}
+            count={statusFilterCounts[option]}
+          />
+        )}
+      />
+      <Filter
+        options={sortOptions}
+        label="Show first:"
+        active={sorting}
+        onChange={changeStreamSort}
+        isDisabled={isEmptyList}
+        className={styles.sortBlock}
+        controlClassName={styles.filterControl}
+        renderOption={(option) => <span>{option.label}</span>}
+        renderActive={(option) => (
+          <div className={styles.sortWithOrder}>
+            {option.order && <SortIcon type={option.order} />}
+            <span>{option.label}</span>
+          </div>
+        )}
+      />
       <div className={styles.directionSorts}>
         {directionOptions.map((direction) => (
           <Button
@@ -93,41 +78,37 @@ export function StreamFilters({className}: {className: string}) {
           </Button>
         ))}
       </div>
-
-      {!isSmallForTextFilter && textFilter}
-
-      <div className={styles.filtersWrapper}>
-        <Filter
-          options={statusOptions}
-          label="Status:"
-          active={status}
-          onChange={changeStatusFilter}
-          isDisabled={isEmptyList}
-          controlClassName={styles.filterControl}
-          renderOption={(option) => (
-            <FilterOptionWithCounter
-              key={option}
-              option={option}
-              count={statusFilterCounts[option]}
-            />
-          )}
+      <div className={cn(styles.textFilter, showInput && styles.withInput)} key="text-filter">
+        <button
+          type="button"
+          className={styles.textFilterMagnifier}
+          onClick={() => setShowInput(true)}
+        >
+          <img src={magnifierIcon} alt="search" />
+        </button>
+        <input
+          className={styles.textFilterInput}
+          value={filterText}
+          onChange={(e) => changeTextFilter(e.currentTarget.value)}
+          onFocus={() => setShowInput(true)}
+          onBlur={(e) => {
+            const isEmptyInput = e.currentTarget.value.trim() === '';
+            if (isEmptyInput) {
+              setShowInput(false);
+            }
+          }}
+          placeholder="Search text"
         />
-
-        <Filter
-          options={sortOptions}
-          label="Show first:"
-          active={sorting}
-          onChange={changeStreamSort}
-          isDisabled={isEmptyList}
-          controlClassName={styles.filterControl}
-          renderOption={(option) => <span>{option.label}</span>}
-          renderActive={(option) => (
-            <div className={styles.sortWithOrder}>
-              {option.order && <SortIcon type={option.order} />}
-              <span>{option.label}</span>
-            </div>
-          )}
-        />
+        <button
+          type="button"
+          className={styles.textFilterClear}
+          onClick={() => {
+            setShowInput(false);
+            changeTextFilter('');
+          }}
+        >
+          <img src={clearIcon} alt="clear" />
+        </button>
       </div>
     </div>
   );

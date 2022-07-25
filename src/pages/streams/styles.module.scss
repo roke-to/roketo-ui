@@ -8,7 +8,9 @@
 
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
+  grid-auto-rows: max-content;
+  row-gap: 30px;
+  column-gap: 40px;
 }
 
 .streamListBlock {
@@ -31,10 +33,12 @@
 .sendingReceivingStatus {
   grid-column: 1 / span 2;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: max-content max-content;
 }
 
 .withdrawalStatus {
   grid-column: 3;
+  grid-template-rows: max-content max-content;
 }
 
 .infoCard {

@@ -7,7 +7,6 @@ import {getTokensPerSecondCount} from '~/features/create-stream/lib';
 import {parseColor, parseComment, streamViewData} from '~/features/roketo-resource';
 
 import {
-  $account,
   $accountId,
   $accountStreams,
   $nearWallet,
@@ -76,10 +75,6 @@ export const $streamFilter = createStore({
   text: '',
 });
 
-export const $streamsCount = createStore(
-  {streamsCount: 0, streamsTotalCount: 0},
-  {updateFilter: areObjectsDifferent},
-);
 export const changeDirectionFilter = createEvent<DirectionFilter>();
 export const changeStatusFilter = createEvent<StatusFilter>();
 export const changeTextFilter = createEvent<string>();
@@ -223,37 +218,6 @@ sample({
 });
 
 sample({clock: changeStreamSort, target: $streamSort});
-
-sample({
-  source: {
-    account: $account,
-    streams: $accountStreams,
-    filter: $streamFilter,
-  },
-  target: $streamsCount,
-  fn({account, streams, filter}) {
-    const totalIncomingStreamsCount = account?.active_incoming_streams ?? 0;
-    const totalOutgoingStreamsCount = account?.active_outgoing_streams ?? 0;
-
-    const incomingStreamsCount = streams.inputs.length;
-    const outgoingStreamsCount = streams.outputs.length;
-
-    const isIncomingOnly = filter.direction === 'Incoming';
-    const isOutgoingOnly = filter.direction === 'Outgoing';
-
-    const shouldCountIncoming = !isOutgoingOnly;
-    const shouldCountOutgoing = !isIncomingOnly;
-
-    const streamsCount =
-      (shouldCountIncoming ? incomingStreamsCount : 0) +
-      (shouldCountOutgoing ? outgoingStreamsCount : 0);
-    const streamsTotalCount =
-      (shouldCountIncoming ? totalIncomingStreamsCount : 0) +
-      (shouldCountOutgoing ? totalOutgoingStreamsCount : 0);
-
-    return {streamsCount, streamsTotalCount};
-  },
-});
 
 /** redraw progress bar each second */
 sample({
