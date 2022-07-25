@@ -69,3 +69,13 @@ export function ableToAddFunds(stream: RoketoStream, accountId: string | null) {
   const isStreamEnded = getStreamLeftPercent(stream) === 0;
   return isOutgoingStream && !isLocked(stream) && !isStreamEnded && hasPassedCliff(stream);
 }
+
+export function ableToStartStream(stream: RoketoStream, accountId: string | null) {
+  const isOutgoingStream = accountId === stream.owner_id;
+  return stream.status !== STREAM_STATUS.Active && isOutgoingStream;
+}
+
+export function ableToPauseStream(stream: RoketoStream, accountId: string | null) {
+  const direction = getStreamDirection(stream, accountId);
+  return !!direction && stream.status === STREAM_STATUS.Active && !isWithCliff(stream);
+}
