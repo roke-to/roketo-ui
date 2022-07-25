@@ -67,8 +67,15 @@ const StreamCards = ({className}: {className: string}) => (
         getKey: ({id}) => id,
         fn(stream) {
           const {id: streamId} = stream;
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const {color, showAddFundsButton, showWithdrawButton, iconType} = useStoreMap({
+          const {
+            color,
+            showAddFundsButton,
+            showWithdrawButton,
+            showStartButton,
+            showPauseButton,
+            iconType,
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+          } = useStoreMap({
             store: $streamCardsData,
             keys: [streamId],
             fn: (items) => items[streamId],
@@ -118,6 +125,8 @@ const StreamCards = ({className}: {className: string}) => (
                   dropdownClassName={styles.controlDropdown}
                   showAddFundsButton={showAddFundsButton}
                   showWithdrawButton={showWithdrawButton}
+                  showStartButton={showStartButton}
+                  showPauseButton={showPauseButton}
                   openerClassName={styles.streamActionsButton}
                   openerContent={
                     <img

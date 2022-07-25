@@ -19,7 +19,13 @@ import {
 import {createStream} from '~/shared/api/methods';
 import {STREAM_DIRECTION, STREAM_STATUS} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {ableToAddFunds, getStreamDirection, isActiveStream} from '~/shared/api/roketo/lib';
+import {
+  ableToAddFunds,
+  ableToPauseStream,
+  ableToStartStream,
+  getStreamDirection,
+  isActiveStream,
+} from '~/shared/api/roketo/lib';
 import {
   formatSmartly,
   toHumanReadableValue,
@@ -348,6 +354,8 @@ sample({
         isLocked: stream.is_locked,
         showAddFundsButton: ableToAddFunds(stream, accountId),
         showWithdrawButton: direction === STREAM_DIRECTION.IN && isActiveStream(stream),
+        showStartButton: ableToStartStream(stream, accountId),
+        showPauseButton: ableToPauseStream(stream, accountId),
         iconType,
       };
     }),

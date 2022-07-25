@@ -20,6 +20,8 @@ export const streamCardDataDefaults: StreamCardData = {
   isLocked: false,
   showAddFundsButton: false,
   showWithdrawButton: false,
+  showStartButton: false,
+  showPauseButton: false,
   iconType: 'Initialized',
 };
 

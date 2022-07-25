@@ -18,6 +18,8 @@ import {STREAM_DIRECTION, STREAM_STATUS, StreamDirection} from '~/shared/api/rok
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {
   ableToAddFunds,
+  ableToPauseStream,
+  ableToStartStream,
   getAvailableToWithdraw,
   getStreamDirection,
   hasPassedCliff,
@@ -73,6 +75,8 @@ export const $streamInfo = createStore({
   showControls: false,
   showAddFundsButton: false,
   showWithdrawButton: false,
+  showStartButton: false,
+  showPauseButton: false,
   subheader: '',
   direction: null as StreamDirection | null,
   link: '',
@@ -212,6 +216,8 @@ sample({
       showAddFundsButton: ableToAddFunds(stream, accountId),
       showWithdrawButton:
         direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.Active,
+      showStartButton: ableToStartStream(stream, accountId),
+      showPauseButton: ableToPauseStream(stream, accountId),
       subheader,
       direction,
       link: getStreamLink(stream.id),

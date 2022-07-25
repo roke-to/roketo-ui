@@ -24,6 +24,8 @@ export type StreamCardData = {
   isLocked: boolean;
   showAddFundsButton: boolean;
   showWithdrawButton: boolean;
+  showStartButton: boolean;
+  showPauseButton: boolean;
   iconType: keyof typeof STREAM_STATUS;
 };
 

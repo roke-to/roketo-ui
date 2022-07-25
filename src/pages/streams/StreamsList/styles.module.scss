@@ -22,9 +22,9 @@
     [color-column] 4px
     [status-column] 48px
     [bar-column] 200px
-    [address-column] minmax(max-content, 1fr)
+    [address-column] minmax(min-content, 1fr)
     [comment-column] max-content
-    [control-column] minmax(200px, 1fr);
+    [control-column] 150px;
   grid-auto-rows: 48px;
   grid-template-rows: 30px;
 }

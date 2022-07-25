@@ -8,15 +8,8 @@ import {AddFunds} from '~/features/add-funds';
 import {blurGate} from '~/entities/blur';
 import {$accountId} from '~/entities/wallet';
 
-import {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {
-  isActiveStream,
-  isDead,
-  isPausedStream,
-  isWithCliff,
-  wasStartedAndLocked,
-} from '~/shared/api/roketo/lib';
+import {isActiveStream, isDead, isPausedStream, wasStartedAndLocked} from '~/shared/api/roketo/lib';
 import {testIds} from '~/shared/constants';
 import {BooleanControl, useBool} from '~/shared/hooks/useBool';
 import {AdaptiveModal} from '~/shared/kit/AdaptiveModal';
@@ -92,30 +85,36 @@ export function StreamControls({
   className,
   openerClassName,
   dropdownClassName,
-  additionalControls,
   openerText,
   needToUseBlur,
+  showStartButton,
+  showPauseButton,
+  showAddFundsButton,
+  showWithdrawButton,
 }: {
   stream: RoketoStream;
   className?: string;
   openerClassName?: string;
   dropdownClassName?: string;
-  additionalControls?: ReactNode;
   openerText?: ReactNode;
   needToUseBlur?: boolean;
+  showStartButton: boolean;
+  showPauseButton: boolean;
+  showAddFundsButton: boolean;
+  showWithdrawButton: boolean;
 }) {
   const pauseModalControl = useBool(false);
   const stopModalControl = useBool(false);
   const loading = useStore($loading);
   const [menuOpened, setMenuOpened] = useState(false);
-  const {isOutgoing, isIncoming, isExternal} = useStoreMap({
+  const {isIncoming, isExternal} = useStoreMap({
     store: $accountId,
     keys: [stream],
     fn(accountId) {
       const outgoing = accountId === stream.owner_id;
       const incoming = accountId === stream.receiver_id;
       const external = !outgoing && !incoming;
-      return {isOutgoing: outgoing, isIncoming: incoming, isExternal: external};
+      return {isIncoming: incoming, isExternal: external};
     },
   });
 
@@ -142,9 +141,6 @@ export function StreamControls({
     modalId: `stream controls ${stream.id}`,
     active: !!needToUseBlur && !showStatusOnly && !isStartedAndLocked && opened,
   });
-
-  const shouldShowStartButton = stream.status !== STREAM_STATUS.Active && isOutgoing;
-  const shouldShowPauseButton = stream.status === STREAM_STATUS.Active && !isWithCliff(stream);
 
   const statusClassName = {
     [styles.active]: isActiveStream(stream),
@@ -210,12 +206,17 @@ export function StreamControls({
         modalClassName={styles.modalContent}
         dropdownClassName={cn(styles.controlsMenu, dropdownClassName)}
       >
-        {additionalControls && (
-          <DropdownMenuItem className={styles.additionalControl}>
-            {additionalControls}
+        {showAddFundsButton && (
+          <DropdownMenuItem>
+            <AddFunds stream={stream} className={styles.controlButton} />
           </DropdownMenuItem>
         )}
-        {shouldShowStartButton && (
+        {showWithdrawButton && (
+          <DropdownMenuItem>
+            <WithdrawButton stream={stream} className={styles.controlButton} />
+          </DropdownMenuItem>
+        )}
+        {showStartButton && (
           <DropdownMenuItem>
             <button
               type="button"
@@ -229,7 +230,7 @@ export function StreamControls({
           </DropdownMenuItem>
         )}
 
-        {shouldShowPauseButton && (
+        {showPauseButton && (
           <DropdownMenuItem>
             <button
               type="button"
@@ -243,7 +244,8 @@ export function StreamControls({
           </DropdownMenuItem>
         )}
 
-        {(shouldShowStartButton || shouldShowPauseButton) && <DropdownMenuDivider />}
+        <DropdownMenuDivider className={styles.menuDivider} />
+
         <DropdownMenuItem>
           <button
             type="button"
@@ -267,6 +269,8 @@ export function StreamListControls({
   needToUseBlur,
   showAddFundsButton,
   showWithdrawButton,
+  showStartButton,
+  showPauseButton,
   openerContent,
   openerClassName,
 }: {
@@ -276,6 +280,8 @@ export function StreamListControls({
   needToUseBlur?: boolean;
   showAddFundsButton: boolean;
   showWithdrawButton: boolean;
+  showStartButton: boolean;
+  showPauseButton: boolean;
   openerContent: ReactNode;
   openerClassName: string;
 }) {
@@ -283,14 +289,14 @@ export function StreamListControls({
   const stopModalControl = useBool(false);
   const loading = useStore($loading);
   const [menuOpened, setMenuOpened] = useState(false);
-  const {isOutgoing, isIncoming, isExternal} = useStoreMap({
+  const {isIncoming, isExternal} = useStoreMap({
     store: $accountId,
     keys: [stream],
     fn(accountId) {
       const outgoing = accountId === stream.owner_id;
       const incoming = accountId === stream.receiver_id;
       const external = !outgoing && !incoming;
-      return {isOutgoing: outgoing, isIncoming: incoming, isExternal: external};
+      return {isIncoming: incoming, isExternal: external};
     },
   });
 
@@ -317,9 +323,6 @@ export function StreamListControls({
     modalId: `stream controls ${stream.id}`,
     active: !!needToUseBlur && !showStatusOnly && !isStartedAndLocked && opened,
   });
-
-  const shouldShowStartButton = stream.status !== STREAM_STATUS.Active && isOutgoing;
-  const shouldShowPauseButton = stream.status === STREAM_STATUS.Active && !isWithCliff(stream);
 
   if (showStatusOnly) {
     return <StreamStatus className={className} status={stream.status} />;
@@ -375,16 +378,16 @@ export function StreamListControls({
         dropdownClassName={cn(styles.streamListControlsMenu, dropdownClassName)}
       >
         {showAddFundsButton && (
-          <DropdownMenuItem className={styles.additionalControl}>
-            <AddFunds stream={stream} className={styles.streamListControlButton} />
+          <DropdownMenuItem>
+            <AddFunds stream={stream} className={styles.controlButton} />
           </DropdownMenuItem>
         )}
         {showWithdrawButton && (
-          <DropdownMenuItem className={styles.additionalControl}>
-            <WithdrawButton stream={stream} className={styles.streamListControlButton} />
+          <DropdownMenuItem>
+            <WithdrawButton stream={stream} className={styles.controlButton} />
           </DropdownMenuItem>
         )}
-        {shouldShowStartButton && (
+        {showStartButton && (
           <DropdownMenuItem>
             <button
               type="button"
@@ -398,7 +401,7 @@ export function StreamListControls({
           </DropdownMenuItem>
         )}
 
-        {shouldShowPauseButton && (
+        {showPauseButton && (
           <DropdownMenuItem>
             <button
               type="button"
@@ -412,7 +415,8 @@ export function StreamListControls({
           </DropdownMenuItem>
         )}
 
-        {(shouldShowStartButton || shouldShowPauseButton) && <DropdownMenuDivider />}
+        <DropdownMenuDivider className={styles.menuDivider} />
+
         <DropdownMenuItem>
           <button
             type="button"
