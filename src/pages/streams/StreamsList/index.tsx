@@ -143,8 +143,18 @@ const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
   );
 };
 
-const ExpandedStreamCard = ({streamId}: {streamId: string}) => {
-  const {color, iconType, comment, streamPageLink} = useStoreMap({
+const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
+  const {id: streamId} = stream;
+  const {
+    color,
+    iconType,
+    comment,
+    streamPageLink,
+    showAddFundsButton,
+    showWithdrawButton,
+    showStartButton,
+    showPauseButton,
+  } = useStoreMap({
     store: $streamCardsData,
     keys: [streamId],
     fn: (items) => items[streamId],
@@ -223,9 +233,18 @@ const ExpandedStreamCard = ({streamId}: {streamId: string}) => {
       </div>
       {cliffText && <div className={styles.cliffRemaining}>Cliff remaining: {cliffText}</div>}
       {comment && <div className={styles.comment}>{comment}</div>}
-      <button type="button" className={styles.streamActions}>
-        Stream actions
-      </button>
+      <StreamListControls
+        stream={stream}
+        dropdownClassName={styles.controlDropdown}
+        needToUseBlur
+        showAddFundsButton={showAddFundsButton}
+        showWithdrawButton={showWithdrawButton}
+        showStartButton={showStartButton}
+        showPauseButton={showPauseButton}
+        className={styles.streamActions}
+        openerClassName={styles.streamActionsButtonExpanded}
+        openerContent="Stream actions"
+      />
       <ViewDetailsLink to={streamPageLink} />
     </div>
   );
@@ -269,7 +288,7 @@ export const StreamsList = ({
             fn: (selected) => selected === streamId,
           });
           return isSelected ? (
-            <ExpandedStreamCard streamId={streamId} />
+            <ExpandedStreamCard stream={stream} />
           ) : (
             <CollapsedStreamRow stream={stream} />
           );

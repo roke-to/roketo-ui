@@ -238,16 +238,16 @@
   margin: 12px 0;
   padding: 16px 16px 12px 16px;
 
-  & > .statusIcon {
+  .statusIcon {
     grid-column: left-column;
-    & > img {
+    img {
       width: 32px;
       height: 32px;
     }
   }
-  & > .progressBar {
+  .progressBar {
     grid-column: content-column / right-column-end;
-    & > .barStatusText {
+    .barStatusText {
       position: relative;
       left: 12px;
       line-height: 26px;
@@ -255,7 +255,7 @@
       font-size: 16px;
       width: calc(100% - 24px);
       display: flex;
-      & > .barStreamName {
+      .barStreamName {
         display: inline-block;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -263,7 +263,7 @@
         flex-grow: 2;
         flex-shrink: 0;
       }
-      & > .barProgressText {
+      .barProgressText {
         display: inline-flex;
         flex-basis: 30%;
         flex-grow: 2;
@@ -274,18 +274,18 @@
       }
     }
   }
-  & > .color {
+  .color {
     --size: 8;
     grid-column: left-column / content-column;
     align-self: center;
     justify-self: center;
   }
-  & > .direction {
+  .direction {
     grid-column: content-column;
     line-height: 32px;
     font-weight: 600;
   }
-  & > .link {
+  .link {
     grid-column: right-column;
     height: 32px;
     width: 32px;
@@ -293,20 +293,20 @@
     justify-content: center;
     align-items: center;
   }
-  & > .speed {
+  .speed {
     grid-column: content-column / right-column-end;
   }
-  & > .remainingIcon {
+  .remainingIcon {
     grid-column: left-column / content-column;
     justify-self: center;
   }
-  & > .remaining,
-  & > .streamed,
-  & > .withdrawn,
-  & > .cliffRemaining {
+  .remaining,
+  .streamed,
+  .withdrawn,
+  .cliffRemaining {
     grid-column: content-column / right-column-end;
   }
-  & > .comment {
+  .comment {
     grid-column: left-column / right-column-end;
     background-color: #f7f7f8;
     padding: 20px;
@@ -316,19 +316,29 @@
     font-size: 14px;
     margin-bottom: 4px;
   }
-  & > .streamActions {
+  .streamActions {
     grid-column: left-column / right-column-end;
-    background-color: #f0f6ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  & > .viewDetails {
+  .viewDetails {
     grid-column: left-column / right-column-end;
-  }
-  & > .streamActions,
-  & > .viewDetails {
     display: flex;
     align-items: center;
     justify-content: center;
     color: #3e65f2;
+    height: 48px;
+    width: 100%;
+    border-radius: 24px;
+    font-weight: 600;
+  }
+  .streamActionsButtonExpanded {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3e65f2;
+    background-color: #f0f6ff;
     height: 48px;
     width: 100%;
     border-radius: 24px;

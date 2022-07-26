@@ -365,7 +365,11 @@ export function StreamListControls({
       <button
         className={cn(openerClassName)}
         type="button"
-        onClick={() => setMenuOpened(!opened)}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setMenuOpened(!opened);
+        }}
         data-testid={testIds.streamControlsDropdown}
       >
         {openerContent}

@@ -31,9 +31,10 @@
   padding: 24px;
   max-width: 480px;
   width: 95vw;
-  border-radius: 8px;
+  border-radius: 24px;
   background-color: white;
   color: $light-black;
+  outline: none;
 
   & .controlButton {
     width: -webkit-fill-available;
