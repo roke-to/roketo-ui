@@ -265,8 +265,6 @@ sample({
         1,
       );
 
-      const progressText = `${streamedText} of ${total}`;
-
       const {formattedValue: speedFormattedValue, unit: speedUnit} = tokensPerMeaningfulPeriod(
         decimals,
         tokensPerSec,
@@ -287,7 +285,6 @@ sample({
       }
       return {
         symbol,
-        progressText,
         progressFull: progress.full,
         progressStreamed: progress.streamed,
         progressWithdrawn: progress.withdrawn,
@@ -296,6 +293,7 @@ sample({
         speedUnit,
         timeLeft,
         streamedText,
+        totalText: total.toString(),
         streamedPercentage,
         withdrawnText,
         withdrawnPercentage,

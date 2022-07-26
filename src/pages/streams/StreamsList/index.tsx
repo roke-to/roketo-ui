@@ -25,6 +25,7 @@ import {
   $streamCardsData,
   $streamListData,
   $streamsProgress,
+  selectStream,
 } from '../model';
 import {StreamProgress} from '../StreamProgress';
 import activeStreamIcon from './activeStream.svg';
@@ -151,7 +152,7 @@ const ExpandedStreamCard = ({streamId}: {streamId: string}) => {
   });
   const {
     name,
-    progressText,
+    totalText,
     symbol,
     progressFull,
     progressStreamed,
@@ -173,7 +174,8 @@ const ExpandedStreamCard = ({streamId}: {streamId: string}) => {
     defaultValue: streamProgressDataDefaults,
   });
   return (
-    <div className={styles.expandedInfo}>
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+    <div className={styles.expandedInfo} onClick={() => selectStream(null)}>
       <div className={cn(styles.statusIcon)}>
         <img src={selectIcon(iconType)} alt="Stream status" />
       </div>
@@ -189,7 +191,7 @@ const ExpandedStreamCard = ({streamId}: {streamId: string}) => {
           <span className={styles.barStreamName}>{name}</span>
           <div className={styles.barProgressText}>
             {sign}
-            {progressText} <span className={styles.subtext}>{symbol}</span>
+            {streamedText} of {totalText} <span className={styles.subtext}>{symbol}</span>
           </div>
         </div>
       </ProgressBar>
@@ -198,7 +200,6 @@ const ExpandedStreamCard = ({streamId}: {streamId: string}) => {
       <button className={styles.link} type="button" onClick={() => copy(getStreamLink(streamId))}>
         <LinkIcon />
       </button>
-      <div className={styles.sign}>{sign}</div>
       <div className={styles.speed}>
         {speedFormattedValue}{' '}
         <span className={styles.subtext}>
@@ -212,11 +213,12 @@ const ExpandedStreamCard = ({streamId}: {streamId: string}) => {
         </>
       )}
       <div className={styles.streamed}>
-        Streamed: {streamedText} <span className={styles.subtext}>{`${streamedPercentage}%`}</span>
+        Streamed: {streamedText}{' '}
+        <span className={styles.subtext}>({streamedPercentage.toString()}%)</span>
       </div>
       <div className={styles.withdrawn}>
         Withdrawn: {withdrawnText}{' '}
-        <span className={styles.subtext}>{`${withdrawnPercentage}%`}</span>
+        <span className={styles.subtext}>({withdrawnPercentage.toString()}%)</span>
       </div>
       {comment && <div className={styles.comment}>{comment}</div>}
       <button type="button" className={styles.streamActions}>

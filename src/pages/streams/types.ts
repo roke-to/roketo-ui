@@ -32,7 +32,7 @@ export type StreamCardData = {
 export type StreamProgressData = {
   symbol: string;
   sign: string;
-  progressText: string;
+  totalText: string;
   progressFull: string;
   progressStreamed: string;
   progressWithdrawn: string;

@@ -18,7 +18,7 @@ const TOOLTIP_ALIGN = {
 
 const ExtendedInfo = ({streamId, className}: {streamId: string; className?: string}) => {
   const {
-    progressText,
+    totalText,
     symbol,
     progressFull,
     progressStreamed,
@@ -42,7 +42,10 @@ const ExtendedInfo = ({streamId, className}: {streamId: string; className?: stri
   return (
     <div className={cn(styles.extendedInfo, styles.text, className)}>
       <div className={styles.innerStatus}>
-        <span>{progressText}</span> <span className={styles.subtext}>{symbol}</span>
+        <span>
+          {streamedText} of {totalText}
+        </span>{' '}
+        <span className={styles.subtext}>{symbol}</span>
       </div>
 
       <ProgressBar
@@ -82,7 +85,8 @@ const ExtendedInfo = ({streamId, className}: {streamId: string; className?: stri
 
 export const StreamProgress = ({streamId, className}: {streamId: string; className: string}) => {
   const {
-    progressText,
+    totalText,
+    streamedText,
     symbol,
     sign,
     progressFull,
@@ -122,7 +126,7 @@ export const StreamProgress = ({streamId, className}: {streamId: string; classNa
             <div className={styles.progressStatus}>
               <span data-testid={testIds.streamProgressCaption}>
                 {sign}
-                {progressText}
+                {streamedText} of {totalText}
               </span>{' '}
               <span className={styles.tokenSymbol}>{symbol}</span>
             </div>

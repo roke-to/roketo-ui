@@ -15,7 +15,6 @@
   position: relative;
   left: 12px;
   line-height: 26px;
-  /* width: 100%; */
   font-weight: 500;
   font-size: 16px;
 }
@@ -112,19 +111,26 @@
   .root {
     cursor: pointer;
   }
+  .status {
+    display: flex;
+    width: calc(100% - 24px);
+  }
   .streamName {
     display: inline-block;
-    position: relative;
-    width: 30%;
     overflow: hidden;
     text-overflow: ellipsis;
+    flex-basis: 30%;
+    flex-grow: 2;
+    flex-shrink: 0;
   }
   .progressStatus {
-    display: inline-block;
-    position: absolute;
-    max-width: 70%;
-    right: 0;
-    top: 0;
-    padding-right: 24px;
+    display: inline-flex;
+    flex-basis: 30%;
+    flex-grow: 2;
+    justify-content: end;
+    flex-shrink: 1;
+    align-items: baseline;
+    gap: 4px;
+    white-space: nowrap;
   }
 }

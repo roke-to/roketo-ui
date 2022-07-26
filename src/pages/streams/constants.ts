@@ -28,7 +28,7 @@ export const streamCardDataDefaults: StreamCardData = {
 export const streamProgressDataDefaults: StreamProgressData = {
   symbol: '',
   sign: '',
-  progressText: '',
+  totalText: '',
   progressFull: '',
   progressStreamed: '',
   progressWithdrawn: '',
