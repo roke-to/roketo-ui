@@ -5,7 +5,7 @@ import React from 'react';
 
 import {testIds} from '~/shared/constants';
 import {ProgressBar} from '~/shared/ui/components/ProgressBar';
-import {ClockIcon} from '~/shared/ui/icons/Clock';
+import clockIcon from '~/shared/ui/icons/clock.svg';
 
 import {streamProgressDataDefaults} from '../constants';
 import {$streamsProgress} from '../model';
@@ -70,7 +70,7 @@ export const StreamProgress = ({streamId, className}: {streamId: string; classNa
 
           {timeLeft && (
             <div className={styles.remained}>
-              <ClockIcon className={styles.clock} />
+              <img src={clockIcon} className={styles.clock} alt="remainded" />
               {timeLeft}
             </div>
           )}
