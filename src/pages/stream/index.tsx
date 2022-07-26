@@ -162,7 +162,7 @@ export function StreamPage() {
             {comment && (
               <div className={cn(styles.blockLarge, styles.commentBlock)}>
                 <span className={styles.blockTitle}>Comment</span>
-                <div className={styles.blockBody}>{comment}</div>
+                <div className={cn(styles.blockBody, styles.commentText)}>{comment}</div>
               </div>
             )}
             <div className={cn(styles.blockLarge, styles.linkBlock)}>
