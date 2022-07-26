@@ -308,6 +308,13 @@
   }
   & > .comment {
     grid-column: left-column / right-column-end;
+    background-color: #f7f7f8;
+    padding: 20px;
+    border-radius: 24px;
+    overflow-wrap: break-word;
+    font-style: italic;
+    font-size: 14px;
+    margin-bottom: 4px;
   }
   & > .streamActions {
     grid-column: left-column / right-column-end;
