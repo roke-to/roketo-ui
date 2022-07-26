@@ -101,6 +101,7 @@
     grid-template-columns: 1fr;
     padding: 24px 8px 28px 8px;
     overflow-x: hidden;
+    row-gap: 20px;
   }
   .sendingReceivingStatus {
     grid-column: 1 / span 1;
@@ -120,7 +121,6 @@
   }
   .streamFilters {
     grid-column: 1 / span 1;
-    display: none;
   }
   .streamListBlock {
     grid-column: 1 / span 1;

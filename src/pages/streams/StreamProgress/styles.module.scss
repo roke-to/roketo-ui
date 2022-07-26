@@ -111,6 +111,9 @@
   .root {
     cursor: pointer;
   }
+  .tooltip {
+    display: none;
+  }
   .status {
     display: flex;
     width: calc(100% - 24px);
