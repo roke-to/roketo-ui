@@ -6,25 +6,32 @@ import {Link} from 'react-router-dom';
 
 import {StreamListControls} from '~/features/stream-control/StreamControls';
 
+import type {STREAM_STATUS} from '~/shared/api/roketo/constants';
+import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {Badge} from '~/shared/components/Badge';
+import {ColorDot} from '~/shared/kit/ColorDot';
 import {getStreamLink} from '~/shared/lib/routing';
 
 import {Button} from '@ui/components/Button';
+import {ProgressBar} from '@ui/components/ProgressBar';
 import {Spinner} from '@ui/components/Spinner';
+import clockIcon from '@ui/icons/clock.svg';
 import {LinkIcon} from '@ui/icons/Link';
 
-import {streamCardDataDefaults} from '../constants';
-import {$filteredStreams, $streamCardsData, $streamListData} from '../model';
+import {streamCardDataDefaults, streamProgressDataDefaults} from '../constants';
+import {
+  $filteredStreams,
+  $selectedStream,
+  $streamCardsData,
+  $streamListData,
+  $streamsProgress,
+} from '../model';
 import {StreamProgress} from '../StreamProgress';
 import activeStreamIcon from './activeStream.svg';
 import finishedStreamIcon from './finishedStream.svg';
 import menuDotsIcon from './menuDots.svg';
 import pausedStreamIcon from './pausedStream.svg';
 import styles from './styles.module.scss';
-
-const EmptyState = ({children}: {children: React.ReactNode}) => (
-  <div className={styles.emptyState}>{children}</div>
-);
 
 const StreamNameLink = memo(({streamId}: {streamId: string}) => {
   const {streamPageLink, name, isLocked} = useStoreMap({
@@ -42,6 +49,12 @@ const StreamNameLink = memo(({streamId}: {streamId: string}) => {
   );
 });
 
+const ViewDetailsLink = memo(({to}: {to: string}) => (
+  <Link to={to} className={styles.viewDetails}>
+    View details
+  </Link>
+));
+
 const StreamCommentLink = memo(({streamId}: {streamId: string}) => {
   const {streamPageLink, comment} = useStoreMap({
     store: $streamCardsData,
@@ -56,7 +69,185 @@ const StreamCommentLink = memo(({streamId}: {streamId: string}) => {
   );
 });
 
-const StreamCards = ({className}: {className: string}) => (
+function selectIcon(iconType: keyof typeof STREAM_STATUS) {
+  switch (iconType) {
+    case 'Active':
+      return activeStreamIcon;
+    case 'Finished':
+      return finishedStreamIcon;
+    case 'Initialized':
+    case 'Paused':
+    default:
+      return pausedStreamIcon;
+  }
+}
+
+const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
+  const {id: streamId} = stream;
+  const {
+    color,
+    showAddFundsButton,
+    showWithdrawButton,
+    showStartButton,
+    showPauseButton,
+    iconType,
+  } = useStoreMap({
+    store: $streamCardsData,
+    keys: [streamId],
+    fn: (items) => items[streamId],
+    defaultValue: streamCardDataDefaults,
+  });
+  return (
+    <>
+      <div className={styles.colorCell} style={{'--stream-color': color} as any} />
+      <div className={cn(styles.statusCell)}>
+        <img src={selectIcon(iconType)} alt="Stream status" className={styles.streamStatusIcon} />
+      </div>
+
+      <StreamProgress
+        streamId={stream.id}
+        className={cn(styles.progressCell, styles.leftStickyCell)}
+      />
+
+      <StreamNameLink streamId={stream.id} />
+
+      <StreamCommentLink streamId={stream.id} />
+
+      <div className={cn(styles.controlCell)}>
+        <button
+          className={styles.streamLinkButton}
+          type="button"
+          onClick={() => copy(getStreamLink(streamId))}
+        >
+          <LinkIcon />
+        </button>
+        <StreamListControls
+          stream={stream}
+          dropdownClassName={styles.controlDropdown}
+          showAddFundsButton={showAddFundsButton}
+          showWithdrawButton={showWithdrawButton}
+          showStartButton={showStartButton}
+          showPauseButton={showPauseButton}
+          openerClassName={styles.streamActionsButton}
+          openerContent={
+            <img
+              src={menuDotsIcon}
+              alt="Open stream actions"
+              className={styles.streamActionsIcon}
+            />
+          }
+        />
+      </div>
+    </>
+  );
+};
+
+const ExpandedStreamCard = ({streamId}: {streamId: string}) => {
+  const {color, iconType, comment, streamPageLink} = useStoreMap({
+    store: $streamCardsData,
+    keys: [streamId],
+    fn: (items) => items[streamId],
+    defaultValue: streamCardDataDefaults,
+  });
+  const {
+    name,
+    progressText,
+    symbol,
+    progressFull,
+    progressStreamed,
+    progressWithdrawn,
+    cliffPercent,
+    speedFormattedValue,
+    speedUnit,
+    timeLeft,
+    streamedText,
+    streamedPercentage,
+    withdrawnText,
+    withdrawnPercentage,
+    direction,
+    sign,
+  } = useStoreMap({
+    store: $streamsProgress,
+    keys: [streamId],
+    fn: (items) => items[streamId],
+    defaultValue: streamProgressDataDefaults,
+  });
+  return (
+    <div className={styles.expandedInfo}>
+      <div className={cn(styles.statusIcon)}>
+        <img src={selectIcon(iconType)} alt="Stream status" />
+      </div>
+      <ProgressBar
+        total={progressFull}
+        streamed={progressStreamed}
+        withdrawn={progressWithdrawn}
+        cliffPercent={cliffPercent}
+        direction={direction}
+        className={styles.progressBar}
+      >
+        <div className={styles.barStatusText}>
+          <span className={styles.barStreamName}>{name}</span>
+          <div className={styles.barProgressText}>
+            {sign}
+            {progressText} <span className={styles.subtext}>{symbol}</span>
+          </div>
+        </div>
+      </ProgressBar>
+      {color && <ColorDot className={styles.color} color={color} />}
+      <div className={styles.direction}>{direction === 'in' ? 'Incoming' : 'Outgoing'} stream</div>
+      <button className={styles.link} type="button" onClick={() => copy(getStreamLink(streamId))}>
+        <LinkIcon />
+      </button>
+      <div className={styles.sign}>{sign}</div>
+      <div className={styles.speed}>
+        {speedFormattedValue}{' '}
+        <span className={styles.subtext}>
+          {symbol} / {speedUnit}
+        </span>
+      </div>
+      {timeLeft && (
+        <>
+          <img src={clockIcon} alt="remaining" className={styles.remainingIcon} />
+          <div className={styles.remaining}>{timeLeft} remaining</div>
+        </>
+      )}
+      <div className={styles.streamed}>
+        Streamed: {streamedText} <span className={styles.subtext}>{`${streamedPercentage}%`}</span>
+      </div>
+      <div className={styles.withdrawn}>
+        Withdrawn: {withdrawnText}{' '}
+        <span className={styles.subtext}>{`${withdrawnPercentage}%`}</span>
+      </div>
+      {comment && <div className={styles.comment}>{comment}</div>}
+      <button type="button" className={styles.streamActions}>
+        Stream actions
+      </button>
+      <ViewDetailsLink to={streamPageLink} />
+    </div>
+  );
+};
+
+const Placeholder = ({onCreateStreamClick}: {onCreateStreamClick(): void}) => {
+  const {streamsLoading, hasStreams} = useStore($streamListData);
+  if (streamsLoading) return <Spinner wrapperClassName={styles.loader} />;
+  if (!hasStreams) {
+    return (
+      <>
+        <div>You don't have any streams yet.</div>
+        <Button onClick={onCreateStreamClick}>Create First Stream</Button>
+      </>
+    );
+  }
+  return <div>No streams matching your filters. Try selecting different ones</div>;
+};
+
+export const StreamsList = ({
+  onCreateStreamClick,
+  className,
+}: {
+  onCreateStreamClick: () => void;
+  className: string;
+}) => (
   <div className={cn(styles.container, className)}>
     <section className={styles.streamGrid}>
       <h3 className={cn(styles.leftStickyCell, styles.title)}>Amount to stream</h3>
@@ -67,114 +258,24 @@ const StreamCards = ({className}: {className: string}) => (
         getKey: ({id}) => id,
         fn(stream) {
           const {id: streamId} = stream;
-          const {
-            color,
-            showAddFundsButton,
-            showWithdrawButton,
-            showStartButton,
-            showPauseButton,
-            iconType,
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-          } = useStoreMap({
-            store: $streamCardsData,
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const isSelected = useStoreMap({
+            store: $selectedStream,
             keys: [streamId],
-            fn: (items) => items[streamId],
-            defaultValue: streamCardDataDefaults,
+            fn: (selected) => selected === streamId,
           });
-          const statusIconUrl = (() => {
-            switch (iconType) {
-              case 'Active':
-                return activeStreamIcon;
-              case 'Finished':
-                return finishedStreamIcon;
-              case 'Initialized':
-              case 'Paused':
-              default:
-                return pausedStreamIcon;
-            }
-          })();
-          return (
-            <>
-              <div className={styles.colorCell} style={{'--stream-color': color} as any} />
-              <div className={cn(styles.statusCell)}>
-                <img src={statusIconUrl} alt="Stream status" className={styles.streamStatusIcon} />
-              </div>
-
-              <StreamProgress
-                streamId={stream.id}
-                className={cn(styles.progressCell, styles.leftStickyCell)}
-              />
-
-              <StreamNameLink streamId={stream.id} />
-
-              <StreamCommentLink streamId={stream.id} />
-
-              <div className={cn(styles.controlCell)}>
-                <button
-                  className={styles.streamLinkButton}
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    copy(getStreamLink(streamId));
-                  }}
-                >
-                  <LinkIcon />
-                </button>
-                <StreamListControls
-                  stream={stream}
-                  dropdownClassName={styles.controlDropdown}
-                  showAddFundsButton={showAddFundsButton}
-                  showWithdrawButton={showWithdrawButton}
-                  showStartButton={showStartButton}
-                  showPauseButton={showPauseButton}
-                  openerClassName={styles.streamActionsButton}
-                  openerContent={
-                    <img
-                      src={menuDotsIcon}
-                      alt="Open stream actions"
-                      className={styles.streamActionsIcon}
-                    />
-                  }
-                />
-              </div>
-            </>
+          return isSelected ? (
+            <ExpandedStreamCard streamId={streamId} />
+          ) : (
+            <CollapsedStreamRow stream={stream} />
           );
         },
         placeholder: (
-          <EmptyState>
-            <div>No streams matching your filters. Try selecting different ones</div>
-          </EmptyState>
+          <div className={styles.emptyState}>
+            <Placeholder onCreateStreamClick={onCreateStreamClick} />
+          </div>
         ),
       })}
     </section>
   </div>
 );
-
-export const StreamsList = ({
-  onCreateStreamClick,
-  className,
-}: {
-  onCreateStreamClick: () => void;
-  className: string;
-}) => {
-  const {streamsLoading, hasStreams} = useStore($streamListData);
-
-  if (streamsLoading) {
-    return (
-      <EmptyState>
-        <Spinner wrapperClassName={styles.loader} />
-      </EmptyState>
-    );
-  }
-
-  if (!hasStreams) {
-    return (
-      <EmptyState>
-        <div>You don't have any streams yet.</div>
-        <Button onClick={onCreateStreamClick}>Create First Stream</Button>
-      </EmptyState>
-    );
-  }
-
-  return <StreamCards className={className} />;
-};

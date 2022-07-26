@@ -217,6 +217,109 @@
   height: 28px;
 }
 
+.subtext {
+  font-size: 14px;
+  color: $grey;
+}
+
+.expandedInfo {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns:
+    [left-column] 32px
+    [content-column] 1fr
+    [right-column] 32px [right-column-end];
+  align-items: center;
+  column-gap: 4px;
+  row-gap: 8px;
+  box-shadow: 0px 5px 20px rgba(87, 140, 219, 0.25);
+  border-radius: 24px;
+  border-top: 1px solid transparent;
+  margin: 12px;
+  padding: 24px 24px 12px 24px;
+
+  & > .statusIcon {
+    grid-column: left-column;
+    & > img {
+      width: 32px;
+      height: 32px;
+    }
+  }
+  & > .progressBar {
+    grid-column: content-column / right-column-end;
+    & > .barStatusText {
+      position: relative;
+      left: 12px;
+      line-height: 26px;
+      font-weight: 500;
+      font-size: 16px;
+      & > .barStreamName {
+      }
+      & > .barProgressText {
+      }
+    }
+  }
+  & > .color {
+    --size: 8;
+    grid-column: left-column;
+    align-self: center;
+    justify-self: center;
+  }
+  & > .direction {
+    grid-column: content-column;
+    line-height: 32px;
+    font-weight: 600;
+  }
+  & > .link {
+    grid-column: right-column;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  & > .sign {
+    grid-column: left-column;
+    justify-self: end;
+  }
+  & > .speed {
+    grid-column: content-column / right-column-end;
+  }
+  & > .remainingIcon {
+    grid-column: left-column;
+  }
+  & > .remaining {
+    grid-column: content-column / right-column-end;
+  }
+  & > .streamed {
+    grid-column: content-column / right-column-end;
+  }
+  & > .withdrawn {
+    grid-column: content-column / right-column-end;
+  }
+  & > .comment {
+    grid-column: left-column / right-column-end;
+  }
+  & > .streamActions {
+    grid-column: left-column / right-column-end;
+    background-color: #f0f6ff;
+  }
+  & > .viewDetails {
+    grid-column: left-column / right-column-end;
+  }
+  & > .streamActions,
+  & > .viewDetails {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3e65f2;
+    height: 48px;
+    width: 100%;
+    border-radius: 24px;
+    font-weight: 600;
+  }
+}
+
 /* Phone */
 @media (max-width: 767px) {
   .container {

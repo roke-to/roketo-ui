@@ -6,6 +6,7 @@ import type {FormValues} from '~/features/create-stream/constants';
 import {getTokensPerSecondCount} from '~/features/create-stream/lib';
 import {parseColor, parseComment, streamViewData} from '~/features/roketo-resource';
 
+import {$isSmallScreen} from '~/entities/screen';
 import {
   $accountId,
   $accountStreams,
@@ -156,6 +157,9 @@ export const $streamCardsData = createStore<Record<string, StreamCardData>>({});
 
 export const $streamsProgress = createStore<Record<string, StreamProgressData>>({});
 
+export const selectStream = createEvent<string | null>();
+export const $selectedStream = createStore<string | null>(null);
+
 sample({
   source: {
     tokens: $tokens,
@@ -238,6 +242,7 @@ sample({
     tokens: $tokens,
     streams: $filteredStreams,
   },
+  target: $streamsProgress,
   fn: ({oldData, accountId, streams, tokens}) =>
     recordUpdater(oldData, streams, (stream) => {
       const {token_account_id: tokenId, tokens_per_sec: tokensPerSec} = stream;
@@ -299,7 +304,6 @@ sample({
         name: direction === STREAM_DIRECTION.IN ? stream.owner_id : stream.receiver_id,
       };
     }),
-  target: $streamsProgress,
 });
 
 sample({
@@ -325,6 +329,21 @@ sample({
       };
     }),
   target: $streamCardsData,
+});
+
+sample({
+  clock: selectStream,
+  source: $selectedStream,
+  filter: $isSmallScreen,
+  fn: (currentSelection, upd) => (upd === currentSelection ? null : upd),
+  target: $selectedStream,
+});
+
+sample({
+  clock: $isSmallScreen,
+  filter: (isSmallScreen) => !isSmallScreen,
+  fn: () => null,
+  target: $selectedStream,
 });
 
 $streamFilter.on(changeDirectionFilter, (filter, direction) => ({...filter, direction}));
