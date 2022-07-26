@@ -223,7 +223,7 @@
     overflow-x: hidden;
   }
   .streamGrid {
-    max-width: 80vw;
+    max-width: calc(100vw - 16px);
     grid-template-columns:
       [color-column] 4px
       [status-column] 36px
