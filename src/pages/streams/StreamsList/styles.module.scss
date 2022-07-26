@@ -25,8 +25,15 @@
     [address-column] minmax(min-content, 1fr)
     [comment-column] max-content
     [control-column] 150px;
-  grid-auto-rows: 48px;
-  grid-template-rows: 30px;
+}
+
+.colorCell,
+.statusCell,
+.progressCell,
+.nameCell,
+.commentCell,
+.controlCell {
+  min-height: 48px;
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {
@@ -108,6 +115,7 @@
 
 .progressCell {
   grid-column: bar-column;
+  max-width: min(100%, 80vw);
 }
 
 .nameCell {
@@ -212,10 +220,10 @@
 /* Phone */
 @media (max-width: 767px) {
   .container {
-    overflow-x: unset;
+    overflow-x: hidden;
   }
   .streamGrid {
-    max-width: unset;
+    max-width: 80vw;
     grid-template-columns:
       [color-column] 4px
       [status-column] 36px

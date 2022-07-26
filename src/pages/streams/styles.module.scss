@@ -66,6 +66,7 @@
 .createStreamButton {
   grid-column: 1;
   grid-row: 2;
+  white-space: nowrap;
 }
 
 .finance {
@@ -91,6 +92,7 @@
 
 .progressBar {
   margin-top: 12px;
+  max-width: min(100%, 80vw);
 }
 
 /* Phone */
