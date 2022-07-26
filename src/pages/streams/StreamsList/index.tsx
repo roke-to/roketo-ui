@@ -158,6 +158,7 @@ const ExpandedStreamCard = ({streamId}: {streamId: string}) => {
     progressStreamed,
     progressWithdrawn,
     cliffPercent,
+    cliffText,
     speedFormattedValue,
     speedUnit,
     timeLeft,
@@ -220,6 +221,7 @@ const ExpandedStreamCard = ({streamId}: {streamId: string}) => {
         Withdrawn: {withdrawnText}{' '}
         <span className={styles.subtext}>({withdrawnPercentage.toString()}%)</span>
       </div>
+      {cliffText && <div className={styles.cliffRemaining}>Cliff remaining: {cliffText}</div>}
       {comment && <div className={styles.comment}>{comment}</div>}
       <button type="button" className={styles.streamActions}>
         Stream actions

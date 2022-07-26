@@ -236,7 +236,7 @@
   border-radius: 24px;
   border-top: 1px solid transparent;
   margin: 12px 0;
-  padding: 24px 20px 12px 20px;
+  padding: 16px 16px 12px 16px;
 
   & > .statusIcon {
     grid-column: left-column;
@@ -298,14 +298,12 @@
   }
   & > .remainingIcon {
     grid-column: left-column / content-column;
+    justify-self: center;
   }
-  & > .remaining {
-    grid-column: content-column / right-column-end;
-  }
-  & > .streamed {
-    grid-column: content-column / right-column-end;
-  }
-  & > .withdrawn {
+  & > .remaining,
+  & > .streamed,
+  & > .withdrawn,
+  & > .cliffRemaining {
     grid-column: content-column / right-column-end;
   }
   & > .comment {

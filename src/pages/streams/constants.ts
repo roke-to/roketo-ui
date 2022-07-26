@@ -33,6 +33,7 @@ export const streamProgressDataDefaults: StreamProgressData = {
   progressStreamed: '',
   progressWithdrawn: '',
   cliffPercent: null,
+  cliffText: null,
   speedFormattedValue: '',
   speedUnit: '',
   timeLeft: '',

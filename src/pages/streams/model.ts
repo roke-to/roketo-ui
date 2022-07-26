@@ -1,10 +1,11 @@
+import {isPast} from 'date-fns';
 import {combine, createEffect, createEvent, createStore, sample} from 'effector';
 import {generatePath} from 'react-router-dom';
 
 import {colorDescriptions} from '~/features/create-stream/constants';
 import type {FormValues} from '~/features/create-stream/constants';
 import {getTokensPerSecondCount} from '~/features/create-stream/lib';
-import {parseColor, parseComment, streamViewData} from '~/features/roketo-resource';
+import {formatTimeLeft, parseColor, parseComment, streamViewData} from '~/features/roketo-resource';
 
 import {$isSmallScreen} from '~/entities/screen';
 import {
@@ -250,7 +251,7 @@ sample({
       if (!token) return undefined;
       const {decimals} = token.meta;
       const symbol = isWNearTokenId(tokenId) ? 'NEAR' : token.meta.symbol;
-      const {progress, timeLeft, percentages} = streamViewData(stream);
+      const {cliffEndTimestamp, progress, timeLeft, percentages} = streamViewData(stream);
       const streamed = Number(toHumanReadableValue(decimals, progress.streamed, 3));
       const withdrawn = Number(toHumanReadableValue(decimals, progress.withdrawn, 3));
       const total = Number(toHumanReadableValue(decimals, progress.full, 3));
@@ -289,6 +290,10 @@ sample({
         progressStreamed: progress.streamed,
         progressWithdrawn: progress.withdrawn,
         cliffPercent: percentages.cliff,
+        cliffText:
+          cliffEndTimestamp && !isPast(cliffEndTimestamp)
+            ? formatTimeLeft(cliffEndTimestamp - Date.now())
+            : null,
         speedFormattedValue,
         speedUnit,
         timeLeft,

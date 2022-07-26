@@ -37,6 +37,7 @@ export type StreamProgressData = {
   progressStreamed: string;
   progressWithdrawn: string;
   cliffPercent: number | null;
+  cliffText: string | null;
   speedFormattedValue: string;
   speedUnit: string;
   timeLeft: string;
