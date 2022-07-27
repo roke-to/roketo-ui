@@ -2,7 +2,9 @@ import classNames from 'classnames';
 import {useStore} from 'effector-react';
 import {useEffect, useRef, useState} from 'react';
 
+import {FinancialActivity} from '~/widgets/header/ui/FinancialActivity';
 import {InfoIcon} from '~/widgets/profile/ProfileForm/InfoIcon';
+import {UserAvatar} from '~/widgets/profile/UserAvatar';
 
 import {$user, resendVerificationEmailFx, updateUserFx} from '~/entities/wallet';
 
@@ -14,7 +16,11 @@ import {Spinner} from '@ui/components/Spinner';
 
 import styles from './index.module.scss';
 
-export function ProfileForm() {
+interface ProfileFormProps {
+  showFinances?: boolean;
+}
+
+export function ProfileForm({showFinances}: ProfileFormProps) {
   const user = useStore($user);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -52,6 +58,10 @@ export function ProfileForm() {
         }}
         ref={formRef}
       >
+        <UserAvatar className={styles.avatar} />
+
+        {showFinances && <FinancialActivity className={styles.finances} />}
+
         <FormField label="User name">
           <Input
             placeholder="Name"
