@@ -30,6 +30,7 @@ export const testIds = {
   withdrawLoadingCaption: 'withdrawLoadingCaption',
   streamProgressCaption: 'streamProgressCaption',
   streamControlsDropdown: 'streamControlsDropdown',
+  streamStatusIcon: 'streamStatusIcon',
   streamStartButton: 'streamStartButton',
   streamPauseButton: 'streamPauseButton',
   streamStopButton: 'streamStopButton',

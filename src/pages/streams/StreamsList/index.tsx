@@ -9,6 +9,7 @@ import {StreamListControls} from '~/features/stream-control/StreamControls';
 import type {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {Badge} from '~/shared/components/Badge';
+import {testIds} from '~/shared/constants';
 import {ColorDot} from '~/shared/kit/ColorDot';
 import {getStreamLink} from '~/shared/lib/routing';
 
@@ -102,7 +103,12 @@ const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
     <>
       <div className={styles.colorCell} style={{'--stream-color': color} as any} />
       <div className={cn(styles.statusCell)}>
-        <img src={selectIcon(iconType)} alt="Stream status" className={styles.streamStatusIcon} />
+        <img
+          src={selectIcon(iconType)}
+          alt={iconType}
+          className={styles.streamStatusIcon}
+          data-testid={testIds.streamStatusIcon}
+        />
       </div>
 
       <StreamProgress

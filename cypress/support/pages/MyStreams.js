@@ -1,10 +1,12 @@
+/// <reference types="cypress" />
+
 /* eslint-disable import/no-unresolved, import/extensions */
 import {testSelectors} from '../../../src/shared/constants';
 import Transaction from './TransactionPage';
 
 class MyStreams {
   checkNewStreamStatus(value) {
-    cy.get(testSelectors.streamControlsDropdown).eq(0).contains(value);
+    cy.get(testSelectors.streamStatusIcon).should('have.attr', 'alt').and('contain', value);
   }
 
   checkStreamDoesntExist() {
@@ -12,15 +14,15 @@ class MyStreams {
   }
 
   changeStatus(value) {
-    cy.get(testSelectors.streamControlsDropdown).eq(0).click({force: true});
+    cy.get(testSelectors.streamControlsDropdown).click({force: true});
     if (value === 'start') {
-      cy.get(testSelectors.streamStartButton).eq(0).click({force: true});
+      cy.get(testSelectors.streamStartButton).click({force: true});
     }
     if (value === 'pause') {
-      cy.get(testSelectors.streamPauseButton).eq(0).click({force: true});
+      cy.get(testSelectors.streamPauseButton).click({force: true});
     }
     if (value === 'stop') {
-      cy.get(testSelectors.streamStopButton).eq(0).click({force: true});
+      cy.get(testSelectors.streamStopButton).click({force: true});
       cy.get(testSelectors.streamModalStopButton).click();
     }
   }
