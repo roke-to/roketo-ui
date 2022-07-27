@@ -34,7 +34,7 @@ export const Profile = () => {
         className={styles.dropdownOpener}
         opened={isProfileOpened}
       >
-        <span className={styles.name}>{name || accountId}</span>
+        {!isCompact && <span className={styles.name}>{name || accountId}</span>}
         <UserAvatar className={styles.avatar} />
       </DropdownOpener>
       <AdaptiveModal

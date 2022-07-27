@@ -23,9 +23,11 @@ import {ReactComponent as Warning} from './warning.svg';
 const ROUTES_TO_DISPLAY = [ROUTES_MAP.streams];
 
 export const Header = () => {
-  const signedIn = useStore($isSignedIn);
-  const withSecondFloor = !useMediaQuery('(min-width: 1280px)');
   const showLegacyStreams = useShowLegacyStreams();
+  const signedIn = useStore($isSignedIn);
+
+  const withSecondFloor = !useMediaQuery('(min-width: 1280px)');
+  const isCompact = useMediaQuery('(max-width: 767px)');
 
   return (
     <div className={styles.wrapper}>
@@ -51,7 +53,7 @@ export const Header = () => {
           <Link to="/" className={styles.unshrinkable}>
             <Logo className={styles.logo} />
           </Link>
-          {signedIn && (
+          {signedIn && !isCompact && (
             <PageList
               pageRoutes={
                 showLegacyStreams
@@ -60,22 +62,28 @@ export const Header = () => {
               }
             />
           )}
+          {signedIn && isCompact && <PageList pageRoutes={[ROUTES_TO_DISPLAY[0]]} />}
         </div>
 
         <div className={styles.right}>
           {signedIn && !withSecondFloor && <FinancialActivity className={styles.marginRight} />}
           {signedIn && <Profile />}
-          {signedIn && !withSecondFloor && <Notifications />}
-          {!withSecondFloor && <Authorization />}
+          {signedIn && <Notifications />}
+          {!isCompact && <Authorization />}
         </div>
       </Layout>
       {signedIn && withSecondFloor && (
         <Layout className={styles.secondRoot}>
-          <FinancialActivity className={styles.marginRight} />
-          <div className={styles.right}>
-            <Notifications />
-            <Authorization />
-          </div>
+          {!isCompact && <FinancialActivity className={styles.marginRight} />}
+          {isCompact && (
+            <PageList
+              pageRoutes={
+                showLegacyStreams
+                  ? [...ROUTES_TO_DISPLAY, LEGACY_ROUTES_MAP.legacyStreams]
+                  : ROUTES_TO_DISPLAY
+              }
+            />
+          )}
         </Layout>
       )}
     </div>

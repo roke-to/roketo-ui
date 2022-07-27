@@ -76,4 +76,5 @@
   @extend .root;
   flex-wrap: wrap-reverse;
   height: unset;
+  border-top: 1px solid $light-grey;
 }
