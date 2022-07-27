@@ -62,6 +62,27 @@
   margin-bottom: 6px;
 }
 
+.logout {
+  align-self: end;
+  background: none;
+  border: none;
+  color: $blue;
+  display: flex;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  span {
+    margin-left: 9px;
+    line-height: 18px;
+  }
+}
+
 .resend {
   background-color: $light-blue;
   border: 1px solid $blue;

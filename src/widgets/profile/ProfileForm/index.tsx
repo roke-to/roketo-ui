@@ -6,13 +6,16 @@ import {FinancialActivity} from '~/widgets/header/ui/FinancialActivity';
 import {InfoIcon} from '~/widgets/profile/ProfileForm/InfoIcon';
 import {UserAvatar} from '~/widgets/profile/UserAvatar';
 
-import {$user, resendVerificationEmailFx, updateUserFx} from '~/entities/wallet';
+import {$user, logoutFx, resendVerificationEmailFx, updateUserFx} from '~/entities/wallet';
+
+import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
 
 import {Button, ButtonType} from '@ui/components/Button';
 import {Checkbox} from '@ui/components/Checkbox';
 import {FormField} from '@ui/components/FormField';
 import {Input} from '@ui/components/Input';
 import {Spinner} from '@ui/components/Spinner';
+import {LogoutIcon} from '@ui/icons/LogOut';
 
 import styles from './index.module.scss';
 
@@ -29,6 +32,7 @@ export function ProfileForm({showFinances}: ProfileFormProps) {
   const isUserUpdating = useStore(updateUserFx.pending);
   const isEmailBeingResent = useStore(resendVerificationEmailFx.pending);
   const [resentVerificationEmail, setResentVerificationEmail] = useState(false);
+  const isCompact = useMediaQuery('(max-width: 767px)');
 
   const isMutating = isUserUpdating || isEmailBeingResent;
 
@@ -58,6 +62,12 @@ export function ProfileForm({showFinances}: ProfileFormProps) {
         }}
         ref={formRef}
       >
+        {isCompact && (
+          <Button onClick={() => logoutFx()} className={styles.logout}>
+            <LogoutIcon />
+            <span>Log Out</span>
+          </Button>
+        )}
         <UserAvatar className={styles.avatar} />
 
         {showFinances && <FinancialActivity className={styles.finances} />}
