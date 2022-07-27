@@ -77,6 +77,8 @@ export const Header = () => {
           {!isCompact && <FinancialActivity className={styles.marginRight} />}
           {isCompact && (
             <PageList
+              className={styles.compactNavigation}
+              activeClassName={styles.compactNavigationActive}
               pageRoutes={
                 showLegacyStreams
                   ? [...ROUTES_TO_DISPLAY, LEGACY_ROUTES_MAP.legacyStreams]

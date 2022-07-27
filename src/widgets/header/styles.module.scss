@@ -78,3 +78,19 @@
   height: unset;
   border-top: 1px solid $light-grey;
 }
+
+.compactNavigation li {
+  line-height: 20px;
+
+  a {
+    display: block;
+    padding-top: 8px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+
+    &.compactNavigationActive {
+      border-bottom-color: #a0c2f8;
+    }
+  }
+}
