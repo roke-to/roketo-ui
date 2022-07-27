@@ -27,11 +27,18 @@ jobs:
       - uses: benjlevesque/short-sha@v1.2
         id: short-sha
 
-      - name: Install and Build 🔧
+      - uses: actions/cache@v2
+        with:
+          path: 'node_modules'
+          key: node-18-modules-${{ hashFiles('yarn.lock') }}
+
+      - name: Install deps 🔧
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Build 🧱
         working-directory: .
-        run: |
-          yarn install --frozen-lockfile
-          yarn build --mode mainnet
+        run: yarn build --mode mainnet
         env:
           VITE_BUILD_TIME: '${{ steps.time.outputs.time }}'
           VITE_COMMIT_HASH: '${{ steps.short-sha.outputs.sha }}'

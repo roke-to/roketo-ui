@@ -18,9 +18,14 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.API_CLIENT_KEY }}
 
-    - name: Install 🔧
-      working-directory: .
-      run: yarn
+    - uses: actions/cache@v2
+      with:
+        path: 'node_modules'
+        key: node-18-modules-${{ hashFiles('yarn.lock') }}
+
+    - name: Install deps 🔧
+      if: steps.yarn-cache.outputs.cache-hit != 'true'
+      run: yarn install --frozen-lockfile
 
     - name: Run ESLint 🌸
       working-directory: .

@@ -7,11 +7,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install and check testIds 🔧
+      - uses: actions/cache@v2
+        with:
+          path: 'node_modules'
+          key: node-18-modules-${{ hashFiles('yarn.lock') }}
+
+      - name: Install deps 🔧
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile --silent
+
+      - name: Check testIds
         working-directory: .
-        run: |
-          yarn install --frozen-lockfile --silent
-          yarn testIds:check
+        run: yarn testIds:check
 
       - name: Cypress run
         uses: cypress-io/github-action@v2
