@@ -14,15 +14,15 @@ class MyStreams {
   }
 
   changeStatus(value) {
-    cy.get(testSelectors.streamControlsDropdown).click({force: true});
+    cy.get(testSelectors.streamControlsDropdown).eq(0).click({force: true});
     if (value === 'start') {
-      cy.get(testSelectors.streamStartButton).click({force: true});
+      cy.get(testSelectors.streamStartButton).eq(0).click({force: true});
     }
     if (value === 'pause') {
-      cy.get(testSelectors.streamPauseButton).click({force: true});
+      cy.get(testSelectors.streamPauseButton).eq(0).click({force: true});
     }
     if (value === 'stop') {
-      cy.get(testSelectors.streamStopButton).click({force: true});
+      cy.get(testSelectors.streamStopButton).eq(0).click({force: true});
       cy.get(testSelectors.streamModalStopButton).click();
     }
   }
