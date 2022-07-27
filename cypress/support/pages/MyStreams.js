@@ -73,6 +73,7 @@ class MyStreams {
   }
 
   withdrawFirst() {
+    cy.get(testSelectors.streamControlsDropdown).eq(0).click({force: true});
     cy.get(testSelectors.withdrawButton).eq(0).click({force: true});
 
     const transaction = new Transaction();
