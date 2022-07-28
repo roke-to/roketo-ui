@@ -34,6 +34,11 @@ const getStreamingSpeed = (speedInSeconds: number | string, token: RichToken): s
   }
 
   const {meta} = token;
+
+  if (token.meta.symbol === 'NEAR' && !meta.decimals) {
+    meta.decimals = 24;
+  }
+
   const {formattedValue, unit} = tokensPerMeaningfulPeriod(meta.decimals, speedInSeconds);
 
   return `${formattedValue} ${meta.symbol} / ${unit}`;
