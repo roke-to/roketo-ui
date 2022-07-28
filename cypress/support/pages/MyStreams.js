@@ -72,7 +72,7 @@ class MyStreams {
 
   checkIfLastStreamLocked() {
     cy.get(testSelectors.streamControlsDropdown).should('not.exist');
-    cy.get('span:contains("Locked")'), {timeout: 60000};
+    cy.get('span:contains("Locked")', {timeout: 60000});
   }
 
   withdrawFirst() {
