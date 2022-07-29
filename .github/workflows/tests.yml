@@ -11,7 +11,7 @@ jobs:
         id: yarn-cache
         with:
           path: 'node_modules'
-          key: node-modules-${{ hashFiles('yarn.lock') }}
+          key: node-modules-${{ hashFiles('yarn.lock', 'package.json') }}
 
       - name: Install deps 🔧
         if: steps.yarn-cache.outputs.cache-hit != 'true'
