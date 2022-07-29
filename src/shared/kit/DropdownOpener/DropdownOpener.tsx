@@ -8,6 +8,7 @@ import styles from './styles.module.scss';
 type DropdownOpenerProps = {
   opened?: boolean;
   className?: string;
+  arrowClassName?: string;
   children: React.ReactNode;
   onChange: (state: boolean) => void;
   testId?: string;
@@ -16,12 +17,13 @@ type DropdownOpenerProps = {
 export function DropdownOpener({
   opened,
   className,
+  arrowClassName,
   children,
   onChange,
   testId,
   ...rest
 }: DropdownOpenerProps) {
-  const arrowClassName = cn(styles.arrow, {
+  const arrowDownClassName = cn(styles.arrow, arrowClassName, {
     [styles.rotate]: opened,
   });
 
@@ -35,7 +37,7 @@ export function DropdownOpener({
     >
       {children}
 
-      <ArrowDown className={arrowClassName} />
+      <ArrowDown className={arrowDownClassName} />
     </button>
   );
 }

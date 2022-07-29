@@ -2,19 +2,26 @@ import classNames from 'classnames';
 import {useStore} from 'effector-react';
 import {useEffect, useRef, useState} from 'react';
 
+import {FinancialActivity} from '~/widgets/header/ui/FinancialActivity';
 import {InfoIcon} from '~/widgets/profile/ProfileForm/InfoIcon';
+import {UserAvatar} from '~/widgets/profile/UserAvatar';
 
-import {$user, resendVerificationEmailFx, updateUserFx} from '~/entities/wallet';
+import {$user, logoutFx, resendVerificationEmailFx, updateUserFx} from '~/entities/wallet';
 
 import {Button, ButtonType} from '@ui/components/Button';
 import {Checkbox} from '@ui/components/Checkbox';
 import {FormField} from '@ui/components/FormField';
 import {Input} from '@ui/components/Input';
 import {Spinner} from '@ui/components/Spinner';
+import {LogoutIcon} from '@ui/icons/LogOut';
 
 import styles from './index.module.scss';
 
-export function ProfileForm() {
+interface ProfileFormProps {
+  showFinances?: boolean;
+}
+
+export function ProfileForm({showFinances}: ProfileFormProps) {
   const user = useStore($user);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -52,6 +59,14 @@ export function ProfileForm() {
         }}
         ref={formRef}
       >
+        <Button onClick={() => logoutFx()} className={styles.logout}>
+          <LogoutIcon />
+          <span>Log Out</span>
+        </Button>
+        <UserAvatar className={styles.avatar} />
+
+        {showFinances && <FinancialActivity className={styles.finances} />}
+
         <FormField label="User name">
           <Input
             placeholder="Name"

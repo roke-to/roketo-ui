@@ -45,5 +45,9 @@ export function Balance({tokenAccountId, className, mode = DisplayMode.CRYPTO}: 
     : displayedCryptoAmount;
   const currencySymbol = showInUSD ? '$' : token?.meta.symbol ?? '$';
 
-  return <span className={className}>{`Balance: ${currencySymbol} ${amount}`}</span>;
+  return (
+    <span className={className}>
+      {currencySymbol} {amount}
+    </span>
+  );
 }

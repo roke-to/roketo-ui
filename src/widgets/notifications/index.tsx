@@ -221,7 +221,11 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
   }
 }
 
-export function Notifications() {
+interface NotificationsProps {
+  arrowClassName?: string;
+}
+
+export function Notifications({arrowClassName}: NotificationsProps) {
   const isPanelVisible = useStore($panelIsVisible);
   const hasUnreadNotifications = useStore($hasUnreadNotifications);
   const compact = useMediaQuery('(max-width: 767px)');
@@ -236,6 +240,7 @@ export function Notifications() {
       <DropdownOpener
         onChange={setPanelVisibility}
         className={styles.dropdownOpener}
+        arrowClassName={arrowClassName}
         opened={isPanelVisible}
         testId={testIds.openNotificationsButton}
       >
