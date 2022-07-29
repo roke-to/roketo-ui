@@ -2,7 +2,12 @@ import type {Notification, UpdateUserDto, User} from '@roketo/api-client';
 import {attach, createEffect, createEvent, createStore, sample} from 'effector';
 import {ConnectedWalletAccount, Near} from 'near-api-js';
 
-import {getIncomingStreams, getOutgoingStreams, initApiControl} from '~/shared/api/methods';
+import {
+  createRichContracts,
+  getIncomingStreams,
+  getOutgoingStreams,
+  initApiControl,
+} from '~/shared/api/methods';
 import {createNearInstance} from '~/shared/api/near';
 import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
 import {notificationsApiClient, tokenProvider, usersApiClient} from '~/shared/api/roketo-client';
@@ -169,6 +174,31 @@ const requestAccountStreamsFx = createEffect(
     return {inputs, outputs};
   },
 );
+
+const requestUnknownTokensFx = createEffect(
+  async ({
+    tokenNames,
+    roketo,
+    nearAuth,
+  }: {
+    tokenNames: string[];
+    roketo: ApiControl | null;
+    nearAuth: NearAuth | null;
+  }) => {
+    if (!roketo || !nearAuth) return {};
+    const requestResults = await Promise.all(
+      tokenNames.map(async (tokenName) => {
+        const [contract] = await roketo.contract.get_token({token_account_id: tokenName});
+        return [tokenName, contract] as const;
+      }),
+    );
+    const additionalTokens = await createRichContracts({
+      tokensInfo: requestResults,
+      account: nearAuth.account,
+    });
+    return additionalTokens;
+  },
+);
 const streamsRevalidationTimerFx = createEffect(
   () =>
     new Promise<void>((rs) => {
@@ -307,6 +337,39 @@ sample({
   clock: [createRoketoWalletFx.finally],
   fn: () => false,
   target: $appLoading,
+});
+
+sample({
+  clock: $accountStreams,
+  source: {
+    tokens: $tokens,
+    roketo: $roketoWallet,
+    near: $nearWallet,
+  },
+  target: requestUnknownTokensFx,
+  fn({tokens, roketo, near}, streams) {
+    const allStreams = [...streams.inputs, ...streams.outputs];
+    const streamsTokens = [...new Set(allStreams.map((stream) => stream.token_account_id))];
+    const unknownTokens = streamsTokens.filter((token) => !(token in tokens));
+    return {
+      tokenNames: unknownTokens,
+      roketo,
+      nearAuth: near?.auth ?? null,
+    };
+  },
+});
+
+sample({
+  clock: requestUnknownTokensFx.doneData,
+  source: $tokens,
+  target: $tokens,
+  fn(tokens, additionalTokens) {
+    if (Object.keys(additionalTokens).length === 0) return tokens;
+    return {
+      ...tokens,
+      ...additionalTokens,
+    };
+  },
 });
 
 sample({
