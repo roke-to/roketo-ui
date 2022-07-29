@@ -12,6 +12,7 @@ import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {hasPassedCliff, isLocked} from '~/shared/api/roketo/lib';
 import {toYocto} from '~/shared/api/token-formatter';
 import {Balance, useBalanceForToken} from '~/shared/components/Balance';
+import {testIds} from '~/shared/constants';
 import {useBool} from '~/shared/hooks/useBool';
 import {useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
 import {useToken} from '~/shared/hooks/useToken';
@@ -126,6 +127,7 @@ export function AddFunds({
                 type={ButtonType.submit}
                 className={styles.modalButton}
                 disabled={!hasValidAdditionalFunds || isStreamEnded || submitting}
+                testId={testIds.addFundsSubmit}
               >
                 {submitting ? 'Adding...' : 'Add funds'}
               </Button>
@@ -138,6 +140,7 @@ export function AddFunds({
           onClick={addFundsModal.turnOn}
           displayMode={small ? DisplayMode.primary : undefined}
           className={className}
+          testId={testIds.addFunds}
         >
           Add funds
         </Button>
