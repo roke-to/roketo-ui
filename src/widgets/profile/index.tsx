@@ -13,7 +13,11 @@ import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 import styles from './index.module.scss';
 import {ProfileForm} from './ProfileForm';
 
-export const Profile = () => {
+interface ProfileProps {
+  arrowClassName?: string;
+}
+
+export const Profile = ({arrowClassName}: ProfileProps) => {
   const [isProfileOpened, setIsProfileOpened] = useState(false);
   const isCompact = useMediaQuery('(max-width: 767px)');
   const closeProfile = useCallback(() => setIsProfileOpened(false), [setIsProfileOpened]);
@@ -32,6 +36,7 @@ export const Profile = () => {
       <DropdownOpener
         onChange={setIsProfileOpened}
         className={styles.dropdownOpener}
+        arrowClassName={arrowClassName}
         opened={isProfileOpened}
       >
         {!isCompact && <span className={styles.name}>{name || accountId}</span>}

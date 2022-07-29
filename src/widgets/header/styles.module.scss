@@ -49,6 +49,12 @@
   flex-shrink: 0;
 }
 
+.profileNotificationsArrow {
+  @media (max-width: 767px) {
+    display: none;
+  }
+}
+
 .logo {
   margin-right: 40px;
   width: 85px;

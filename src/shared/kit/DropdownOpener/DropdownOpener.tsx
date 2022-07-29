@@ -1,8 +1,6 @@
 import cn from 'classnames';
 import React from 'react';
 
-import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
-
 import {ArrowDown} from '@ui/icons/ArrowDown';
 
 import styles from './styles.module.scss';
@@ -10,6 +8,7 @@ import styles from './styles.module.scss';
 type DropdownOpenerProps = {
   opened?: boolean;
   className?: string;
+  arrowClassName?: string;
   children: React.ReactNode;
   onChange: (state: boolean) => void;
   testId?: string;
@@ -18,13 +17,13 @@ type DropdownOpenerProps = {
 export function DropdownOpener({
   opened,
   className,
+  arrowClassName,
   children,
   onChange,
   testId,
   ...rest
 }: DropdownOpenerProps) {
-  const isDesktop = useMediaQuery('(min-width: 768px)');
-  const arrowClassName = cn(styles.arrow, {
+  const arrowDownClassName = cn(styles.arrow, arrowClassName, {
     [styles.rotate]: opened,
   });
 
@@ -38,7 +37,7 @@ export function DropdownOpener({
     >
       {children}
 
-      {isDesktop && <ArrowDown className={arrowClassName} />}
+      <ArrowDown className={arrowDownClassName} />
     </button>
   );
 }

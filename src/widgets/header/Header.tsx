@@ -67,8 +67,8 @@ export const Header = () => {
 
         <div className={styles.right}>
           {signedIn && !withSecondFloor && <FinancialActivity className={styles.marginRight} />}
-          {signedIn && <Profile />}
-          {signedIn && <Notifications />}
+          {signedIn && <Profile arrowClassName={styles.profileNotificationsArrow} />}
+          {signedIn && <Notifications arrowClassName={styles.profileNotificationsArrow} />}
           {!isCompact && <Authorization />}
         </div>
       </Layout>
