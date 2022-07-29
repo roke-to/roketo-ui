@@ -81,6 +81,10 @@
     margin-left: 9px;
     line-height: 18px;
   }
+
+  @media (min-width: 768px) {
+    display: none;
+  }
 }
 
 .resend {

@@ -8,8 +8,6 @@ import {UserAvatar} from '~/widgets/profile/UserAvatar';
 
 import {$user, logoutFx, resendVerificationEmailFx, updateUserFx} from '~/entities/wallet';
 
-import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
-
 import {Button, ButtonType} from '@ui/components/Button';
 import {Checkbox} from '@ui/components/Checkbox';
 import {FormField} from '@ui/components/FormField';
@@ -32,7 +30,6 @@ export function ProfileForm({showFinances}: ProfileFormProps) {
   const isUserUpdating = useStore(updateUserFx.pending);
   const isEmailBeingResent = useStore(resendVerificationEmailFx.pending);
   const [resentVerificationEmail, setResentVerificationEmail] = useState(false);
-  const isCompact = useMediaQuery('(max-width: 767px)');
 
   const isMutating = isUserUpdating || isEmailBeingResent;
 
@@ -62,12 +59,10 @@ export function ProfileForm({showFinances}: ProfileFormProps) {
         }}
         ref={formRef}
       >
-        {isCompact && (
-          <Button onClick={() => logoutFx()} className={styles.logout}>
-            <LogoutIcon />
-            <span>Log Out</span>
-          </Button>
-        )}
+        <Button onClick={() => logoutFx()} className={styles.logout}>
+          <LogoutIcon />
+          <span>Log Out</span>
+        </Button>
         <UserAvatar className={styles.avatar} />
 
         {showFinances && <FinancialActivity className={styles.finances} />}
