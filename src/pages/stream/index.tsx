@@ -51,28 +51,14 @@ export function StreamPage() {
     showControls,
     showAddFundsButton,
     showWithdrawButton,
+    showStartButton,
+    showPauseButton,
     subheader,
     direction,
     link,
   } = useStore($streamInfo);
   const compact = useMediaQuery('(max-width: 767px)');
   if (!active) return null;
-  const addWithdrawControls = stream && (
-    <>
-      {showAddFundsButton && (
-        <AddFunds
-          stream={stream}
-          className={cn(styles.button, styles.buttonPrimary, styles.addFundsButton)}
-        />
-      )}
-      {showWithdrawButton && (
-        <WithdrawButton
-          stream={stream}
-          className={cn(styles.button, styles.buttonPrimary, styles.withdrawButton)}
-        />
-      )}
-    </>
-  );
   return (
     <div className={styles.root}>
       <Layout>
@@ -116,14 +102,32 @@ export function StreamPage() {
               />
               {showControls && (
                 <>
-                  {!compact && addWithdrawControls}
+                  {!compact && (
+                    <>
+                      {showAddFundsButton && (
+                        <AddFunds
+                          stream={stream}
+                          className={cn(styles.button, styles.buttonPrimary, styles.addFundsButton)}
+                        />
+                      )}
+                      {showWithdrawButton && (
+                        <WithdrawButton
+                          stream={stream}
+                          className={cn(styles.button, styles.buttonPrimary, styles.withdrawButton)}
+                        />
+                      )}
+                    </>
+                  )}
                   <StreamControls
                     stream={stream}
                     className={styles.streamControls}
                     openerClassName={cn(styles.button, compact && styles.buttonPrimary)}
-                    additionalControls={compact && addWithdrawControls}
                     openerText={compact && <span>Stream actions</span>}
                     needToUseBlur={compact}
+                    showStartButton={showStartButton}
+                    showPauseButton={showPauseButton}
+                    showAddFundsButton={compact && showAddFundsButton}
+                    showWithdrawButton={compact && showWithdrawButton}
                   />
                 </>
               )}
@@ -158,7 +162,7 @@ export function StreamPage() {
             {comment && (
               <div className={cn(styles.blockLarge, styles.commentBlock)}>
                 <span className={styles.blockTitle}>Comment</span>
-                <div className={styles.blockBody}>{comment}</div>
+                <div className={cn(styles.blockBody, styles.commentText)}>{comment}</div>
               </div>
             )}
             <div className={cn(styles.blockLarge, styles.linkBlock)}>

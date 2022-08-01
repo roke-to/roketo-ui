@@ -1,18 +1,10 @@
 @import 'src/shared/ui/palette';
 
 .root {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap-reverse;
-}
-
-.filtersWrapper {
-  display: flex;
-  align-items: center;
-
-  & > :not(:last-child) {
-    margin-right: 20px;
-  }
+  display: grid;
+  grid-auto-flow: dense;
+  gap: 8px;
+  grid-template-columns: repeat(4, max-content);
 }
 
 .sortWithOrder {
@@ -24,14 +16,9 @@
   }
 }
 
-.smallFilterWrapper {
-  flex-basis: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-
 .textFilter {
+  grid-row: 1;
+  grid-column: 2;
   min-width: 48px;
   height: 48px;
   border-radius: 24px;
@@ -39,6 +26,21 @@
   align-items: center;
   justify-content: center;
   position: relative;
+
+  &.withInput {
+    grid-row: 2;
+    grid-column: 2 / span 2;
+
+    & .textFilterMagnifier {
+      background-color: unset;
+    }
+    & .textFilterInput {
+      visibility: visible;
+      border: 1px solid #a0c2f8;
+      cursor: unset;
+      width: -webkit-fill-available;
+    }
+  }
 
   .textFilterMagnifier {
     background-color: #f0f6ff;
@@ -48,7 +50,6 @@
     padding: 9px;
     width: 48px;
     height: 100%;
-    pointer-events: none;
     border-radius: 24px;
   }
 
@@ -58,6 +59,7 @@
     height: 100%;
     width: 48px;
     padding-left: 40px;
+    visibility: hidden;
   }
 
   .textFilterClear {
@@ -68,36 +70,29 @@
     width: 48px;
     height: 100%;
     cursor: pointer;
+    visibility: hidden;
   }
 
-  .countDisclaimer {
-    position: absolute;
-    font-size: 12px;
-    line-height: 16px;
-    color: #8a96a8;
-    top: calc(100% + 8px);
+  .textFilterInput:not(:placeholder-shown) + .textFilterClear {
+    visibility: visible;
   }
+}
 
-  &.withInput .textFilterMagnifier {
-    background-color: unset;
-  }
+.statusBlock {
+  grid-column: 3 / span 1;
+}
 
-  &.withInput .textFilterInput {
-    border: 1px solid #a0c2f8;
-    cursor: unset;
-    width: 320px;
-  }
+.sortBlock {
+  grid-column: 4 / span 1;
 }
 
 .directionSorts {
+  grid-column: 1 / span 1;
   display: flex;
-
-  & > :not(:last-child) {
-    margin-right: 12px;
-  }
 }
 
 .directionSort {
+  border-radius: 24px;
   padding: 12px;
 
   font-weight: 600;
@@ -105,15 +100,103 @@
   line-height: 24px;
 
   color: $grey;
-  background-color: transparent;
+  background: transparent;
   border: 1px solid transparent;
+  transition: color 100ms ease-in, background-color 100ms ease-out;
 
   &[disabled] {
     cursor: not-allowed;
   }
+  &:not([disabled]):hover {
+    color: #2b313b;
+  }
 }
 
 .directionActive:not([disabled]) {
-  background-color: $light-blue;
-  color: $blue;
+  background-color: #f0f6ff;
+  color: #2b313b;
+  cursor: unset;
+}
+
+.compactFilter {
+  display: none;
+}
+
+.compactFilterModal {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  & > h3 {
+    padding-top: 6px;
+  }
+}
+
+.countText {
+  color: $grey;
+}
+
+/* Phone */
+@media (max-width: 767px) {
+  .root {
+    grid-template-columns: 1fr max-content max-content;
+  }
+  .compactFilter {
+    display: unset;
+    grid-column: 3;
+  }
+  .statusBlock,
+  .sortBlock,
+  .directionSorts {
+    display: none;
+  }
+  .textFilter.textFilter {
+    grid-column: 2 / span 1;
+    grid-row: 1;
+    &.withInput {
+      grid-column: 1 / span 2;
+    }
+  }
+}
+
+.filterControl {
+  background: #f0f6ff;
+  border-radius: 24px;
+  padding: 12px 19px;
+}
+
+.modalOverlay {
+  pointer-events: auto;
+  user-select: text;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  overflow: auto;
+  padding: 15vh 0 10vh;
+  flex-direction: column;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+
+  &::before {
+    content: '╳';
+    color: white;
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    font-size: 48px;
+    right: 6vw;
+    top: 5vh;
+    display: block;
+    position: absolute;
+  }
+}
+
+.modalContent {
+  width: min(550px, 100vw - 30px);
+  border-radius: 24px;
+  background-color: white;
 }

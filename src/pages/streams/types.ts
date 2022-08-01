@@ -1,6 +1,6 @@
 import type {BigNumber} from 'bignumber.js';
 
-import type {StreamDirection} from '~/shared/api/roketo/constants';
+import type {STREAM_STATUS, StreamDirection} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 
 import type {OrderType} from '@ui/icons/Sort';
@@ -21,17 +21,23 @@ export type StreamCardData = {
   comment: string | null;
   color: string | null;
   name: string;
-  isIncomingStream: boolean;
   isLocked: boolean;
+  showAddFundsButton: boolean;
+  showWithdrawButton: boolean;
+  showStartButton: boolean;
+  showPauseButton: boolean;
+  iconType: keyof typeof STREAM_STATUS;
 };
 
 export type StreamProgressData = {
   symbol: string;
-  progressText: string;
+  sign: string;
+  totalText: string;
   progressFull: string;
   progressStreamed: string;
   progressWithdrawn: string;
   cliffPercent: number | null;
+  cliffText: string | null;
   speedFormattedValue: string;
   speedUnit: string;
   timeLeft: string;
@@ -40,4 +46,5 @@ export type StreamProgressData = {
   withdrawnText: string;
   withdrawnPercentage: BigNumber;
   direction: StreamDirection | null;
+  name: string;
 };

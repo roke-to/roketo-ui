@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import {useStore, useStoreMap} from 'effector-react';
 import React from 'react';
 
@@ -12,7 +13,7 @@ import {Button, DisplayMode} from '@ui/components/Button';
 import {$tokenData, triggerWithdrawAll} from './model';
 import styles from './styles.module.scss';
 
-export function WithdrawAllButton() {
+export function WithdrawAllButton({className}: {className?: string}) {
   const areStreamsLoaded = useStoreMap({
     store: $accountStreams,
     keys: [],
@@ -59,9 +60,9 @@ export function WithdrawAllButton() {
         onClick={() => triggerWithdrawAll()}
         testId={testIds.withdrawAllButton}
         displayMode={preparedTokenData.length !== 0 ? DisplayMode.action : DisplayMode.secondary}
-        className={preparedTokenData.length !== 0 ? undefined : styles.notAllowed}
+        className={cn(preparedTokenData.length !== 0 ? undefined : styles.notAllowed, className)}
       >
-        Withdraw tokens
+        Withdraw&nbsp;tokens
       </Button>
     </Tooltip>
   );

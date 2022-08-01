@@ -138,6 +138,11 @@
   grid-column: 5 / span 2;
 }
 
+.commentText {
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
 .blockTitle {
   color: $bluish-grey;
   font-size: 14px;

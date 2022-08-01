@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import cn from 'classnames';
 import React from 'react';
 
 import {useOutsideClick} from '~/shared/hooks/useOutsideClick';
@@ -22,7 +22,7 @@ function DropdownMenuContent({opened, children, className, onClose}: DropdownMen
   });
 
   return (
-    <div ref={ref} className={classNames(styles.menu, className)}>
+    <div ref={ref} className={cn(styles.menu, className)}>
       {children}
     </div>
   );
@@ -40,12 +40,12 @@ type DropdownMenuItemProps = {
 
 export function DropdownMenuItem({children, className, ...rest}: DropdownMenuItemProps) {
   return (
-    <div className={classNames(styles.menuItem, className)} {...rest}>
+    <div className={cn(styles.menuItem, className)} {...rest}>
       {children}
     </div>
   );
 }
 
-export function DropdownMenuDivider() {
-  return <div className={styles.menuDivider} />;
+export function DropdownMenuDivider({className}: {className?: string}) {
+  return <div className={cn(styles.menuDivider, className)} />;
 }

@@ -1,61 +1,49 @@
 @import 'src/shared/ui/palette';
 
-.root {
+.layout {
   color: $light-black;
 
   flex-grow: 1;
-  padding-bottom: 28px;
+  padding: 24px 56px 28px 56px;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: max-content;
+  row-gap: 30px;
+  column-gap: 40px;
 }
 
-.section {
-  margin-bottom: 28px;
-}
-
-.flex {
-  display: flex;
-  align-items: center;
-}
-
-.header {
-  justify-content: space-between;
-  flex-wrap: wrap;
-  margin-bottom: 28px;
-}
-
-.buttonsWrapper {
-  padding-top: 28px;
-  & > :not(:last-child) {
-    margin-right: 16px;
-  }
-}
-
-.pageTitle {
-  font-weight: 600;
-  font-size: 32px;
-  line-height: 40px;
-  padding-top: 28px;
-  padding-right: 16px;
+.streamListBlock {
+  grid-column: 1 / span 3;
 }
 
 .streamFilters {
-  margin-bottom: 25px;
+  grid-column: 1 / span 3;
 }
 
-.financialStatus {
-  display: flex;
-  flex-wrap: wrap;
+.shadowCard {
+  display: grid;
+  padding: 24px 32px 32px;
+  gap: 12px;
 
-  & > :not(:last-child) {
-    margin-right: 65px;
-  }
+  box-shadow: 0px 5px 20px rgba(87, 140, 219, 0.25);
+  border-radius: 24px;
+}
+
+.sendingReceivingStatus {
+  grid-column: 1 / span 2;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: max-content max-content;
+}
+
+.withdrawalStatus {
+  grid-column: 3;
+  grid-template-rows: max-content max-content;
 }
 
 .infoCard {
   display: flex;
   flex-direction: column;
-
-  min-width: 200px;
-  margin-bottom: 28px;
 }
 
 .infoTitle {
@@ -65,8 +53,76 @@
   line-height: 16px;
 }
 
+.sendingCard {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.receivingCard {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.createStreamButton {
+  grid-column: 1;
+  grid-row: 2;
+  white-space: nowrap;
+}
+
 .finance {
   font-weight: 600;
   font-size: 28px;
   line-height: 36px;
+}
+
+.financeLarge {
+  font-weight: 600;
+  font-size: 48px;
+  line-height: 60px;
+}
+
+.button {
+  padding: 12px 20px;
+  color: #496ef3;
+  background: #f0f6ff;
+  border-radius: 24px;
+  border-color: #f0f6ff;
+  align-self: end;
+}
+
+.progressBar {
+  margin-top: 12px;
+  max-width: min(100%, 80vw);
+}
+
+/* Phone */
+@media (max-width: 767px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding: 24px 8px 28px 8px;
+    overflow-x: hidden;
+    row-gap: 20px;
+  }
+  .sendingReceivingStatus {
+    grid-column: 1 / span 1;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, max-content);
+  }
+  .receivingCard {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .createStreamButton {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .withdrawalStatus {
+    grid-column: 1 / span 1;
+  }
+  .streamFilters {
+    grid-column: 1 / span 1;
+  }
+  .streamListBlock {
+    grid-column: 1 / span 1;
+  }
 }

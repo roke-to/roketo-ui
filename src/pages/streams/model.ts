@@ -1,13 +1,14 @@
+import {isPast} from 'date-fns';
 import {combine, createEffect, createEvent, createStore, sample} from 'effector';
 import {generatePath} from 'react-router-dom';
 
 import {colorDescriptions} from '~/features/create-stream/constants';
 import type {FormValues} from '~/features/create-stream/constants';
 import {getTokensPerSecondCount} from '~/features/create-stream/lib';
-import {parseColor, parseComment, streamViewData} from '~/features/roketo-resource';
+import {formatTimeLeft, parseColor, parseComment, streamViewData} from '~/features/roketo-resource';
 
+import {$isSmallScreen} from '~/entities/screen';
 import {
-  $account,
   $accountId,
   $accountStreams,
   $nearWallet,
@@ -17,9 +18,15 @@ import {
 } from '~/entities/wallet';
 
 import {createStream} from '~/shared/api/methods';
-import {STREAM_DIRECTION} from '~/shared/api/roketo/constants';
+import {STREAM_DIRECTION, STREAM_STATUS} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {getStreamDirection, isActiveStream} from '~/shared/api/roketo/lib';
+import {
+  ableToAddFunds,
+  ableToPauseStream,
+  ableToStartStream,
+  getStreamDirection,
+  isActiveStream,
+} from '~/shared/api/roketo/lib';
 import {
   formatSmartly,
   toHumanReadableValue,
@@ -56,7 +63,6 @@ export const $streamListData = createStore(
   {
     streamsLoading: true,
     hasStreams: false,
-    hasDisplayedStreams: false,
   },
   {updateFilter: areObjectsDifferent},
 );
@@ -71,10 +77,6 @@ export const $streamFilter = createStore({
   text: '',
 });
 
-export const $streamsCount = createStore(
-  {streamsCount: 0, streamsTotalCount: 0},
-  {updateFilter: areObjectsDifferent},
-);
 export const changeDirectionFilter = createEvent<DirectionFilter>();
 export const changeStatusFilter = createEvent<StatusFilter>();
 export const changeTextFilter = createEvent<string>();
@@ -94,6 +96,7 @@ export const handleCreateStreamFx = createProtectedEffect({
     !!roketo && !!near ? {roketo, near} : null,
   ),
   async fn({roketo: {tokens, transactionMediator, accountId}, near: {auth}}, values: FormValues) {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     const {receiver, delayed, comment, deposit, duration, token, isLocked, cliffDateTime, color} =
       values;
     const {roketoMeta, tokenContract, meta} = tokens[token];
@@ -155,6 +158,9 @@ export const $streamCardsData = createStore<Record<string, StreamCardData>>({});
 
 export const $streamsProgress = createStore<Record<string, StreamProgressData>>({});
 
+export const selectStream = createEvent<string | null>();
+export const $selectedStream = createStore<string | null>(null);
+
 sample({
   source: {
     tokens: $tokens,
@@ -174,15 +180,11 @@ sample({
 });
 
 sample({
-  source: {
-    accountStreams: $accountStreams,
-    filteredStreams: $filteredStreams,
-  },
+  source: $accountStreams,
   target: $streamListData,
-  fn: ({accountStreams: {streamsLoaded, inputs, outputs}, filteredStreams}) => ({
+  fn: ({streamsLoaded, inputs, outputs}) => ({
     streamsLoading: !streamsLoaded,
     hasStreams: inputs.length + outputs.length > 0,
-    hasDisplayedStreams: filteredStreams.length > 0,
   }),
 });
 
@@ -222,37 +224,6 @@ sample({
 
 sample({clock: changeStreamSort, target: $streamSort});
 
-sample({
-  source: {
-    account: $account,
-    streams: $accountStreams,
-    filter: $streamFilter,
-  },
-  target: $streamsCount,
-  fn({account, streams, filter}) {
-    const totalIncomingStreamsCount = account?.active_incoming_streams ?? 0;
-    const totalOutgoingStreamsCount = account?.active_outgoing_streams ?? 0;
-
-    const incomingStreamsCount = streams.inputs.length;
-    const outgoingStreamsCount = streams.outputs.length;
-
-    const isIncomingOnly = filter.direction === 'Incoming';
-    const isOutgoingOnly = filter.direction === 'Outgoing';
-
-    const shouldCountIncoming = !isOutgoingOnly;
-    const shouldCountOutgoing = !isIncomingOnly;
-
-    const streamsCount =
-      (shouldCountIncoming ? incomingStreamsCount : 0) +
-      (shouldCountOutgoing ? outgoingStreamsCount : 0);
-    const streamsTotalCount =
-      (shouldCountIncoming ? totalIncomingStreamsCount : 0) +
-      (shouldCountOutgoing ? totalOutgoingStreamsCount : 0);
-
-    return {streamsCount, streamsTotalCount};
-  },
-});
-
 /** redraw progress bar each second */
 sample({
   clock: [$filteredStreams, progressRedrawTimerFx.doneData],
@@ -272,6 +243,7 @@ sample({
     tokens: $tokens,
     streams: $filteredStreams,
   },
+  target: $streamsProgress,
   fn: ({oldData, accountId, streams, tokens}) =>
     recordUpdater(oldData, streams, (stream) => {
       const {token_account_id: tokenId, tokens_per_sec: tokensPerSec} = stream;
@@ -279,7 +251,7 @@ sample({
       if (!token) return undefined;
       const {decimals} = token.meta;
       const symbol = isWNearTokenId(tokenId) ? 'NEAR' : token.meta.symbol;
-      const {progress, timeLeft, percentages} = streamViewData(stream);
+      const {cliffEndTimestamp, progress, timeLeft, percentages} = streamViewData(stream);
       const streamed = Number(toHumanReadableValue(decimals, progress.streamed, 3));
       const withdrawn = Number(toHumanReadableValue(decimals, progress.withdrawn, 3));
       const total = Number(toHumanReadableValue(decimals, progress.full, 3));
@@ -294,30 +266,47 @@ sample({
         1,
       );
 
-      const progressText = `${streamedText} of ${total}`;
-
       const {formattedValue: speedFormattedValue, unit: speedUnit} = tokensPerMeaningfulPeriod(
         decimals,
         tokensPerSec,
       );
+      const direction = getStreamDirection(stream, accountId);
+      let sign: string;
+      switch (direction) {
+        case STREAM_DIRECTION.IN:
+          sign = '+';
+          break;
+        case STREAM_DIRECTION.OUT:
+          sign = '-';
+          break;
+        case null:
+        default:
+          sign = '';
+          break;
+      }
       return {
         symbol,
-        progressText,
         progressFull: progress.full,
         progressStreamed: progress.streamed,
         progressWithdrawn: progress.withdrawn,
         cliffPercent: percentages.cliff,
+        cliffText:
+          cliffEndTimestamp && !isPast(cliffEndTimestamp)
+            ? formatTimeLeft(cliffEndTimestamp - Date.now())
+            : null,
         speedFormattedValue,
         speedUnit,
         timeLeft,
         streamedText,
+        totalText: total.toString(),
         streamedPercentage,
         withdrawnText,
         withdrawnPercentage,
-        direction: getStreamDirection(stream, accountId),
+        direction,
+        sign,
+        name: direction === STREAM_DIRECTION.IN ? stream.owner_id : stream.receiver_id,
       };
     }),
-  target: $streamsProgress,
 });
 
 sample({
@@ -327,16 +316,37 @@ sample({
     recordUpdater(oldData, streams, (stream, id) => {
       const direction = getStreamDirection(stream, accountId);
       const isIncomingStream = direction === STREAM_DIRECTION.IN;
+      const iconType: keyof typeof STREAM_STATUS =
+        typeof stream.status === 'string' ? stream.status : 'Finished';
       return {
         streamPageLink: generatePath(ROUTES_MAP.stream.path, {id}),
         comment: parseComment(stream.description),
         color: parseColor(stream.description),
         name: isIncomingStream ? stream.owner_id : stream.receiver_id,
-        isIncomingStream,
         isLocked: stream.is_locked,
+        showAddFundsButton: ableToAddFunds(stream, accountId),
+        showWithdrawButton: direction === STREAM_DIRECTION.IN && isActiveStream(stream),
+        showStartButton: ableToStartStream(stream, accountId),
+        showPauseButton: ableToPauseStream(stream, accountId),
+        iconType,
       };
     }),
   target: $streamCardsData,
+});
+
+sample({
+  clock: selectStream,
+  source: $selectedStream,
+  filter: $isSmallScreen,
+  fn: (currentSelection, upd) => (upd === currentSelection ? null : upd),
+  target: $selectedStream,
+});
+
+sample({
+  clock: $isSmallScreen,
+  filter: (isSmallScreen) => !isSmallScreen,
+  fn: () => null,
+  target: $selectedStream,
 });
 
 $streamFilter.on(changeDirectionFilter, (filter, direction) => ({...filter, direction}));

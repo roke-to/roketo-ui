@@ -12,12 +12,13 @@
 }
 
 .status {
-  margin-bottom: 4px;
+  position: relative;
+  left: 12px;
+  line-height: 26px;
+  font-weight: 500;
+  font-size: 16px;
 }
 
-.grey {
-  color: $grey;
-}
 .overlay {
   background-color: unset;
   opacity: 1;
@@ -39,16 +40,20 @@
 }
 
 .tooltip {
-  padding: 8px 6px;
   width: 285px;
+}
+
+.extendedInfo {
+  padding: 8px 6px;
 }
 
 .innerStatus {
   margin-bottom: 6px;
 }
 
-.smaller {
+.subtext {
   font-size: 12px;
+  color: $grey;
 }
 
 .speed {
@@ -56,7 +61,7 @@
   margin-bottom: 12px;
 }
 
-.remained {
+.remaining {
   display: flex;
   margin-bottom: 12px;
 }
@@ -87,4 +92,48 @@
   border-radius: 50%;
   margin-right: 6px;
   margin-bottom: 2px;
+}
+
+.streamName {
+  display: none;
+}
+
+.tokenSymbol {
+  color: $grey;
+}
+
+.progressStatus {
+  display: contents;
+}
+
+/* Phone */
+@media (max-width: 767px) {
+  .root {
+    cursor: pointer;
+  }
+  .tooltip {
+    display: none;
+  }
+  .status {
+    display: flex;
+    width: calc(100% - 24px);
+  }
+  .streamName {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-basis: 30%;
+    flex-grow: 2;
+    flex-shrink: 0;
+  }
+  .progressStatus {
+    display: inline-flex;
+    flex-basis: 30%;
+    flex-grow: 2;
+    justify-content: end;
+    flex-shrink: 1;
+    align-items: baseline;
+    gap: 4px;
+    white-space: nowrap;
+  }
 }

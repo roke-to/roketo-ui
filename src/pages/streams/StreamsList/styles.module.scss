@@ -1,10 +1,9 @@
 @import 'src/shared/ui/palette';
 
 .container {
-  width: calc(100% + 60px);
-  overflow-x: auto;
-  margin-bottom: -122px;
-  margin-right: -60px;
+  --progress-bar-height: 28px;
+  display: flex;
+  flex-direction: column-reverse;
   -ms-overflow-style: none; /* Internet Explorer 10+ */
   scrollbar-width: none; /* Firefox */
 
@@ -15,55 +14,61 @@
   }
 }
 
-.flexColumn {
-  min-width: 1280px;
-  display: flex;
-  flex-direction: column;
-  padding-right: 60px;
-
-  &:after {
-    content: '';
-    width: 100%;
-    height: 150px;
-  }
+.streamGrid {
+  max-width: 1280px;
+  display: grid;
+  grid-template-columns:
+    [color-column] 4px
+    [status-column] 48px
+    [bar-column] 200px
+    [address-column] minmax(min-content, 1fr)
+    [comment-column] max-content
+    [control-column] 150px;
 }
 
-@media (max-width: 1024px) {
+.colorCell,
+.statusCell,
+.progressCell,
+.nameCell,
+.commentCell,
+.controlCell {
+  min-height: 48px;
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
   .container {
     width: calc(100% + 16px);
     margin-right: -16px;
   }
-
-  .flexColumn {
-    padding-right: 16px;
-  }
 }
 
-.withPaddings {
-  padding-right: 22px;
-
-  & > * {
-    padding-top: 16px;
-    padding-bottom: 16px;
-  }
-
-  & > :first-child {
-    background-color: #fdfdfd;
-    padding-left: 22px;
-    position: sticky;
+.leftStickyCell {
+  background-color: #fdfdfd;
+  position: sticky;
+  left: 52px;
+  height: 100%;
+  justify-content: center;
+  &:first-of-type {
     left: 0;
-    z-index: 1;
   }
 }
 
 .title {
-  color: $light-black;
-  font-weight: 600;
+  color: #8a96a8;
+  font-weight: 500;
   font-size: 12px;
   line-height: 16px;
+  grid-row: 1;
+  grid-column: span 1;
+  padding-left: 12px;
+  &:first-of-type {
+    grid-column: span 3;
+    padding-left: 28px;
+  }
 }
 
 .emptyState {
+  grid-column: 1 / -1;
   width: 100%;
 
   display: flex;
@@ -71,11 +76,13 @@
   align-items: center;
   align-content: center;
   justify-content: center;
-  padding: 100px 0;
+  padding: 10px 0;
 
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
+
+  color: #8a96a8;
 
   & > :not(:last-child) {
     margin-bottom: 32px;
@@ -86,4 +93,299 @@
   width: 100%;
 
   height: 200px;
+}
+
+.colorCell {
+  grid-column: color-column;
+  width: 4px;
+  height: 100%;
+  position: sticky;
+  left: 0;
+  background-color: var(--stream-color, transparent);
+}
+
+.statusCell {
+  grid-column: status-column;
+  position: sticky;
+  left: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progressCell {
+  grid-column: bar-column;
+  max-width: min(100%, 80vw);
+}
+
+.nameCell {
+  grid-column: address-column;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  overflow: hidden;
+}
+
+.commentCell {
+  grid-column: comment-column;
+  display: flex;
+  align-items: center;
+}
+
+.controlCell {
+  grid-column: control-column;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  /** Open tooltip to top for last 5 controlCells
+   *  Giving that there is 6 columns,
+   *  last affected cell will have n = 30
+   */
+  &:nth-last-child(6n + 1):nth-last-child(-n + 30) {
+    .controlDropdown {
+      margin-top: unset;
+      margin-bottom: 6px;
+      bottom: 100%;
+    }
+  }
+}
+
+.statusCell,
+.progressCell,
+.nameCell,
+.commentCell,
+.controlCell {
+  border-top: 1px solid #a0c2f880;
+}
+
+.nameCell,
+.commentCell,
+.controlCell {
+  padding-left: 12px;
+}
+
+.commentBlock {
+  max-width: 300px;
+
+  font-weight: 500;
+  font-size: 14px;
+
+  // TODO: move to UI-kit mixins
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.nameText {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.streamLinkButton {
+  padding: 8px 12px;
+
+  border-radius: 6px;
+
+  &:hover {
+    background-color: $background-secondary;
+  }
+}
+
+.streamActionsButton {
+  padding: 8px 8px;
+  border-radius: 6px;
+  margin-right: 40px;
+
+  &:hover {
+    background-color: $background-secondary;
+  }
+}
+
+.streamActionsIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.streamStatusIcon {
+  width: 28px;
+  height: 28px;
+}
+
+.subtext {
+  font-size: 14px;
+  color: $grey;
+}
+
+.expandedInfo {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns:
+    [left-column] 32px
+    [content-column] 1fr
+    [right-column] 32px [right-column-end];
+  align-items: center;
+  column-gap: 4px;
+  row-gap: 8px;
+  box-shadow: 0px 5px 20px rgba(87, 140, 219, 0.25);
+  border-radius: 24px;
+  border-top: 1px solid transparent;
+  margin: 12px 0;
+  padding: 16px 16px 12px 16px;
+  width: calc(100vw - 16px);
+  overflow-x: hidden;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+
+  .statusIcon {
+    grid-column: left-column;
+    img {
+      width: 32px;
+      height: 32px;
+    }
+  }
+  .progressBar {
+    grid-column: content-column / right-column-end;
+    max-width: calc(100vw - 64px);
+    .barStatusText {
+      position: relative;
+      left: 12px;
+      line-height: 26px;
+      font-weight: 500;
+      font-size: 16px;
+      width: calc(100% - 24px);
+      display: flex;
+      .barStreamName {
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-basis: 30%;
+        flex-grow: 2;
+        flex-shrink: 0;
+      }
+      .barProgressText {
+        display: inline-flex;
+        flex-basis: 30%;
+        flex-grow: 2;
+        justify-content: end;
+        flex-shrink: 1;
+        align-items: baseline;
+        white-space: pre;
+      }
+    }
+  }
+  .color {
+    --size: 8;
+    grid-column: left-column / content-column;
+    align-self: center;
+    justify-self: center;
+  }
+  .direction {
+    grid-column: content-column;
+    line-height: 32px;
+    font-weight: 600;
+  }
+  .link {
+    grid-column: right-column;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .speed {
+    grid-column: content-column / right-column-end;
+  }
+  .remainingIcon {
+    grid-column: left-column / content-column;
+    justify-self: center;
+  }
+  .remaining,
+  .streamed,
+  .withdrawn,
+  .cliffRemaining {
+    grid-column: content-column / right-column-end;
+  }
+  .comment {
+    grid-column: left-column / right-column-end;
+    background-color: #f7f7f8;
+    padding: 20px;
+    border-radius: 24px;
+    overflow-wrap: break-word;
+    font-style: italic;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .streamActions {
+    grid-column: left-column / right-column-end;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .viewDetails {
+    grid-column: left-column / right-column-end;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3e65f2;
+    height: 48px;
+    width: 100%;
+    border-radius: 24px;
+    font-weight: 600;
+  }
+  .streamActionsButtonExpanded {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3e65f2;
+    background-color: #f0f6ff;
+    height: 48px;
+    width: 100%;
+    border-radius: 24px;
+    font-weight: 600;
+  }
+}
+
+/* Phone */
+@media (max-width: 767px) {
+  .container {
+    overflow-x: unset;
+  }
+  .streamGrid {
+    max-width: calc(100vw - 16px);
+    grid-template-columns:
+      [color-column] 4px
+      [status-column] 36px
+      [bar-column] minmax(min-content, 1fr);
+  }
+  .statusCell,
+  .progressCell,
+  .nameCell,
+  .commentCell,
+  .controlCell {
+    border-top-color: transparent;
+  }
+  .leftStickyCell,
+  .colorCell,
+  .statusCell {
+    position: unset;
+  }
+  .leftStickyCell {
+    background-color: unset;
+  }
+  .title {
+    display: none;
+  }
+  .nameCell,
+  .commentCell,
+  .controlCell {
+    display: none;
+  }
 }

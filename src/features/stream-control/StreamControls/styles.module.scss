@@ -4,11 +4,6 @@
   position: relative;
 }
 
-.additionalControl {
-  width: -webkit-fill-available;
-  width: stretch;
-}
-
 .controlButton {
   display: flex;
   align-items: center;
@@ -36,9 +31,10 @@
   padding: 24px;
   max-width: 480px;
   width: 95vw;
-  border-radius: 8px;
+  border-radius: 24px;
   background-color: white;
   color: $light-black;
+  outline: none;
 
   & .controlButton {
     width: -webkit-fill-available;
@@ -152,4 +148,17 @@
 .stop {
   background-color: $light-red;
   color: $danger;
+}
+
+.streamListControlsMenu {
+  padding: 14px;
+  min-width: unset;
+  position: absolute;
+  border-radius: 24px;
+  margin-top: 6px;
+  transform: translateX(-80%);
+}
+
+.menuDivider:first-child {
+  display: none;
 }

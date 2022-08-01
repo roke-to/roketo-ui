@@ -17,12 +17,14 @@ import {getStream} from '~/shared/api/methods';
 import {STREAM_DIRECTION, STREAM_STATUS, StreamDirection} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {
+  ableToAddFunds,
+  ableToPauseStream,
+  ableToStartStream,
   getAvailableToWithdraw,
   getStreamDirection,
   hasPassedCliff,
   isDead,
   isIdling,
-  isLocked,
 } from '~/shared/api/roketo/lib';
 import {formatAmount, formatSmartly, toHumanReadableValue} from '~/shared/api/token-formatter';
 import type {RichToken} from '~/shared/api/types';
@@ -73,6 +75,8 @@ export const $streamInfo = createStore({
   showControls: false,
   showAddFundsButton: false,
   showWithdrawButton: false,
+  showStartButton: false,
+  showPauseButton: false,
   subheader: '',
   direction: null as StreamDirection | null,
   link: '',
@@ -159,7 +163,6 @@ sample({
     const {cliffEndTimestamp, timeLeft, progress, percentages} = streamViewData(stream);
     const available = getAvailableToWithdraw(stream).toNumber();
     const direction = getStreamDirection(stream, accountId);
-    const isOutgoingStream = direction === STREAM_DIRECTION.OUT;
     const color = parseColor(stream.description) ?? null;
     const comment = parseComment(stream.description) ?? null;
     let subheader: string;
@@ -210,9 +213,11 @@ sample({
       color,
       comment,
       showControls: !isDead(stream),
-      showAddFundsButton: isOutgoingStream && !isLocked(stream),
+      showAddFundsButton: ableToAddFunds(stream, accountId),
       showWithdrawButton:
         direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.Active,
+      showStartButton: ableToStartStream(stream, accountId),
+      showPauseButton: ableToPauseStream(stream, accountId),
       subheader,
       direction,
       link: getStreamLink(stream.id),

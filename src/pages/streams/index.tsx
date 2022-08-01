@@ -11,7 +11,6 @@ import {testIds} from '~/shared/constants';
 import {ProgressBar} from '~/shared/ui/components/ProgressBar';
 
 import {Button} from '@ui/components/Button';
-import {Layout} from '@ui/components/Layout';
 
 import {$financialStatus, handleCreateStreamFx} from './model';
 import {StreamFilters} from './StreamFilters';
@@ -26,6 +25,7 @@ const FinancialInfo = ({
   withProgressBar = true,
   testId,
   direction = null,
+  className,
 }: {
   title: string;
   total: number;
@@ -34,11 +34,12 @@ const FinancialInfo = ({
   withProgressBar?: boolean;
   testId?: string;
   direction?: StreamDirection | null;
+  className?: string;
 }) => (
-  <div className={styles.infoCard}>
+  <div className={cn(styles.infoCard, className)}>
     <h3 className={styles.infoTitle}>{title}</h3>
 
-    <span className={styles.finance} data-testid={testId}>
+    <span className={withProgressBar ? styles.finance : styles.financeLarge} data-testid={testId}>
       {streamed ? `$ ${streamed} of ${total}` : `$ ${total}`}
     </span>
 
@@ -48,6 +49,7 @@ const FinancialInfo = ({
         streamed={String(streamed)}
         withdrawn={String(withdrawn)}
         direction={direction}
+        className={styles.progressBar}
       />
     )}
   </div>
@@ -65,58 +67,56 @@ export const StreamsPage = () => {
   const {outcomeAmountInfo, incomeAmountInfo, availableForWithdrawal} = useStore($financialStatus);
 
   return (
-    <div className={styles.root}>
-      <Layout>
-        <section className={cn(styles.flex, styles.header)}>
-          <h1 className={styles.pageTitle}>Streams</h1>
+    <div className={styles.layout}>
+      <div className={cn(styles.shadowCard, styles.sendingReceivingStatus)}>
+        <FinancialInfo
+          title="Sending"
+          total={outcomeAmountInfo.total}
+          streamed={outcomeAmountInfo.streamed}
+          withdrawn={outcomeAmountInfo.withdrawn}
+          direction={STREAM_DIRECTION.OUT}
+          className={styles.sendingCard}
+        />
 
-          <div className={cn(styles.flex, styles.buttonsWrapper)}>
-            <WithdrawAllButton />
-
-            <Button onClick={toggleModal} testId={testIds.createStreamButton}>
-              Create a stream
-            </Button>
-            <Modal isOpen={isModalOpened} onCloseModal={toggleModal}>
-              <CreateStream
-                onFormCancel={toggleModal}
-                onFormSubmit={(values) =>
-                  handleCreateStreamFx(values).then(() => setIsModalOpened(false))
-                }
-                submitting={submitting}
-              />
-            </Modal>
-          </div>
-        </section>
-
-        <section className={styles.financialStatus}>
-          <FinancialInfo
-            title="Sending"
-            total={outcomeAmountInfo.total}
-            streamed={outcomeAmountInfo.streamed}
-            withdrawn={outcomeAmountInfo.withdrawn}
-            direction={STREAM_DIRECTION.OUT}
+        <FinancialInfo
+          title="Receiving"
+          total={incomeAmountInfo.total}
+          streamed={incomeAmountInfo.streamed}
+          withdrawn={incomeAmountInfo.withdrawn}
+          direction={STREAM_DIRECTION.IN}
+          className={styles.receivingCard}
+        />
+        <Button
+          className={cn(styles.button, styles.createStreamButton)}
+          onClick={toggleModal}
+          testId={testIds.createStreamButton}
+        >
+          Create a stream
+        </Button>
+        <Modal isOpen={isModalOpened} onCloseModal={toggleModal}>
+          <CreateStream
+            onFormCancel={toggleModal}
+            onFormSubmit={(values) =>
+              handleCreateStreamFx(values).then(() => setIsModalOpened(false))
+            }
+            submitting={submitting}
           />
+        </Modal>
+      </div>
 
-          <FinancialInfo
-            title="Receiving"
-            total={incomeAmountInfo.total}
-            streamed={incomeAmountInfo.streamed}
-            withdrawn={incomeAmountInfo.withdrawn}
-            direction={STREAM_DIRECTION.IN}
-          />
+      <div className={cn(styles.shadowCard, styles.withdrawalStatus)}>
+        <FinancialInfo
+          title="Available for withdrawal"
+          total={availableForWithdrawal}
+          withProgressBar={false}
+          testId={testIds.availableForWithdrawalCaption}
+        />
+        <WithdrawAllButton className={styles.button} />
+      </div>
 
-          <FinancialInfo
-            title="Available for withdrawal"
-            total={availableForWithdrawal}
-            withProgressBar={false}
-            testId={testIds.availableForWithdrawalCaption}
-          />
-        </section>
+      <StreamFilters className={styles.streamFilters} />
 
-        <StreamFilters className={styles.streamFilters} />
-
-        <StreamsList className={styles.section} onCreateStreamClick={toggleModal} />
-      </Layout>
+      <StreamsList className={styles.streamListBlock} onCreateStreamClick={toggleModal} />
     </div>
   );
 };

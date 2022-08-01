@@ -17,17 +17,23 @@ export const streamCardDataDefaults: StreamCardData = {
   comment: '',
   color: '',
   name: '',
-  isIncomingStream: false,
   isLocked: false,
+  showAddFundsButton: false,
+  showWithdrawButton: false,
+  showStartButton: false,
+  showPauseButton: false,
+  iconType: 'Initialized',
 };
 
 export const streamProgressDataDefaults: StreamProgressData = {
   symbol: '',
-  progressText: '',
+  sign: '',
+  totalText: '',
   progressFull: '',
   progressStreamed: '',
   progressWithdrawn: '',
   cliffPercent: null,
+  cliffText: null,
   speedFormattedValue: '',
   speedUnit: '',
   timeLeft: '',
@@ -36,6 +42,7 @@ export const streamProgressDataDefaults: StreamProgressData = {
   withdrawnText: '',
   withdrawnPercentage: new BigNumber(0),
   direction: null,
+  name: '',
 };
 
 export const sorts = {
