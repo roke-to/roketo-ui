@@ -1,5 +1,7 @@
 # testing
 /coverage
+anotherTestAccount.json
+testAccount.json
 
 # production
 /build
