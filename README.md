@@ -29,7 +29,6 @@ How ViteJS handle environment variables and configs [read here](https://vitejs.d
 
 # Links
 
-- [Landing](https://www.roke.to/) (webflow, outside repo)
-- [dApp](test.app-v2.roke.to) (testnet)
-- [Docs](https://www.notion.so/kikimora-labs/Roketo-2056455fdcf4452f9e690601cc49d7a4)
-- [API docs](/streaming/README.md)
+- [Landing](https://app2.roke.to/) (webflow, outside repo)
+- [dApp](https://app2.test.roke.to/) (testnet)
+- [Docs](https://www.notion.so/roketo/Roketo-v2-contract-api-59c29437ae9f403a824536732d80e856)
