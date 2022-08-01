@@ -26,7 +26,6 @@ import {
   $streamCardsData,
   $streamListData,
   $streamsProgress,
-  selectStream,
 } from '../model';
 import {StreamProgress} from '../StreamProgress';
 import activeStreamIcon from './activeStream.svg';
@@ -191,8 +190,7 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
     defaultValue: streamProgressDataDefaults,
   });
   return (
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-    <div className={styles.expandedInfo} onClick={() => selectStream(null)}>
+    <div className={styles.expandedInfo}>
       <div className={cn(styles.statusIcon)}>
         <img src={selectIcon(iconType)} alt="Stream status" />
       </div>
