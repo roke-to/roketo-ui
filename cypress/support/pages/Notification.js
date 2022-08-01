@@ -16,6 +16,8 @@ class Notifications {
       pause: `The stream to ${receiverId} is paused`,
       restart: `The stream to ${receiverId} was continued`,
       stop: `The stream to ${receiverId} has ended`,
+      cliff: `The stream to ${receiverId} has passed the cliff period`,
+      funds: `The funds were added to the stream to ${receiverId}`,
     }[type];
 
     cy.get(testSelectors.notificationsContainer).contains(text);
@@ -27,6 +29,9 @@ class Notifications {
       pause: `The stream from ${senderId} is paused`,
       restart: `${senderId} has continued the stream`,
       stop: `The stream from ${senderId} has ended`,
+      cliff: `The stream from ${senderId} has passed the cliff period`,
+      funds: `The funds were added to the stream from ${senderId}`,
+      due: `The stream from ${senderId} id due`,
     }[type];
 
     cy.get(testSelectors.notificationsContainer).contains(text);

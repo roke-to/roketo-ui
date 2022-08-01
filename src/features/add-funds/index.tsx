@@ -10,6 +10,7 @@ import {streamViewData} from '~/features/roketo-resource';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {toYocto} from '~/shared/api/token-formatter';
 import {Balance, useBalanceForToken} from '~/shared/components/Balance';
+import {testIds} from '~/shared/constants';
 import {useBool} from '~/shared/hooks/useBool';
 import {useToken} from '~/shared/hooks/useToken';
 
@@ -106,6 +107,7 @@ export function AddFunds({stream, className}: {stream: RoketoStream; className?:
                 type={ButtonType.submit}
                 className={styles.modalButton}
                 disabled={!hasValidAdditionalFunds || isStreamEnded || submitting}
+                testId={testIds.addFundsSubmit}
               >
                 {submitting ? 'Adding...' : 'Add funds'}
               </Button>
@@ -113,7 +115,7 @@ export function AddFunds({stream, className}: {stream: RoketoStream; className?:
           </form>
         </Modal>
       )}
-      <Button onClick={addFundsModal.turnOn} className={className}>
+      <Button onClick={addFundsModal.turnOn} className={className} testId={testIds.addFunds}>
         Add funds
       </Button>
     </>

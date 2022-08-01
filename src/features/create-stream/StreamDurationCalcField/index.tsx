@@ -88,8 +88,8 @@ export const StreamDurationCalcField = (props: StreamDurationCalcFieldProps) => 
       <div className={styles.wrapper}>
         <DurationInput
           value={months}
-          onChange={handleInputChangeFactory(setMonths, 12)}
-          label="Months, max: 12"
+          onChange={handleInputChangeFactory(setMonths, 36)}
+          label="Months, max: 36"
           testId={testIds.createStreamMonthsInput}
         />
         <DurationInput

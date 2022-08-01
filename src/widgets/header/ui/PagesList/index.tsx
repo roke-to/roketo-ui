@@ -1,26 +1,31 @@
+import classNames from 'classnames';
 import React from 'react';
+import {NavLink} from 'react-router-dom';
 
-import {NavigationLink} from '~/shared/components/NavigationLink';
 import {Route} from '~/shared/lib/routing';
 
 import styles from './styles.module.scss';
 
 type PageListProps = {
   pageRoutes: Route[];
+  className?: string;
+  activeClassName?: string;
 };
 
 export const PageList = (props: PageListProps) => {
-  const {pageRoutes = []} = props;
+  const {pageRoutes = [], className, activeClassName} = props;
 
   if (pageRoutes.length === 0) {
     return null;
   }
 
   return (
-    <ul className={styles.root}>
+    <ul className={classNames(styles.root, className)}>
       {pageRoutes.map((route) => (
         <li className={styles.pageLink} key={route.path}>
-          <NavigationLink to={route.path}>{route.title}</NavigationLink>
+          <NavLink to={route.path} activeClassName={activeClassName} exact>
+            {route.title}
+          </NavLink>
         </li>
       ))}
     </ul>

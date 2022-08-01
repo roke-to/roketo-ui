@@ -30,6 +30,20 @@ class CreateStream {
     cy.get(testSelectors.createStreamMinutesInput).click().type(' {backspace}').type(mins);
   }
 
+  inputCliffPeriod() {
+    const currentTimeInMilliseconds = new Date();
+    cy.get('[aria-label="Month"]').click().type(currentTimeInMilliseconds.getMonth());
+    cy.get('[aria-label="Day"]').click().type(currentTimeInMilliseconds.getDay());
+    cy.get('[aria-label="Year"]')
+      .click()
+      .type(' {backspace}')
+      .type(currentTimeInMilliseconds.getFullYear() + 1);
+    cy.get('[aria-label="Hour"]').click().type(currentTimeInMilliseconds.getHours());
+    cy.get('[aria-label="Minute"]').click().type(currentTimeInMilliseconds.getMinutes());
+    cy.get('[aria-label="Second"]').click().type(' {backspace}').type(1);
+    cy.get('[aria-label="Select AM/PM"]').select('AM');
+  }
+
   inputComments(value) {
     cy.get(testSelectors.createStreamCommentInput).click().type(value);
   }
@@ -40,6 +54,10 @@ class CreateStream {
 
   submit() {
     cy.get(testSelectors.createStreamSubmitButton).click();
+  }
+
+  uneditable() {
+    cy.get(testSelectors.createStreamLockedCheckbox).click();
   }
 }
 

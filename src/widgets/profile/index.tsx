@@ -1,51 +1,56 @@
-import {useStore} from 'effector-react';
-import {useState} from 'react';
+import {useGate, useStore} from 'effector-react';
+import {useCallback, useState} from 'react';
 
+import {UserAvatar} from '~/widgets/profile/UserAvatar';
+
+import {blurGate} from '~/entities/blur';
 import {$accountId, $user} from '~/entities/wallet';
 
-import {env} from '~/shared/config';
-import {DropdownMenu} from '~/shared/kit/DropdownMenu';
+import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
+import {AdaptiveModal} from '~/shared/kit/AdaptiveModal';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 
 import styles from './index.module.scss';
 import {ProfileForm} from './ProfileForm';
 
-export const Profile = () => {
-  const [isDropdownOpened, setIsDropdownOpened] = useState(false);
-  const [needFallback, setNeedFallback] = useState(false);
+interface ProfileProps {
+  arrowClassName?: string;
+}
+
+export const Profile = ({arrowClassName}: ProfileProps) => {
+  const [isProfileOpened, setIsProfileOpened] = useState(false);
+  const isCompact = useMediaQuery('(max-width: 767px)');
+  const closeProfile = useCallback(() => setIsProfileOpened(false), [setIsProfileOpened]);
+
+  useGate(blurGate, {
+    modalId: 'profile',
+    active: isCompact && isProfileOpened,
+  });
 
   const accountId = useStore($accountId);
 
-  const {name, email} = useStore($user);
+  const {name} = useStore($user);
 
   return (
     <div className={styles.profile}>
       <DropdownOpener
-        onChange={setIsDropdownOpened}
+        onChange={setIsProfileOpened}
         className={styles.dropdownOpener}
-        opened={isDropdownOpened}
+        arrowClassName={arrowClassName}
+        opened={isProfileOpened}
       >
-        <span className={styles.name}>{name || accountId}</span>
-
-        {needFallback || !accountId ? (
-          <svg className={styles.avatar} />
-        ) : (
-          <img
-            className={styles.avatar}
-            src={`${env.WEB_API_URL}/users/${accountId}/avatar?email=${email}`}
-            alt=""
-            onError={() => setNeedFallback(true)}
-          />
-        )}
+        {!isCompact && <span className={styles.name}>{name || accountId}</span>}
+        <UserAvatar className={styles.avatar} />
       </DropdownOpener>
-
-      <DropdownMenu
-        opened={isDropdownOpened}
-        onClose={() => setIsDropdownOpened(false)}
-        className={styles.dropdownMenu}
+      <AdaptiveModal
+        compact={isCompact}
+        onClose={closeProfile}
+        isOpen={isProfileOpened}
+        dropdownClassName={styles.dropdownMenu}
+        modalClassName={styles.modal}
       >
-        <ProfileForm />
-      </DropdownMenu>
+        <ProfileForm showFinances={isCompact} />
+      </AdaptiveModal>
     </div>
   );
 };

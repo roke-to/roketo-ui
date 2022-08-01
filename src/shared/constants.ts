@@ -49,6 +49,8 @@ export const testIds = {
   openNotificationsButton: 'openNotificationsButton',
   notificationsLoader: 'notificationsLoader',
   notificationsContainer: 'notificationsContainer',
+  addFunds: 'addFunds',
+  addFundsSubmit: 'addFundsSubmit',
 } as const;
 
 const testIdsKeys = Object.keys(testIds) as Array<keyof typeof testIds>;
