@@ -173,10 +173,15 @@ export async function transfer({
   tokenAccountId: string;
   transactionMediator: TransactionMediator;
 }) {
-  const [isRegisteredSender, isRegisteredReceiver] = await Promise.all([
-    isRegistered({accountId: payload.owner_id, tokenContract}),
-    isRegistered({accountId: payload.receiver_id, tokenContract}),
-  ]);
+  const storageDepositAccountIds = [
+    env.ROKETO_CONTRACT_NAME,
+    env.ROKETO_FINANCE_CONTRACT_NAME,
+    payload.owner_id,
+    payload.receiver_id,
+  ];
+  const isRegisteredAccountIds = await Promise.all(
+    storageDepositAccountIds.map((accountId) => isRegistered({accountId, tokenContract})),
+  );
 
   const actions = [
     transactionMediator.functionCall(
@@ -200,31 +205,20 @@ export async function transfer({
   /** account creation costs 0.00125 NEAR for storage */
   const depositAmount = utils.format.parseNearAmount('0.00125')!;
 
-  if (!isRegisteredSender) {
-    actions.unshift(
-      transactionMediator.functionCall(
-        'storage_deposit',
-        {account_id: payload.owner_id},
-        '30000000000000',
-        depositAmount,
-      ),
-    );
+  storageDepositAccountIds.forEach((accountId, index) => {
+    if (!isRegisteredAccountIds[index]) {
+      actions.unshift(
+        transactionMediator.functionCall(
+          'storage_deposit',
+          {account_id: accountId},
+          '30000000000000',
+          depositAmount,
+        ),
+      );
 
-    depositSum = depositSum.plus(depositAmount);
-  }
-
-  if (!isRegisteredReceiver) {
-    actions.unshift(
-      transactionMediator.functionCall(
-        'storage_deposit',
-        {account_id: payload.receiver_id},
-        '30000000000000',
-        depositAmount,
-      ),
-    );
-
-    depositSum = depositSum.plus(depositAmount);
-  }
+      depositSum = depositSum.plus(depositAmount);
+    }
+  });
 
   if (isWNearTokenId(tokenAccountId)) {
     actions.unshift(

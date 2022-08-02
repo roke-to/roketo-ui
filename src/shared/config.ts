@@ -3,6 +3,7 @@ type EnvType = {
   NEAR_NETWORK_ID: 'mainnet' | 'testnet';
   NEAR_NODE_URL: string;
   ROKETO_CONTRACT_NAME: string;
+  ROKETO_FINANCE_CONTRACT_NAME: string;
   WALLET_URL: string;
   PUBLIC_URL: string;
   PRICE_ORACLE_CONTRACT_NAME: string;
@@ -18,6 +19,7 @@ export const env: EnvType = {
   NEAR_NETWORK_ID: import.meta.env.VITE_NEAR_NETWORK_ID,
   NEAR_NODE_URL: import.meta.env.VITE_NEAR_NODE_URL,
   ROKETO_CONTRACT_NAME: import.meta.env.VITE_ROKETO_CONTRACT_NAME,
+  ROKETO_FINANCE_CONTRACT_NAME: import.meta.env.VITE_ROKETO_FINANCE_CONTRACT_NAME,
   WALLET_URL: import.meta.env.VITE_WALLET_URL,
   PUBLIC_URL: import.meta.env.BASE_URL,
   PRICE_ORACLE_CONTRACT_NAME: import.meta.env.VITE_PRICE_ORACLE_CONTRACT_NAME,
