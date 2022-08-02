@@ -88,8 +88,12 @@ class MyStreams {
     cy.url().should('contains', 'http://localhost:3000/#/streams');
   }
   addFunds(value) {
+    cy.get(testSelectors.streamControlsDropdown).eq(0).click({force: true});
     cy.get(testSelectors.addFunds).eq(0).click({force: true}, {timeout: 60000});
-    cy.get('[name="deposit"]').click().type(' {backspace}').type(value);
+    cy.get('[name="deposit"]')
+      .click({force: true}, {timeout: 60000})
+      .type(' {backspace}')
+      .type(value);
     cy.get(testSelectors.addFundsSubmit).click();
   }
   checkAddFunds() {
