@@ -196,9 +196,9 @@ export async function transfer({
     ),
   ];
 
-  let depositSumm = new BigNumber(0);
-  /** account creation costs 0.0025 NEAR for storage */
-  const depositAmmount = utils.format.parseNearAmount('0.0025')!;
+  let depositSum = new BigNumber(0);
+  /** account creation costs 0.00125 NEAR for storage */
+  const depositAmount = utils.format.parseNearAmount('0.00125')!;
 
   if (!isRegisteredSender) {
     actions.unshift(
@@ -206,11 +206,11 @@ export async function transfer({
         'storage_deposit',
         {account_id: payload.owner_id},
         '30000000000000',
-        depositAmmount,
+        depositAmount,
       ),
     );
 
-    depositSumm = depositSumm.plus(depositAmmount);
+    depositSum = depositSum.plus(depositAmount);
   }
 
   if (!isRegisteredReceiver) {
@@ -219,11 +219,11 @@ export async function transfer({
         'storage_deposit',
         {account_id: payload.receiver_id},
         '30000000000000',
-        depositAmmount,
+        depositAmount,
       ),
     );
 
-    depositSumm = depositSumm.plus(depositAmmount);
+    depositSum = depositSum.plus(depositAmount);
   }
 
   if (isWNearTokenId(tokenAccountId)) {
@@ -232,7 +232,7 @@ export async function transfer({
         'near_deposit',
         {},
         '30000000000000',
-        new BigNumber(amount).plus(depositSumm).toFixed(),
+        new BigNumber(amount).plus(depositSum).toFixed(),
       ),
     );
   }
