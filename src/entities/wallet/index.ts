@@ -43,6 +43,7 @@ export const $nearWallet = createStore<null | {
 }>(null);
 export const $roketoWallet = createStore<null | ApiControl>(null);
 export const $tokens = createStore<Record<string, RichToken>>({});
+export const $listedTokens = createStore<Record<string, RichToken>>({});
 export const $priceOracle = createStore<PriceOracle>({
   getPriceInUsd: () => '0',
 });
@@ -325,6 +326,11 @@ sample({
   clock: createRoketoWalletFx.doneData,
   fn: ({tokens}) => tokens,
   target: $tokens,
+});
+sample({
+  clock: createRoketoWalletFx.doneData,
+  target: $listedTokens,
+  fn: ({tokens}) => tokens,
 });
 /**
  * when price oracle is initialized allow app to consume it from $priceOracle store
