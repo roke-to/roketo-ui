@@ -173,10 +173,15 @@ export async function transfer({
   tokenAccountId: string;
   transactionMediator: TransactionMediator;
 }) {
-  const [isRegisteredSender, isRegisteredReceiver] = await Promise.all([
-    isRegistered({accountId: payload.owner_id, tokenContract}),
-    isRegistered({accountId: payload.receiver_id, tokenContract}),
-  ]);
+  const storageDepositAccountIds = [
+    env.ROKETO_CONTRACT_NAME,
+    env.ROKETO_FINANCE_CONTRACT_NAME,
+    payload.owner_id,
+    payload.receiver_id,
+  ];
+  const isRegisteredAccountIds = await Promise.all(
+    storageDepositAccountIds.map((accountId) => isRegistered({accountId, tokenContract})),
+  );
 
   const actions = [
     transactionMediator.functionCall(
@@ -196,35 +201,24 @@ export async function transfer({
     ),
   ];
 
-  let depositSumm = new BigNumber(0);
-  /** account creation costs 0.0025 NEAR for storage */
-  const depositAmmount = utils.format.parseNearAmount('0.0025')!;
+  let depositSum = new BigNumber(0);
+  /** account creation costs 0.00125 NEAR for storage */
+  const depositAmount = utils.format.parseNearAmount('0.00125')!;
 
-  if (!isRegisteredSender) {
-    actions.unshift(
-      transactionMediator.functionCall(
-        'storage_deposit',
-        {account_id: payload.owner_id},
-        '30000000000000',
-        depositAmmount,
-      ),
-    );
+  storageDepositAccountIds.forEach((accountId, index) => {
+    if (!isRegisteredAccountIds[index]) {
+      actions.unshift(
+        transactionMediator.functionCall(
+          'storage_deposit',
+          {account_id: accountId},
+          '30000000000000',
+          depositAmount,
+        ),
+      );
 
-    depositSumm = depositSumm.plus(depositAmmount);
-  }
-
-  if (!isRegisteredReceiver) {
-    actions.unshift(
-      transactionMediator.functionCall(
-        'storage_deposit',
-        {account_id: payload.receiver_id},
-        '30000000000000',
-        depositAmmount,
-      ),
-    );
-
-    depositSumm = depositSumm.plus(depositAmmount);
-  }
+      depositSum = depositSum.plus(depositAmount);
+    }
+  });
 
   if (isWNearTokenId(tokenAccountId)) {
     actions.unshift(
@@ -232,7 +226,7 @@ export async function transfer({
         'near_deposit',
         {},
         '30000000000000',
-        new BigNumber(amount).plus(depositSumm).toFixed(),
+        new BigNumber(amount).plus(depositSum).toFixed(),
       ),
     );
   }
