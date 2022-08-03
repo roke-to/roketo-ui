@@ -18,17 +18,19 @@ export const countTotalUSDWithdrawal = (
   tokens: Record<string, RichToken>,
   priceOracle: PriceOracle,
 ) => {
-  const availableForWithdrawal = streams.reduce((withdrawalSum, inputStream) => {
-    const tokenAccountId = inputStream.token_account_id;
-    const {meta} = tokens[tokenAccountId];
+  const availableForWithdrawal = streams
+    .filter((stream) => tokens[stream.token_account_id])
+    .reduce((withdrawalSum, inputStream) => {
+      const tokenAccountId = inputStream.token_account_id;
+      const {meta} = tokens[tokenAccountId];
 
-    const withdrawal = getAvailableToWithdraw(inputStream).toFixed();
-    const amountForDisplay = toHumanReadableValue(meta.decimals, withdrawal, MANTISSA);
+      const withdrawal = getAvailableToWithdraw(inputStream).toFixed();
+      const amountForDisplay = toHumanReadableValue(meta.decimals, withdrawal, MANTISSA);
 
-    const amountInUSD = priceOracle.getPriceInUsd(tokenAccountId, amountForDisplay);
+      const amountInUSD = priceOracle.getPriceInUsd(tokenAccountId, amountForDisplay);
 
-    return withdrawalSum.plus(amountInUSD);
-  }, INITIAL_VALUE);
+      return withdrawalSum.plus(amountInUSD);
+    }, INITIAL_VALUE);
 
   return Number(availableForWithdrawal.toFixed(0));
 };
