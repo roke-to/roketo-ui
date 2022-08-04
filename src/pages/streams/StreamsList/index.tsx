@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import copy from 'clipboard-copy';
 import {useList, useStore, useStoreMap} from 'effector-react';
-import React, {memo} from 'react';
+import React, {memo, useCallback} from 'react';
 import {Link} from 'react-router-dom';
 
 import {StreamListControls} from '~/features/stream-control/StreamControls';
@@ -21,11 +21,14 @@ import {LinkIcon} from '@ui/icons/Link';
 
 import {streamCardDataDefaults, streamProgressDataDefaults} from '../constants';
 import {
+  $canBeLoadedMore,
   $filteredStreams,
+  $moreStreamsIsLoading,
   $selectedStream,
   $streamCardsData,
   $streamListData,
   $streamsProgress,
+  loadMoreStreamsPressed,
 } from '../model';
 import {StreamProgress} from '../StreamProgress';
 import activeStreamIcon from './activeStream.svg';
@@ -260,12 +263,28 @@ const Placeholder = ({onCreateStreamClick}: {onCreateStreamClick(): void}) => {
   if (!hasStreams) {
     return (
       <>
-        <div>You don't have any streams yet.</div>
+        <div>You don&apos;t have any streams yet.</div>
         <Button onClick={onCreateStreamClick}>Create First Stream</Button>
       </>
     );
   }
   return <div>No streams matching your filters. Try selecting different ones</div>;
+};
+
+const LoadMore = () => {
+  const loadMoreHandler = useCallback(() => loadMoreStreamsPressed(), []);
+  const canBeLoadedMore = useStore($canBeLoadedMore);
+  const isLoading = useStore($moreStreamsIsLoading);
+
+  if (!canBeLoadedMore) return null;
+
+  return (
+    <div className={styles.loadMoreSection}>
+      <Button disabled={isLoading} className={styles.button} onClick={loadMoreHandler}>
+        {isLoading ? 'More streams loading…' : 'Load more streams'}
+      </Button>
+    </div>
+  );
 };
 
 export const StreamsList = ({
@@ -304,5 +323,6 @@ export const StreamsList = ({
         ),
       })}
     </section>
+    <LoadMore />
   </div>
 );

@@ -5,6 +5,7 @@ import Modal from 'react-modal';
 
 import {blurGate} from '~/entities/blur';
 import {$isSmallScreen} from '~/entities/screen';
+import {$allStreams} from '~/entities/wallet';
 
 import {Filter, FilterOptionWithCounter} from '~/shared/kit/Filter';
 import {RadioButton} from '~/shared/kit/RadioButton';
@@ -14,7 +15,6 @@ import {OrderType, SortIcon} from '@ui/icons/Sort';
 
 import {directionOptions, sortOptions, statusOptions} from '../constants';
 import {
-  $allStreams,
   $statusFilterCounts,
   $streamFilter,
   $streamSort,

@@ -1,9 +1,10 @@
 import type {Notification, UpdateUserDto, User} from '@roketo/api-client';
-import {attach, createEffect, createEvent, createStore, sample} from 'effector';
+import {attach, combine, createEffect, createEvent, createStore, sample} from 'effector';
 import {ConnectedWalletAccount, Near} from 'near-api-js';
 
 import {
   createRichContracts,
+  getAccount,
   getIncomingStreams,
   getOutgoingStreams,
   initApiControl,
@@ -62,6 +63,11 @@ export const $isSignedIn = $nearWallet.map((wallet) => wallet?.auth.signedIn ?? 
 export const $account = $roketoWallet.map((wallet) => wallet?.roketoAccount ?? null);
 
 export const $accountId = $nearWallet.map((wallet) => wallet?.auth.accountId ?? null);
+
+export const $activeStreamsCount = $account.map((account) =>
+  account ? account.active_incoming_streams + account.active_outgoing_streams : 0,
+);
+export const $allStreams = $accountStreams.map(({inputs, outputs}) => [...inputs, ...outputs]);
 
 export const $user = createStore<Partial<User>>({
   name: '',
@@ -162,19 +168,38 @@ const createRoketoWalletFx = createEffect(
     transactionMediator: TransactionMediator;
   }) => initApiControl({account, transactionMediator}),
 );
+const loadAccountFx = attach({
+  source: $roketoWallet,
+  async effect(wallet) {
+    if (wallet) {
+      return getAccount(wallet);
+    }
+  },
+});
 export const $appLoading = createStore(true);
 const createPriceOracleFx = createEffect((account: ConnectedWalletAccount) =>
   initPriceOracle({account}),
 );
-const requestAccountStreamsFx = createEffect(
-  async ({accountId, contract}: Pick<ApiControl, 'accountId' | 'contract'>) => {
+
+export const $loadedStreamsCount = $allStreams.map((streams) => streams.length);
+export const $leftToLoadStreams = combine(
+  $loadedStreamsCount,
+  $activeStreamsCount,
+  (loaded, active) => Math.max(active - loaded, 0),
+);
+
+const requestAccountStreamsFx = attach({
+  source: {streams: $accountStreams},
+  async effect({streams}, {accountId, contract}: Pick<ApiControl, 'accountId' | 'contract'>) {
+    const inputStreamsToLoad = streams.inputs.length === 0 ? 50 : streams.inputs.length;
+    const outputStreamsToLoad = streams.outputs.length === 0 ? 50 : streams.outputs.length;
     const [inputs, outputs] = await Promise.all([
-      getIncomingStreams({from: 0, limit: 500, accountId, contract}),
-      getOutgoingStreams({from: 0, limit: 500, accountId, contract}),
+      getIncomingStreams({from: 0, limit: inputStreamsToLoad, accountId, contract}),
+      getOutgoingStreams({from: 0, limit: outputStreamsToLoad, accountId, contract}),
     ]);
     return {inputs, outputs};
   },
-);
+});
 
 const requestUnknownTokensFx = createEffect(
   async ({
@@ -231,8 +256,11 @@ sample({
   clock: [lastCreatedStreamUpdated, streamsRevalidationTimerFx.doneData],
   source: $roketoWallet,
   filter: Boolean,
-  fn: ({accountId, contract}) => ({accountId, contract}),
   target: requestAccountStreamsFx,
+});
+sample({
+  clock: streamsRevalidationTimerFx.doneData,
+  target: loadAccountFx,
 });
 /**
  * when account streams successfully requested
@@ -320,6 +348,16 @@ sample({
 });
 sample({
   clock: createRoketoWalletFx.doneData,
+  target: $roketoWallet,
+});
+sample({
+  clock: loadAccountFx.doneData,
+  source: $roketoWallet,
+  filter: (wallet, account) => wallet !== null && Boolean(account),
+  fn: (wallet, account) => ({
+    ...wallet!,
+    roketoAccount: account!,
+  }),
   target: $roketoWallet,
 });
 sample({

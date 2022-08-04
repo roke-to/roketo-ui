@@ -3,7 +3,7 @@
 .container {
   --progress-bar-height: 28px;
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   -ms-overflow-style: none; /* Internet Explorer 10+ */
   scrollbar-width: none; /* Firefox */
 
@@ -33,6 +33,22 @@
 .commentCell,
 .controlCell {
   min-height: 48px;
+}
+
+.loadMoreSection {
+  display: flex;
+  justify-content: center;
+  margin-top: 70px;
+  margin-bottom: 140px;
+}
+
+.button {
+  padding: 12px 20px;
+  color: #496ef3;
+  background: #f0f6ff;
+  border-radius: 24px;
+  border-color: #f0f6ff;
+  align-self: end;
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {

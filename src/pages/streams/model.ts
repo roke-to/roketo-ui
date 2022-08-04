@@ -1,9 +1,10 @@
 import {isPast} from 'date-fns';
-import {combine, createEffect, createEvent, createStore, sample} from 'effector';
+import {attach, combine, createEffect, createEvent, createStore, sample} from 'effector';
+import {and, not} from 'patronum';
 import {generatePath} from 'react-router-dom';
 
-import {colorDescriptions} from '~/features/create-stream/constants';
 import type {FormValues} from '~/features/create-stream/constants';
+import {colorDescriptions} from '~/features/create-stream/constants';
 import {getTokensPerSecondCount} from '~/features/create-stream/lib';
 import {formatTimeLeft, parseColor, parseComment, streamViewData} from '~/features/roketo-resource';
 
@@ -11,13 +12,15 @@ import {$isSmallScreen} from '~/entities/screen';
 import {
   $accountId,
   $accountStreams,
+  $allStreams,
+  $leftToLoadStreams,
   $nearWallet,
   $priceOracle,
   $roketoWallet,
   $tokens,
 } from '~/entities/wallet';
 
-import {createStream} from '~/shared/api/methods';
+import {createStream, getIncomingStreams, getOutgoingStreams} from '~/shared/api/methods';
 import {STREAM_DIRECTION, STREAM_STATUS} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {
@@ -67,8 +70,6 @@ export const $streamListData = createStore(
   {updateFilter: areObjectsDifferent},
 );
 
-export const $allStreams = $accountStreams.map(({inputs, outputs}) => [...inputs, ...outputs]);
-
 export const $filteredStreams = createStore<RoketoStream[]>([], {updateFilter: areArraysDifferent});
 
 export const $streamFilter = createStore({
@@ -80,6 +81,7 @@ export const $streamFilter = createStore({
 export const changeDirectionFilter = createEvent<DirectionFilter>();
 export const changeStatusFilter = createEvent<StatusFilter>();
 export const changeTextFilter = createEvent<string>();
+export const loadMoreStreamsPressed = createEvent<void>();
 
 export const $statusFilterCounts = createStore<Record<StatusFilter, number>>({
   All: 0,
@@ -90,6 +92,37 @@ export const $statusFilterCounts = createStore<Record<StatusFilter, number>>({
 
 export const changeStreamSort = createEvent<StreamSort>();
 export const $streamSort = createStore<StreamSort>(sorts.mostRecent);
+
+const $pageSize = createStore(50);
+
+export const $canBeLoadedMore = $leftToLoadStreams.map(
+  (streamsLeftToLoad) => streamsLeftToLoad > 0,
+);
+
+const loadMoreStreamsFx = attach({
+  source: {wallet: $roketoWallet, streams: $accountStreams, pageSize: $pageSize},
+  async effect({wallet, streams, pageSize}) {
+    if (wallet) {
+      const [inputs, outputs] = await Promise.all([
+        getIncomingStreams({
+          accountId: wallet.accountId,
+          contract: wallet.contract,
+          from: streams.inputs.length,
+          limit: pageSize,
+        }),
+        getOutgoingStreams({
+          accountId: wallet.accountId,
+          contract: wallet.contract,
+          from: streams.outputs.length,
+          limit: pageSize,
+        }),
+      ]);
+      return {inputs, outputs};
+    }
+  },
+});
+
+export const $moreStreamsIsLoading = loadMoreStreamsFx.pending;
 
 export const handleCreateStreamFx = createProtectedEffect({
   source: combine($roketoWallet, $nearWallet, (roketo, near) =>
@@ -352,3 +385,21 @@ sample({
 $streamFilter.on(changeDirectionFilter, (filter, direction) => ({...filter, direction}));
 $streamFilter.on(changeStatusFilter, (filter, status) => ({...filter, status}));
 $streamFilter.on(changeTextFilter, (filter, text) => ({...filter, text}));
+
+sample({
+  clock: loadMoreStreamsFx.doneData,
+  source: $accountStreams,
+  filter: (_, received) => Boolean(received),
+  fn: (loaded, received) => ({
+    streamsLoaded: loaded.streamsLoaded,
+    inputs: [...loaded.inputs, ...received!.inputs],
+    outputs: [...loaded.outputs, ...received!.outputs],
+  }),
+  target: $accountStreams,
+});
+
+sample({
+  clock: loadMoreStreamsPressed,
+  filter: and($canBeLoadedMore, not(loadMoreStreamsFx.pending)),
+  target: loadMoreStreamsFx,
+});

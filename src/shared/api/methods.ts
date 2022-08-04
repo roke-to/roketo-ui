@@ -254,7 +254,7 @@ export async function transfer({
   });
 }
 
-async function getAccount({
+export async function getAccount({
   contract,
   accountId,
 }: {
