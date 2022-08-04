@@ -324,12 +324,7 @@ sample({
 });
 sample({
   clock: createRoketoWalletFx.doneData,
-  fn: ({tokens}) => tokens,
-  target: $tokens,
-});
-sample({
-  clock: createRoketoWalletFx.doneData,
-  target: $listedTokens,
+  target: [$tokens, $listedTokens],
   fn: ({tokens}) => tokens,
 });
 /**
