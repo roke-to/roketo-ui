@@ -5,8 +5,8 @@ import {env, GAS_SIZE} from '~/shared/config';
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 
 import type {RoketoContract} from './roketo/interfaces/contracts';
-import type {RoketoAccount, RoketoStream} from './roketo/interfaces/entities';
-import type {ApiControl, FTContract, TransactionMediator} from './types';
+import type {RoketoAccount, RoketoStream, RoketoTokenMeta} from './roketo/interfaces/entities';
+import type {ApiControl, FTContract, RichToken, TransactionMediator} from './types';
 
 export async function initApiControl({
   account,
@@ -21,9 +21,34 @@ export async function initApiControl({
     getAccount({contract, accountId}),
     getDao({contract}),
   ]);
-  const richTokens = Object.fromEntries(
+  const richTokens = await createRichContracts({
+    account,
+    tokensInfo: Object.entries(dao.tokens),
+  });
+  return {
+    account,
+    accountId,
+    contract,
+    roketoAccount,
+    dao,
+    tokens: richTokens,
+    transactionMediator,
+  };
+}
+
+export async function createRichContracts({
+  tokensInfo,
+  account,
+}: {
+  tokensInfo: Array<readonly [tokenAccountId: string, roketoMeta: RoketoTokenMeta]>;
+  account: Account;
+}): Promise<{
+  [tokenId: string]: RichToken;
+}> {
+  const {accountId} = account;
+  return Object.fromEntries(
     await Promise.all(
-      Object.entries(dao.tokens).map(async ([tokenAccountId, roketoMeta]) => {
+      tokensInfo.map(async ([tokenAccountId, roketoMeta]) => {
         const tokenContract = createTokenContract({account, tokenAccountId});
         const [meta, balance] = await Promise.all([
           getTokenMetadata({tokenContract}),
@@ -41,15 +66,6 @@ export async function initApiControl({
       }),
     ),
   );
-  return {
-    account,
-    accountId,
-    contract,
-    roketoAccount,
-    dao,
-    tokens: richTokens,
-    transactionMediator,
-  };
 }
 
 function createTokenContract({

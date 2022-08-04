@@ -80,14 +80,16 @@ sample({
       }
     }
     return {
-      tokenData: Object.values(tokensData).map((value) => {
-        const {meta} = tokens[value.tokenAccountId];
-        return {
-          tokenAccountId: value.tokenAccountId,
-          amount: formatAmount(meta.decimals, value.available.toFixed()),
-          symbol: meta.symbol,
-        };
-      }),
+      tokenData: Object.values(tokensData)
+        .filter((value) => tokens[value.tokenAccountId])
+        .map((value) => {
+          const {meta} = tokens[value.tokenAccountId];
+          return {
+            tokenAccountId: value.tokenAccountId,
+            amount: formatAmount(meta.decimals, value.available.toFixed()),
+            symbol: meta.symbol,
+          };
+        }),
       streamIds,
     };
   },

@@ -18,17 +18,19 @@ export const countTotalUSDWithdrawal = (
   tokens: Record<string, RichToken>,
   priceOracle: PriceOracle,
 ) => {
-  const availableForWithdrawal = streams.reduce((withdrawalSum, inputStream) => {
-    const tokenAccountId = inputStream.token_account_id;
-    const {meta} = tokens[tokenAccountId];
+  const availableForWithdrawal = streams
+    .filter((stream) => tokens[stream.token_account_id])
+    .reduce((withdrawalSum, inputStream) => {
+      const tokenAccountId = inputStream.token_account_id;
+      const {meta} = tokens[tokenAccountId];
 
-    const withdrawal = getAvailableToWithdraw(inputStream).toFixed();
-    const amountForDisplay = toHumanReadableValue(meta.decimals, withdrawal, MANTISSA);
+      const withdrawal = getAvailableToWithdraw(inputStream).toFixed();
+      const amountForDisplay = toHumanReadableValue(meta.decimals, withdrawal, MANTISSA);
 
-    const amountInUSD = priceOracle.getPriceInUsd(tokenAccountId, amountForDisplay);
+      const amountInUSD = priceOracle.getPriceInUsd(tokenAccountId, amountForDisplay);
 
-    return withdrawalSum.plus(amountInUSD);
-  }, INITIAL_VALUE);
+      return withdrawalSum.plus(amountInUSD);
+    }, INITIAL_VALUE);
 
   return Number(availableForWithdrawal.toFixed(0));
 };
@@ -40,35 +42,37 @@ export const collectTotalFinancialAmountInfo = (
 ) => {
   const initialInfo = {total: INITIAL_VALUE, streamed: INITIAL_VALUE, withdrawn: INITIAL_VALUE};
 
-  const totalFinancialInfo = streams.reduce((financialInfoAccumulator, stream) => {
-    const tokenAccountId = stream.token_account_id;
-    const {meta} = tokens[tokenAccountId];
+  const totalFinancialInfo = streams
+    .filter((stream) => tokens[stream.token_account_id])
+    .reduce((financialInfoAccumulator, stream) => {
+      const tokenAccountId = stream.token_account_id;
+      const {meta} = tokens[tokenAccountId];
 
-    const {progress} = streamViewData(stream);
+      const {progress} = streamViewData(stream);
 
-    const streamedAmountForDisplay = toHumanReadableValue(
-      meta.decimals,
-      progress.streamed,
-      MANTISSA,
-    );
-    const streamedUSD = priceOracle.getPriceInUsd(tokenAccountId, streamedAmountForDisplay);
+      const streamedAmountForDisplay = toHumanReadableValue(
+        meta.decimals,
+        progress.streamed,
+        MANTISSA,
+      );
+      const streamedUSD = priceOracle.getPriceInUsd(tokenAccountId, streamedAmountForDisplay);
 
-    const fullAmountForDisplay = toHumanReadableValue(meta.decimals, progress.full, MANTISSA);
-    const fullUSD = priceOracle.getPriceInUsd(tokenAccountId, fullAmountForDisplay);
+      const fullAmountForDisplay = toHumanReadableValue(meta.decimals, progress.full, MANTISSA);
+      const fullUSD = priceOracle.getPriceInUsd(tokenAccountId, fullAmountForDisplay);
 
-    const withdrawnAmountForDisplay = toHumanReadableValue(
-      meta.decimals,
-      progress.withdrawn,
-      MANTISSA,
-    );
-    const withdrawnUSD = priceOracle.getPriceInUsd(tokenAccountId, withdrawnAmountForDisplay);
+      const withdrawnAmountForDisplay = toHumanReadableValue(
+        meta.decimals,
+        progress.withdrawn,
+        MANTISSA,
+      );
+      const withdrawnUSD = priceOracle.getPriceInUsd(tokenAccountId, withdrawnAmountForDisplay);
 
-    return {
-      total: financialInfoAccumulator.total.plus(fullUSD),
-      streamed: financialInfoAccumulator.streamed.plus(streamedUSD),
-      withdrawn: financialInfoAccumulator.withdrawn.plus(withdrawnUSD),
-    };
-  }, initialInfo);
+      return {
+        total: financialInfoAccumulator.total.plus(fullUSD),
+        streamed: financialInfoAccumulator.streamed.plus(streamedUSD),
+        withdrawn: financialInfoAccumulator.withdrawn.plus(withdrawnUSD),
+      };
+    }, initialInfo);
 
   return {
     total: Number(totalFinancialInfo.total.toFixed(0)),
