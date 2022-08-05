@@ -94,7 +94,7 @@ export const StreamDurationCalcField = (props: StreamDurationCalcFieldProps) => 
           value={inputValue ?? ''}
           placeholder="2w 7d 1h 10m"
           onChange={handleInputChangeFactory}
-          testId={testIds.createStreamMinutesInput}
+          testId={testIds.createStreamDurationInput}
         />
         <ClearButton onCLick={() => setInputValue('')} />
       </div>
