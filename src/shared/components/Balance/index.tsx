@@ -27,15 +27,18 @@ export enum DisplayMode {
 type BalanceProps = {
   tokenAccountId: string;
   className?: string;
+  isShort?: boolean;
   // Display balance in USD or in Crypto currency
   mode?: DisplayMode;
 };
 
-export function Balance({tokenAccountId, className, mode = DisplayMode.CRYPTO}: BalanceProps) {
+export function Balance({
+  tokenAccountId,
+  className,
+  isShort,
+  mode = DisplayMode.CRYPTO,
+}: BalanceProps) {
   const priceOracle = useStore($priceOracle);
-
-  const token = useToken(tokenAccountId);
-
   const displayedCryptoAmount = useBalanceForToken(tokenAccountId);
 
   const showInUSD = mode === DisplayMode.USD;
@@ -43,11 +46,6 @@ export function Balance({tokenAccountId, className, mode = DisplayMode.CRYPTO}: 
   const amount = showInUSD
     ? priceOracle.getPriceInUsd(tokenAccountId, displayedCryptoAmount) ?? 0
     : displayedCryptoAmount;
-  const currencySymbol = showInUSD ? '$' : token?.meta.symbol ?? '$';
 
-  return (
-    <span className={className}>
-      {currencySymbol} {amount}
-    </span>
-  );
+  return <span className={className}>{`${!isShort ? 'Balance: ' : ''}${amount}`}</span>;
 }

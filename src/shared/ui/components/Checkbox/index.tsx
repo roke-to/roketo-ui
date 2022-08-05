@@ -20,7 +20,7 @@ export const Checkbox: FC<CheckboxProps> = ({
   <label className={cn(styles.root, disabled && styles.disabled, className)}>
     <input
       type="checkbox"
-      className={cn(styles.checkbox, {[styles.error]: hasError})}
+      className={cn({[styles.error]: hasError})}
       disabled={disabled}
       {...rest}
     />

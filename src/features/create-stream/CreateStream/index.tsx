@@ -5,11 +5,13 @@ import React, {useState} from 'react';
 
 import {$listedTokens} from '~/entities/wallet';
 
+import {countSrorageDeposit} from '~/shared/api/methods';
 import {formatAmount} from '~/shared/api/token-formatter';
 import {Balance, DisplayMode} from '~/shared/components/Balance';
 import {FormikCheckbox} from '~/shared/components/FormikCheckbox';
 import {FormikInput} from '~/shared/components/FormikInput';
 import {FormikTextArea} from '~/shared/components/FormikTextArea';
+import {FormikToggle} from '~/shared/components/FormikToggle';
 import {env} from '~/shared/config';
 import {testIds} from '~/shared/constants';
 
@@ -19,11 +21,41 @@ import {ErrorSign} from '@ui/icons/ErrorSign';
 import {CliffPeriodPicker} from '../CliffPeriodPicker';
 import {ColorPicker} from '../ColorPicker';
 import {COMMENT_TEXT_LIMIT, FormValues, INITIAL_FORM_VALUES, StreamColor} from '../constants';
-import {getStreamingSpeed, getTokensPerSecondCount} from '../lib';
 import {StreamDurationCalcField} from '../StreamDurationCalcField';
 import {TokenSelector} from '../TokenSelector';
+import {ArrowIcon} from './ArrowIcon';
 import {formValidationSchema} from './model';
 import styles from './styles.module.scss';
+
+type CommissionDetailsProps = {
+  amount: number;
+  tokenSymbol: string;
+  tokenDecimals: number;
+  commission: number | string;
+  deposit: number;
+};
+
+const CommissionDetails = ({
+  amount,
+  tokenSymbol,
+  tokenDecimals,
+  commission,
+  deposit,
+}: CommissionDetailsProps) => (
+  <div className={styles.commissionBlock}>
+    <div className={styles.commissionTitle}>Total amount and fee: </div>
+    <div className={styles.commissionWrap}>
+      <div>Amount to be streamed</div>
+      <div>
+        {amount} {tokenSymbol}
+      </div>
+      <div>Stream creation fee</div>
+      <div>{formatAmount(tokenDecimals, commission)} NEAR</div>
+      <div>Storage deposit fee</div>
+      <div>{deposit} NEAR</div>
+    </div>
+  </div>
+);
 
 type CreateStreamProps = {
   onFormSubmit: (values: FormValues) => Promise<void>;
@@ -31,33 +63,12 @@ type CreateStreamProps = {
   submitting: boolean;
 };
 
-const DELAYED_DESCRIPTION = (
-  <div>
-    Delayed start
-    <div className={styles.subDescription}>
-      Select this if you want the stream not to start immediately,
-      <br />
-      you'll need to start it manually from stream page
-      <br />
-      (streams with cliff cannot be delayed)
-    </div>
-  </div>
-);
-
-const LOCK_DESCRIPTION = (
-  <div>
-    Uneditable stream
-    <div className={styles.subDescription}>
-      If you select this field, you will not be able
-      <br />
-      to carry out any actions on the stream
-    </div>
-  </div>
-);
-
 export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStreamProps) => {
   const tokens = useStore($listedTokens);
   const [submitError, setError] = useState<Error | null>(null);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [streamAmount, setStreamAmount] = useState(0);
+  const [deposit, setDeposit] = useState(0);
 
   const handleFormSubmit = (formValues: FormValues) => {
     onFormSubmit(formValues).catch((error) => setError(error));
@@ -75,10 +86,28 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
         validateOnMount={false}
       >
         {({values, handleSubmit, setFieldValue, setFieldTouched, validateField}) => {
-          const activeTokenAccountId = values.token;
-          const token = tokens[activeTokenAccountId];
+          const senderTokenAccountId = values.token;
+          const token = tokens[senderTokenAccountId];
+
+          const handleReceiverChanged = async (event: React.FormEvent<HTMLFormElement>) => {
+            const receiverTokenAccountId = (event.target as HTMLInputElement).value;
+            const {tokenContract} = token;
+
+            const {depositSumm} = await countSrorageDeposit({
+              tokenContract,
+              senderTokenAccountId,
+              receiverTokenAccountId,
+            });
+
+            setDeposit(depositSumm.toNumber() / 10 ** 24);
+          };
+
+          const handleAmountChanged = (event: React.FormEvent<HTMLFormElement>) => {
+            setStreamAmount(Number((event.target as HTMLInputElement).value));
+          };
+
           if (!token) return null;
-          const {meta: tokenMeta, roketoMeta} = token;
+          const {meta: tokenMeta, commission} = token;
 
           const onChoose = async (fieldName: string, value: any) => {
             await setFieldValue(fieldName, value, false);
@@ -86,34 +115,38 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
             validateField(fieldName);
           };
 
-          const rawSpeed = getTokensPerSecondCount(tokenMeta, values.deposit, values.duration);
-          const meaningfulSpeed = getStreamingSpeed(rawSpeed, token);
-
           return (
             <form onSubmit={handleSubmit} className={styles.form}>
               <Field
+                name="delayed"
+                disabled={Boolean(values.cliffDateTime)}
+                type="checkbox"
+                component={FormikToggle}
+                data-testid={testIds.createStreamDelayedCheckbox}
+                className={cn(styles.formBlock, styles.start)}
+                description="Start immediately"
+                hint={
+                  values.delayed
+                    ? 'The stream will start immediately'
+                    : 'You can start stream manualy later'
+                }
+                checked={values.cliffDateTime ? false : values.delayed}
+              />
+
+              <Field
                 isRequired
                 name="receiver"
-                label="Receiver:"
+                label="Receiver"
                 component={FormikInput}
                 placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
                 className={cn(styles.formBlock, styles.receiver)}
                 data-testid={testIds.createStreamReceiverInput}
-              />
-
-              <Field
-                isRequired
-                name="token"
-                label="Token:"
-                activeTokenAccountId={values.token}
-                onTokenChoose={(tokenAccountId: string) => onChoose('token', tokenAccountId)}
-                component={TokenSelector}
-                className={cn(styles.formBlock, styles.token)}
+                onBlur={handleReceiverChanged}
               />
 
               <Field
                 name="color"
-                label="Color:"
+                label="Add tag"
                 component={ColorPicker}
                 className={cn(styles.formBlock, styles.color)}
                 onChoose={(color: StreamColor) => onChoose('color', color)}
@@ -122,73 +155,85 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
               <Field
                 isRequired
                 name="deposit"
-                label="Amount to stream:"
+                label="Amount to stream"
                 component={FormikInput}
                 placeholder="Amount to stream"
                 className={cn(styles.formBlock, styles.deposit)}
+                onBlur={handleAmountChanged}
                 description={
-                  <Balance tokenAccountId={activeTokenAccountId} mode={DisplayMode.CRYPTO} />
+                  <Balance tokenAccountId={senderTokenAccountId} mode={DisplayMode.CRYPTO} />
                 }
                 data-testid={testIds.createStreamAmountInput}
               />
 
               <Field
-                name="cliffDateTime"
-                label="Cliff period:"
-                component={CliffPeriodPicker}
-                onCliffDateTimeChange={(cliffDateTime: Date | null) =>
-                  onChoose('cliffDateTime', cliffDateTime)
-                }
-                className={cn(styles.formBlock, styles.cliff)}
+                isRequired
+                name="token"
+                label="Token"
+                activeTokenAccountId={values.token}
+                onTokenChoose={(tokenAccountId: string) => onChoose('token', tokenAccountId)}
+                component={TokenSelector}
+                className={cn(styles.formBlock, styles.token)}
               />
 
               <Field
                 isRequired
                 name="duration"
-                label="Stream duration:"
+                label="Stream duration"
                 component={StreamDurationCalcField}
                 onDurationChange={(duration: number) => onChoose('duration', duration)}
                 className={cn(styles.formBlock, styles.duration)}
               />
+
               <Field
                 maxLength={COMMENT_TEXT_LIMIT}
                 name="comment"
-                label="Comment:"
-                placeholder="Enter comment"
+                label="Comment"
+                placeholder="You can type something to highlight the stream"
                 component={FormikTextArea}
                 className={cn(styles.formBlock, styles.comment)}
                 data-testid={testIds.createStreamCommentInput}
               />
 
-              <Field
-                name="delayed"
-                disabled={Boolean(values.cliffDateTime)}
-                description={DELAYED_DESCRIPTION}
-                type="checkbox"
-                component={FormikCheckbox}
-                data-testid={testIds.createStreamDelayedCheckbox}
-                className={cn(styles.formBlock, styles.delayed)}
-                checked={values.cliffDateTime ? false : values.delayed}
+              <div className={styles.collapseBtnWrap}>
+                {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
+                <div className={styles.collapseBtn} onClick={() => setIsCollapsed(!isCollapsed)}>
+                  {!isCollapsed && 'More options'}
+                  {isCollapsed && 'Less options'}
+                  <ArrowIcon className={isCollapsed ? styles.rotated : ''} />
+                </div>
+              </div>
+
+              {isCollapsed && (
+                <>
+                  <Field
+                    name="cliffDateTime"
+                    label="Cliff period"
+                    component={CliffPeriodPicker}
+                    onCliffDateTimeChange={(cliffDateTime: Date | null) =>
+                      onChoose('cliffDateTime', cliffDateTime)
+                    }
+                    className={cn(styles.formBlock, styles.cliff)}
+                  />
+                  <Field
+                    name="isLocked"
+                    description="Edited stream"
+                    type="checkbox"
+                    component={FormikCheckbox}
+                    data-testid={testIds.createStreamLockedCheckbox}
+                    className={cn(styles.formBlock, styles.isLocked)}
+                  />
+                </>
+              )}
+
+              <CommissionDetails
+                amount={streamAmount}
+                tokenSymbol={token.meta.symbol}
+                tokenDecimals={tokenMeta.decimals}
+                commission={commission}
+                deposit={deposit}
               />
 
-              <Field
-                name="isLocked"
-                description={LOCK_DESCRIPTION}
-                type="checkbox"
-                component={FormikCheckbox}
-                data-testid={testIds.createStreamLockedCheckbox}
-                className={cn(styles.formBlock, styles.isLocked)}
-              />
-              <div className={cn(styles.formBlock, styles.meaningfulSpeed)}>
-                Streaming speed: {meaningfulSpeed}
-              </div>
-              {tokenMeta && (
-                <div className={styles.feeDisclaimer}>
-                  {`You will be charged
-                    ${formatAmount(tokenMeta.decimals, roketoMeta.commission_on_create)}
-                    ${tokenMeta.symbol} fee for the stream`}
-                </div>
-              )}
               <div className={cn(styles.formBlock, styles.actionButtonsWrapper)}>
                 {submitError && (
                   <div className={styles.submitError}>

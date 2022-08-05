@@ -1,5 +1,8 @@
+import cn from 'classnames';
 import React from 'react';
 import ReactModal from 'react-modal';
+
+import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
 
 import styles from './styles.module.scss';
 
@@ -14,6 +17,7 @@ type Props = {
 // eslint-disable-next-line react/prefer-stateless-function
 export const Modal = (props: Props) => {
   const {title, children, isOpen = true, onCloseModal} = props;
+  const compact = useMediaQuery('(max-width: 767px)');
 
   return (
     <ReactModal
@@ -25,7 +29,10 @@ export const Modal = (props: Props) => {
     >
       <div>
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-        <span className={styles.close} onClick={onCloseModal} />
+        <span
+          className={cn(styles.close, compact ? styles.closeMobile : '')}
+          onClick={onCloseModal}
+        />
 
         <h2 className={styles.title}>{title}</h2>
 

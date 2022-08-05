@@ -13,7 +13,8 @@
   bottom: 0;
   left: 0;
 
-  background-color: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
 
   z-index: 1000;
   pointer-events: auto;
@@ -30,7 +31,7 @@
   position: relative;
   min-width: 500px;
 
-  max-width: 95%;
+  max-width: 60%;
 
   padding: 32px;
   border-radius: 12px;
@@ -90,9 +91,28 @@
   }
 }
 
+.closeMobile {
+  width: 40px;
+  height: 40px;
+  top: -61px;
+  right: 0;
+
+  &:after,
+  &:before {
+    background: #fff;
+  }
+}
+
 /* Extra small - xs */
 @media (max-width: 767px) {
   .content {
     min-width: auto;
+    border-radius: 24px;
+    max-width: 90%;
+    padding: 16px 24px;
+  }
+
+  .overlay {
+    padding: 10vh 0;
   }
 }

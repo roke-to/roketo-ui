@@ -12,20 +12,24 @@
   align-items: center;
 
   background-color: $white;
-  border: 1px solid $grey;
+  border: 1px solid $input-blue;
 
   border-radius: 8px;
   height: 50px;
+
+  .tokenOption .tokenBalance {
+    display: none;
+  }
 }
 
 .tokenOption {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
 
   font-weight: 500;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 16px;
+  line-height: 32px;
 
   & > :not(:last-child) {
     margin-right: 6px;
@@ -40,9 +44,28 @@
 
 .dropdownMenu {
   gap: 12px;
-  margin-top: 10px;
+  margin-top: 8px;
   position: absolute;
 
   right: 50%;
   transform: translateX(50%);
+}
+
+.tokenWrap {
+  margin-left: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.tokenBalance {
+  display: block;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 15px;
+  color: $grey;
+}
+
+.tokenActive {
+  color: $input-highlight;
 }

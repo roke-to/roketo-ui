@@ -43,7 +43,8 @@ export const formValidationSchema = Yup.object().shape({
     .moreThan(0, 'Deposit should be more than 0'),
   duration: Yup.number()
     .required('Stream duration is required')
-    .moreThan(0, 'Choose stream duration'),
+    .moreThan(0, 'Choose stream duration')
+    .max(94694400, 'Max duration: 36 month'),
   autoStart: Yup.boolean(),
   comment: Yup.string().max(COMMENT_TEXT_LIMIT),
   isLocked: Yup.boolean(),

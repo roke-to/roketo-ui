@@ -54,6 +54,7 @@ export type RoketoTokenMeta = {
   collected_commission: StringInt;
   commission_coef: SafeFloat;
   commission_on_create: StringInt;
+  is_payment: boolean;
   gas_for_ft_transfer: StringInt;
   gas_for_storage_deposit: StringInt;
   is_listed: boolean;
@@ -62,7 +63,7 @@ export type RoketoTokenMeta = {
 
 // Also we can name it "roketo contract settings"
 export type RoketoDao = {
-  commission_unlisted: StringInt;
+  commission_non_payment_ft: StringInt;
   dao_id: AccountId;
   eth_near_ratio: SafeFloat;
   oracles: []; // TODO

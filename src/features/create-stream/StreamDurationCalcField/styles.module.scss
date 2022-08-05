@@ -5,12 +5,34 @@
   width: 100%;
 
   gap: 20px;
+  position: relative;
 }
 
 .durationInput {
   display: flex;
   flex-direction: column;
   flex: 1;
+}
+
+.clearBtn {
+  position: absolute;
+  top: calc(50% - 3px);
+  right: 15px;
+  transform: translate(0, -50%);
+  cursor: pointer;
+
+  &:hover svg {
+    fill: $light-black;
+  }
+
+  &:focus svg {
+    fill: $input-focus;
+  }
+
+  svg {
+    fill: $bluish-grey;
+    transition: fill 0.2s ease-in-out;
+  }
 }
 
 .input {

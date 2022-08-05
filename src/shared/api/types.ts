@@ -61,6 +61,7 @@ export type RichToken = {
   meta: TokenMetadata;
   balance: string;
   tokenContract: FTContract;
+  commission: string;
 };
 
 export type ApiControl = {
