@@ -37,7 +37,7 @@ class CreateStream {
   }
 
   setDelayed() {
-    cy.get(testSelectors.createStreamDelayedCheckbox).click();
+    cy.get(testSelectors.createStreamDelayedCheckbox).click({force: true});
   }
 
   submit() {
