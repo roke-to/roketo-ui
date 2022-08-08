@@ -58,3 +58,31 @@ export function recordUpdater<T, Src extends {id: string}>(
   );
   return areRecordsDifferent(oldData, result) ? result : oldData;
 }
+
+/**
+ * If item from `received` exists in `source` updates it, otherwise just append at the end
+ * If item exists, there will be no full list search, just check up in `cache`
+ * @param source
+ * @param received
+ * @param cache
+ */
+export function upsertWithCache<T extends {id: string}>(
+  source: T[],
+  received: T[],
+  cache: Set<string>,
+): T[] {
+  if (received.length === 0) return source;
+  const copy = [...source];
+  received.forEach((item) => {
+    if (cache.has(item.id)) {
+      const index = copy.findIndex((found) => found.id === item.id);
+      if (index !== -1) {
+        copy.splice(index, 1, item);
+      }
+    } else {
+      copy.push(item);
+      cache.add(item.id);
+    }
+  });
+  return copy;
+}

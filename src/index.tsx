@@ -9,3 +9,4 @@ const rootEl = document.getElementById('root')!;
 
 Modal.setAppElement(rootEl);
 ReactDOM.render(<App />, rootEl);
+export {upsertWithCache} from '~/shared/lib/changeDetection';

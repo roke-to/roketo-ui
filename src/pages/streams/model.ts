@@ -1,6 +1,6 @@
 import {isPast} from 'date-fns';
-import {attach, combine, createEffect, createEvent, createStore, sample} from 'effector';
-import {and, not} from 'patronum';
+import {combine, createEvent, createStore, sample} from 'effector';
+import {not} from 'patronum';
 import {generatePath} from 'react-router-dom';
 
 import type {FormValues} from '~/features/create-stream/constants';
@@ -13,14 +13,14 @@ import {
   $accountId,
   $accountStreams,
   $allStreams,
-  $leftToLoadStreams,
   $nearWallet,
   $priceOracle,
   $roketoWallet,
   $tokens,
+  resetOnLogout,
 } from '~/entities/wallet';
 
-import {createStream, getIncomingStreams, getOutgoingStreams} from '~/shared/api/methods';
+import {createStream} from '~/shared/api/methods';
 import {STREAM_DIRECTION, STREAM_STATUS} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {
@@ -62,6 +62,12 @@ import type {
 const redirectUrl = generatePath(ROUTES_MAP.streams.path);
 const returnPath = `${window.location.origin}/#${redirectUrl}`;
 
+export const changeDirectionFilter = createEvent<DirectionFilter>();
+export const changeStatusFilter = createEvent<StatusFilter>();
+export const changeTextFilter = createEvent<string>();
+export const loadMoreStreamsPressed = createEvent<void>();
+const incrementShownPages = createEvent();
+
 export const $streamListData = createStore(
   {
     streamsLoading: true,
@@ -72,18 +78,30 @@ export const $streamListData = createStore(
 
 export const $filteredStreams = createStore<RoketoStream[]>([], {updateFilter: areArraysDifferent});
 
+const $pageSize = resetOnLogout.createStore(50);
+const $shownPages = resetOnLogout.createStore(1);
+
+export const $paginatedStreams = combine(
+  $filteredStreams,
+  $pageSize,
+  $shownPages,
+  (streams, pageSize, shownPages) => streams.slice(0, pageSize * shownPages),
+);
+
+export const $canBeLoadedMore = combine(
+  $filteredStreams,
+  $pageSize,
+  $shownPages,
+  (streams, pageSize, shownPages) => streams.length - pageSize * shownPages > 0,
+);
+
 export const $streamFilter = createStore({
   direction: 'All' as DirectionFilter,
   status: 'All' as StatusFilter,
   text: '',
 });
 
-export const changeDirectionFilter = createEvent<DirectionFilter>();
-export const changeStatusFilter = createEvent<StatusFilter>();
-export const changeTextFilter = createEvent<string>();
-export const loadMoreStreamsPressed = createEvent<void>();
-
-export const $statusFilterCounts = createStore<Record<StatusFilter, number>>({
+export const $statusFilterCounts = resetOnLogout.createStore<Record<StatusFilter, number>>({
   All: 0,
   Initialized: 0,
   Active: 0,
@@ -91,38 +109,7 @@ export const $statusFilterCounts = createStore<Record<StatusFilter, number>>({
 });
 
 export const changeStreamSort = createEvent<StreamSort>();
-export const $streamSort = createStore<StreamSort>(sorts.mostRecent);
-
-const $pageSize = createStore(50);
-
-export const $canBeLoadedMore = $leftToLoadStreams.map(
-  (streamsLeftToLoad) => streamsLeftToLoad > 0,
-);
-
-const loadMoreStreamsFx = attach({
-  source: {wallet: $roketoWallet, streams: $accountStreams, pageSize: $pageSize},
-  async effect({wallet, streams, pageSize}) {
-    if (wallet) {
-      const [inputs, outputs] = await Promise.all([
-        getIncomingStreams({
-          accountId: wallet.accountId,
-          contract: wallet.contract,
-          from: streams.inputs.length,
-          limit: pageSize,
-        }),
-        getOutgoingStreams({
-          accountId: wallet.accountId,
-          contract: wallet.contract,
-          from: streams.outputs.length,
-          limit: pageSize,
-        }),
-      ]);
-      return {inputs, outputs};
-    }
-  },
-});
-
-export const $moreStreamsIsLoading = loadMoreStreamsFx.pending;
+export const $streamSort = resetOnLogout.createStore<StreamSort>(sorts.mostRecent);
 
 export const handleCreateStreamFx = createProtectedEffect({
   source: combine($roketoWallet, $nearWallet, (roketo, near) =>
@@ -166,7 +153,7 @@ export const handleCreateStreamFx = createProtectedEffect({
   },
 });
 
-export const $financialStatus = createStore({
+export const $financialStatus = resetOnLogout.createStore({
   outcomeAmountInfo: {
     total: 0,
     streamed: 0,
@@ -180,19 +167,21 @@ export const $financialStatus = createStore({
   availableForWithdrawal: 0,
 });
 
-const progressRedrawTimerFx = createEffect(
+const progressRedrawTimerFx = resetOnLogout.createEffect(
   () =>
     new Promise<void>((rs) => {
       setTimeout(rs, 1000);
     }),
 );
 
-export const $streamCardsData = createStore<Record<string, StreamCardData>>({});
+export const $streamCardsMap = resetOnLogout.createStore<Record<string, StreamCardData>>({});
 
-export const $streamsProgress = createStore<Record<string, StreamProgressData>>({});
+export const $streamsProgressMap = resetOnLogout.createStore<Record<string, StreamProgressData>>(
+  {},
+);
 
 export const selectStream = createEvent<string | null>();
-export const $selectedStream = createStore<string | null>(null);
+export const $selectedStream = resetOnLogout.createStore<string | null>(null);
 
 sample({
   source: {
@@ -222,7 +211,12 @@ sample({
 });
 
 sample({
-  source: {streams: $allStreams, filter: $streamFilter, accountId: $accountId, sort: $streamSort},
+  source: {
+    streams: $allStreams,
+    filter: $streamFilter,
+    accountId: $accountId,
+    sort: $streamSort,
+  },
   target: $filteredStreams,
   fn({streams, filter: {direction, status, text}, accountId, sort}) {
     const filters = [
@@ -260,8 +254,8 @@ sample({clock: changeStreamSort, target: $streamSort});
 /** redraw progress bar each second */
 sample({
   clock: [$filteredStreams, progressRedrawTimerFx.doneData],
-  filter: progressRedrawTimerFx.pending.map((pending) => !pending),
-  target: [progressRedrawTimerFx],
+  filter: not(progressRedrawTimerFx.pending),
+  target: progressRedrawTimerFx,
 });
 
 /**
@@ -271,12 +265,12 @@ sample({
 sample({
   clock: [$filteredStreams, $tokens, progressRedrawTimerFx.doneData],
   source: {
-    oldData: $streamsProgress,
+    oldData: $streamsProgressMap,
     accountId: $accountId,
     tokens: $tokens,
     streams: $filteredStreams,
   },
-  target: $streamsProgress,
+  target: $streamsProgressMap,
   fn: ({oldData, accountId, streams, tokens}) =>
     recordUpdater(oldData, streams, (stream) => {
       const {token_account_id: tokenId, tokens_per_sec: tokensPerSec} = stream;
@@ -344,7 +338,7 @@ sample({
 
 sample({
   clock: $filteredStreams,
-  source: {accountId: $accountId, oldData: $streamCardsData},
+  source: {accountId: $accountId, oldData: $streamCardsMap},
   fn: ({accountId, oldData}, streams) =>
     recordUpdater(oldData, streams, (stream, id) => {
       const direction = getStreamDirection(stream, accountId);
@@ -364,7 +358,7 @@ sample({
         iconType,
       };
     }),
-  target: $streamCardsData,
+  target: $streamCardsMap,
 });
 
 sample({
@@ -386,20 +380,12 @@ $streamFilter.on(changeDirectionFilter, (filter, direction) => ({...filter, dire
 $streamFilter.on(changeStatusFilter, (filter, status) => ({...filter, status}));
 $streamFilter.on(changeTextFilter, (filter, text) => ({...filter, text}));
 
-sample({
-  clock: loadMoreStreamsFx.doneData,
-  source: $accountStreams,
-  filter: (_, received) => Boolean(received),
-  fn: (loaded, received) => ({
-    streamsLoaded: loaded.streamsLoaded,
-    inputs: [...loaded.inputs, ...received!.inputs],
-    outputs: [...loaded.outputs, ...received!.outputs],
-  }),
-  target: $accountStreams,
-});
+$shownPages.reset($streamFilter);
 
 sample({
   clock: loadMoreStreamsPressed,
-  filter: and($canBeLoadedMore, not(loadMoreStreamsFx.pending)),
-  target: loadMoreStreamsFx,
+  filter: $canBeLoadedMore,
+  target: incrementShownPages,
 });
+
+$shownPages.on(incrementShownPages, (shownPages) => shownPages + 1);

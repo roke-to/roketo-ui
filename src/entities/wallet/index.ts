@@ -1,5 +1,5 @@
 import type {Notification, UpdateUserDto, User} from '@roketo/api-client';
-import {attach, combine, createEffect, createEvent, createStore, sample} from 'effector';
+import {attach, createDomain, createEffect, createEvent, createStore, sample} from 'effector';
 import {ConnectedWalletAccount, Near} from 'near-api-js';
 
 import {
@@ -14,47 +14,32 @@ import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
 import {notificationsApiClient, tokenProvider, usersApiClient} from '~/shared/api/roketo-client';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import type {ApiControl, NearAuth, RichToken, TransactionMediator} from '~/shared/api/types';
-import {getChangedFields} from '~/shared/lib/changeDetection';
+import {getChangedFields, upsertWithCache} from '~/shared/lib/changeDetection';
 
-async function retry<T>(cb: () => Promise<T>) {
-  const retryCount = 3;
-  let error: unknown;
-  for (let i = 0; i <= retryCount; i += 1) {
-    try {
-      if (i > 0) {
-        // eslint-disable-next-line no-await-in-loop
-        await tokenProvider.refreshToken();
-      }
-      // eslint-disable-next-line no-await-in-loop
-      return await cb();
-    } catch (err: any) {
-      if (!err.message.startsWith('HTTP-Code: 401')) throw err;
-      error = err;
-    }
-  }
-  throw error;
-}
+export const resetOnLogout = createDomain();
 
 export const initWallets = createEvent();
 
-export const $nearWallet = createStore<null | {
+export const $nearWallet = resetOnLogout.createStore<null | {
   near: Near;
   auth: NearAuth;
   walletType: 'near' | 'sender';
 }>(null);
-export const $roketoWallet = createStore<null | ApiControl>(null);
-export const $tokens = createStore<Record<string, RichToken>>({});
-export const $listedTokens = createStore<Record<string, RichToken>>({});
-export const $priceOracle = createStore<PriceOracle>({
+export const $roketoWallet = resetOnLogout.createStore<null | ApiControl>(null);
+export const $tokens = resetOnLogout.createStore<Record<string, RichToken>>({});
+export const $listedTokens = resetOnLogout.createStore<Record<string, RichToken>>({});
+export const $priceOracle = resetOnLogout.createStore<PriceOracle>({
   getPriceInUsd: () => '0',
 });
-export const $accountStreams = createStore<{
+export const $accountStreams = resetOnLogout.createStore<{
   inputs: RoketoStream[];
   outputs: RoketoStream[];
+  idsCache: Set<string>;
   streamsLoaded: boolean;
 }>({
   inputs: [],
   outputs: [],
+  idsCache: new Set(),
   streamsLoaded: false,
 });
 
@@ -64,18 +49,19 @@ export const $account = $roketoWallet.map((wallet) => wallet?.roketoAccount ?? n
 
 export const $accountId = $nearWallet.map((wallet) => wallet?.auth.accountId ?? null);
 
-export const $activeStreamsCount = $account.map((account) =>
-  account ? account.active_incoming_streams + account.active_outgoing_streams : 0,
-);
+export const $activeStreamsCount = $account.map((account) => ({
+  incoming: account?.active_incoming_streams ?? 0,
+  outgoing: account?.active_outgoing_streams ?? 0,
+}));
 export const $allStreams = $accountStreams.map(({inputs, outputs}) => [...inputs, ...outputs]);
 
-export const $user = createStore<Partial<User>>({
+export const $user = resetOnLogout.createStore<Partial<User>>({
   name: '',
   email: '',
   isEmailVerified: false,
 });
 
-export const $notifications = createStore<Notification[] | null>(null);
+export const $notifications = resetOnLogout.createStore<Notification[] | null>(null);
 
 // eslint-disable-next-line arrow-body-style
 const getUserFx = createEffect(async (accountId: string) => {
@@ -155,6 +141,10 @@ export const logoutFx = attach({
   },
 });
 
+resetOnLogout.onCreateStore((store) => {
+  store.reset(logoutFx.done);
+});
+
 const createNearWalletFx = createEffect(async (walletType: 'near' | 'sender' | 'any' = 'any') => {
   const {near, auth, walletType: type} = await createNearInstance(walletType);
   return {near, auth, walletType: type};
@@ -181,23 +171,56 @@ const createPriceOracleFx = createEffect((account: ConnectedWalletAccount) =>
   initPriceOracle({account}),
 );
 
-export const $loadedStreamsCount = $allStreams.map((streams) => streams.length);
-export const $leftToLoadStreams = combine(
-  $loadedStreamsCount,
-  $activeStreamsCount,
-  (loaded, active) => Math.max(active - loaded, 0),
-);
+const requestIncomingStreamsFx = attach({
+  source: $roketoWallet,
+  async effect(wallet, {from, limit}: {from: number; limit: number}) {
+    if (wallet) {
+      return getIncomingStreams({
+        from,
+        limit,
+        accountId: wallet.accountId,
+        contract: wallet.contract,
+      });
+    }
+  },
+});
+
+const requestOutgoingStreamsFx = attach({
+  source: $roketoWallet,
+  async effect(wallet, {from, limit}: {from: number; limit: number}) {
+    if (wallet) {
+      return getOutgoingStreams({
+        from,
+        limit,
+        accountId: wallet.accountId,
+        contract: wallet.contract,
+      });
+    }
+  },
+});
+
+const STREAMS_PER_REQUEST = 500;
 
 const requestAccountStreamsFx = attach({
-  source: {streams: $accountStreams},
-  async effect({streams}, {accountId, contract}: Pick<ApiControl, 'accountId' | 'contract'>) {
-    const inputStreamsToLoad = streams.inputs.length === 0 ? 50 : streams.inputs.length;
-    const outputStreamsToLoad = streams.outputs.length === 0 ? 50 : streams.outputs.length;
-    const [inputs, outputs] = await Promise.all([
-      getIncomingStreams({from: 0, limit: inputStreamsToLoad, accountId, contract}),
-      getOutgoingStreams({from: 0, limit: outputStreamsToLoad, accountId, contract}),
+  source: $activeStreamsCount,
+  async effect({incoming, outgoing}) {
+    const incomingPages = countPages(incoming, STREAMS_PER_REQUEST);
+    const outgoingPages = countPages(outgoing, STREAMS_PER_REQUEST);
+
+    await Promise.all([
+      ...Array.from({length: incomingPages}, (_, pageIndex) =>
+        requestIncomingStreamsFx({
+          from: pageIndex * STREAMS_PER_REQUEST,
+          limit: STREAMS_PER_REQUEST,
+        }),
+      ),
+      ...Array.from({length: outgoingPages}, (_, pageIndex) =>
+        requestOutgoingStreamsFx({
+          from: pageIndex * STREAMS_PER_REQUEST,
+          limit: STREAMS_PER_REQUEST,
+        }),
+      ),
     ]);
-    return {inputs, outputs};
   },
 });
 
@@ -266,15 +289,29 @@ sample({
  * when account streams successfully requested
  * save them to store $accountStreams
  */
-sample({
-  clock: requestAccountStreamsFx.doneData,
-  fn: ({inputs, outputs}) => ({
-    inputs,
-    outputs,
-    streamsLoaded: true,
-  }),
-  target: $accountStreams,
+
+$accountStreams.on(requestIncomingStreamsFx.doneData, (exists, incoming) => {
+  if (!incoming) return exists;
+
+  return {
+    ...exists,
+    inputs: upsertWithCache(exists.inputs, incoming, exists.idsCache),
+  };
 });
+
+$accountStreams.on(requestOutgoingStreamsFx.doneData, (exists, outgoing) => {
+  if (!outgoing) return exists;
+
+  return {
+    ...exists,
+    outputs: upsertWithCache(exists.outputs, outgoing, exists.idsCache),
+  };
+});
+
+$accountStreams.on(requestAccountStreamsFx.doneData, (exists) => ({
+  ...exists,
+  streamsLoaded: true,
+}));
 
 /** when account id is exists, request user info and notifications for it */
 sample({
@@ -335,12 +372,12 @@ sample({
 sample({
   clock: createNearWalletFx.doneData,
   fn: ({auth}) => ({account: auth.account, transactionMediator: auth.transactionMediator}),
-  target: [createRoketoWalletFx],
+  target: createRoketoWalletFx,
 });
 sample({
   clock: createNearWalletFx.doneData,
   fn: ({auth}) => auth.account,
-  target: [createPriceOracleFx],
+  target: createPriceOracleFx,
 });
 sample({
   clock: createNearWalletFx.doneData,
@@ -373,7 +410,7 @@ sample({
   target: $priceOracle,
 });
 sample({
-  clock: [createRoketoWalletFx.finally],
+  clock: createRoketoWalletFx.finally,
   fn: () => false,
   target: $appLoading,
 });
@@ -412,12 +449,29 @@ sample({
 });
 
 sample({
-  clock: [loginFx.doneData],
+  clock: loginFx.doneData,
   target: initWallets,
 });
-$nearWallet.reset([logoutFx.done]);
-$roketoWallet.reset([logoutFx.done]);
-$user.reset([logoutFx.done]);
-$tokens.reset([logoutFx.done]);
-$priceOracle.reset([logoutFx.done]);
-$accountStreams.reset([logoutFx.done]);
+
+async function retry<T>(cb: () => Promise<T>) {
+  const retryCount = 3;
+  let error: unknown;
+  for (let i = 0; i <= retryCount; i += 1) {
+    try {
+      if (i > 0) {
+        // eslint-disable-next-line no-await-in-loop
+        await tokenProvider.refreshToken();
+      }
+      // eslint-disable-next-line no-await-in-loop
+      return await cb();
+    } catch (err: any) {
+      if (!err.message.startsWith('HTTP-Code: 401')) throw err;
+      error = err;
+    }
+  }
+  throw error;
+}
+
+function countPages(total: number, pageSize: number) {
+  return Math.ceil(total / pageSize);
+}

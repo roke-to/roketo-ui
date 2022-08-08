@@ -44,10 +44,10 @@ sample({
 sample({
   source: {
     tokens: $tokens,
-    streams: $accountStreams,
+    streams: $accountStreams.map((streams) => streams.inputs),
   },
   target: $activeTokensInfo,
-  fn({tokens, streams: {inputs}}) {
+  fn({tokens, streams: inputs}) {
     const activeInputs = inputs.filter(isActiveStream);
     const tokensData: {
       [tokenAccountId: string]: {

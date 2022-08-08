@@ -8,7 +8,7 @@ import {ProgressBar} from '~/shared/ui/components/ProgressBar';
 import clockIcon from '~/shared/ui/icons/clock.svg';
 
 import {streamProgressDataDefaults} from '../constants';
-import {$streamsProgress, selectStream} from '../model';
+import {$streamsProgressMap, selectStream} from '../model';
 import styles from './styles.module.scss';
 
 const TOOLTIP_ALIGN = {
@@ -34,7 +34,7 @@ const ExtendedInfo = ({streamId, className}: {streamId: string; className?: stri
     direction,
     sign,
   } = useStoreMap({
-    store: $streamsProgress,
+    store: $streamsProgressMap,
     keys: [streamId],
     fn: (items) => items[streamId],
     defaultValue: streamProgressDataDefaults,
@@ -96,7 +96,7 @@ export const StreamProgress = ({streamId, className}: {streamId: string; classNa
     direction,
     name,
   } = useStoreMap({
-    store: $streamsProgress,
+    store: $streamsProgressMap,
     keys: [streamId],
     fn: (items) => items[streamId],
     defaultValue: streamProgressDataDefaults,

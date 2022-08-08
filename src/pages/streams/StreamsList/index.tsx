@@ -22,12 +22,11 @@ import {LinkIcon} from '@ui/icons/Link';
 import {streamCardDataDefaults, streamProgressDataDefaults} from '../constants';
 import {
   $canBeLoadedMore,
-  $filteredStreams,
-  $moreStreamsIsLoading,
+  $paginatedStreams,
   $selectedStream,
-  $streamCardsData,
+  $streamCardsMap,
   $streamListData,
-  $streamsProgress,
+  $streamsProgressMap,
   loadMoreStreamsPressed,
 } from '../model';
 import {StreamProgress} from '../StreamProgress';
@@ -39,7 +38,7 @@ import styles from './styles.module.scss';
 
 const StreamNameLink = memo(({streamId}: {streamId: string}) => {
   const {streamPageLink, name, isLocked} = useStoreMap({
-    store: $streamCardsData,
+    store: $streamCardsMap,
     keys: [streamId],
     fn: (items) => items[streamId],
     defaultValue: streamCardDataDefaults,
@@ -61,7 +60,7 @@ const ViewDetailsLink = memo(({to}: {to: string}) => (
 
 const StreamCommentLink = memo(({streamId}: {streamId: string}) => {
   const {streamPageLink, comment} = useStoreMap({
-    store: $streamCardsData,
+    store: $streamCardsMap,
     keys: [streamId],
     fn: (items) => items[streamId],
     defaultValue: streamCardDataDefaults,
@@ -96,7 +95,7 @@ const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
     showPauseButton,
     iconType,
   } = useStoreMap({
-    store: $streamCardsData,
+    store: $streamCardsMap,
     keys: [streamId],
     fn: (items) => items[streamId],
     defaultValue: streamCardDataDefaults,
@@ -163,7 +162,7 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
     showStartButton,
     showPauseButton,
   } = useStoreMap({
-    store: $streamCardsData,
+    store: $streamCardsMap,
     keys: [streamId],
     fn: (items) => items[streamId],
     defaultValue: streamCardDataDefaults,
@@ -187,7 +186,7 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
     direction,
     sign,
   } = useStoreMap({
-    store: $streamsProgress,
+    store: $streamsProgressMap,
     keys: [streamId],
     fn: (items) => items[streamId],
     defaultValue: streamProgressDataDefaults,
@@ -274,14 +273,13 @@ const Placeholder = ({onCreateStreamClick}: {onCreateStreamClick(): void}) => {
 const LoadMore = () => {
   const loadMoreHandler = useCallback(() => loadMoreStreamsPressed(), []);
   const canBeLoadedMore = useStore($canBeLoadedMore);
-  const isLoading = useStore($moreStreamsIsLoading);
 
   if (!canBeLoadedMore) return null;
 
   return (
     <div className={styles.loadMoreSection}>
-      <Button disabled={isLoading} className={styles.button} onClick={loadMoreHandler}>
-        {isLoading ? 'More streams loading…' : 'Load more streams'}
+      <Button className={styles.button} onClick={loadMoreHandler}>
+        Load more streams
       </Button>
     </div>
   );
@@ -300,7 +298,7 @@ export const StreamsList = ({
       <h3 className={styles.title}>Wallet address</h3>
       <h3 className={styles.title}>Comment</h3>
 
-      {useList($filteredStreams, {
+      {useList($paginatedStreams, {
         getKey: ({id}) => id,
         fn(stream) {
           const {id: streamId} = stream;
@@ -308,12 +306,12 @@ export const StreamsList = ({
           const isSelected = useStoreMap({
             store: $selectedStream,
             keys: [streamId],
-            fn: (selected) => selected === streamId,
+            fn: (selected, [id]) => selected === id,
           });
           return isSelected ? (
-            <ExpandedStreamCard stream={stream} />
+            <ExpandedStreamCard key={streamId} stream={stream} />
           ) : (
-            <CollapsedStreamRow stream={stream} />
+            <CollapsedStreamRow key={streamId} stream={stream} />
           );
         },
         placeholder: (
