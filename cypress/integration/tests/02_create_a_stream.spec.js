@@ -10,54 +10,54 @@ context('Stream creation', () => {
     cy.task('getAccount', {reuse: true}).then((testAccount) => (account = testAccount));
     cy.viewport(1536, 960);
   });
-  it('Create uneditable stream', () => {
-    login(account.seedPhrase);
-    const stream = new CreateStream();
-    stream.createStream();
-    stream.inputReceiver('delusion.testnet');
-    stream.inputDeposit('1');
-    stream.inputPeriod('1000w 10d 10h 10m');
-    stream.submit();
-    const transaction = new Transaction();
-    transaction.approve();
-    const mystreams = new MyStreams();
-    mystreams.checkIfLastStreamLocked();
-  });
+  // it('Create uneditable stream', () => {
+  //   login(account.seedPhrase);
+  //   const stream = new CreateStream();
+  //   stream.createStream();
+  //   stream.inputReceiver('delusion.testnet');
+  //   stream.inputDeposit('1');
+  //   stream.inputPeriod('36w 10d 10h 10m');
+  //   stream.submit();
+  //   const transaction = new Transaction();
+  //   transaction.approve();
+  //   const mystreams = new MyStreams();
+  //   mystreams.checkIfLastStreamLocked();
+  // });
 
-  it('Create a delayed stream', () => {
-    login(account.seedPhrase);
-    const stream = new CreateStream();
-    stream.createStream();
-    stream.inputReceiver('delusion.testnet');
-    stream.inputDeposit('1');
-    stream.inputPeriod('1000w 10d 10h 10m');
-    stream.moreOptions();
-    stream.editable();
-    // stream.inputComments('comment-comment');
-    stream.submit();
-    const transaction = new Transaction();
-    transaction.approve();
-    const mystreams = new MyStreams();
-    mystreams.checkNewStreamStatus('Initialized');
-  });
+  // it('Create a delayed stream', () => {
+  //   login(account.seedPhrase);
+  //   const stream = new CreateStream();
+  //   stream.createStream();
+  //   stream.inputReceiver('delusion.testnet');
+  //   stream.inputDeposit('1');
+  //   stream.inputPeriod('36w 10d 10h 10m');
+  //   stream.moreOptions();
+  //   stream.editable();
+  //   // stream.inputComments('comment-comment');
+  //   stream.submit();
+  //   const transaction = new Transaction();
+  //   transaction.approve();
+  //   const mystreams = new MyStreams();
+  //   mystreams.checkNewStreamStatus('Initialized');
+  // });
 
-  it('Create a non-delayed stream', () => {
-    login(account.seedPhrase);
-    const stream = new CreateStream();
-    stream.createStream();
-    stream.inputReceiver('delusion.testnet');
-    stream.inputDeposit('1');
-    stream.inputPeriod('1000w 10d 10h 10m');
-    stream.moreOptions();
-    stream.editable();
-    // stream.inputComments('comment-comment');
-    stream.setNotDelayed();
-    stream.submit();
-    const transaction = new Transaction();
-    transaction.approve();
-    const mystreams = new MyStreams();
-    mystreams.checkNewStreamStatus('Active');
-  });
+  // it('Create a non-delayed stream', () => {
+  //   login(account.seedPhrase);
+  //   const stream = new CreateStream();
+  //   stream.createStream();
+  //   stream.inputReceiver('delusion.testnet');
+  //   stream.inputDeposit('1');
+  //   stream.inputPeriod('36w 10d 10h 10m');
+  //   stream.moreOptions();
+  //   stream.editable();
+  //   // stream.inputComments('comment-comment');
+  //   stream.setNotDelayed();
+  //   stream.submit();
+  //   const transaction = new Transaction();
+  //   transaction.approve();
+  //   const mystreams = new MyStreams();
+  //   mystreams.checkNewStreamStatus('Active');
+  // });
 
   it('Create a stream with cliff period', () => {
     login(account.seedPhrase);
@@ -67,7 +67,7 @@ context('Stream creation', () => {
     stream.inputDeposit('1');
     stream.moreOptions();
     stream.inputCliffPeriod();
-    stream.inputPeriod('12w 10d 10h 10m');
+    stream.inputPeriod('36w 10d 10h 10m');
     stream.editable();
     // stream.inputComments('comment-comment');
     stream.submit();
