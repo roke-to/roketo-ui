@@ -36,7 +36,7 @@ class CreateStream {
     cy.get(testSelectors.createStreamCommentInput).click().type(value);
   }
 
-  setDelayed() {
+  setNotDelayed() {
     cy.get(testSelectors.createStreamDelayedCheckbox).click({force: true});
   }
 
@@ -44,8 +44,12 @@ class CreateStream {
     cy.get(testSelectors.createStreamSubmitButton).click();
   }
 
-  uneditable() {
-    cy.get(testSelectors.createStreamLockedCheckbox).click();
+  editable() {
+    cy.get(testSelectors.createStreamLockedCheckbox).click({force: true});
+  }
+
+  moreOptions() {
+    cy.get(testSelectors.collapseButton).click();
   }
 }
 

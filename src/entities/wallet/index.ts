@@ -4,6 +4,7 @@ import {ConnectedWalletAccount, Near} from 'near-api-js';
 
 import {
   createRichContracts,
+  getDao,
   getIncomingStreams,
   getOutgoingStreams,
   initApiControl,
@@ -193,10 +194,16 @@ const requestUnknownTokensFx = createEffect(
         return [tokenName, contract] as const;
       }),
     );
+
+    const {contract} = roketo;
+    const [dao] = await Promise.all([getDao({contract})]);
+
     const additionalTokens = await createRichContracts({
-      tokensInfo: requestResults,
       account: nearAuth.account,
+      tokensInfo: requestResults,
+      dao,
     });
+
     return additionalTokens;
   },
 );

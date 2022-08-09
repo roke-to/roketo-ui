@@ -11,7 +11,6 @@ export function createstream({receiver = 'githubtest9.testnet', duration} = {}) 
   } else {
     stream.inputPeriod('1000w 10d 10h 10m');
     // stream.inputComments('comment-comment');
-    stream.setDelayed();
   }
   stream.submit();
   const transaction = new Transaction();

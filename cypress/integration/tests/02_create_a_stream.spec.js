@@ -16,8 +16,7 @@ context('Stream creation', () => {
     stream.createStream();
     stream.inputReceiver('delusion.testnet');
     stream.inputDeposit('1');
-    stream.inputPeriod('1000', '10', '10', '10');
-    stream.uneditable();
+    stream.inputPeriod('1000w 10d 10h 10m');
     stream.submit();
     const transaction = new Transaction();
     transaction.approve();
@@ -32,8 +31,9 @@ context('Stream creation', () => {
     stream.inputReceiver('delusion.testnet');
     stream.inputDeposit('1');
     stream.inputPeriod('1000w 10d 10h 10m');
+    stream.moreOptions();
+    stream.editable();
     // stream.inputComments('comment-comment');
-    stream.setDelayed();
     stream.submit();
     const transaction = new Transaction();
     transaction.approve();
@@ -48,7 +48,10 @@ context('Stream creation', () => {
     stream.inputReceiver('delusion.testnet');
     stream.inputDeposit('1');
     stream.inputPeriod('1000w 10d 10h 10m');
+    stream.moreOptions();
+    stream.editable();
     // stream.inputComments('comment-comment');
+    stream.setNotDelayed();
     stream.submit();
     const transaction = new Transaction();
     transaction.approve();
@@ -62,8 +65,10 @@ context('Stream creation', () => {
     stream.createStream();
     stream.inputReceiver('delusion.testnet');
     stream.inputDeposit('1');
+    stream.moreOptions();
     stream.inputCliffPeriod();
-    stream.inputPeriod('12', '10', '10', '10');
+    stream.inputPeriod('12w 10d 10h 10m');
+    stream.editable();
     // stream.inputComments('comment-comment');
     stream.submit();
     const transaction = new Transaction();

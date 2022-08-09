@@ -3,9 +3,9 @@ import {useStore} from 'effector-react';
 import {Field, Formik} from 'formik';
 import React, {useState} from 'react';
 
-import {$listedTokens} from '~/entities/wallet';
+import {$accountId, $listedTokens} from '~/entities/wallet';
 
-import {countSrorageDeposit} from '~/shared/api/methods';
+import {countStorageDeposit} from '~/shared/api/methods';
 import {formatAmount} from '~/shared/api/token-formatter';
 import {Balance, DisplayMode} from '~/shared/components/Balance';
 import {FormikCheckbox} from '~/shared/components/FormikCheckbox';
@@ -69,6 +69,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [streamAmount, setStreamAmount] = useState(0);
   const [deposit, setDeposit] = useState(0);
+  const accountId = useStore($accountId);
 
   const handleFormSubmit = (formValues: FormValues) => {
     onFormSubmit(formValues).catch((error) => setError(error));
@@ -86,20 +87,21 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
         validateOnMount={false}
       >
         {({values, handleSubmit, setFieldValue, setFieldTouched, validateField}) => {
-          const senderTokenAccountId = values.token;
-          const token = tokens[senderTokenAccountId];
+          const activeTokenAccountId = values.token;
+          const token = tokens[activeTokenAccountId];
 
           const handleReceiverChanged = async (event: React.FormEvent<HTMLFormElement>) => {
             const receiverTokenAccountId = (event.target as HTMLInputElement).value;
             const {tokenContract} = token;
 
-            const {depositSumm} = await countSrorageDeposit({
+            const storageDepositAccountIds = [accountId || '', receiverTokenAccountId];
+
+            const {depositSum} = await countStorageDeposit({
               tokenContract,
-              senderTokenAccountId,
-              receiverTokenAccountId,
+              storageDepositAccountIds,
             });
 
-            setDeposit(depositSumm.toNumber() / 10 ** 24);
+            setDeposit(depositSum.toNumber() / 10 ** 24);
           };
 
           const handleAmountChanged = (event: React.FormEvent<HTMLFormElement>) => {
@@ -161,7 +163,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
                 className={cn(styles.formBlock, styles.deposit)}
                 onBlur={handleAmountChanged}
                 description={
-                  <Balance tokenAccountId={senderTokenAccountId} mode={DisplayMode.CRYPTO} />
+                  <Balance tokenAccountId={activeTokenAccountId} mode={DisplayMode.CRYPTO} />
                 }
                 data-testid={testIds.createStreamAmountInput}
               />
@@ -197,7 +199,11 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
 
               <div className={styles.collapseBtnWrap}>
                 {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-                <div className={styles.collapseBtn} onClick={() => setIsCollapsed(!isCollapsed)}>
+                <div
+                  className={styles.collapseBtn}
+                  onClick={() => setIsCollapsed(!isCollapsed)}
+                  data-testid={testIds.collapseButton}
+                >
                   {!isCollapsed && 'More options'}
                   {isCollapsed && 'Less options'}
                   <ArrowIcon className={isCollapsed ? styles.rotated : ''} />
