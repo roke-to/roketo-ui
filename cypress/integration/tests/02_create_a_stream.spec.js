@@ -16,7 +16,7 @@ context('Stream creation', () => {
   //   stream.createStream();
   //   stream.inputReceiver('delusion.testnet');
   //   stream.inputDeposit('1');
-  //   stream.inputPeriod('36w 10d 10h 10m');
+  //   stream.inputPeriod('35m 10d 10h 10min');
   //   stream.submit();
   //   const transaction = new Transaction();
   //   transaction.approve();
@@ -30,7 +30,7 @@ context('Stream creation', () => {
   //   stream.createStream();
   //   stream.inputReceiver('delusion.testnet');
   //   stream.inputDeposit('1');
-  //   stream.inputPeriod('36w 10d 10h 10m');
+  //   stream.inputPeriod('35m 10d 10h 10min');
   //   stream.moreOptions();
   //   stream.editable();
   //   // stream.inputComments('comment-comment');
@@ -47,7 +47,7 @@ context('Stream creation', () => {
   //   stream.createStream();
   //   stream.inputReceiver('delusion.testnet');
   //   stream.inputDeposit('1');
-  //   stream.inputPeriod('36w 10d 10h 10m');
+  //   stream.inputPeriod('35m 10d 10h 10min');
   //   stream.moreOptions();
   //   stream.editable();
   //   // stream.inputComments('comment-comment');
@@ -67,7 +67,7 @@ context('Stream creation', () => {
     stream.inputDeposit('1');
     stream.moreOptions();
     stream.inputCliffPeriod();
-    stream.inputPeriod('36w 10d 10h 10m');
+    stream.inputPeriod('35m 10d 10h 10min');
     stream.editable();
     // stream.inputComments('comment-comment');
     stream.submit();

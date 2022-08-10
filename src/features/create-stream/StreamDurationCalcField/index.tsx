@@ -65,6 +65,8 @@ export const StreamDurationCalcField = (props: StreamDurationCalcFieldProps) => 
 
   const error = form.errors[field.name];
 
+  parseDuration.m = parseDuration.month;
+
   const [inputValue, setInputValue] = useState('');
   const durationMs = parseDuration(inputValue);
   const durationInSeconds = Math.floor(durationMs / 1000);
@@ -92,7 +94,7 @@ export const StreamDurationCalcField = (props: StreamDurationCalcFieldProps) => 
       <div className={styles.wrapper}>
         <DurationInput
           value={inputValue ?? ''}
-          placeholder="2w 7d 1h 10m"
+          placeholder="2m 7d 1h 10min"
           onChange={handleInputChangeFactory}
           testId={testIds.createStreamDurationInput}
         />

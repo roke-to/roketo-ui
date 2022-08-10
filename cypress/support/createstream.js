@@ -7,9 +7,9 @@ export function createstream({receiver = 'githubtest9.testnet', duration} = {}) 
   stream.inputReceiver(receiver);
   stream.inputDeposit('1');
   if (duration === 'short') {
-    stream.inputPeriod('0w 0d 0h 1m');
+    stream.inputPeriod('0m 0d 0h 1m');
   } else {
-    stream.inputPeriod('30w 10d 10h 10m');
+    stream.inputPeriod('35m 10d 10h 10min');
     // stream.inputComments('comment-comment');
   }
   stream.submit();
