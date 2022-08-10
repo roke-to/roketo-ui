@@ -36,6 +36,7 @@ export const Authorization = () => {
         <Button
           onClick={() => {
             selectWallet('near');
+            // TODO: rewrite into `loginButtonPressed` event
             loginFx('near');
           }}
           className={styles.root}
@@ -70,7 +71,10 @@ export const Authorization = () => {
   return (
     <button
       type="button"
-      onClick={() => logoutFx()}
+      onClick={() => {
+        // TODO: rewrite into `logoutButtonPressed`
+        logoutFx();
+      }}
       className={styles.logoutButton}
       data-testid={testIds.signOutButton}
     >

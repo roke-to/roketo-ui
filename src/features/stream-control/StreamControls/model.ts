@@ -55,7 +55,3 @@ export const stopStream = modifyStreamFx.prepend((streamId: string) => ({
   streamId,
   command: 'stop',
 }));
-
-modifyStreamFx.finally.watch((upd) => {
-  console.log('modifyStreamFx', upd);
-});

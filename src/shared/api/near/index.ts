@@ -24,19 +24,18 @@ async function createSenderWalletInstance(): Promise<{
       network: env.NEAR_NETWORK_ID,
       modules: [setupSender()],
     });
-    const sdrWallet = await walletSelector.wallet('sender');
-    console.log('sdrWallet', sdrWallet);
+    const senderWallet = await walletSelector.wallet('sender');
     const senderNear = window.near;
     // @ts-expect-error not typed method
-    const accSnd: ConnectedWalletAccount = senderNear.account();
-    const accountIdSnd = senderNear.getAccountId();
-    let balanceSnd;
-    if (accountIdSnd) {
-      balanceSnd = await accSnd.getAccountBalance();
+    const senderAccount: ConnectedWalletAccount = senderNear.account();
+    const accountIdSender = senderNear.getAccountId();
+    let balanceSender;
+    if (accountIdSender) {
+      balanceSender = await senderAccount.getAccountBalance();
     }
-    if (accSnd && accSnd.connection.networkId !== env.NEAR_NETWORK_ID) {
+    if (senderAccount && senderAccount.connection.networkId !== env.NEAR_NETWORK_ID) {
       throw Error(
-        `wrong account network: ${accSnd.connection.networkId} need ${env.NEAR_NETWORK_ID}`,
+        `wrong account network: ${senderAccount.connection.networkId} need ${env.NEAR_NETWORK_ID}`,
       );
     }
     const senderTransactionMediator: TransactionMediator<SelectorAction> = {
@@ -44,7 +43,7 @@ async function createSenderWalletInstance(): Promise<{
         return {type: 'FunctionCall', params: {methodName, args, gas, deposit}};
       },
       signAndSendTransaction({receiverId, actions, walletCallbackUrl}) {
-        return sdrWallet.signAndSendTransaction({
+        return senderWallet.signAndSendTransaction({
           receiverId,
           // @ts-expect-error
           walletCallbackUrl,
@@ -55,12 +54,12 @@ async function createSenderWalletInstance(): Promise<{
     return {
       walletType: 'sender',
       auth: {
-        balance: balanceSnd,
-        account: accSnd,
-        signedIn: !!accountIdSnd,
-        accountId: accountIdSnd ?? '',
+        balance: balanceSender,
+        account: senderAccount,
+        signedIn: !!accountIdSender,
+        accountId: accountIdSender ?? '',
         async login() {
-          await sdrWallet.signIn({
+          await senderWallet.signIn({
             contractId: env.ROKETO_CONTRACT_NAME,
             derivationPaths: [],
             methodNames: ['start_stream', 'pause_stream', 'stop_stream', 'withdraw'],
@@ -69,7 +68,7 @@ async function createSenderWalletInstance(): Promise<{
         },
         async logout() {
           localStorage.setItem('profileType', 'none');
-          await sdrWallet.signOut();
+          await senderWallet.signOut();
         },
         transactionMediator: senderTransactionMediator,
       },
@@ -136,10 +135,10 @@ async function createNearWalletInstance(): Promise<{
 export async function createNearInstance(walletType: 'any' | 'near' | 'sender' = 'any') {
   switch (walletType) {
     case 'sender': {
-      const result = await createSenderWalletInstance();
-      if (!result) throw Error('Sender wallet is not installed');
+      const senderWallet = await createSenderWalletInstance();
+      if (!senderWallet) throw Error('Sender wallet is not installed');
       localStorage.setItem('profileType', 'sender');
-      return result;
+      return senderWallet;
     }
     case 'near': {
       localStorage.setItem('profileType', 'near');

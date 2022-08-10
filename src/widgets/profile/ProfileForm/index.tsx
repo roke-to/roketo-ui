@@ -51,6 +51,7 @@ export function ProfileForm({showFinances}: ProfileFormProps) {
         className={styles.profileForm}
         onSubmit={(e) => {
           e.preventDefault();
+          // TODO: do not use fx, rewrite to event ex.: `userFormChanged`
           updateUserFx({
             name,
             email,
@@ -116,6 +117,7 @@ export function ProfileForm({showFinances}: ProfileFormProps) {
                       className={styles.resendButton}
                       onClick={() => {
                         setResentVerificationEmail(true);
+                        // TODO: Rewrite to `resendVerificationEmailButtonPressed` event. Do not use effects directly
                         resendVerificationEmailFx();
                       }}
                     >
