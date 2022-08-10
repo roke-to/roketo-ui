@@ -6,6 +6,9 @@ export function createstream({receiver = 'githubtest9.testnet', duration} = {}) 
   stream.createStream();
   stream.inputReceiver(receiver);
   stream.inputDeposit('1');
+  stream.moreOptions();
+  stream.editable();
+
   if (duration === 'short') {
     stream.inputPeriod('0m 0d 0h 1m');
   } else {
