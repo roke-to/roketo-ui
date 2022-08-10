@@ -268,6 +268,9 @@ sample({
   clock: [createRoketoWalletFx.doneData, streamsRevalidationTimerFx.doneData],
   target: streamsRevalidationTimerFx,
 });
+
+$accountStreams.reset(streamsRevalidationTimerFx.done);
+
 /**
  * when last_created_stream is changed or revalidation timer ends
  * read roketo wallet

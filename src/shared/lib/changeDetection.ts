@@ -60,7 +60,7 @@ export function recordUpdater<T, Src extends {id: string}>(
 }
 
 /**
- * If item from `received` exists in `source` updates it, otherwise just append at the end
+ * Adds items from `received` into `source`, without overwriting
  * If item exists, there will be no full list search, just check up in `cache`
  * @param source
  * @param received
@@ -74,12 +74,7 @@ export function upsertWithCache<T extends {id: string}>(
   if (received.length === 0) return source;
   const copy = [...source];
   received.forEach((item) => {
-    if (cache.has(item.id)) {
-      const index = copy.findIndex((found) => found.id === item.id);
-      if (index !== -1) {
-        copy.splice(index, 1, item);
-      }
-    } else {
+    if (!cache.has(item.id)) {
       copy.push(item);
       cache.add(item.id);
     }
