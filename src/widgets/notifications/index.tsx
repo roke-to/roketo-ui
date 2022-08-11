@@ -80,11 +80,11 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
           <PrimaryText>
             {direction === STREAM_DIRECTION.IN ? (
               <>
-                {stream.owner_id} <strong>started</strong> a stream for you to receive
+                {stream.owner_id} <strong>created</strong> a stream to you
               </>
             ) : (
               <>
-                You've successfully <strong>started</strong> a stream to {stream.receiver_id}
+                You've successfully <strong>created</strong> a stream to {stream.receiver_id}
               </>
             )}
           </PrimaryText>
@@ -132,7 +132,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
             {direction === STREAM_DIRECTION.IN
               ? `from ${stream.owner_id}`
               : `to ${stream.receiver_id}`}{' '}
-            has <strong>ended</strong>.
+            has <strong>completed</strong>.
           </PrimaryText>
           <SecondaryText>
             Total amount streamed:{' '}
@@ -146,7 +146,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
       return (
         <>
           <PrimaryText>
-            The stream from {stream.owner_id} is <strong>due</strong>
+            The stream from {stream.owner_id} was <strong>finished</strong>
           </PrimaryText>
           <SecondaryText>
             Available for withdrawal:{' '}
@@ -162,11 +162,11 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
           <PrimaryText>
             {direction === STREAM_DIRECTION.IN ? (
               <>
-                {stream.owner_id} has <strong>continued</strong> the stream
+                {stream.owner_id} <strong>resumed</strong> the stream
               </>
             ) : (
               <>
-                The stream to {stream.receiver_id} was <strong>continued</strong>
+                The stream to {stream.receiver_id} was <strong>resumed</strong>
               </>
             )}
           </PrimaryText>
