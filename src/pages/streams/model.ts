@@ -109,7 +109,7 @@ export const handleCreateStreamFx = createProtectedEffect({
         tokenAccountId: token,
         commissionOnCreate: roketoMeta.commission_on_create,
         tokensPerSec,
-        delayed,
+        delayed: cliffDateTime ? delayed : !delayed,
         callbackUrl: returnPath,
         isLocked: !isLocked,
         cliffPeriodSec: cliffDateTime
