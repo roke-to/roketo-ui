@@ -73,7 +73,7 @@ const ExtendedInfo = ({streamId, className}: {streamId: string; className?: stri
         </div>
       )}
 
-      {cliffText && <div className={cn(styles.progress)}>Cliff remaining: {cliffText}</div>}
+      {cliffText && <div className={cn(styles.progress)}>Cliff ends within: {cliffText}</div>}
 
       <div className={cn(styles.progress, styles.streamed)}>
         Streamed: {streamedText}{' '}
