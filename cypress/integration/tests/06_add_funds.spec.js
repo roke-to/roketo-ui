@@ -17,6 +17,7 @@ context('Stream creation', () => {
     stream.createStream();
     stream.inputReceiver('delusion.testnet');
     stream.inputDeposit('1');
+    stream.setNotDelayed();
     stream.inputPeriod('35m 10d 10h 10min');
     // stream.inputComments('comment-comment');
     stream.submit();

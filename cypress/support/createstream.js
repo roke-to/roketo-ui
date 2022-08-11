@@ -11,6 +11,7 @@ export function createstream({receiver = 'githubtest9.testnet', duration} = {}) 
 
   if (duration === 'short') {
     stream.inputPeriod('0m 0d 0h 1m');
+    stream.setNotDelayed();
   } else {
     stream.inputPeriod('35m 10d 10h 10min');
     // stream.inputComments('comment-comment');
