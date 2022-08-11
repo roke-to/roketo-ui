@@ -147,7 +147,7 @@ export function StreamFilters({className}: {className: string}) {
           className={styles.textFilterInput}
           value={filterText}
           onChange={(e) => changeTextFilter(e.currentTarget.value)}
-          onClick={() => setShowInput(true)}
+          onFocus={() => setShowInput(true)}
           onBlur={(e) => {
             const isEmptyInput = e.currentTarget.value.trim() === '';
             if (isEmptyInput) {
