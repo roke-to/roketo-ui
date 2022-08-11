@@ -235,7 +235,7 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
         Withdrawn: {withdrawnText}{' '}
         <span className={styles.subtext}>({withdrawnPercentage.toString()}%)</span>
       </div>
-      {cliffText && <div className={styles.cliffRemaining}>Cliff remaining: {cliffText}</div>}
+      {cliffText && <div className={styles.cliffRemaining}>Cliff ends within: {cliffText}</div>}
       {comment && <div className={styles.comment}>{comment}</div>}
       <StreamListControls
         stream={stream}
