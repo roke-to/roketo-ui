@@ -51,6 +51,7 @@
     width: 48px;
     height: 100%;
     border-radius: 24px;
+    pointer-events: none;
   }
 
   .textFilterInput {
@@ -59,7 +60,10 @@
     height: 100%;
     width: 48px;
     padding-left: 40px;
-    visibility: hidden;
+  }
+
+  &.withInput .textFilterMagnifier {
+    background-color: unset;
   }
 
   .textFilterClear {

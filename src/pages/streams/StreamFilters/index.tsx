@@ -24,7 +24,7 @@ import {
   changeTextFilter,
 } from '../model';
 import clearIcon from './clear.svg';
-import magnifierIcon from './magnifier.svg';
+import {ReactComponent as MagnifierIcon} from './magnifier.svg';
 import styles from './styles.module.scss';
 
 export function StreamFilters({className}: {className: string}) {
@@ -142,19 +142,12 @@ export function StreamFilters({className}: {className: string}) {
         ))}
       </div>
       <div className={cn(styles.textFilter, showInput && styles.withInput)} key="text-filter">
-        <button
-          type="button"
-          className={styles.textFilterMagnifier}
-          onClick={() => setShowInput(true)}
-        >
-          <img src={magnifierIcon} alt="search" />
-        </button>
+        <MagnifierIcon className={styles.textFilterMagnifier} />
         <input
           className={styles.textFilterInput}
           value={filterText}
           onChange={(e) => changeTextFilter(e.currentTarget.value)}
-          onFocus={() => setShowInput(true)}
-          ref={(element) => element?.focus?.()}
+          onClick={() => setShowInput(true)}
           onBlur={(e) => {
             const isEmptyInput = e.currentTarget.value.trim() === '';
             if (isEmptyInput) {
