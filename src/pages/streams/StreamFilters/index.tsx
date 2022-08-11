@@ -24,7 +24,7 @@ import {
   changeTextFilter,
 } from '../model';
 import clearIcon from './clear.svg';
-import {ReactComponent as MagnifierIcon} from './magnifier.svg';
+import magnifierIcon from './magnifier.svg';
 import styles from './styles.module.scss';
 
 export function StreamFilters({className}: {className: string}) {
@@ -142,7 +142,7 @@ export function StreamFilters({className}: {className: string}) {
         ))}
       </div>
       <div className={cn(styles.textFilter, showInput && styles.withInput)} key="text-filter">
-        <MagnifierIcon className={styles.textFilterMagnifier} />
+        <img src={magnifierIcon} className={styles.textFilterMagnifier} alt="search" />
         <input
           className={styles.textFilterInput}
           value={filterText}
