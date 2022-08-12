@@ -1,6 +1,5 @@
+import {getStreamProgress, parseComment} from '@roketo/sdk';
 import {BigNumber} from 'bignumber.js';
-
-import {parseComment, streamViewData} from '~/features/roketo-resource';
 
 import type {PriceOracle} from '~/shared/api/price-oracle';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
@@ -48,7 +47,7 @@ export const collectTotalFinancialAmountInfo = (
       const tokenAccountId = stream.token_account_id;
       const {meta} = tokens[tokenAccountId];
 
-      const {progress} = streamViewData(stream);
+      const progress = getStreamProgress({stream});
 
       const streamedAmountForDisplay = toHumanReadableValue(
         meta.decimals,

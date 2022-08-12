@@ -1,3 +1,12 @@
+import {
+  calculateCliffEndTimestamp,
+  calculateCliffPercent,
+  calculateTimeLeft,
+  formatTimeLeft,
+  getStreamProgress,
+  parseColor,
+  parseComment,
+} from '@roketo/sdk';
 import {isPast} from 'date-fns';
 import {combine, createEffect, createEvent, createStore, sample} from 'effector';
 import {generatePath} from 'react-router-dom';
@@ -5,7 +14,6 @@ import {generatePath} from 'react-router-dom';
 import {colorDescriptions} from '~/features/create-stream/constants';
 import type {FormValues} from '~/features/create-stream/constants';
 import {getTokensPerSecondCount} from '~/features/create-stream/lib';
-import {formatTimeLeft, parseColor, parseComment, streamViewData} from '~/features/roketo-resource';
 
 import {$isSmallScreen} from '~/entities/screen';
 import {
@@ -251,7 +259,9 @@ sample({
       if (!token) return undefined;
       const {decimals} = token.meta;
       const symbol = isWNearTokenId(tokenId) ? 'NEAR' : token.meta.symbol;
-      const {cliffEndTimestamp, progress, timeLeft, percentages} = streamViewData(stream);
+      const cliffEndTimestamp = calculateCliffEndTimestamp(stream);
+      const progress = getStreamProgress({stream});
+      const timeLeft = calculateTimeLeft(stream);
       const streamed = Number(toHumanReadableValue(decimals, progress.streamed, 3));
       const withdrawn = Number(toHumanReadableValue(decimals, progress.withdrawn, 3));
       const total = Number(toHumanReadableValue(decimals, progress.full, 3));
@@ -289,7 +299,7 @@ sample({
         progressFull: progress.full,
         progressStreamed: progress.streamed,
         progressWithdrawn: progress.withdrawn,
-        cliffPercent: percentages.cliff,
+        cliffPercent: calculateCliffPercent(stream),
         cliffText:
           cliffEndTimestamp && !isPast(cliffEndTimestamp)
             ? formatTimeLeft(cliffEndTimestamp - Date.now())

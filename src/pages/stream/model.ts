@@ -1,9 +1,17 @@
+import {
+  calculateCliffEndTimestamp,
+  calculateCliffPercent,
+  calculateTimeLeft,
+  formatTimeLeft,
+  getStreamProgress,
+  parseColor,
+  parseComment,
+} from '@roketo/sdk';
 import {isPast} from 'date-fns';
 import {combine, createEffect, createEvent, createStore, sample, split} from 'effector';
 import {createGate} from 'effector-react';
 
 import {getStreamingSpeed} from '~/features/create-stream/lib';
-import {formatTimeLeft, parseColor, parseComment, streamViewData} from '~/features/roketo-resource';
 
 import {
   $accountId,
@@ -160,7 +168,9 @@ sample({
   fn({accountId, oracle: {getPriceInUsd: toUsd}}, {stream, token}) {
     const {decimals, symbol} = token.meta;
     const tokenId = token.roketoMeta.account_id;
-    const {cliffEndTimestamp, timeLeft, progress, percentages} = streamViewData(stream);
+    const timeLeft = calculateTimeLeft(stream);
+    const progress = getStreamProgress({stream});
+    const cliffEndTimestamp = calculateCliffEndTimestamp(stream);
     const available = getAvailableToWithdraw(stream).toNumber();
     const direction = getStreamDirection(stream, accountId);
     const color = parseColor(stream.description) ?? null;
@@ -204,7 +214,7 @@ sample({
       )}`,
       progressInUSD: `${sign}$${streamedInUsd} of $${totalInUsd}`,
       withdrawnText: formatSmartly(Number(toHumanReadableValue(decimals, progress.withdrawn, 3))),
-      cliffPercent: percentages.cliff,
+      cliffPercent: calculateCliffPercent(stream),
       withdrawn: progress.withdrawn,
       streamed: progress.streamed,
       total: progress.full,
@@ -245,7 +255,8 @@ sample({
     $stream,
     (status, pending, stream) => {
       if (!status || pending || !stream) return false;
-      return Boolean(stream && !isIdling(stream) && streamViewData(stream).percentages.left > 0);
+      const {left} = getStreamProgress({stream, asPercentage: true});
+      return Boolean(stream && !isIdling(stream) && +left > 0);
     },
   ),
   target: [progressRedrawTimerFx],
