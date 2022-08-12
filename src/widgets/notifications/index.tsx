@@ -8,7 +8,6 @@ import {Link} from 'react-router-dom';
 import {blurGate} from '~/entities/blur';
 import {$notifications} from '~/entities/wallet';
 
-import {STREAM_DIRECTION} from '~/shared/api/roketo/constants';
 import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {formatAmount} from '~/shared/api/token-formatter';
 import {testIds} from '~/shared/constants';
@@ -77,7 +76,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
       return (
         <>
           <PrimaryText>
-            {direction === STREAM_DIRECTION.IN ? (
+            {direction === 'IN' ? (
               <>
                 {stream.owner_id} <strong>started</strong> a stream for you to receive
               </>
@@ -102,10 +101,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
       return (
         <>
           <PrimaryText>
-            The stream{' '}
-            {direction === STREAM_DIRECTION.IN
-              ? `from ${stream.owner_id}`
-              : `to ${stream.receiver_id}`}{' '}
+            The stream {direction === 'IN' ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`}{' '}
             is <strong>paused</strong>
           </PrimaryText>
 
@@ -127,10 +123,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
       return (
         <>
           <PrimaryText>
-            The stream{' '}
-            {direction === STREAM_DIRECTION.IN
-              ? `from ${stream.owner_id}`
-              : `to ${stream.receiver_id}`}{' '}
+            The stream {direction === 'IN' ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`}{' '}
             has <strong>ended</strong>.
           </PrimaryText>
           <SecondaryText>
@@ -159,7 +152,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
       return (
         <>
           <PrimaryText>
-            {direction === STREAM_DIRECTION.IN ? (
+            {direction === 'IN' ? (
               <>
                 {stream.owner_id} has <strong>continued</strong> the stream
               </>
@@ -184,10 +177,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
       return (
         <>
           <PrimaryText>
-            The stream{' '}
-            {direction === STREAM_DIRECTION.IN
-              ? `from ${stream.owner_id}`
-              : `to ${stream.receiver_id}`}{' '}
+            The stream {direction === 'IN' ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`}{' '}
             has <strong>passed the cliff period</strong>
           </PrimaryText>
           <SecondaryText>
@@ -203,9 +193,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
         <>
           <PrimaryText>
             <strong>The funds were added</strong> to the stream{' '}
-            {direction === STREAM_DIRECTION.IN
-              ? `from ${stream.owner_id}`
-              : `to ${stream.receiver_id}`}
+            {direction === 'IN' ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`}
           </PrimaryText>
           <SecondaryText>
             Added amount:{' '}

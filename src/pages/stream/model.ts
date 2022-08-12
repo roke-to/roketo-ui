@@ -1,9 +1,18 @@
 import {
+  ableToAddFunds,
+  ableToPauseStream,
+  ableToStartStream,
   calculateCliffEndTimestamp,
   calculateCliffPercent,
   calculateTimeLeft,
   formatTimeLeft,
+  getAvailableToWithdraw,
+  getStream,
+  getStreamDirection,
   getStreamProgress,
+  hasPassedCliff,
+  isDead,
+  isIdling,
   parseColor,
   parseComment,
 } from '@roketo/sdk';
@@ -21,19 +30,8 @@ import {
   lastCreatedStreamUpdated,
 } from '~/entities/wallet';
 
-import {getStream} from '~/shared/api/methods';
-import {STREAM_DIRECTION, STREAM_STATUS, StreamDirection} from '~/shared/api/roketo/constants';
+import {STREAM_STATUS, StreamDirection} from '~/shared/api/roketo/constants';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {
-  ableToAddFunds,
-  ableToPauseStream,
-  ableToStartStream,
-  getAvailableToWithdraw,
-  getStreamDirection,
-  hasPassedCliff,
-  isDead,
-  isIdling,
-} from '~/shared/api/roketo/lib';
 import {formatAmount, formatSmartly, toHumanReadableValue} from '~/shared/api/token-formatter';
 import type {RichToken} from '~/shared/api/types';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
@@ -178,11 +176,11 @@ sample({
     let subheader: string;
     let sign: string;
     switch (direction) {
-      case STREAM_DIRECTION.IN:
+      case 'IN':
         subheader = 'Incoming stream';
         sign = '+';
         break;
-      case STREAM_DIRECTION.OUT:
+      case 'OUT':
         subheader = 'Outgoing stream';
         sign = '-';
         break;
@@ -196,8 +194,8 @@ sample({
     const totalInUsd = toUsd(tokenId, toHumanReadableValue(decimals, progress.full, 4), 2);
     return {
       active: true,
-      sender: direction === STREAM_DIRECTION.OUT ? 'You' : stream.owner_id,
-      receiver: direction === STREAM_DIRECTION.IN ? 'You' : stream.receiver_id,
+      sender: direction === 'OUT' ? 'You' : stream.owner_id,
+      receiver: direction === 'IN' ? 'You' : stream.receiver_id,
       amount: formatAmount(decimals, progress.full),
       tokenSymbol: symbol,
       cliff: cliffEndTimestamp
@@ -224,12 +222,11 @@ sample({
       comment,
       showControls: !isDead(stream),
       showAddFundsButton: ableToAddFunds(stream, accountId),
-      showWithdrawButton:
-        direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.Active,
+      showWithdrawButton: direction === 'IN' && stream.status === STREAM_STATUS.Active,
       showStartButton: ableToStartStream(stream, accountId),
       showPauseButton: ableToPauseStream(stream, accountId),
       subheader,
-      direction,
+      direction: direction ? (direction.toLowerCase() as 'in' | 'out') : direction,
       link: getStreamLink(stream.id),
     };
   },

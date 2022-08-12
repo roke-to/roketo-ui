@@ -1,18 +1,19 @@
 import type {Notification, UpdateUserDto, User} from '@roketo/api-client';
-import {attach, createEffect, createEvent, createStore, sample} from 'effector';
-import {ConnectedWalletAccount, Near} from 'near-api-js';
-
 import {
   createRichContracts,
   getIncomingStreams,
   getOutgoingStreams,
   initApiControl,
-} from '~/shared/api/methods';
+} from '@roketo/sdk';
+import {attach, createEffect, createEvent, createStore, sample} from 'effector';
+import {ConnectedWalletAccount, Near} from 'near-api-js';
+
 import {createNearInstance} from '~/shared/api/near';
 import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
 import {notificationsApiClient, tokenProvider, usersApiClient} from '~/shared/api/roketo-client';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import type {ApiControl, NearAuth, RichToken, TransactionMediator} from '~/shared/api/types';
+import {env} from '~/shared/config';
 import {getChangedFields} from '~/shared/lib/changeDetection';
 
 async function retry<T>(cb: () => Promise<T>) {
@@ -160,7 +161,8 @@ const createRoketoWalletFx = createEffect(
   }: {
     account: ConnectedWalletAccount;
     transactionMediator: TransactionMediator;
-  }) => initApiControl({account, transactionMediator}),
+  }) =>
+    initApiControl({account, transactionMediator, roketoContractName: env.ROKETO_CONTRACT_NAME}),
 );
 export const $appLoading = createStore(true);
 const createPriceOracleFx = createEffect((account: ConnectedWalletAccount) =>

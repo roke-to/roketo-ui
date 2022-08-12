@@ -1,3 +1,4 @@
+import {isActiveStream, isDead, isPausedStream, wasStartedAndLocked} from '@roketo/sdk';
 import cn from 'classnames';
 import {useGate, useStore, useStoreMap} from 'effector-react';
 import {ReactNode, useState} from 'react';
@@ -9,7 +10,6 @@ import {blurGate} from '~/entities/blur';
 import {$accountId} from '~/entities/wallet';
 
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {isActiveStream, isDead, isPausedStream, wasStartedAndLocked} from '~/shared/api/roketo/lib';
 import {testIds} from '~/shared/constants';
 import {BooleanControl, useBool} from '~/shared/hooks/useBool';
 import {AdaptiveModal} from '~/shared/kit/AdaptiveModal';

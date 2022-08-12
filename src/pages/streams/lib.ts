@@ -1,9 +1,8 @@
-import {getStreamProgress, parseComment} from '@roketo/sdk';
+import {getAvailableToWithdraw, getStreamProgress, parseComment} from '@roketo/sdk';
 import {BigNumber} from 'bignumber.js';
 
 import type {PriceOracle} from '~/shared/api/price-oracle';
 import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {getAvailableToWithdraw} from '~/shared/api/roketo/lib';
 import {toHumanReadableValue} from '~/shared/api/token-formatter';
 import type {RichToken} from '~/shared/api/types';
 
