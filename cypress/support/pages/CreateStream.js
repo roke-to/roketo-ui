@@ -29,6 +29,7 @@ class CreateStream {
     cy.get('[aria-label="Hour"]').click().type(currentTimeInMilliseconds.getHours());
     cy.get('[aria-label="Minute"]').click().type(currentTimeInMilliseconds.getMinutes());
     cy.get('[aria-label="Second"]').click().type(' {backspace}').type(1);
+    cy.get('[name="amPm"]').select('AM');
   }
 
   inputComments(value) {

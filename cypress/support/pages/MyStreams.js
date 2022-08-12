@@ -6,7 +6,7 @@ import Transaction from './TransactionPage';
 
 class MyStreams {
   checkNewStreamStatus(value) {
-    cy.get(testSelectors.streamStatusIcon).should('have.attr', 'alt').and('contain', value);
+    cy.get(testSelectors.streamStatusIcon).eq(0).should('have.attr', 'alt').and('contain', value);
   }
 
   checkStreamDoesntExist() {
