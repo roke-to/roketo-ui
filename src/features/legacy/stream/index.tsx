@@ -1,3 +1,4 @@
+import type {RichToken} from '@roketo/sdk/dist/types';
 import classNames from 'classnames';
 import copy from 'clipboard-copy';
 import {format, isPast} from 'date-fns';
@@ -5,7 +6,6 @@ import React, {useState} from 'react';
 import {Link, useParams} from 'react-router-dom';
 
 import {tokensPerMeaningfulPeriod} from '~/shared/api/token-formatter';
-import {RichToken} from '~/shared/api/types';
 import {PageError} from '~/shared/components/PageError';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 import {TokenImage} from '~/shared/kit/TokenImage';
