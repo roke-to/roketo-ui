@@ -5,14 +5,19 @@ import {
   getOutgoingStreams,
   initApiControl,
 } from '@roketo/sdk';
+import type {
+  ApiControl,
+  NearAuth,
+  RichToken,
+  RoketoStream,
+  TransactionMediator,
+} from '@roketo/sdk/dist/types';
 import {attach, createEffect, createEvent, createStore, sample} from 'effector';
 import {ConnectedWalletAccount, Near} from 'near-api-js';
 
 import {createNearInstance} from '~/shared/api/near';
 import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
 import {notificationsApiClient, tokenProvider, usersApiClient} from '~/shared/api/roketo-client';
-import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import type {ApiControl, NearAuth, RichToken, TransactionMediator} from '~/shared/api/types';
 import {env} from '~/shared/config';
 import {getChangedFields} from '~/shared/lib/changeDetection';
 

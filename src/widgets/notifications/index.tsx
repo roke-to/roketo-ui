@@ -1,5 +1,6 @@
 import type {Notification, NotificationTypeEnum as NotificationType} from '@roketo/api-client';
 import {calculateTimeLeft, getStreamProgress} from '@roketo/sdk';
+import type {RoketoStream} from '@roketo/sdk/dist/types';
 import classNames from 'classnames';
 import {useGate, useList, useStore, useStoreMap} from 'effector-react';
 import React from 'react';
@@ -8,7 +9,6 @@ import {Link} from 'react-router-dom';
 import {blurGate} from '~/entities/blur';
 import {$notifications} from '~/entities/wallet';
 
-import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {formatAmount} from '~/shared/api/token-formatter';
 import {testIds} from '~/shared/constants';
 import {useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';

@@ -1,4 +1,5 @@
 import {calculateEndTimestamp, getStreamProgress} from '@roketo/sdk';
+import type {RoketoStream} from '@roketo/sdk/dist/types';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import {format} from 'date-fns';
@@ -6,7 +7,6 @@ import {useStore} from 'effector-react';
 import React, {useState} from 'react';
 import Modal from 'react-modal';
 
-import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {toYocto} from '~/shared/api/token-formatter';
 import {Balance, useBalanceForToken} from '~/shared/components/Balance';
 import {testIds} from '~/shared/constants';

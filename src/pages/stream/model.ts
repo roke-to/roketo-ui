@@ -16,6 +16,7 @@ import {
   parseColor,
   parseComment,
 } from '@roketo/sdk';
+import type {RichToken, RoketoStream} from '@roketo/sdk/dist/types';
 import {isPast} from 'date-fns';
 import {combine, createEffect, createEvent, createStore, sample, split} from 'effector';
 import {createGate} from 'effector-react';
@@ -31,9 +32,7 @@ import {
 } from '~/entities/wallet';
 
 import {STREAM_STATUS, StreamDirection} from '~/shared/api/roketo/constants';
-import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {formatAmount, formatSmartly, toHumanReadableValue} from '~/shared/api/token-formatter';
-import type {RichToken} from '~/shared/api/types';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 import {getStreamLink} from '~/shared/lib/routing';
 

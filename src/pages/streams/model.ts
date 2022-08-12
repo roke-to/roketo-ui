@@ -13,6 +13,7 @@ import {
   parseColor,
   parseComment,
 } from '@roketo/sdk';
+import type {RoketoStream} from '@roketo/sdk/dist/types';
 import {isPast} from 'date-fns';
 import {combine, createEffect, createEvent, createStore, sample} from 'effector';
 import {generatePath} from 'react-router-dom';
@@ -32,7 +33,6 @@ import {
 } from '~/entities/wallet';
 
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
-import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {
   formatSmartly,
   toHumanReadableValue,

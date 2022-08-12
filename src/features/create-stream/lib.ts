@@ -1,8 +1,8 @@
+import type {RichToken, TokenMetadata} from '@roketo/sdk/dist/types';
 import BigNumber from 'bignumber.js';
 import {addMonths, differenceInDays} from 'date-fns';
 
 import {tokensPerMeaningfulPeriod, toYocto} from '~/shared/api/token-formatter';
-import type {RichToken, TokenMetadata} from '~/shared/api/types';
 import {SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE} from '~/shared/constants';
 
 export const getDurationInSeconds = (

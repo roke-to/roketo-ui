@@ -1,5 +1,6 @@
 import {Action as SelectorAction, setupWalletSelector} from '@near-wallet-selector/core';
 import {setupSender} from '@near-wallet-selector/sender';
+import type {NearAuth, TransactionMediator} from '@roketo/sdk/dist/types';
 import {
   connect,
   ConnectedWalletAccount,
@@ -11,8 +12,6 @@ import {
 import type {Action as NearAction} from 'near-api-js/lib/transaction';
 
 import {env} from '~/shared/config';
-
-import type {NearAuth, TransactionMediator} from '../types';
 
 async function createSenderWalletInstance(): Promise<{
   near: Near;
