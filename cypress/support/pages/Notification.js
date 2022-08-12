@@ -27,7 +27,7 @@ class Notifications {
     const text = {
       start: `${senderId} created a stream to you`,
       pause: `The stream from ${senderId} is paused`,
-      restart: `${senderId} has resumed the stream`,
+      restart: `${senderId} resumed the stream`,
       stop: `The stream from ${senderId} has completed`,
       cliff: `The stream from ${senderId} has passed the cliff period`,
       funds: `The funds were added to the stream from ${senderId}`,
