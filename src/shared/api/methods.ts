@@ -218,15 +218,15 @@ export async function transfer({
   ];
 
   let depositSum = new BigNumber(0);
-  /** account creation costs 0.00125 NEAR for storage */
-  const depositAmount = utils.format.parseNearAmount('0.00125')!;
+  /** account creation costs either 0.00125 NEAR for storage, or 0.0125 NEAR for bridged FT */
+  const depositAmount = utils.format.parseNearAmount('0.0125')!;
 
   storageDepositAccountIds.forEach((accountId, index) => {
     if (!isRegisteredAccountIds[index]) {
       actions.unshift(
         transactionMediator.functionCall(
           'storage_deposit',
-          {account_id: accountId},
+          {account_id: accountId, registration_only: true},
           '30000000000000',
           depositAmount,
         ),
