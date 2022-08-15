@@ -122,6 +122,7 @@
 
 .isLocked {
   justify-content: center;
+  margin-top: 21px;
 }
 
 .submitError {
@@ -232,6 +233,10 @@
 
   .actionButtonsWrapper {
     justify-content: space-between;
+  }
+
+  .isLocked {
+    margin-top: 0;
   }
 }
 @media (max-width: 767px) {
