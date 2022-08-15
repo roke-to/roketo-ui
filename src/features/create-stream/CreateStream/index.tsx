@@ -69,6 +69,8 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [streamAmount, setStreamAmount] = useState(0);
   const [deposit, setDeposit] = useState(0);
+  const [delayed, setDelayed] = useState(true);
+  const [isLocked, setIsLocked] = useState(true);
   const accountId = useStore($accountId);
 
   const handleFormSubmit = (formValues: FormValues) => {
@@ -132,7 +134,8 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
                     ? 'The stream will start immediately'
                     : 'You can start stream manualy later'
                 }
-                checked={values.cliffDateTime ? false : values.delayed}
+                onChange={() => setDelayed(!delayed)}
+                checked={values.cliffDateTime ? false : delayed}
               />
 
               <Field
@@ -228,6 +231,8 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
                     component={FormikCheckbox}
                     data-testid={testIds.createStreamLockedCheckbox}
                     className={cn(styles.formBlock, styles.isLocked)}
+                    onChange={() => setIsLocked(!isLocked)}
+                    checked={isLocked}
                   />
                 </>
               )}
