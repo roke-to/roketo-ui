@@ -146,7 +146,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
       return (
         <>
           <PrimaryText>
-            The stream from {stream.owner_id} was <strong>finished</strong>
+            The stream from {stream.owner_id} is <strong>ready to be fully withdrawn</strong>
           </PrimaryText>
           <SecondaryText>
             Available for withdrawal:{' '}
