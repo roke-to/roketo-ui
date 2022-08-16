@@ -13,9 +13,10 @@
 
 .status {
   position: relative;
-  line-height: 19px;
   font-weight: 500;
   font-size: 16px;
+  left: 12px;
+  line-height: 26px;
 }
 
 .overlay {
@@ -36,6 +37,11 @@
 
 .extendedInfo {
   padding: 8px 6px;
+
+  .status {
+    line-height: 19px;
+    left: 0;
+  }
 }
 
 .title {
