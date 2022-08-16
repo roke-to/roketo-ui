@@ -70,14 +70,11 @@ export function upsertWithCache<T extends {id: string}>(
   source: T[],
   received: T[],
   cache: Set<string>,
-): T[] {
-  if (received.length === 0) return source;
-  const copy = [...source];
+) {
   received.forEach((item) => {
     if (!cache.has(item.id)) {
-      copy.push(item);
+      source.push(item);
       cache.add(item.id);
     }
   });
-  return copy;
 }

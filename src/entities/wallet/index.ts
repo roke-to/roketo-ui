@@ -34,12 +34,10 @@ export const $priceOracle = resetOnLogout.createStore<PriceOracle>({
 export const $accountStreams = resetOnLogout.createStore<{
   inputs: RoketoStream[];
   outputs: RoketoStream[];
-  idsCache: Set<string>;
   streamsLoaded: boolean;
 }>({
   inputs: [],
   outputs: [],
-  idsCache: new Set(),
   streamsLoaded: false,
 });
 
@@ -207,20 +205,32 @@ const requestAccountStreamsFx = attach({
     const incomingPages = countPages(incoming, STREAMS_PER_REQUEST);
     const outgoingPages = countPages(outgoing, STREAMS_PER_REQUEST);
 
-    await Promise.all([
-      ...Array.from({length: incomingPages}, (_, pageIndex) =>
-        requestIncomingStreamsFx({
-          from: pageIndex * STREAMS_PER_REQUEST,
-          limit: STREAMS_PER_REQUEST,
-        }),
-      ),
-      ...Array.from({length: outgoingPages}, (_, pageIndex) =>
-        requestOutgoingStreamsFx({
-          from: pageIndex * STREAMS_PER_REQUEST,
-          limit: STREAMS_PER_REQUEST,
-        }),
-      ),
-    ]);
+    const incomingStreams: RoketoStream[] = [];
+    const outgoingStreams: RoketoStream[] = [];
+    const cacheIds = new Set<string>();
+
+    const incomingPromises = iterateOver(incomingPages, async (pageIndex) => {
+      const streams = await requestIncomingStreamsFx({
+        from: pageIndex * STREAMS_PER_REQUEST,
+        limit: STREAMS_PER_REQUEST,
+      });
+      if (streams) {
+        upsertWithCache(incomingStreams, streams, cacheIds);
+      }
+    });
+    const outgoingPromises = iterateOver(outgoingPages, async (pageIndex) => {
+      const streams = await requestOutgoingStreamsFx({
+        from: pageIndex * STREAMS_PER_REQUEST,
+        limit: STREAMS_PER_REQUEST,
+      });
+      if (streams) {
+        upsertWithCache(outgoingStreams, streams, cacheIds);
+      }
+    });
+
+    await Promise.all([...incomingPromises, ...outgoingPromises]);
+
+    return {incoming: incomingStreams, outgoing: outgoingStreams};
   },
 });
 
@@ -293,26 +303,9 @@ sample({
  * save them to store $accountStreams
  */
 
-$accountStreams.on(requestIncomingStreamsFx.doneData, (exists, incoming) => {
-  if (!incoming) return exists;
-
-  return {
-    ...exists,
-    inputs: upsertWithCache(exists.inputs, incoming, exists.idsCache),
-  };
-});
-
-$accountStreams.on(requestOutgoingStreamsFx.doneData, (exists, outgoing) => {
-  if (!outgoing) return exists;
-
-  return {
-    ...exists,
-    outputs: upsertWithCache(exists.outputs, outgoing, exists.idsCache),
-  };
-});
-
-$accountStreams.on(requestAccountStreamsFx.doneData, (exists) => ({
-  ...exists,
+$accountStreams.on(requestAccountStreamsFx.doneData, (accountStreams, {incoming, outgoing}) => ({
+  inputs: incoming,
+  outputs: outgoing,
   streamsLoaded: true,
 }));
 
@@ -477,4 +470,8 @@ async function retry<T>(cb: () => Promise<T>) {
 
 function countPages(total: number, pageSize: number) {
   return Math.ceil(total / pageSize);
+}
+
+function iterateOver(count: number, fn: (index: number) => Promise<void>): Array<Promise<void>> {
+  return Array.from({length: count}, async (_, index) => fn(index));
 }
