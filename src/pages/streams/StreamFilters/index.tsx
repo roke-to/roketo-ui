@@ -142,13 +142,7 @@ export function StreamFilters({className}: {className: string}) {
         ))}
       </div>
       <div className={cn(styles.textFilter, showInput && styles.withInput)} key="text-filter">
-        <button
-          type="button"
-          className={styles.textFilterMagnifier}
-          onClick={() => setShowInput(true)}
-        >
-          <img src={magnifierIcon} alt="search" />
-        </button>
+        <img src={magnifierIcon} className={styles.textFilterMagnifier} alt="search" />
         <input
           className={styles.textFilterInput}
           value={filterText}

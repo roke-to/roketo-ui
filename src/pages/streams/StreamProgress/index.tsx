@@ -33,6 +33,7 @@ const ExtendedInfo = ({streamId, className}: {streamId: string; className?: stri
     withdrawnPercentage,
     direction,
     sign,
+    cliffText,
   } = useStoreMap({
     store: $streamsProgress,
     keys: [streamId],
@@ -41,6 +42,7 @@ const ExtendedInfo = ({streamId, className}: {streamId: string; className?: stri
   });
   return (
     <div className={cn(styles.extendedInfo, styles.text, className)}>
+      <div className={styles.title}>{direction === 'in' ? 'Ingoing' : 'Outgoing'} stream</div>
       <div className={styles.innerStatus}>
         <span>
           {streamedText} of {totalText}
@@ -71,13 +73,16 @@ const ExtendedInfo = ({streamId, className}: {streamId: string; className?: stri
         </div>
       )}
 
+      {cliffText && <div className={cn(styles.progress)}>Cliff ends within: {cliffText}</div>}
+
       <div className={cn(styles.progress, styles.streamed)}>
-        Streamed: {streamedText} <span className={styles.subtext}>{`${streamedPercentage}%`}</span>
+        Streamed: {streamedText}{' '}
+        <span className={styles.subtext}>{`(${streamedPercentage}%)`}</span>
       </div>
 
       <div className={cn(styles.progress, styles.withdrawn)}>
         Withdrawn: {withdrawnText}{' '}
-        <span className={styles.subtext}>{`${withdrawnPercentage}%`}</span>
+        <span className={styles.subtext}>{`(${withdrawnPercentage}%)`}</span>
       </div>
     </div>
   );
