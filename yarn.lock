@@ -1651,10 +1651,10 @@
     url-parse "^1.4.3"
     whatwg-fetch "^3.0.0"
 
-"@roketo/sdk@^0.2.7":
-  version "0.2.7"
-  resolved "https://registry.yarnpkg.com/@roketo/sdk/-/sdk-0.2.7.tgz#a16eb63be88a859fd3eb5ae347c2478dd115b67f"
-  integrity sha512-2AfQovYJa4TZouvLwEvQy82bkdE+oXnsLI8DeR53MqtvNiDAlkCOs8eRhypyH6ywZu1qLJ0xFB6NTKOtQ/hXFA==
+"@roketo/sdk@^0.2.8":
+  version "0.2.8"
+  resolved "https://registry.yarnpkg.com/@roketo/sdk/-/sdk-0.2.8.tgz#dab9054d49e8db59a8cd33c162f9092425019ef5"
+  integrity sha512-nWdqrHR5L3rGXpvItb0PHjx+XG/xeJ9B0KynWzrc7JJNXe11/zOxb6tdKBfmETrzC9gfDp6W3elmYzJv7DFmtw==
   dependencies:
     bignumber.js "^9.1.0"
     date-fns "^2.28.0"
