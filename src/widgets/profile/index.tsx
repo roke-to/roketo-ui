@@ -49,7 +49,7 @@ export const Profile = ({arrowClassName}: ProfileProps) => {
         dropdownClassName={styles.dropdownMenu}
         modalClassName={styles.modal}
       >
-        <ProfileForm showFinances={isCompact} />
+        <ProfileForm />
       </AdaptiveModal>
     </div>
   );

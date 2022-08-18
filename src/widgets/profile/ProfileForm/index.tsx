@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import {useStore} from 'effector-react';
 import {useEffect, useRef, useState} from 'react';
 
-import {FinancialActivity} from '~/widgets/header/ui/FinancialActivity';
 import {InfoIcon} from '~/widgets/profile/ProfileForm/InfoIcon';
 import {UserAvatar} from '~/widgets/profile/UserAvatar';
 
@@ -17,11 +16,7 @@ import {LogoutIcon} from '@ui/icons/LogOut';
 
 import styles from './index.module.scss';
 
-interface ProfileFormProps {
-  showFinances?: boolean;
-}
-
-export function ProfileForm({showFinances}: ProfileFormProps) {
+export function ProfileForm() {
   const user = useStore($user);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -64,8 +59,6 @@ export function ProfileForm({showFinances}: ProfileFormProps) {
           <span>Log Out</span>
         </Button>
         <UserAvatar className={styles.avatar} />
-
-        {showFinances && <FinancialActivity className={styles.finances} />}
 
         <FormField label="User name">
           <Input
