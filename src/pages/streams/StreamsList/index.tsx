@@ -1,3 +1,4 @@
+import type {RoketoStream} from '@roketo/sdk/dist/types';
 import cn from 'classnames';
 import copy from 'clipboard-copy';
 import {useList, useStore, useStoreMap} from 'effector-react';
@@ -7,7 +8,6 @@ import {Link} from 'react-router-dom';
 import {StreamListControls} from '~/features/stream-control/StreamControls';
 
 import type {STREAM_STATUS} from '~/shared/api/roketo/constants';
-import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {Badge} from '~/shared/components/Badge';
 import {testIds} from '~/shared/constants';
 import {ColorDot} from '~/shared/kit/ColorDot';
