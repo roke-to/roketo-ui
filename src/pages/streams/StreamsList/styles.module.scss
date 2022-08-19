@@ -20,9 +20,9 @@
     [color-column] 4px
     [status-column] 48px
     [bar-column] 200px
-    [address-column] minmax(min-content, 1fr)
-    [comment-column] max-content
-    [control-column] 150px;
+    [address-column] min-content
+    [comment-column] minmax(min-content, 1fr)
+    [control-column] 120px;
 }
 
 .colorCell,
@@ -59,7 +59,8 @@
   line-height: 16px;
   grid-row: 1;
   grid-column: span 1;
-  padding-left: 12px;
+  padding-left: 64px;
+  margin-bottom: 10px;
   &:first-of-type {
     grid-column: span 3;
     padding-left: 28px;
@@ -125,6 +126,10 @@
   overflow: hidden;
 }
 
+.inlineBadge {
+  margin-left: 12px;
+}
+
 .commentCell {
   grid-column: comment-column;
   display: flex;
@@ -135,7 +140,7 @@
   grid-column: control-column;
 
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
 
   /** Open tooltip to top for last 5 controlCells
@@ -159,10 +164,13 @@
   border-top: 1px solid #a0c2f880;
 }
 
-.nameCell,
-.commentCell,
 .controlCell {
   padding-left: 12px;
+}
+
+.nameCell,
+.commentCell {
+  padding-left: 64px;
 }
 
 .commentBlock {
