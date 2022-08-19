@@ -20,8 +20,8 @@
     [color-column] 4px
     [status-column] 48px
     [bar-column] 200px
-    [address-column] minmax(min-content, 1fr)
-    [comment-column] max-content
+    [address-column] min-content
+    [comment-column] minmax(min-content, 1fr)
     [control-column] 150px;
 }
 
