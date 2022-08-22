@@ -1,5 +1,4 @@
 import cn from 'classnames';
-import copy from 'clipboard-copy';
 import {useGate, useStore} from 'effector-react';
 import React, {ReactNode} from 'react';
 import {Link, useParams} from 'react-router-dom';
@@ -14,9 +13,9 @@ import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
 import {ColorDot} from '~/shared/kit/ColorDot';
 import {ROUTES_MAP} from '~/shared/lib/routing';
 
+import {CopyLinkButton} from '@ui/components/CopyLinkButton';
 import {Layout} from '@ui/components/Layout';
 import {ProgressBar} from '@ui/components/ProgressBar';
-import {LinkIcon} from '@ui/icons/Link';
 
 import {BreadcrumbIcon} from './BreadcrumbIcon';
 import {$loading, $pageError, $stream, $streamInfo, pageGate} from './model';
@@ -168,9 +167,7 @@ export function StreamPage() {
             <div className={cn(styles.blockLarge, styles.linkBlock)}>
               <div className={cn(styles.copyTitle, styles.blockTitle)}>
                 Public link to view the stream
-                <button type="button" className={styles.copyButton} onClick={() => copy(link)}>
-                  <LinkIcon className={styles.linkIcon} />
-                </button>
+                <CopyLinkButton className={styles.copyButton} link={link} />
               </div>
               <div className={cn(styles.blockBody, styles.link)}>{link}</div>
             </div>
