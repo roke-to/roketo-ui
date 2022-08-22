@@ -35,12 +35,12 @@ export const COMMENT_TEXT_LIMIT = 80;
 export type FormValues = {
   receiver: string;
   streamName: string;
-  delayed: boolean;
+  isNotDelayed: boolean;
   comment: string;
   deposit: number;
   duration: number;
   token: string;
-  isLocked: boolean;
+  isUnlocked: boolean;
   cliffDateTime: Date | null;
   color: StreamColor;
 };
@@ -51,9 +51,9 @@ export const INITIAL_FORM_VALUES: FormValues = {
   token: env.WNEAR_ID,
   duration: 0,
   deposit: 0,
-  delayed: false,
+  isNotDelayed: true,
   comment: '',
-  isLocked: false,
+  isUnlocked: true,
   cliffDateTime: null,
   color: 'none',
 };

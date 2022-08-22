@@ -116,11 +116,11 @@
 }
 
 .delayed,
-.isLocked {
+.isUnlocked {
   grid-column: auto / span 6;
 }
 
-.isLocked {
+.isUnlocked {
   justify-content: center;
   margin-top: 21px;
 }
@@ -220,7 +220,7 @@
   .duration,
   .commissionBlock,
   .cliff,
-  .isLocked,
+  .isUnlocked,
   .actionButtonsWrapper {
     grid-column: 1 / -1;
   }
@@ -235,7 +235,7 @@
     justify-content: space-between;
   }
 
-  .isLocked {
+  .isUnlocked {
     margin-top: 0;
   }
 }

@@ -97,8 +97,17 @@ export const handleCreateStreamFx = createProtectedEffect({
   ),
   async fn({roketo: {tokens, transactionMediator, accountId}, near: {auth}}, values: FormValues) {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const {receiver, delayed, comment, deposit, duration, token, isLocked, cliffDateTime, color} =
-      values;
+    const {
+      receiver,
+      isNotDelayed,
+      comment,
+      deposit,
+      duration,
+      token,
+      isUnlocked,
+      cliffDateTime,
+      color,
+    } = values;
     const {roketoMeta, tokenContract, meta} = tokens[token];
     const tokensPerSec = getTokensPerSecondCount(meta, deposit, duration);
     const creator = () =>
@@ -109,9 +118,9 @@ export const handleCreateStreamFx = createProtectedEffect({
         tokenAccountId: token,
         commissionOnCreate: roketoMeta.commission_on_create,
         tokensPerSec,
-        delayed: cliffDateTime ? delayed : !delayed,
+        delayed: !isNotDelayed,
         callbackUrl: returnPath,
-        isLocked: !isLocked,
+        isLocked: !isUnlocked,
         cliffPeriodSec: cliffDateTime
           ? Math.floor((cliffDateTime.getTime() - Date.now()) / 1000)
           : undefined,

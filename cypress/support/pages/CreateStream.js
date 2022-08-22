@@ -29,14 +29,13 @@ class CreateStream {
     cy.get('[aria-label="Hour"]').click().type(currentTimeInMilliseconds.getHours());
     cy.get('[aria-label="Minute"]').click().type(currentTimeInMilliseconds.getMinutes());
     cy.get('[aria-label="Second"]').click().type(' {backspace}').type(1);
-    cy.get('[name="amPm"]').select('AM');
   }
 
   inputComments(value) {
     cy.get(testSelectors.createStreamCommentInput).click().type(value);
   }
 
-  setNotDelayed() {
+  setDelayed() {
     cy.get(testSelectors.createStreamDelayedCheckbox).click({force: true});
   }
 
@@ -44,7 +43,7 @@ class CreateStream {
     cy.get(testSelectors.createStreamSubmitButton).click();
   }
 
-  editable() {
+  uneditable() {
     cy.get(testSelectors.createStreamLockedCheckbox).click({force: true});
   }
 

@@ -91,18 +91,6 @@
   }
 }
 
-.closeMobile {
-  width: 40px;
-  height: 40px;
-  top: -61px;
-  right: 0;
-
-  &:after,
-  &:before {
-    background: #fff;
-  }
-}
-
 /* Extra small - xs */
 @media (max-width: 767px) {
   .content {
@@ -114,5 +102,17 @@
 
   .overlay {
     padding: 10vh 0;
+  }
+
+  .close {
+    width: 40px;
+    height: 40px;
+    top: -61px;
+    right: 0;
+
+    &:after,
+    &:before {
+      background: #fff;
+    }
   }
 }

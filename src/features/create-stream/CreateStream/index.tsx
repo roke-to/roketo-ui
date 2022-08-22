@@ -69,8 +69,6 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [streamAmount, setStreamAmount] = useState(0);
   const [deposit, setDeposit] = useState(0);
-  const [delayed, setDelayed] = useState(true);
-  const [isLocked, setIsLocked] = useState(true);
   const accountId = useStore($accountId);
 
   const handleFormSubmit = (formValues: FormValues) => {
@@ -122,20 +120,18 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
           return (
             <form onSubmit={handleSubmit} className={styles.form}>
               <Field
-                name="delayed"
+                name="isNotDelayed"
                 disabled={Boolean(values.cliffDateTime)}
-                type="checkbox"
                 component={FormikToggle}
                 data-testid={testIds.createStreamDelayedCheckbox}
                 className={cn(styles.formBlock, styles.start)}
                 description="Start immediately"
                 hint={
-                  values.delayed
+                  values.isNotDelayed
                     ? 'The stream will start immediately'
                     : 'You can start stream manualy later'
                 }
-                onChange={() => setDelayed(!delayed)}
-                checked={values.cliffDateTime ? false : delayed}
+                checked={values.cliffDateTime ? false : values.isNotDelayed}
               />
 
               <Field
@@ -201,8 +197,8 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
               />
 
               <div className={styles.collapseBtnWrap}>
-                {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-                <div
+                <button
+                  type="button"
                   className={styles.collapseBtn}
                   onClick={() => setIsCollapsed(!isCollapsed)}
                   data-testid={testIds.collapseButton}
@@ -210,7 +206,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
                   {!isCollapsed && 'More options'}
                   {isCollapsed && 'Less options'}
                   <ArrowIcon className={isCollapsed ? styles.rotated : ''} />
-                </div>
+                </button>
               </div>
 
               {isCollapsed && (
@@ -225,14 +221,12 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
                     className={cn(styles.formBlock, styles.cliff)}
                   />
                   <Field
-                    name="isLocked"
+                    name="isUnlocked"
                     description="Edited stream"
                     type="checkbox"
                     component={FormikCheckbox}
                     data-testid={testIds.createStreamLockedCheckbox}
-                    className={cn(styles.formBlock, styles.isLocked)}
-                    onChange={() => setIsLocked(!isLocked)}
-                    checked={isLocked}
+                    className={cn(styles.formBlock, styles.isUnlocked)}
                   />
                 </>
               )}

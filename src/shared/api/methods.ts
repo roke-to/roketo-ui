@@ -6,7 +6,12 @@ import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 
 import {STORAGE_DEPOSIT} from './roketo/constants';
 import type {RoketoContract} from './roketo/interfaces/contracts';
-import type {RoketoAccount, RoketoDao, RoketoStream, RoketoTokenMeta} from './roketo/interfaces/entities';
+import type {
+  RoketoAccount,
+  RoketoDao,
+  RoketoStream,
+  RoketoTokenMeta,
+} from './roketo/interfaces/entities';
 import type {ApiControl, FTContract, RichToken, TransactionMediator} from './types';
 
 export async function initApiControl({
@@ -25,7 +30,7 @@ export async function initApiControl({
   const richTokens = await createRichContracts({
     account,
     tokensInfo: Object.entries(dao.tokens),
-    dao
+    dao,
   });
   return {
     account,
@@ -41,7 +46,7 @@ export async function initApiControl({
 export async function createRichContracts({
   account,
   tokensInfo,
-  dao
+  dao,
 }: {
   account: Account;
   tokensInfo: Array<readonly [tokenAccountId: string, roketoMeta: RoketoTokenMeta]>;
@@ -59,11 +64,9 @@ export async function createRichContracts({
           getBalance({accountId, tokenContract}),
         ]);
 
-        let commission = dao.commission_non_payment_ft;
-
-        if (roketoMeta.is_payment) {
-          commission = roketoMeta.commission_on_create;
-        }
+        const commission = roketoMeta.is_payment
+          ? roketoMeta.commission_on_create
+          : dao.commission_non_payment_ft;
 
         return [
           tokenAccountId,
@@ -72,7 +75,7 @@ export async function createRichContracts({
             meta,
             balance,
             tokenContract,
-            commission
+            commission,
           },
         ];
       }),
@@ -201,18 +204,13 @@ export async function transfer({
   tokenAccountId: string;
   transactionMediator: TransactionMediator;
 }) {
-  const storageDepositAccountIds = [
-    payload.owner_id,
-    payload.receiver_id,
-  ];
+  const storageDepositAccountIds = [payload.owner_id, payload.receiver_id];
 
-  const {isRegisteredAccountIds, depositSum, depositAmount} =
-    await countStorageDeposit({
-      tokenContract,
-      storageDepositAccountIds,
-    });
+  const {isRegisteredAccountIds, depositSum, depositAmount} = await countStorageDeposit({
+    tokenContract,
+    storageDepositAccountIds,
+  });
 
-  
   const actions = [
     transactionMediator.functionCall(
       'ft_transfer_call',
@@ -269,10 +267,7 @@ export async function countStorageDeposit({
   tokenContract: FTContract;
   storageDepositAccountIds: Array<string>;
 }) {
-  const rocetoAccountIds = [
-    env.ROKETO_CONTRACT_NAME,
-    env.ROKETO_FINANCE_CONTRACT_NAME,
-  ]
+  const rocetoAccountIds = [env.ROKETO_CONTRACT_NAME, env.ROKETO_FINANCE_CONTRACT_NAME];
 
   storageDepositAccountIds.push(...rocetoAccountIds);
 
@@ -283,7 +278,7 @@ export async function countStorageDeposit({
   let depositSum = new BigNumber(0);
   /** account creation costs 0.0025 NEAR for storage */
   const depositAmount = utils.format.parseNearAmount(STORAGE_DEPOSIT)!;
-  
+
   storageDepositAccountIds.forEach((accountId, index) => {
     if (!isRegisteredAccountIds[index]) depositSum = depositSum.plus(depositAmount);
   });
