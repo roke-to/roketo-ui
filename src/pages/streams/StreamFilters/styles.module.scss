@@ -2,9 +2,8 @@
 
 .root {
   display: grid;
-  grid-auto-flow: dense;
   gap: 8px;
-  grid-template-columns: repeat(4, max-content);
+  grid-template-columns: min-content 1fr;
 }
 
 .sortWithOrder {
@@ -17,20 +16,16 @@
 }
 
 .textFilter {
-  grid-row: 1;
-  grid-column: 2;
+  grid-column: 2 / span 1;
   min-width: 48px;
   height: 48px;
   border-radius: 24px;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   position: relative;
 
   &.withInput {
-    grid-row: 2;
-    grid-column: 2 / span 2;
-
     & .textFilterMagnifier {
       background-color: unset;
     }
@@ -38,7 +33,7 @@
       visibility: visible;
       border: 1px solid #a0c2f8;
       cursor: unset;
-      width: fit-content;
+      width: 320px;
     }
   }
 
@@ -139,11 +134,42 @@
 .countText {
   color: $grey;
 }
+@media (max-width: 1199px) {
+  .textFilter {
+    &.withInput {
+      width: 250px;
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .textFilter {
+    &.withInput {
+      grid-row: 2;
+    }
+  }
+}
+
+@media (max-width: 991px) {
+  .statusBlock {
+    grid-column: 1 / span 1;
+  }
+  .textFilter {
+    &.withInput {
+      width: 100%;
+      grid-column: 2 / span 2;
+      grid-row: 1;
+    }
+  }
+  .sortBlock {
+    grid-column: 4 / span 1;
+  }
+}
 
 /* Phone */
 @media (max-width: 767px) {
   .root {
-    grid-template-columns: 1fr max-content max-content;
+    grid-template-columns: 1fr max-content;
   }
   .compactFilter {
     display: unset;
@@ -157,9 +183,6 @@
   .textFilter.textFilter {
     grid-column: 2 / span 1;
     grid-row: 1;
-    &.withInput {
-      grid-column: 1 / span 2;
-    }
   }
 }
 

@@ -1,11 +1,11 @@
-import type BigNumber from 'bignumber.js';
+import {getAvailableToWithdraw, hasPassedCliff, isActiveStream, withdrawStreams} from '@roketo/sdk';
+import type {BigNumber} from 'bignumber.js';
 import {createEvent, createStore, sample} from 'effector';
 
 import {$accountStreams, $roketoWallet, $tokens} from '~/entities/wallet';
 
-import {withdrawStreams} from '~/shared/api/methods';
-import {getAvailableToWithdraw, hasPassedCliff, isActiveStream} from '~/shared/api/roketo/lib';
 import {formatAmount} from '~/shared/api/token-formatter';
+import {env} from '~/shared/config';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 
 export const triggerWithdrawAll = createEvent();
@@ -13,7 +13,11 @@ export const triggerWithdrawAll = createEvent();
 export const withdrawAllFx = createProtectedEffect({
   source: $roketoWallet,
   fn({transactionMediator}, streamIds: string[]) {
-    return withdrawStreams({streamIds, transactionMediator});
+    return withdrawStreams({
+      streamIds,
+      transactionMediator,
+      roketoContractName: env.ROKETO_CONTRACT_NAME,
+    });
   },
 });
 
@@ -72,6 +76,7 @@ sample({
 
       if (!tokensData[tokenAccountId]) {
         tokensData[tokenAccountId] = {
+          // @ts-expect-error BigNumber types in sdk and app are incompatible for some reason
           available,
           tokenAccountId,
         };

@@ -73,11 +73,6 @@
   margin-left: auto;
 }
 
-.marginRight {
-  margin-right: 32px;
-  padding: 10px 0;
-}
-
 .secondRoot {
   @extend .root;
   flex-wrap: wrap-reverse;

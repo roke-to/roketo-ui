@@ -1,9 +1,27 @@
+import {
+  ableToAddFunds,
+  ableToPauseStream,
+  ableToStartStream,
+  calculateCliffEndTimestamp,
+  calculateCliffPercent,
+  calculateTimeLeft,
+  formatTimeLeft,
+  getAvailableToWithdraw,
+  getStream,
+  getStreamDirection,
+  getStreamProgress,
+  hasPassedCliff,
+  isDead,
+  isIdling,
+  parseColor,
+  parseComment,
+} from '@roketo/sdk';
+import type {RichToken, RoketoStream} from '@roketo/sdk/dist/types';
 import {isPast} from 'date-fns';
 import {combine, createEffect, createEvent, createStore, sample, split} from 'effector';
 import {createGate} from 'effector-react';
 
 import {getStreamingSpeed} from '~/features/create-stream/lib';
-import {formatTimeLeft, parseColor, parseComment, streamViewData} from '~/features/roketo-resource';
 
 import {
   $accountId,
@@ -13,21 +31,8 @@ import {
   lastCreatedStreamUpdated,
 } from '~/entities/wallet';
 
-import {getStream} from '~/shared/api/methods';
-import {STREAM_DIRECTION, STREAM_STATUS, StreamDirection} from '~/shared/api/roketo/constants';
-import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {
-  ableToAddFunds,
-  ableToPauseStream,
-  ableToStartStream,
-  getAvailableToWithdraw,
-  getStreamDirection,
-  hasPassedCliff,
-  isDead,
-  isIdling,
-} from '~/shared/api/roketo/lib';
+import {STREAM_STATUS, StreamDirection} from '~/shared/api/roketo/constants';
 import {formatAmount, formatSmartly, toHumanReadableValue} from '~/shared/api/token-formatter';
-import type {RichToken} from '~/shared/api/types';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 import {getStreamLink} from '~/shared/lib/routing';
 
@@ -160,7 +165,9 @@ sample({
   fn({accountId, oracle: {getPriceInUsd: toUsd}}, {stream, token}) {
     const {decimals, symbol} = token.meta;
     const tokenId = token.roketoMeta.account_id;
-    const {cliffEndTimestamp, timeLeft, progress, percentages} = streamViewData(stream);
+    const timeLeft = calculateTimeLeft(stream);
+    const progress = getStreamProgress({stream});
+    const cliffEndTimestamp = calculateCliffEndTimestamp(stream);
     const available = getAvailableToWithdraw(stream).toNumber();
     const direction = getStreamDirection(stream, accountId);
     const color = parseColor(stream.description) ?? null;
@@ -168,11 +175,11 @@ sample({
     let subheader: string;
     let sign: string;
     switch (direction) {
-      case STREAM_DIRECTION.IN:
+      case 'IN':
         subheader = 'Incoming stream';
         sign = '+';
         break;
-      case STREAM_DIRECTION.OUT:
+      case 'OUT':
         subheader = 'Outgoing stream';
         sign = '-';
         break;
@@ -186,8 +193,8 @@ sample({
     const totalInUsd = toUsd(tokenId, toHumanReadableValue(decimals, progress.full, 4), 2);
     return {
       active: true,
-      sender: direction === STREAM_DIRECTION.OUT ? 'You' : stream.owner_id,
-      receiver: direction === STREAM_DIRECTION.IN ? 'You' : stream.receiver_id,
+      sender: direction === 'OUT' ? 'You' : stream.owner_id,
+      receiver: direction === 'IN' ? 'You' : stream.receiver_id,
       amount: formatAmount(decimals, progress.full),
       tokenSymbol: symbol,
       cliff: cliffEndTimestamp
@@ -204,7 +211,7 @@ sample({
       )}`,
       progressInUSD: `${sign}$${streamedInUsd} of $${totalInUsd}`,
       withdrawnText: formatSmartly(Number(toHumanReadableValue(decimals, progress.withdrawn, 3))),
-      cliffPercent: percentages.cliff,
+      cliffPercent: calculateCliffPercent(stream),
       withdrawn: progress.withdrawn,
       streamed: progress.streamed,
       total: progress.full,
@@ -214,12 +221,11 @@ sample({
       comment,
       showControls: !isDead(stream),
       showAddFundsButton: ableToAddFunds(stream, accountId),
-      showWithdrawButton:
-        direction === STREAM_DIRECTION.IN && stream.status === STREAM_STATUS.Active,
+      showWithdrawButton: direction === 'IN' && stream.status === STREAM_STATUS.Active,
       showStartButton: ableToStartStream(stream, accountId),
       showPauseButton: ableToPauseStream(stream, accountId),
       subheader,
-      direction,
+      direction: direction ? (direction.toLowerCase() as 'in' | 'out') : direction,
       link: getStreamLink(stream.id),
     };
   },
@@ -245,7 +251,8 @@ sample({
     $stream,
     (status, pending, stream) => {
       if (!status || pending || !stream) return false;
-      return Boolean(stream && !isIdling(stream) && streamViewData(stream).percentages.left > 0);
+      const {left} = getStreamProgress({stream, asPercentage: true});
+      return Boolean(stream && !isIdling(stream) && +left > 0);
     },
   ),
   target: [progressRedrawTimerFx],

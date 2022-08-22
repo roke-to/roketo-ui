@@ -1,3 +1,5 @@
+import {calculateEndTimestamp, getStreamProgress} from '@roketo/sdk';
+import type {RoketoStream} from '@roketo/sdk/dist/types';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import {format} from 'date-fns';
@@ -5,9 +7,6 @@ import {useStore} from 'effector-react';
 import React, {useState} from 'react';
 import Modal from 'react-modal';
 
-import {streamViewData} from '~/features/roketo-resource';
-
-import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {toYocto} from '~/shared/api/token-formatter';
 import {Balance, useBalanceForToken} from '~/shared/components/Balance';
 import {testIds} from '~/shared/constants';
@@ -23,10 +22,8 @@ import styles from './styles.module.scss';
 export function AddFunds({stream, className}: {stream: RoketoStream; className?: string}) {
   const addFundsModal = useBool(false);
 
-  const {
-    streamEndTimestamp,
-    percentages: {left},
-  } = streamViewData(stream);
+  const streamEndTimestamp = calculateEndTimestamp(stream);
+  const left = +getStreamProgress({stream, asPercentage: true}).left;
 
   const [deposit, setDeposit] = useState('');
   const currentBalance = useBalanceForToken(stream.token_account_id);

@@ -16,7 +16,6 @@ import {Logo} from '@ui/icons/Logo';
 import {Notifications} from '../notifications';
 import {Profile} from '../profile';
 import styles from './styles.module.scss';
-import {FinancialActivity} from './ui/FinancialActivity';
 import {PageList} from './ui/PagesList';
 import {ReactComponent as Warning} from './warning.svg';
 
@@ -66,7 +65,6 @@ export const Header = () => {
         </div>
 
         <div className={styles.right}>
-          {signedIn && !withSecondFloor && <FinancialActivity className={styles.marginRight} />}
           {signedIn && <Profile arrowClassName={styles.profileNotificationsArrow} />}
           {signedIn && <Notifications arrowClassName={styles.profileNotificationsArrow} />}
           {!isCompact && <Authorization />}
@@ -74,7 +72,6 @@ export const Header = () => {
       </Layout>
       {signedIn && withSecondFloor && (
         <Layout className={styles.secondRoot}>
-          {!isCompact && <FinancialActivity className={styles.marginRight} />}
           {isCompact && (
             <PageList
               className={styles.compactNavigation}

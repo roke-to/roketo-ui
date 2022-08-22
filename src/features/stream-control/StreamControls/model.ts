@@ -1,12 +1,13 @@
-import {combine} from 'effector';
-
-import {$nearWallet, $roketoWallet} from '~/entities/wallet';
-
 import {
   pauseStream as pauseStreamFn,
   startStream as startStreamFn,
   stopStream as stopStreamFn,
-} from '~/shared/api/methods';
+} from '@roketo/sdk';
+import {combine} from 'effector';
+
+import {$nearWallet, $roketoWallet} from '~/entities/wallet';
+
+import {env} from '~/shared/config';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 
 const modifyStreamFx = createProtectedEffect({
@@ -20,11 +21,23 @@ const modifyStreamFx = createProtectedEffect({
     const creator = () => {
       switch (command) {
         case 'start':
-          return startStreamFn({streamId, transactionMediator});
+          return startStreamFn({
+            streamId,
+            transactionMediator,
+            roketoContractName: env.ROKETO_CONTRACT_NAME,
+          });
         case 'pause':
-          return pauseStreamFn({streamId, transactionMediator});
+          return pauseStreamFn({
+            streamId,
+            transactionMediator,
+            roketoContractName: env.ROKETO_CONTRACT_NAME,
+          });
         case 'stop':
-          return stopStreamFn({streamId, transactionMediator});
+          return stopStreamFn({
+            streamId,
+            transactionMediator,
+            roketoContractName: env.ROKETO_CONTRACT_NAME,
+          });
         default:
           return null;
       }
