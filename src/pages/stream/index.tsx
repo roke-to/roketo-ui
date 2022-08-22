@@ -132,7 +132,7 @@ export function StreamPage() {
               )}
             </div>
 
-            <BlockLarge className={styles.availableBlock} title="Available">
+            <BlockLarge className={styles.availableBlock} title="Availiable for withdraw">
               {tokensAvailable} of {amount} {tokenSymbol}
             </BlockLarge>
             <BlockLarge className={styles.remainingBlock} title="Remaining">

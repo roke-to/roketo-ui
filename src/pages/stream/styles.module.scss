@@ -44,7 +44,9 @@
 .stream {
   margin-top: 24px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr) repeat(4, auto);
+  grid-template-columns:
+    [progress-column] 416px
+    repeat(1, 6fr);
   gap: 20px;
   max-width: calc(100vw - 32px);
   grid-auto-flow: column dense;
@@ -86,7 +88,7 @@
 }
 
 .progressBlock {
-  grid-column: 1 / span 2;
+  grid-column: progress-column;
   grid-row: 1 / span 3;
   display: grid;
   grid-auto-flow: row dense;
@@ -242,6 +244,12 @@
   .stream {
     gap: 16px;
   }
+  .stream {
+    grid-template-columns:
+      [progress-column] 350px
+      repeat(1, 6fr);
+  }
+
   .blockLarge {
     & > .blockBody {
       font-size: 16px;
