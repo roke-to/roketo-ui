@@ -44,7 +44,11 @@ const StreamNameLink = memo(({streamId}: {streamId: string}) => {
     <Link to={streamPageLink} className={cn(styles.nameCell)}>
       <span className={styles.nameText}>{name}</span>
 
-      {isLocked && <Badge isOrange>Locked</Badge>}
+      {isLocked && (
+        <Badge className={styles.inlineBadge} isOrange>
+          Locked
+        </Badge>
+      )}
     </Link>
   );
 });
