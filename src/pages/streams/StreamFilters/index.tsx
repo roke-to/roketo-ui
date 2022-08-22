@@ -47,6 +47,46 @@ export function StreamFilters({className}: {className: string}) {
 
   return (
     <div className={cn(styles.root, className)}>
+      <div className={styles.directionSorts}>
+        {directionOptions.map((direction) => (
+          <Button
+            key={direction}
+            className={cn(styles.directionSort, {
+              [styles.directionActive]: direction === activeDirection,
+            })}
+            onClick={() => changeDirectionFilter(direction)}
+            disabled={isEmptyList}
+          >
+            {direction}
+          </Button>
+        ))}
+      </div>
+      <div className={cn(styles.textFilter, showInput && styles.withInput)} key="text-filter">
+        <img src={magnifierIcon} className={styles.textFilterMagnifier} alt="search" />
+        <input
+          className={styles.textFilterInput}
+          value={filterText}
+          onChange={(e) => changeTextFilter(e.currentTarget.value)}
+          onFocus={() => setShowInput(true)}
+          onBlur={(e) => {
+            const isEmptyInput = e.currentTarget.value.trim() === '';
+            if (isEmptyInput) {
+              setShowInput(false);
+            }
+          }}
+          placeholder="Search text"
+        />
+        <button
+          type="button"
+          className={styles.textFilterClear}
+          onClick={() => {
+            setShowInput(false);
+            changeTextFilter('');
+          }}
+        >
+          <img src={clearIcon} alt="clear" />
+        </button>
+      </div>
       <Filter
         options={statusOptions}
         label="Status:"
@@ -65,7 +105,7 @@ export function StreamFilters({className}: {className: string}) {
       />
       <Filter
         options={sortOptions}
-        label="Show first:"
+        label="Sort by:"
         active={sorting}
         onChange={changeStreamSort}
         isDisabled={isEmptyList}
@@ -127,46 +167,6 @@ export function StreamFilters({className}: {className: string}) {
       >
         <SortIcon type={OrderType.desc} />
       </Button>
-      <div className={styles.directionSorts}>
-        {directionOptions.map((direction) => (
-          <Button
-            key={direction}
-            className={cn(styles.directionSort, {
-              [styles.directionActive]: direction === activeDirection,
-            })}
-            onClick={() => changeDirectionFilter(direction)}
-            disabled={isEmptyList}
-          >
-            {direction}
-          </Button>
-        ))}
-      </div>
-      <div className={cn(styles.textFilter, showInput && styles.withInput)} key="text-filter">
-        <img src={magnifierIcon} className={styles.textFilterMagnifier} alt="search" />
-        <input
-          className={styles.textFilterInput}
-          value={filterText}
-          onChange={(e) => changeTextFilter(e.currentTarget.value)}
-          onFocus={() => setShowInput(true)}
-          onBlur={(e) => {
-            const isEmptyInput = e.currentTarget.value.trim() === '';
-            if (isEmptyInput) {
-              setShowInput(false);
-            }
-          }}
-          placeholder="Search text"
-        />
-        <button
-          type="button"
-          className={styles.textFilterClear}
-          onClick={() => {
-            setShowInput(false);
-            changeTextFilter('');
-          }}
-        >
-          <img src={clearIcon} alt="clear" />
-        </button>
-      </div>
     </div>
   );
 }
