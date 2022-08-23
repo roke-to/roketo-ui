@@ -49,7 +49,6 @@ context('Stream creation', () => {
     stream.inputReceiver('delusion.testnet');
     stream.inputDeposit('1');
     stream.inputPeriod('35m 10d 10h 10min');
-    stream.moreOptions();
     // stream.inputComments('comment-comment');
     stream.submit();
     const transaction = new Transaction();

@@ -9,24 +9,30 @@ interface ToggleProps extends InputHTMLAttributes<HTMLInputElement> {
   hasError?: boolean;
   className?: string;
   disabled?: boolean;
+  checked: boolean;
+  testId: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const Toggle: FC<ToggleProps> = ({
   description,
   hint,
+  onChange,
   className,
+  testId,
+  checked,
   hasError = false,
   disabled = false,
-  ...rest
 }) => (
   <>
-    <label className={cn(styles.root, disabled && styles.disabled, className)}>
+    <label className={cn(styles.root, disabled && styles.disabled, className)} data-testid={testId}>
       {description && <div>{description}</div>}
       <input
         className={cn({[styles.error]: hasError})}
         type="checkbox"
         disabled={disabled}
-        {...rest}
+        checked={checked}
+        onChange={onChange}
       />
       <span className={cn(styles.toggle)} />
     </label>

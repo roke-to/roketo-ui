@@ -111,10 +111,10 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
           if (!token) return null;
           const {meta: tokenMeta, commission} = token;
 
-          const onChoose = async (fieldName: string, value: any) => {
+          const onChoose = async (fieldName: string, value: any, validate?: boolean) => {
             await setFieldValue(fieldName, value, false);
             await setFieldTouched(fieldName, true, false);
-            validateField(fieldName);
+            if (validate) validateField(fieldName);
           };
 
           return (
@@ -123,7 +123,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
                 name="isNotDelayed"
                 disabled={Boolean(values.cliffDateTime)}
                 component={FormikToggle}
-                data-testid={testIds.createStreamDelayedCheckbox}
+                testId={testIds.createStreamDelayedCheckbox}
                 className={cn(styles.formBlock, styles.start)}
                 description="Start immediately"
                 hint={
@@ -131,7 +131,8 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
                     ? 'The stream will start immediately'
                     : 'You can start stream manualy later'
                 }
-                checked={values.cliffDateTime ? false : values.isNotDelayed}
+                isChecked={values.cliffDateTime ? false : values.isNotDelayed}
+                onDelayedChange={(isNotDelayed: boolean) => onChoose('isNotDelayed', isNotDelayed)}
               />
 
               <Field
@@ -150,7 +151,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
                 label="Add tag"
                 component={ColorPicker}
                 className={cn(styles.formBlock, styles.color)}
-                onChoose={(color: StreamColor) => onChoose('color', color)}
+                onChoose={(color: StreamColor) => onChoose('color', color, true)}
               />
 
               <Field
@@ -172,7 +173,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
                 name="token"
                 label="Token"
                 activeTokenAccountId={values.token}
-                onTokenChoose={(tokenAccountId: string) => onChoose('token', tokenAccountId)}
+                onTokenChoose={(tokenAccountId: string) => onChoose('token', tokenAccountId, true)}
                 component={TokenSelector}
                 className={cn(styles.formBlock, styles.token)}
               />
@@ -182,7 +183,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
                 name="duration"
                 label="Stream duration"
                 component={StreamDurationCalcField}
-                onDurationChange={(duration: number) => onChoose('duration', duration)}
+                onDurationChange={(duration: number) => onChoose('duration', duration, true)}
                 className={cn(styles.formBlock, styles.duration)}
               />
 
@@ -216,7 +217,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
                     label="Cliff period"
                     component={CliffPeriodPicker}
                     onCliffDateTimeChange={(cliffDateTime: Date | null) =>
-                      onChoose('cliffDateTime', cliffDateTime)
+                      onChoose('cliffDateTime', cliffDateTime, true)
                     }
                     className={cn(styles.formBlock, styles.cliff)}
                   />
