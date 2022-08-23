@@ -8,7 +8,7 @@ export function createstream({receiver = 'githubtest9.testnet', duration} = {}) 
   stream.inputDeposit('1');
 
   if (duration === 'short') {
-    stream.inputPeriod('0m 0d 0h 1m');
+    stream.inputPeriod('0m 0d 0h 1min');
   } else {
     stream.inputPeriod('35m 10d 10h 10min');
     stream.setDelayed();
