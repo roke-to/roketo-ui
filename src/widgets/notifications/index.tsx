@@ -78,11 +78,11 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
           <PrimaryText>
             {direction === 'IN' ? (
               <>
-                {stream.owner_id} <strong>created</strong> a stream to you
+                {stream.owner_id} <strong>created a stream</strong> to you
               </>
             ) : (
               <>
-                You've successfully <strong>created</strong> a stream to {stream.receiver_id}
+                You've <strong>successfully created a stream</strong> to {stream.receiver_id}
               </>
             )}
           </PrimaryText>
@@ -101,8 +101,9 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
       return (
         <>
           <PrimaryText>
-            The stream {direction === 'IN' ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`}{' '}
-            is <strong>paused</strong>
+            <span className={styles.blue}>The stream</span>{' '}
+            {direction === 'IN' ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`} is{' '}
+            <strong>paused</strong>
           </PrimaryText>
 
           <SecondaryText>
@@ -123,8 +124,9 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
       return (
         <>
           <PrimaryText>
-            The stream {direction === 'IN' ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`}{' '}
-            has <strong>completed</strong>.
+            <span className={styles.blue}>The stream</span>{' '}
+            {direction === 'IN' ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`} has{' '}
+            <strong>completed</strong>.
           </PrimaryText>
           <SecondaryText>
             Total amount streamed:{' '}
@@ -138,7 +140,8 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
       return (
         <>
           <PrimaryText>
-            The stream from {stream.owner_id} is <strong>ready to be fully withdrawn</strong>
+            <span className={styles.blue}>The stream</span> from {stream.owner_id} is{' '}
+            <strong>ready to be fully withdrawn</strong>
           </PrimaryText>
           <SecondaryText>
             Available for withdrawal:{' '}
@@ -157,9 +160,10 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
                 {stream.owner_id} <strong>resumed</strong> the stream
               </>
             ) : (
-              <>
-                The stream to {stream.receiver_id} was <strong>resumed</strong>
-              </>
+              <span>
+                <span className={styles.blue}>The stream</span> to {stream.receiver_id} was{' '}
+                <strong>resumed</strong>
+              </span>
             )}
           </PrimaryText>
           <SecondaryText>
@@ -177,8 +181,9 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
       return (
         <>
           <PrimaryText>
-            The stream {direction === 'IN' ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`}{' '}
-            has <strong>passed the cliff period</strong>
+            <span className={styles.blue}>The stream</span>{' '}
+            {direction === 'IN' ? `from ${stream.owner_id}` : `to ${stream.receiver_id}`} has{' '}
+            <strong>passed the cliff period</strong>
           </PrimaryText>
           <SecondaryText>
             Available for withdrawal:{' '}

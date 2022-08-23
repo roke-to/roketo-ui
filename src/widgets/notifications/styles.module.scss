@@ -13,6 +13,9 @@
   padding: 0;
   width: min(550px, 100vw - 30px);
   flex-direction: row;
+
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .dropdownPanel {
@@ -28,8 +31,17 @@
   width: 100%;
   max-height: min(100vh - 150px, 70vh);
   overflow-x: hidden;
-  overflow-y: auto;
-  border-radius: 16px;
+  overflow-y: overlay;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+    display: block;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 7px;
+    background-color: #d8d8d8;
+  }
 }
 
 .loader {
@@ -69,6 +81,12 @@
   margin-bottom: 8px;
   word-break: break-word;
   grid-column: 2;
+  color: #000;
+}
+
+.blue {
+  color: $blue;
+  font-weight: 700;
 }
 
 .secondaryText {
