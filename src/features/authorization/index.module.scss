@@ -1,34 +1,71 @@
 @import 'src/shared/ui/palette';
 
 .root {
+  display: grid;
+  grid-gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.button {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  white-space: nowrap;
-  gap: 8px;
-  &:not(:last-of-type) {
-    margin-right: 16px;
+  justify-content: center;
+  gap: 24px;
+
+  padding: 40px 90px;
+  background-color: #fff;
+  color: #496ef3;
+  border-radius: 24px;
+
+  border: none;
+  box-shadow: 0px 5px 20px rgba(87, 140, 219, 0.25);
+
+  &:hover,
+  &:active {
+    box-shadow: 0px 5px 32px rgba(87, 140, 219, 0.4);
   }
 }
 
-.root[disabled] {
-  background-color: $light-grey;
-  border-color: $light-grey;
+.button[disabled] {
   cursor: not-allowed;
+  &:hover,
+  &:active {
+    box-shadow: 0px 5px 20px rgba(87, 140, 219, 0.25);
+  }
 }
 
 .logo {
-  width: 24px;
+  width: 72px;
 }
 
 .name {
   max-width: 200px;
 
-  font-weight: 500;
+  font-weight: 600;
   font-size: 16px;
   line-height: 24px;
 
   display: inline-block;
+}
+
+@media (max-width: 767px) {
+  .root {
+    width: 100%;
+    grid-template-columns: repeat(1, 1fr);
+    grid-gap: 8px;
+  }
+
+  .button {
+    padding-top: 18px;
+    padding-bottom: 18px;
+
+    flex-direction: row;
+  }
+
+  .logo {
+    width: 28px;
+  }
 }
 
 /* Phone, portrait */
