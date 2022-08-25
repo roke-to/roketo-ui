@@ -5,8 +5,9 @@ import {test} from '../shared/nearAuthecated';
 test('Do smth as authenticated user', async ({page}) => {
   const streamingPage = new StreamingPage(page);
 
-  streamingPage.openStreamingPage();
-  streamingPage.checkUrlIsStreaming();
-  streamingPage.clickCreateStreamBtn();
-  streamingPage.fillStreamRecieverData('delusion.testnet');
+  await streamingPage.openStreamingPage();
+
+  await streamingPage.checkUrlIsStreaming();
+  await streamingPage.clickCreateStreamBtn();
+  await streamingPage.fillStreamRecieverData('delusion.testnet');
 });
