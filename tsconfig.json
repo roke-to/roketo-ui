@@ -9,13 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext",
-      "es5",
-      "es6"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext", "es5", "es6"],
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
@@ -24,7 +18,5 @@
     "noEmit": true,
     "jsx": "preserve"
   },
-  "include": [
-    "src",
-  ]
+  "include": ["src", "playwright", "playwright.config.ts"]
 }

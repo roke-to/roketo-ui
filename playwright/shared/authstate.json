@@ -1,0 +1,92 @@
+{
+  "cookies": [
+    {
+      "name": "_ga",
+      "value": "GA1.1.1409494411.1661366706",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1695926772.746793,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "intercom-id-n8dfldd9",
+      "value": "c1e23a4a-a06d-46c2-9d31-0f8db8aa7d58",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1684696773,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "intercom-session-n8dfldd9",
+      "value": "",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1661971573,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_NLTF3KLNL2",
+      "value": "GS1.1.1661366705.1.1.1661366774.0.0.0",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1695926774.05308,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "profileType",
+          "value": "near"
+        },
+        {
+          "name": "near-api-js:keystore:anarocketo04.testnet:testnet",
+          "value": "ed25519:4RfbFHjnAXMCRKwAsfp5hTf7zgaK6P7jurgLhtH7qo936QEEABZFobfHUPYhK4VNoUzTAf9avZ1vWywuTiWcPEX6"
+        },
+        {
+          "name": "intercom.intercom-state-n8dfldd9",
+          "value": "{\"app\":{\"color\":\"#0071b2\",\"secondaryColor\":\"#0071b2\",\"openConfig\":{\"form\":null,\"openTo\":null,\"spaces\":[]},\"selfServeSuggestionsMatch\":false,\"name\":\"Roketo\",\"features\":{\"anonymousInboundMessages\":true,\"googleAnalytics\":false,\"hubspotInstalled\":false,\"inboundMessages\":true,\"marketoEnrichmentInstalled\":false,\"outboundMessages\":true},\"launcherLogoUrl\":null,\"boundWebEvents\":[],\"inboundConversationsDisabled\":false,\"isInstantBootEnabled\":true,\"alignment\":\"right\",\"horizontalPadding\":20,\"verticalPadding\":20,\"isDeveloperWorkspace\":false,\"customGoogleAnalyticsTrackerId\":null},\"launcher\":{\"isLauncherEnabled\":true},\"launcherDiscoveryMode\":{\"hasDiscoveredLauncher\":false},\"user\":{\"role\":\"visitor\",\"locale\":\"en\",\"hasConversations\":false},\"message\":{},\"conversations\":{\"byId\":{}},\"openOnBoot\":{\"type\":null,\"metadata\":{}},\"operator\":{\"lastComposerEvent\":0},\"router\":{\"location\":null,\"action\":null,\"previousLocations\":[]}}"
+        },
+        {
+          "name": "streaming-r-v2.dcversus.testnet_wallet_auth_key",
+          "value": "{\"accountId\":\"anarocketo04.testnet\",\"allKeys\":[\"ed25519:5qn8K4t5VuHAdkUQfvjfWuJ5E1EhkwoteySw5M5dR2Fv\"]}"
+        }
+      ]
+    },
+    {
+      "origin": "https://wallet.testnet.near.org",
+      "localStorage": [
+        {
+          "name": "_4:wallet:accounts_v2",
+          "value": "{\"anarocketo04.testnet\":true}"
+        },
+        {
+          "name": "languageCode",
+          "value": "ru"
+        },
+        {
+          "name": "_4:wallet:active_account_id_v2",
+          "value": "anarocketo04.testnet"
+        },
+        {
+          "name": "nearlib:keystore:anarocketo04.testnet:default",
+          "value": "ed25519:4iBHMnNmqqTbL5yC4crnvdusB2SZnUcig5HPjvduC6A9ZM4xyfaw8tNBKqYReGrBqqNEYn1TBjXa5L8jbLLdPZFA"
+        },
+        {
+          "name": "wallet.account:anarocketo04.testnet:default:confirmed",
+          "value": "true"
+        }
+      ]
+    }
+  ]
+}
