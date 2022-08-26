@@ -29,5 +29,3 @@ export const env: EnvType = {
   COMMIT_HASH: import.meta.env.VITE_COMMIT_HASH,
   BUILD_TIME: import.meta.env.VITE_BUILD_TIME,
 };
-
-export const GAS_SIZE = '200000000000000';

@@ -1,7 +1,9 @@
+import {addFunds} from '@roketo/sdk';
+
 import {$roketoWallet} from '~/entities/wallet';
 
-import {addFunds} from '~/shared/api/methods';
 import {toYocto} from '~/shared/api/token-formatter';
+import {env} from '~/shared/config';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 
 export const addFundsFx = createProtectedEffect({
@@ -29,6 +31,8 @@ export const addFundsFx = createProtectedEffect({
       callbackUrl: window.location.href,
       tokenAccountId,
       transactionMediator,
+      roketoContractName: env.ROKETO_CONTRACT_NAME,
+      wNearId: env.WNEAR_ID,
     });
   },
 });

@@ -1,5 +1,5 @@
+import type {RoketoStream} from '@roketo/sdk/dist/types';
 import cn from 'classnames';
-import copy from 'clipboard-copy';
 import {useList, useStore, useStoreMap} from 'effector-react';
 import React, {memo} from 'react';
 import {Link} from 'react-router-dom';
@@ -7,17 +7,16 @@ import {Link} from 'react-router-dom';
 import {StreamListControls} from '~/features/stream-control/StreamControls';
 
 import type {STREAM_STATUS} from '~/shared/api/roketo/constants';
-import {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
 import {Badge} from '~/shared/components/Badge';
 import {testIds} from '~/shared/constants';
 import {ColorDot} from '~/shared/kit/ColorDot';
 import {getStreamLink} from '~/shared/lib/routing';
 
 import {Button} from '@ui/components/Button';
+import {CopyLinkButton} from '@ui/components/CopyLinkButton';
 import {ProgressBar} from '@ui/components/ProgressBar';
 import {Spinner} from '@ui/components/Spinner';
 import clockIcon from '@ui/icons/clock.svg';
-import {LinkIcon} from '@ui/icons/Link';
 
 import {streamCardDataDefaults, streamProgressDataDefaults} from '../constants';
 import {
@@ -45,7 +44,11 @@ const StreamNameLink = memo(({streamId}: {streamId: string}) => {
     <Link to={streamPageLink} className={cn(styles.nameCell)}>
       <span className={styles.nameText}>{name}</span>
 
-      {isLocked && <Badge isOrange>Locked</Badge>}
+      {isLocked && (
+        <Badge className={styles.inlineBadge} isOrange>
+          Locked
+        </Badge>
+      )}
     </Link>
   );
 });
@@ -120,13 +123,7 @@ const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
       <StreamCommentLink streamId={stream.id} />
 
       <div className={cn(styles.controlCell)}>
-        <button
-          className={styles.streamLinkButton}
-          type="button"
-          onClick={() => copy(getStreamLink(streamId))}
-        >
-          <LinkIcon />
-        </button>
+        <CopyLinkButton className={styles.streamLinkButton} link={getStreamLink(streamId)} />
         <StreamListControls
           stream={stream}
           dropdownClassName={styles.controlDropdown}
@@ -212,9 +209,7 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
       </ProgressBar>
       {color && <ColorDot className={styles.color} color={color} />}
       <div className={styles.direction}>{direction === 'in' ? 'Incoming' : 'Outgoing'} stream</div>
-      <button className={styles.link} type="button" onClick={() => copy(getStreamLink(streamId))}>
-        <LinkIcon />
-      </button>
+      <CopyLinkButton className={styles.link} link={getStreamLink(streamId)} />
       <div className={styles.speed}>
         {speedFormattedValue}{' '}
         <span className={styles.subtext}>
@@ -235,7 +230,7 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
         Withdrawn: {withdrawnText}{' '}
         <span className={styles.subtext}>({withdrawnPercentage.toString()}%)</span>
       </div>
-      {cliffText && <div className={styles.cliffRemaining}>Cliff remaining: {cliffText}</div>}
+      {cliffText && <div className={styles.cliffRemaining}>Cliff ends within: {cliffText}</div>}
       {comment && <div className={styles.comment}>{comment}</div>}
       <StreamListControls
         stream={stream}

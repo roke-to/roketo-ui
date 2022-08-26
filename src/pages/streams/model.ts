@@ -1,3 +1,19 @@
+import {
+  ableToAddFunds,
+  ableToPauseStream,
+  ableToStartStream,
+  calculateCliffEndTimestamp,
+  calculateCliffPercent,
+  calculateTimeLeft,
+  createStream,
+  formatTimeLeft,
+  getStreamDirection,
+  getStreamProgress,
+  isActiveStream,
+  parseColor,
+  parseComment,
+} from '@roketo/sdk';
+import type {RoketoStream} from '@roketo/sdk/dist/types';
 import {isPast} from 'date-fns';
 import {combine, createEffect, createEvent, createStore, sample} from 'effector';
 import {generatePath} from 'react-router-dom';
@@ -5,7 +21,6 @@ import {generatePath} from 'react-router-dom';
 import {colorDescriptions} from '~/features/create-stream/constants';
 import type {FormValues} from '~/features/create-stream/constants';
 import {getTokensPerSecondCount} from '~/features/create-stream/lib';
-import {formatTimeLeft, parseColor, parseComment, streamViewData} from '~/features/roketo-resource';
 
 import {$isSmallScreen} from '~/entities/screen';
 import {
@@ -17,22 +32,14 @@ import {
   $tokens,
 } from '~/entities/wallet';
 
-import {createStream} from '~/shared/api/methods';
-import {STREAM_DIRECTION, STREAM_STATUS} from '~/shared/api/roketo/constants';
-import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {
-  ableToAddFunds,
-  ableToPauseStream,
-  ableToStartStream,
-  getStreamDirection,
-  isActiveStream,
-} from '~/shared/api/roketo/lib';
+import {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import {
   formatSmartly,
   toHumanReadableValue,
   tokensPerMeaningfulPeriod,
   toYocto,
 } from '~/shared/api/token-formatter';
+import {env} from '~/shared/config';
 import {areArraysDifferent, areObjectsDifferent, recordUpdater} from '~/shared/lib/changeDetection';
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
@@ -128,6 +135,9 @@ export const handleCreateStreamFx = createProtectedEffect({
         transactionMediator,
         accountId,
         tokenContract,
+        roketoContractName: env.ROKETO_CONTRACT_NAME,
+        financeContractName: env.ROKETO_FINANCE_CONTRACT_NAME,
+        wNearId: env.WNEAR_ID,
       });
     try {
       await creator();
@@ -260,7 +270,9 @@ sample({
       if (!token) return undefined;
       const {decimals} = token.meta;
       const symbol = isWNearTokenId(tokenId) ? 'NEAR' : token.meta.symbol;
-      const {cliffEndTimestamp, progress, timeLeft, percentages} = streamViewData(stream);
+      const cliffEndTimestamp = calculateCliffEndTimestamp(stream);
+      const progress = getStreamProgress({stream});
+      const timeLeft = calculateTimeLeft(stream);
       const streamed = Number(toHumanReadableValue(decimals, progress.streamed, 3));
       const withdrawn = Number(toHumanReadableValue(decimals, progress.withdrawn, 3));
       const total = Number(toHumanReadableValue(decimals, progress.full, 3));
@@ -282,10 +294,10 @@ sample({
       const direction = getStreamDirection(stream, accountId);
       let sign: string;
       switch (direction) {
-        case STREAM_DIRECTION.IN:
+        case 'IN':
           sign = '+';
           break;
-        case STREAM_DIRECTION.OUT:
+        case 'OUT':
           sign = '-';
           break;
         case null:
@@ -298,7 +310,7 @@ sample({
         progressFull: progress.full,
         progressStreamed: progress.streamed,
         progressWithdrawn: progress.withdrawn,
-        cliffPercent: percentages.cliff,
+        cliffPercent: calculateCliffPercent(stream),
         cliffText:
           cliffEndTimestamp && !isPast(cliffEndTimestamp)
             ? formatTimeLeft(cliffEndTimestamp - Date.now())
@@ -311,9 +323,9 @@ sample({
         streamedPercentage,
         withdrawnText,
         withdrawnPercentage,
-        direction,
+        direction: direction ? (direction.toLowerCase() as 'in' | 'out') : null,
         sign,
-        name: direction === STREAM_DIRECTION.IN ? stream.owner_id : stream.receiver_id,
+        name: direction === 'IN' ? stream.owner_id : stream.receiver_id,
       };
     }),
 });
@@ -324,7 +336,7 @@ sample({
   fn: ({accountId, oldData}, streams) =>
     recordUpdater(oldData, streams, (stream, id) => {
       const direction = getStreamDirection(stream, accountId);
-      const isIncomingStream = direction === STREAM_DIRECTION.IN;
+      const isIncomingStream = direction === 'IN';
       const iconType: keyof typeof STREAM_STATUS =
         typeof stream.status === 'string' ? stream.status : 'Finished';
       return {
@@ -334,7 +346,7 @@ sample({
         name: isIncomingStream ? stream.owner_id : stream.receiver_id,
         isLocked: stream.is_locked,
         showAddFundsButton: ableToAddFunds(stream, accountId),
-        showWithdrawButton: direction === STREAM_DIRECTION.IN && isActiveStream(stream),
+        showWithdrawButton: direction === 'IN' && isActiveStream(stream),
         showStartButton: ableToStartStream(stream, accountId),
         showPauseButton: ableToPauseStream(stream, accountId),
         iconType,

@@ -1,12 +1,9 @@
+import {getAvailableToWithdraw, getStreamProgress, parseComment} from '@roketo/sdk';
+import type {RichToken, RoketoStream} from '@roketo/sdk/dist/types';
 import {BigNumber} from 'bignumber.js';
 
-import {parseComment, streamViewData} from '~/features/roketo-resource';
-
 import type {PriceOracle} from '~/shared/api/price-oracle';
-import type {RoketoStream} from '~/shared/api/roketo/interfaces/entities';
-import {getAvailableToWithdraw} from '~/shared/api/roketo/lib';
 import {toHumanReadableValue} from '~/shared/api/token-formatter';
-import type {RichToken} from '~/shared/api/types';
 
 import type {DirectionFilter, FilterFn, StatusFilter} from './types';
 
@@ -48,7 +45,7 @@ export const collectTotalFinancialAmountInfo = (
       const tokenAccountId = stream.token_account_id;
       const {meta} = tokens[tokenAccountId];
 
-      const {progress} = streamViewData(stream);
+      const progress = getStreamProgress({stream});
 
       const streamedAmountForDisplay = toHumanReadableValue(
         meta.decimals,

@@ -1,3 +1,4 @@
+import type {RichToken} from '@roketo/sdk/dist/types';
 import cn from 'classnames';
 import {useStore} from 'effector-react';
 import {FieldInputProps, FormikState} from 'formik';
@@ -5,7 +6,6 @@ import React, {useState} from 'react';
 
 import {$listedTokens} from '~/entities/wallet';
 
-import type {RichToken} from '~/shared/api/types';
 import {Balance, DisplayMode} from '~/shared/components/Balance';
 import {DropdownMenu} from '~/shared/kit/DropdownMenu';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
