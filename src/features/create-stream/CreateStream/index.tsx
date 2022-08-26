@@ -1,3 +1,4 @@
+import {countStorageDeposit} from '@roketo/sdk';
 import cn from 'classnames';
 import {useStore} from 'effector-react';
 import {Field, Formik} from 'formik';
@@ -5,7 +6,6 @@ import React, {useState} from 'react';
 
 import {$accountId, $listedTokens} from '~/entities/wallet';
 
-import {countStorageDeposit} from '~/shared/api/methods';
 import {formatAmount} from '~/shared/api/token-formatter';
 import {Balance, DisplayMode} from '~/shared/components/Balance';
 import {FormikCheckbox} from '~/shared/components/FormikCheckbox';
@@ -99,6 +99,8 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
             const {depositSum} = await countStorageDeposit({
               tokenContract,
               storageDepositAccountIds,
+              roketoContractName: env.ROKETO_CONTRACT_NAME,
+              financeContractName: env.ROKETO_FINANCE_CONTRACT_NAME,
             });
 
             setDeposit(depositSum.toNumber() / 10 ** 24);
