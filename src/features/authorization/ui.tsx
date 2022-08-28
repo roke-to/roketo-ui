@@ -36,6 +36,7 @@ export const Authorization = () => {
         {modules.map((module: ModuleState) => {
           // @ts-expect-error
           const {name, iconUrl, available, downloadUrl} = module.metadata;
+          console.log(module);
           const clicked = module.id === clickedWallet;
           const WalletIcon = resolveWalletIcon(iconUrl as WalletIconType);
 
@@ -48,7 +49,7 @@ export const Authorization = () => {
                 available ? handleWalletClick(module) : () => window.open(downloadUrl, '_blank')
               }
               className={cn(styles.button, {[styles.isLoading]: isLoading && clicked})}
-              testId={testIds.signInButton}
+              testId={module.id === 'near-wallet' ? testIds.signInButton : ''}
               disabled={isLoading}
             >
               <img src={WalletIcon} alt={name} className={styles.logo} />
