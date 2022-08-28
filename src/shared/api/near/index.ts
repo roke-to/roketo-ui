@@ -35,15 +35,15 @@ export const createWalletSelectorInstance = async () =>
     ],
   });
 
-export async function createNearInstance(walletType: WalletId | 'any' = 'any'): Promise<{
+export async function createNearInstance(WalletId: WalletId | 'any' = 'any'): Promise<{
   near: Near;
   auth: NearAuth;
-  walletType: WalletId | 'any';
+  WalletId: WalletId | 'any';
 }> {
   const keyStore = new keyStores.BrowserLocalStorageKeyStore();
   let near: Near;
 
-  switch (walletType) {
+  switch (WalletId) {
     case 'sender':
       near = window.near as unknown as Near;
       break;
@@ -76,7 +76,7 @@ export async function createNearInstance(walletType: WalletId | 'any' = 'any'): 
     },
   };
   return {
-    walletType,
+    WalletId,
     near,
     auth: {
       balance,
@@ -84,7 +84,7 @@ export async function createNearInstance(walletType: WalletId | 'any' = 'any'): 
       signedIn: !!accountId,
       accountId,
       async login() {
-        localStorage.setItem('profileType', walletType);
+        localStorage.setItem('profileType', WalletId);
         const appTitle = 'Roketo Token Streaming Service';
         await walletConnection.requestSignIn(env.ROKETO_CONTRACT_NAME, appTitle);
       },

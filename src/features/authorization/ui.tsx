@@ -36,7 +36,6 @@ export const Authorization = () => {
         {modules.map((module: ModuleState) => {
           // @ts-expect-error
           const {name, iconUrl, available, downloadUrl} = module.metadata;
-          console.log(module);
           const clicked = module.id === clickedWallet;
           const WalletIcon = resolveWalletIcon(iconUrl as WalletIconType);
 

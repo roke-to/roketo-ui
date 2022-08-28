@@ -49,7 +49,7 @@ export const initWallets = createEvent();
 export const $nearWallet = createStore<null | {
   near: Near;
   auth: NearAuth;
-  walletType: WalletId | 'any';
+  WalletId: WalletId | 'any';
 }>(null);
 export const $roketoWallet = createStore<null | ApiControl>(null);
 export const $tokens = createStore<Record<string, RichToken>>({});
@@ -191,9 +191,9 @@ export const logoutFx = attach({
   },
 });
 
-const createNearWalletFx = createEffect(async (walletType: WalletId | 'any' = 'any') => {
-  const {near, auth, walletType: type} = await createNearInstance(walletType);
-  return {near, auth, walletType: type};
+const createNearWalletFx = createEffect(async (WalletId: WalletId | 'any' = 'any') => {
+  const {near, auth, WalletId: type} = await createNearInstance(WalletId);
+  return {near, auth, WalletId: type};
 });
 const createRoketoWalletFx = createEffect(
   ({
