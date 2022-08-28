@@ -1,3 +1,4 @@
+import {ModuleState, WalletSelector, WalletSelectorState} from '@near-wallet-selector/core';
 import type {Notification, UpdateUserDto, User} from '@roketo/api-client';
 import {
   createRichContracts,
@@ -14,12 +15,15 @@ import type {
 } from '@roketo/sdk/dist/types';
 import {attach, createEffect, createEvent, createStore, sample} from 'effector';
 import {ConnectedWalletAccount, Near} from 'near-api-js';
+import {Get} from 'type-fest';
 
-import {createNearInstance} from '~/shared/api/near';
+import {createNearInstance, createWalletSelectorInstance} from '~/shared/api/near';
 import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
 import {notificationsApiClient, tokenProvider, usersApiClient} from '~/shared/api/roketo-client';
 import {env} from '~/shared/config';
 import {getChangedFields} from '~/shared/lib/changeDetection';
+
+export type WalletId = 'sender' | 'my-near' | 'near';
 
 async function retry<T>(cb: () => Promise<T>) {
   const retryCount = 3;
@@ -45,7 +49,7 @@ export const initWallets = createEvent();
 export const $nearWallet = createStore<null | {
   near: Near;
   auth: NearAuth;
-  walletType: 'near' | 'sender';
+  walletType: WalletId | 'any';
 }>(null);
 export const $roketoWallet = createStore<null | ApiControl>(null);
 export const $tokens = createStore<Record<string, RichToken>>({});
@@ -126,28 +130,60 @@ export const resendVerificationEmailFx = attach({
 
 export const lastCreatedStreamUpdated = createEvent<string>();
 
-const loginRawFx = attach({
-  source: $nearWallet,
-  async effect(wallet) {
-    await wallet?.auth.login();
-  },
+const $walletSelector = createStore<WalletSelector | null>(null);
+export const $walletSelectorState = createStore<WalletSelectorState>({
+  contract: null,
+  modules: [],
+  accounts: [],
+  selectedWalletId: null,
 });
 
-export const loginFx = attach({
-  source: $nearWallet,
-  async effect(wallet, walletType: 'near' | 'sender') {
-    const currentWalletType = wallet?.walletType ?? null;
-    if (currentWalletType && currentWalletType !== walletType) {
-      await wallet?.auth.logout();
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      await createNearWalletFx(walletType);
-    } else if (!wallet) {
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      await createNearWalletFx(walletType);
+// Login logic
+export const walletClicked = createEvent<ModuleState>();
+
+export const loginViaWalletFx = createEffect(async (module: ModuleState) => {
+  try {
+    const wallet = await module.wallet();
+
+    // dont support hardware wallet
+    if (wallet.type === 'hardware') {
+      return;
     }
-    await loginRawFx();
-  },
+
+    await wallet.signIn({
+      contractId: env.ROKETO_CONTRACT_NAME,
+    });
+  } catch (err) {
+    const {name} = module.metadata;
+
+    const message = err instanceof Error ? err.message : 'Something went wrong';
+
+    const error = new Error(`Failed to sign in with ${name}: ${message}`) as Error & {
+      originalError: unknown;
+    };
+
+    error.originalError = err;
+
+    throw error;
+  }
 });
+
+const setWalletSelectorState = createEvent<WalletSelectorState>();
+
+let walletSelectorStoreSubscription: ReturnType<Get<WalletSelector, 'store.observable.subscribe'>>;
+
+const createWalletSelectorInstanceFx = createEffect(async () => {
+  const walletSelector = await createWalletSelectorInstance();
+
+  if (!walletSelectorStoreSubscription) {
+    walletSelectorStoreSubscription = walletSelector.store.observable.subscribe((state) => {
+      setWalletSelectorState(state);
+    });
+  }
+
+  return walletSelector;
+});
+
 export const logoutFx = attach({
   source: $nearWallet,
   async effect(wallet) {
@@ -155,7 +191,7 @@ export const logoutFx = attach({
   },
 });
 
-const createNearWalletFx = createEffect(async (walletType: 'near' | 'sender' | 'any' = 'any') => {
+const createNearWalletFx = createEffect(async (walletType: WalletId | 'any' = 'any') => {
   const {near, auth, walletType: type} = await createNearInstance(walletType);
   return {near, auth, walletType: type};
 });
@@ -306,6 +342,27 @@ sample({
   fn: () => [],
   target: $notifications,
 });
+// Choose some wallet and click it
+sample({
+  clock: walletClicked,
+  target: loginViaWalletFx,
+});
+
+sample({
+  clock: initWallets,
+  target: createWalletSelectorInstanceFx,
+});
+
+sample({
+  clock: createWalletSelectorInstanceFx.doneData,
+  target: $walletSelector,
+});
+
+// Update state when it changed
+sample({
+  clock: setWalletSelectorState,
+  target: $walletSelectorState,
+});
 
 sample({
   clock: initWallets,
@@ -380,10 +437,6 @@ sample({
   },
 });
 
-sample({
-  clock: [loginFx.doneData],
-  target: initWallets,
-});
 $nearWallet.reset([logoutFx.done]);
 $roketoWallet.reset([logoutFx.done]);
 $user.reset([logoutFx.done]);

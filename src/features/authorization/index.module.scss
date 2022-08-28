@@ -22,13 +22,21 @@
   box-shadow: 0px 5px 20px rgba(87, 140, 219, 0.25);
 
   &:hover,
-  &:active {
+  &:active,
+  &:focus {
     box-shadow: 0px 5px 32px rgba(87, 140, 219, 0.4);
   }
 }
 
+.isLoading {
+  box-shadow: 0px 5px 32px rgba(87, 140, 219, 0.4);
+}
+
 .button[disabled] {
   cursor: not-allowed;
+}
+
+.button[disabled]:not(.isLoading) {
   &:hover,
   &:active {
     box-shadow: 0px 5px 20px rgba(87, 140, 219, 0.25);

@@ -22,9 +22,11 @@
   },
   "dependencies": {
     "@effector/reflect": "^8.0.0",
-    "@near-wallet-selector/core": "^4.0.0",
-    "@near-wallet-selector/sender": "^4.0.0",
-    "@near-wallet-selector/wallet-utils": "^4.1.0",
+    "@near-wallet-selector/core": "^6.0.0",
+    "@near-wallet-selector/my-near-wallet": "^6.0.0",
+    "@near-wallet-selector/near-wallet": "^6.0.0",
+    "@near-wallet-selector/sender": "^6.0.0",
+    "@near-wallet-selector/wallet-utils": "^6.0.0",
     "@roketo/api-client": "roke-to/roketo-api-client#v0.0.31",
     "@roketo/sdk": "^0.2.8",
     "bignumber.js": "^9.0.2",
@@ -45,6 +47,7 @@
     "react-modal": "^3.14.4",
     "react-router-dom": "^5.2.0",
     "swr": "^1.1.1",
+    "type-fest": "^2.19.0",
     "vite-plugin-checker": "^0.4.6",
     "yup": "^0.32.9"
   },
