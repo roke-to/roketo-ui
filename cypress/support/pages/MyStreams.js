@@ -66,7 +66,7 @@ class MyStreams {
   }
 
   waitUntilDue() {
-    // RegExp to catch "1 of 1" only and not "0.251 of 1".
+    // RegExp to catch "1 of 1" only and not "0.251 of 1". Move all received tokens to your wallet.You have nothing to withdraw
     cy.get(testSelectors.streamProgressCaption)
       .eq(0)
       .contains(/\b1 of 1\b/, {timeout: 60000});

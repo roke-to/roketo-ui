@@ -1,0 +1,54 @@
+import {test} from '../tests/fixtures/auth';
+import {HomePage} from '../tests/pages/home.page';
+// import {NearWallet} from '../page-objects/near-wallet';
+import {LoginPage} from '../tests/pages/login.page';
+
+// cy.task('getAccount').then((testAccount) => (account = testAccount));
+test('login', async ({page, accountId}) => {
+  const homePage = new HomePage(page);
+  await homePage.visit();
+  await homePage.checkPage();
+  await homePage.goToSignIn();
+
+  const signPage = new LoginPage(page);
+  await Promise.all([page.waitForNavigation(), signPage.checkIsRedirectedToNear()]);
+  await signPage.loginToNear();
+  // await signPage.importExistingAccount(),
+  // await signPage.chooseFirstAccount();
+  // await signPage.submitButton();
+
+  // await Promise.all([
+  //   page.waitForNavigation(),
+  //   signPage.recoverAccount(),
+  // ]);
+
+  // await Promise.all([
+  //   page.waitForNavigation(),
+  //   signPage.inputPassphrase("riot original quantum same result inner height lens erosion derive nurse ridge"),
+  // ]);
+  //   page.waitForNavigation();
+  // signPage.recoverAccount();
+  // page.waitForNavigation();
+  // signPage.inputPassphrase("riot original quantum same result inner height lens erosion derive nurse ridge");
+  // signPage.pressNext();
+  // signPage.pressNext();
+  //page.waitForNavigation();
+
+  // homePage.checkPage();
+
+  // const loginPage = new LoginPage(page);
+  // const nearWallet = new NearWallet(page);
+  // const navigate = new Navigate(page);
+
+  // await loginPage.openLoginPage();
+  // await loginPage.chooseNearWallet();
+
+  // await nearWallet.checkIsRedirectedToNear();
+  // await nearWallet.chooseFirstAccount();
+  // await nearWallet.connectToNear();
+
+  // await loginPage.checkUserLoggedIn(accountId);
+
+  // await navigate.logout();
+  // await loginPage.checkUserLoggedOut();
+});

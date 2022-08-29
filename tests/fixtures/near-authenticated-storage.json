@@ -1,0 +1,30 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "https://wallet.testnet.near.org",
+      "localStorage": [
+        {
+          "name": "_4:wallet:accounts_v2",
+          "value": "{\"rocketotestuser.testnet\":true}"
+        },
+        {
+          "name": "languageCode",
+          "value": "ru"
+        },
+        {
+          "name": "nearlib:keystore:rocketotestuser.testnet:default",
+          "value": "ed25519:2hQJ7LdCA7qWGaHGEVdhAZ1roLjLkHLmGQSCZpKsw64XKMAkuEUELgmdLVwyUMcox9e963i6kvXCR9CHs7qhHtaq"
+        },
+        {
+          "name": "_4:wallet:active_account_id_v2",
+          "value": "rocketotestuser.testnet"
+        },
+        {
+          "name": "wallet.account:rocketotestuser.testnet:default:confirmed",
+          "value": "true"
+        }
+      ]
+    }
+  ]
+}
