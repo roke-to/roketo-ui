@@ -1,18 +1,25 @@
-import {test} from '../tests/fixtures/auth';
-import {HomePage} from '../tests/pages/home.page';
+import {test} from './fixtures/auth';
+import {HomePage} from './pages/home.page';
 // import {NearWallet} from '../page-objects/near-wallet';
-import {LoginPage} from '../tests/pages/login.page';
+import {LoginPage} from './pages/login.page';
+import {MyStreamsPage} from './pages/mystreams.page';
 
 // cy.task('getAccount').then((testAccount) => (account = testAccount));
-test('login', async ({page, accountId}) => {
+test('login', async ({page}) => {
   const homePage = new HomePage(page);
+
   await homePage.visit();
   await homePage.checkPage();
   await homePage.goToSignIn();
 
   const signPage = new LoginPage(page);
   await Promise.all([page.waitForNavigation(), signPage.checkIsRedirectedToNear()]);
-  await signPage.loginToNear();
+  await signPage.loginNearAuthentificated();
+
+  const streamsPage = new MyStreamsPage(page);
+  await streamsPage.checkPage();
+
+  // await signPage.loginToNear();
   // await signPage.importExistingAccount(),
   // await signPage.chooseFirstAccount();
   // await signPage.submitButton();
@@ -32,7 +39,7 @@ test('login', async ({page, accountId}) => {
   // signPage.inputPassphrase("riot original quantum same result inner height lens erosion derive nurse ridge");
   // signPage.pressNext();
   // signPage.pressNext();
-  //page.waitForNavigation();
+  // page.waitForNavigation();
 
   // homePage.checkPage();
 

@@ -1,6 +1,5 @@
 import {expect, Page} from '@playwright/test';
 
-import {testSelectors} from '../../src/shared/constants';
 import {createTestAccount} from '../shared/createTestAccount';
 
 export class LoginPage {
@@ -15,7 +14,7 @@ export class LoginPage {
     // buttonSelectDao: 'button:has-text("Select DAO")',
     // buttonNearWallet: 'button:has-text("NEAR Wallet")',
     // accountId: '[data-qa="account"]',
-    ////
+    /// /
     buttonWalletSubmit: '[data-test-id="seedPhraseRecoverySubmitButton"]',
     homePageImportAccountButton: '[data-test-id="homePageImportAccountButton"]',
     recoverAccountWithPassphraseButton: '[data-test-id="recoverAccountWithPassphraseButton"]',
@@ -33,9 +32,9 @@ export class LoginPage {
 
   async inputPassphrase(value) {
     await this.page.locator('input').type(value);
-    //cy.get('input').click().type(value);
+    // cy.get('input').click().type(value);
     await this.page.locator(this.elements.buttonWalletSubmit).click();
-    //cy.get('[data-test-id="seedPhraseRecoverySubmitButton"]').click();
+    // cy.get('[data-test-id="seedPhraseRecoverySubmitButton"]').click();
   }
 
   async pressNext() {
@@ -57,10 +56,11 @@ export class LoginPage {
   }
 
   async importExistingAccount() {
-    if (
-      expect(this.page.locator('button', {hasText: 'Import a Different Account'})).toHaveCount(1)
-    ) {
-      //cy.get('.account-selector > .gray-blue').click({force: true});
+    const buttonImportAccount = await this.page.locator('button', {
+      hasText: 'Import a Different Account',
+    });
+    if ((await buttonImportAccount.count()) > 0) {
+      // cy.get('.account-selector > .gray-blue').click({force: true});
       this.page.locator('.account-selector > .gray-blue').click({timeout: 200000});
     } else {
       await this.page.locator('.buttons > .link').click({timeout: 200000});
@@ -96,5 +96,10 @@ export class LoginPage {
 
   async submitButton() {
     await this.page.locator(this.elements.commonSubmitButton).click();
+  }
+
+  async loginNearAuthentificated() {
+    await this.chooseFirstAccount();
+    await this.submitButton();
   }
 }
