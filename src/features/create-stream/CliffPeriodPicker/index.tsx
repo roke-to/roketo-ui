@@ -30,7 +30,6 @@ export const CliffPeriodPicker = ({
     <FormField className={className} label={label} error={error}>
       <DateTimePicker
         className={styles.maxWidth}
-        amPmAriaLabel="Select AM/PM"
         calendarAriaLabel="Toggle calendar"
         clearAriaLabel="Clear value"
         dayAriaLabel="Day"
