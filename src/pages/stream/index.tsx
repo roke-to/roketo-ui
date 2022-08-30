@@ -16,6 +16,7 @@ import {ROUTES_MAP} from '~/shared/lib/routing';
 import {CopyLinkButton} from '@ui/components/CopyLinkButton';
 import {Layout} from '@ui/components/Layout';
 import {ProgressBar} from '@ui/components/ProgressBar';
+import {ArrowLinkIcon} from '@ui/icons/ArrowLink';
 
 import {BreadcrumbIcon} from './BreadcrumbIcon';
 import {$loading, $pageError, $stream, $streamInfo, pageGate} from './model';
@@ -57,6 +58,7 @@ export function StreamPage() {
     link,
   } = useStore($streamInfo);
   const compact = useMediaQuery('(max-width: 767px)');
+  const explorerLink = `https://explorer.testnet.near.org/transactions/${id}`;
   if (!active) return null;
   return (
     <div className={styles.root}>
@@ -167,10 +169,22 @@ export function StreamPage() {
             <div className={cn(styles.blockLarge, styles.linkBlock)}>
               <div className={cn(styles.copyTitle, styles.blockTitle)}>
                 Public link to view the stream
-                <CopyLinkButton className={styles.copyButton} link={link} />
+                <CopyLinkButton className={styles.linkButton} link={link} />
               </div>
               <div className={cn(styles.blockBody, styles.link)}>{link}</div>
             </div>
+
+            <a
+              href={explorerLink}
+              target="_blank"
+              className={cn(styles.blockLarge, styles.linkBlock, styles.externalLink)}
+              rel="noreferrer"
+            >
+              <div className={cn(styles.copyTitle, styles.blockTitle)}>
+                View in explorer.near.org
+                <ArrowLinkIcon className={styles.linkButton} />
+              </div>
+            </a>
 
             <div className={cn(styles.blockSmall, styles.senderBlock)}>
               <span className={styles.blockTitle}>Sender</span>

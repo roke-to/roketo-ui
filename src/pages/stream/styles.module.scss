@@ -214,7 +214,7 @@
   align-items: center;
 }
 
-.copyButton {
+.linkButton {
   width: 24px;
   height: 24px;
   color: $blue;
@@ -224,6 +224,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  padding: 7px;
 }
 
 .linkIcon {
@@ -237,6 +238,10 @@
   text-overflow: ellipsis;
   width: -webkit-fill-available;
   width: stretch;
+}
+
+.externalLink {
+  cursor: pointer;
 }
 
 /* Tablet, phone */
