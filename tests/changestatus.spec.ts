@@ -3,11 +3,13 @@ import {test} from '../tests/fixtures/auth';
 import {CreateStreamPage} from '../tests/pages/createstream.page';
 import {MyStreamsPage} from '../tests/pages/mystreams.page';
 import {TransactionPage} from '../tests/pages/transaction.page';
+import {createstream} from './shared/createstream';
+import {login} from './shared/login';
 
 // cy.task('getAccount').then((testAccount) => (account = testAccount));
 test('run stream', async ({page, accountId}) => {
-  // login(account.seedPhrase);
-  // createstream();
+  login(page);
+  createstream(page, 'long');
 
   const mystreams = new MyStreamsPage(page);
   mystreams.changeStatus('start');
@@ -17,7 +19,7 @@ test('run stream', async ({page, accountId}) => {
 });
 
 test('pause stream', async ({page, accountId}) => {
-  // login(account.seedPhrase);
+  login(page);
   const mystreams = new MyStreamsPage(page);
   mystreams.changeStatus('pause');
   const transaction = new TransactionPage(page);
@@ -26,7 +28,7 @@ test('pause stream', async ({page, accountId}) => {
 });
 
 test('stop stream', async ({page, accountId}) => {
-  // login(account.seedPhrase);
+  login(page);
   const mystreams = new MyStreamsPage(page);
   mystreams.changeStatus('stop');
   const transaction = new TransactionPage(page);

@@ -1,4 +1,6 @@
-import {test} from './fixtures/auth';
+// import {test} from './fixtures/auth';
+import {test} from '@playwright/test';
+
 import {HomePage} from './pages/home.page';
 // import {NearWallet} from '../page-objects/near-wallet';
 import {LoginPage} from './pages/login.page';
@@ -14,7 +16,8 @@ test('login', async ({page}) => {
 
   const signPage = new LoginPage(page);
   await Promise.all([page.waitForNavigation(), signPage.checkIsRedirectedToNear()]);
-  await signPage.loginNearAuthentificated();
+  // await signPage.loginNearAuthentificated();
+  await signPage.loginToNear();
 
   const streamsPage = new MyStreamsPage(page);
   await streamsPage.checkPage();

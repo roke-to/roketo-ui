@@ -21,14 +21,14 @@ export class MyStreamsPage {
     this.page = page;
   }
 
-  async checkNewStreamStatus(value) {
+  async checkNewStreamStatus(value: string) {
     await expect(this.page.locator(testSelectors.streamStatusIcon).nth(0)).toHaveText(value);
   }
   async checkStreamDoesntExist() {
     await expect(this.page.locator(testSelectors.streamControlsDropdown)).toHaveCount(0);
   }
 
-  async changeStatus(value) {
+  async changeStatus(value: string) {
     this.page.locator(testSelectors.streamStatusIcon).nth(0).click();
     if (value === 'start') {
       this.page.locator(testSelectors.streamStartButton).nth(0).click();
@@ -50,7 +50,9 @@ export class MyStreamsPage {
     // this.page.url()
     //  /https:\/\/wallet\.testnet\.near\.org\/login/
     // await expect(this.page).toHaveURL('/http:\/\/localhost:3000\/#\/streams');
-    await expect(this.page).toHaveURL(new RegExp('^http://localhost:3000/#/streams'));
+    await expect(this.page).toHaveURL(new RegExp('^http://localhost:3000/#/streams'), {
+      timeout: 20000,
+    });
     //cy.url().contains('http://localhost:3000/#/streams', {timeout: 20000});
   }
 
@@ -67,7 +69,7 @@ export class MyStreamsPage {
     }
   }
 
-  async checkwithdraw(shouldBeEmpty) {
+  async checkwithdraw(shouldBeEmpty: boolean) {
     await this.page.hover(testSelectors.withdrawAllButton);
     await expect(this.page.locator(testSelectors.withdrawLoadingCaption)).toHaveCount(0);
     // await page.locator('tr').count()
@@ -112,7 +114,7 @@ export class MyStreamsPage {
     await expect(this.page).toHaveURL(new RegExp('^http://localhost:3000/#/streams'));
   }
 
-  async addFunds(value) {
+  async addFunds(value: string) {
     await this.page.locator(testSelectors.streamControlsDropdown).nth(0).click();
     await this.page.locator(testSelectors.addFunds).nth(0).click();
     await this.page.locator(testSelectors.addFunds).type(value);

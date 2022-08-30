@@ -4,9 +4,10 @@ import {HomePage} from '../tests/pages/home.page';
 import {MyStreamsPage} from '../tests/pages/mystreams.page';
 import {NotificationPage} from '../tests/pages/notification.page';
 import {TransactionPage} from '../tests/pages/transaction.page';
+import {login} from './shared/login';
 
 test('Sender NotificationsCheck', async ({page, accountId}) => {
-  // login(receiver.seedPhrase);
+  login(page);
   const notif = new NotificationPage(page);
   notif.openNotifications();
   notif.waitForInitialLoading();
@@ -32,7 +33,7 @@ test('Sender NotificationsCheck', async ({page, accountId}) => {
   // notif.checknew('restart', receiver.accountId);
 
   //add funds
-  mystreams.addFunds(1);
+  mystreams.addFunds('1');
   transaction.approve();
   notif.openNotifications();
   // notif.checknew('funds', receiver.accountId);

@@ -1,5 +1,7 @@
 import {connect, keyStores, utils} from 'near-api-js';
-import {generateSeedPhrase} from 'near-seed-phrase';
+
+//import {generateSeedPhrase} from 'near-seed-phrase';
+const nearseed = require('near-seed-phrase');
 
 // remove generated from filename so it'll be checked in unused exports
 export async function createTestAccount() {
@@ -9,7 +11,7 @@ export async function createTestAccount() {
 
   const accountId = `roketo-${Date.now()}-${randomNumber}`;
 
-  const {seedPhrase, publicKey} = generateSeedPhrase();
+  const {seedPhrase, publicKey} = nearseed.generateSeedPhrase();
   const broswerLocalStorageKey = new keyStores.InMemoryKeyStore();
 
   const near = await connect({

@@ -24,17 +24,17 @@ export class CreateStreamPage {
     await this.page.locator(testSelectors.createStreamButton).click();
   }
 
-  async inputReceiver(value) {
+  async inputReceiver(value: string) {
     await this.page.locator(testSelectors.createStreamReceiverInput).type(value);
     //cy.get(testSelectors.createStreamReceiverInput).click().click().type(value);
   }
 
-  async inputDeposit(value) {
+  async inputDeposit(value: string) {
     await this.page.locator(testSelectors.createStreamAmountInput).type(value);
     //cy.get(testSelectors.createStreamAmountInput).click().type(' {backspace}').type(value);
   }
 
-  async inputPeriod(month, days, hours, mins) {
+  async inputPeriod(month: string, days: string, hours: string, mins: string) {
     if (month !== '0') {
       await this.page.locator(testSelectors.createStreamMonthsInput).type(month);
     }
@@ -72,7 +72,7 @@ export class CreateStreamPage {
     await this.page.locator('[aria-label="Select AM/PM"]').selectOption('AM');
   }
 
-  async inputComments(value) {
+  async inputComments(value: string) {
     await this.page.locator(testSelectors.createStreamCommentInput).type(value);
   }
 

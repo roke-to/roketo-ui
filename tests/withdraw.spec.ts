@@ -4,10 +4,12 @@ import {CreateStreamPage} from '../tests/pages/createstream.page';
 import {HomePage} from '../tests/pages/home.page';
 import {MyStreamsPage} from '../tests/pages/mystreams.page';
 import {TransactionPage} from '../tests/pages/transaction.page';
+import {createstream} from './shared/createstream';
+import {login} from './shared/login';
 
 // cy.task('getAccount').then((testAccount) => (account = testAccount));
 test('withdraw all before test', async ({page, accountId}) => {
-  // login(account.seedPhrase);
+  login(page);
   const mystreams = new MyStreamsPage(page);
   mystreams.withdraw();
   const SHOULD_BE_EMPTY = true;
@@ -15,8 +17,8 @@ test('withdraw all before test', async ({page, accountId}) => {
 });
 
 test('create stream', async ({page, accountId}) => {
-  // login(sender.seedPhrase);
-  // createstream({duration: 'short', receiver: receiver.accountId});
+  login(page);
+  createstream(page, 'short');
   const mystreams = new MyStreamsPage(page);
   mystreams.checkNewStreamStatus('Active');
 });

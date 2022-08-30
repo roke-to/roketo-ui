@@ -30,7 +30,7 @@ export class LoginPage {
     await this.page.locator('[data-test-id="recoverAccountWithPassphraseButton"]').click();
   }
 
-  async inputPassphrase(value) {
+  async inputPassphrase(value: string) {
     await this.page.locator('input').type(value);
     // cy.get('input').click().type(value);
     await this.page.locator(this.elements.buttonWalletSubmit).click();
