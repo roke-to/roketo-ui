@@ -9,6 +9,7 @@ import {WithdrawButton} from '~/features/stream-control/WithdrawButton';
 
 import {Badge} from '~/shared/components/Badge';
 import {PageError} from '~/shared/components/PageError';
+import {env} from '~/shared/config';
 import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
 import {ColorDot} from '~/shared/kit/ColorDot';
 import {ROUTES_MAP} from '~/shared/lib/routing';
@@ -58,7 +59,7 @@ export function StreamPage() {
     link,
   } = useStore($streamInfo);
   const compact = useMediaQuery('(max-width: 767px)');
-  const explorerLink = `https://explorer.testnet.near.org/transactions/${id}`;
+  const explorerLink = `https://explorer.${env.NEAR_NETWORK_ID}.near.org/transactions/${id}`;
   if (!active) return null;
   return (
     <div className={styles.root}>
