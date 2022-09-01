@@ -1,6 +1,5 @@
 import cn from 'classnames';
 import {FieldInputProps, FormikState} from 'formik';
-import parseDuration from 'parse-duration';
 import React, {ChangeEvent, useEffect, useState} from 'react';
 
 import {testIds} from '~/shared/constants';
@@ -9,6 +8,7 @@ import {usePrev} from '~/shared/hooks/usePrev';
 import {FormField} from '@ui/components/FormField';
 import {Input} from '@ui/components/Input';
 
+import {parseDuration} from '../lib';
 import {ClearIcon} from './ClearIcon';
 import styles from './styles.module.scss';
 
@@ -64,8 +64,6 @@ export const StreamDurationCalcField = (props: StreamDurationCalcFieldProps) => 
   const {form, field, label, className, isRequired, description, onDurationChange} = props;
 
   const error = form.errors[field.name];
-
-  parseDuration.m = parseDuration.month;
 
   const [inputValue, setInputValue] = useState('');
   const durationMs = parseDuration(inputValue);

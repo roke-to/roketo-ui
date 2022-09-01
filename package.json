@@ -37,7 +37,6 @@
     "formik": "^2.2.9",
     "near-api-js": "^0.45.1",
     "numbro": "^2.3.5",
-    "parse-duration": "^1.0.2",
     "patronum": "^1.9.0",
     "rc-tooltip": "^5.1.1",
     "react": "^16.13.1",
