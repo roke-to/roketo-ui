@@ -1,10 +1,15 @@
+@import 'src/shared/ui/palette';
+
 .colorDot {
-  --size-px: calc(var(--size) * 1px);
+  --size-px: 24px;
   display: block;
   width: var(--size-px);
   height: var(--size-px);
   border-radius: calc(var(--size-px) / 2);
+  border-style: solid;
+  border-width: 2px;
   background-color: var(--color, transparent);
   align-self: center;
   flex-shrink: 0;
+  margin: 4px 0;
 }

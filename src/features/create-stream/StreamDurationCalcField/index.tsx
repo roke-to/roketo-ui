@@ -1,29 +1,43 @@
 import cn from 'classnames';
 import {FieldInputProps, FormikState} from 'formik';
-import React, {ChangeEvent, Dispatch, SetStateAction, useEffect, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 
 import {testIds} from '~/shared/constants';
 import {usePrev} from '~/shared/hooks/usePrev';
-import {isLikeNumber} from '~/shared/lib/validation';
 
 import {FormField} from '@ui/components/FormField';
 import {Input} from '@ui/components/Input';
 
-import {getDurationInSeconds} from '../lib';
+import {parseDuration} from '../lib';
+import {ClearIcon} from './ClearIcon';
 import styles from './styles.module.scss';
 
 type DurationInputProps = {
-  label: string;
-  value: number;
+  label?: string;
+  placeholder?: string;
+  value?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
   testId: string;
 };
 
-const DurationInput = ({className, value, onChange, label, testId}: DurationInputProps) => (
+const ClearButton = ({onCLick}: {onCLick: (event: React.SyntheticEvent) => void}) => (
+  <button className={styles.clearBtn} type="button" onClick={onCLick}>
+    <ClearIcon />
+  </button>
+);
+
+const DurationInput = ({
+  className,
+  value,
+  onChange,
+  label,
+  placeholder,
+  testId,
+}: DurationInputProps) => (
   <div className={cn(styles.durationInput, className)}>
     <Input
-      placeholder="0"
+      placeholder={placeholder}
       value={value}
       onChange={onChange}
       className={styles.input}
@@ -51,12 +65,9 @@ export const StreamDurationCalcField = (props: StreamDurationCalcFieldProps) => 
 
   const error = form.errors[field.name];
 
-  const [months, setMonths] = useState(0);
-  const [days, setDays] = useState(0);
-  const [minutes, setMinutes] = useState(0);
-  const [hours, setHours] = useState(0);
-
-  const durationInSeconds = getDurationInSeconds(months, days, hours, minutes);
+  const [inputValue, setInputValue] = useState('');
+  const durationMs = parseDuration(inputValue);
+  const durationInSeconds = Math.floor(durationMs / 1000);
   const prevDuration = usePrev(durationInSeconds);
 
   useEffect(() => {
@@ -65,17 +76,10 @@ export const StreamDurationCalcField = (props: StreamDurationCalcFieldProps) => 
     }
   }, [durationInSeconds, onDurationChange, prevDuration]);
 
-  const handleInputChangeFactory =
-    (setValue: Dispatch<SetStateAction<number>>, valueLimit: number) =>
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const {value} = event.target;
-
-      const safeValue = value || '0';
-
-      if (isLikeNumber(safeValue) && Number(safeValue) <= valueLimit) {
-        setValue(Number(safeValue));
-      }
-    };
+  const handleInputChangeFactory = (event: ChangeEvent<HTMLInputElement>) => {
+    const {value} = event.target;
+    setInputValue(value);
+  };
 
   return (
     <FormField
@@ -87,29 +91,12 @@ export const StreamDurationCalcField = (props: StreamDurationCalcFieldProps) => 
     >
       <div className={styles.wrapper}>
         <DurationInput
-          value={months}
-          onChange={handleInputChangeFactory(setMonths, 36)}
-          label="Months, max: 36"
-          testId={testIds.createStreamMonthsInput}
+          value={inputValue ?? ''}
+          placeholder="2m 7d 1h 10min"
+          onChange={handleInputChangeFactory}
+          testId={testIds.createStreamDurationInput}
         />
-        <DurationInput
-          value={days}
-          onChange={handleInputChangeFactory(setDays, 31)}
-          label="Days, max: 31"
-          testId={testIds.createStreamDaysInput}
-        />
-        <DurationInput
-          value={hours}
-          onChange={handleInputChangeFactory(setHours, 24)}
-          label="Hours, max: 24"
-          testId={testIds.createStreamHoursInput}
-        />
-        <DurationInput
-          value={minutes}
-          onChange={handleInputChangeFactory(setMinutes, 60)}
-          label="Minutes, max: 60"
-          testId={testIds.createStreamMinutesInput}
-        />
+        <ClearButton onCLick={() => setInputValue('')} />
       </div>
     </FormField>
   );

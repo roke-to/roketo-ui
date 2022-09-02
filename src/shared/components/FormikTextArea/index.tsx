@@ -48,7 +48,7 @@ export const FormikTextArea = (props: TextAreaProps) => {
       {maxLength && (
         <span className={styles.textLimitCounter}>{`${
           field?.value?.length || 0
-        }/${maxLength}`}</span>
+        } / ${maxLength}`}</span>
       )}
     </FormField>
   );

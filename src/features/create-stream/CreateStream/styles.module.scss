@@ -3,8 +3,6 @@
 .root {
   display: flex;
 
-  min-width: 1000px;
-
   flex-direction: column;
 }
 
@@ -13,7 +11,7 @@
   font-size: 22px;
   line-height: 28px;
 
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .description {
@@ -25,25 +23,84 @@
 
 .form {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(12, 1fr);
   grid-auto-flow: dense;
   gap: 24px;
 }
 
-.receiver,
 .token,
-.color {
-  grid-column: auto / span 2;
+.duration,
+.deposit {
+  grid-column: auto / span 4;
 }
 
-.deposit,
+.color {
+  grid-column: auto / span 1;
+}
+
+.receiver {
+  grid-column: auto / span 11;
+}
+
 .cliff {
-  grid-column: auto / span 3;
+  grid-column: auto / span 6;
 }
 
 .comment,
-.duration {
+.start {
   grid-column: 1 / -1;
+}
+
+.start {
+  width: fit-content;
+}
+
+.collapseBtnWrap {
+  grid-column: 1/-1;
+  position: relative;
+
+  &:before {
+    content: '';
+    width: 100%;
+    height: 2px;
+    background-color: $input-blue;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translate(0, -50%);
+  }
+}
+
+.collapseBtn {
+  border: 1px solid $input-blue;
+  width: fit-content;
+
+  cursor: pointer;
+  user-select: none;
+
+  color: $blue;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 15px;
+
+  border-radius: 12px;
+  background-color: $input-background;
+
+  margin: 0 auto;
+  padding: 4.5px 12px;
+
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  & svg {
+    margin-left: 7px;
+    transition: transform 0.2s ease-in-out;
+  }
+}
+
+.rotated {
+  transform: rotate(180deg);
 }
 
 .meaningfulSpeed {
@@ -59,8 +116,13 @@
 }
 
 .delayed,
-.isLocked {
-  grid-column: auto / span 3;
+.isUnlocked {
+  grid-column: auto / span 6;
+}
+
+.isUnlocked {
+  justify-content: center;
+  margin-top: 21px;
 }
 
 .submitError {
@@ -78,11 +140,40 @@
   }
 }
 
+.commissionBlock {
+  grid-column: auto / span 8;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  margin-top: 24px;
+}
+
+.commissionTitle {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.commissionWrap {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-flow: dense;
+  gap: 6px;
+
+  div {
+    grid-column: auto / span 3;
+
+    &:nth-child(even) {
+      font-weight: 600;
+    }
+  }
+}
+
 .actionButtonsWrapper {
-  grid-column: 1 / -1;
+  grid-column: auto/span 4;
+  width: 100%;
   display: flex;
   justify-content: flex-end;
-  align-items: center;
+  align-items: flex-end;
 
   gap: 20px;
 }
@@ -102,6 +193,10 @@
   }
 }
 
+.textarea {
+  height: 1em;
+}
+
 /* Laptop */
 @media (max-width: 1199px) {
   .root {
@@ -109,22 +204,6 @@
   }
 }
 
-/* Tablet */
-@media (max-width: 991px) and (min-width: 768px) {
-  .receiver,
-  .token {
-    grid-column-end: span 3;
-  }
-  .color {
-    grid-column: 3 / span 1;
-  }
-  .deposit {
-    grid-column-end: span 2;
-  }
-  .cliff {
-    grid-column-end: span 3;
-  }
-}
 @media (max-width: 991px) {
   .form {
     gap: 16px;
@@ -135,35 +214,34 @@
 }
 
 /* Phone, landscape */
-@media (max-width: 767px) and (min-width: 576px) {
-  .form {
-    grid-template-columns: 1fr 1fr;
-  }
-  .deposit {
-    grid-column-end: span 1;
-  }
-  .color {
-    grid-column: 2 / span 1;
-  }
+@media (max-width: 767px) {
+  .deposit,
+  .token,
+  .duration,
+  .commissionBlock,
   .cliff,
-  .isLocked,
-  .delayed {
-    grid-column-end: span 2;
+  .isUnlocked,
+  .actionButtonsWrapper {
+    grid-column: 1 / -1;
+  }
+
+  .commissionWrap {
+    div {
+      grid-column: auto / span 6;
+    }
+  }
+
+  .actionButtonsWrapper {
+    justify-content: space-between;
+  }
+
+  .isUnlocked {
+    margin-top: 0;
   }
 }
 @media (max-width: 767px) {
   .form {
-    gap: 12px;
-  }
-}
-
-/* Phone, portrait */
-@media (max-width: 575px) {
-  .form {
-    grid-template-columns: 1fr;
-  }
-  .formBlock {
-    grid-column-end: span 1;
+    gap: 16px;
   }
 }
 

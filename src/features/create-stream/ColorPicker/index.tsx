@@ -12,12 +12,7 @@ import styles from './styles.module.scss';
 
 function ColorOption({color}: {color: StreamColor}) {
   const description = colorDescriptions[color];
-  return (
-    <>
-      <ColorDot color={description.color} size={20} />
-      <span>{description.label}</span>
-    </>
-  );
+  return <ColorDot color={description.color} borderColor={description.border} size={20} />;
 }
 
 function Option({color, onClick}: {color: StreamColor; onClick: (color: StreamColor) => void}) {

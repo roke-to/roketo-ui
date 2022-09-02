@@ -1,0 +1,82 @@
+@import 'src/shared/ui/palette';
+
+$toggle-width: 50px;
+$toggle-height: 26px;
+$toggle-gutter: 1px;
+$toggle-radius: 50%;
+
+$toggle-radius: calc($toggle-height / 2);
+$toggle-control-size: 22px;
+
+.root {
+  display: block;
+  position: relative;
+  padding-right: $toggle-width + 12px;
+  cursor: pointer;
+  height: $toggle-height;
+  font-size: 12px;
+  line-height: 15px;
+  font-weight: 500;
+  user-select: none;
+  display: flex;
+  align-items: center;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+
+    &:checked ~ .toggle {
+      background-color: $input-background;
+      &:after {
+        left: $toggle-width - $toggle-control-size - $toggle-gutter * 3;
+      }
+    }
+
+    &:disabled ~ .toggle {
+      background-color: $grey;
+      border-color: $grey;
+      &:after {
+        background-color: #fff;
+      }
+    }
+  }
+
+  .toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: $toggle-height;
+    width: $toggle-width;
+    border-radius: $toggle-radius;
+    border: 1px solid $input-blue;
+    transition: background-color 0.15s ease-in;
+
+    &:after {
+      content: '';
+      position: absolute;
+      left: $toggle-gutter;
+      top: $toggle-gutter;
+      width: $toggle-control-size;
+      height: $toggle-control-size;
+      border-radius: $toggle-radius;
+      background: $input-blue;
+      transition: left 0.15s ease-in;
+    }
+  }
+}
+
+.hint {
+  font-size: 12px;
+  line-height: 16px;
+  color: $bluish-grey;
+  margin-top: 2px;
+}
+
+@media (max-width: 767px) {
+  .hint {
+    margin-bottom: 8px;
+  }
+}

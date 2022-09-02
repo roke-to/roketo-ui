@@ -37,10 +37,7 @@ export const testIds = {
   streamModalStopButton: 'streamModalStopButton',
   createStreamReceiverInput: 'createStreamReceiverInput',
   createStreamAmountInput: 'createStreamAmountInput',
-  createStreamMonthsInput: 'createStreamMonthsInput',
-  createStreamDaysInput: 'createStreamDaysInput',
-  createStreamHoursInput: 'createStreamHoursInput',
-  createStreamMinutesInput: 'createStreamMinutesInput',
+  createStreamDurationInput: 'createStreamDurationInput',
   createStreamCommentInput: 'createStreamCommentInput',
   createStreamDelayedCheckbox: 'createStreamDelayedCheckbox',
   createStreamLockedCheckbox: 'createStreamLockedCheckbox',
@@ -51,6 +48,7 @@ export const testIds = {
   notificationsContainer: 'notificationsContainer',
   addFunds: 'addFunds',
   addFundsSubmit: 'addFundsSubmit',
+  collapseButton: 'collapseButton',
 } as const;
 
 const testIdsKeys = Object.keys(testIds) as Array<keyof typeof testIds>;

@@ -11,3 +11,5 @@ export const STREAM_DIRECTION = {
 } as const;
 
 export type StreamDirection = 'in' | 'out';
+
+export const STORAGE_DEPOSIT = '0.0025';

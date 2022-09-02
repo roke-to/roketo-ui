@@ -2,6 +2,7 @@ import {ModuleState, WalletSelector, WalletSelectorState} from '@near-wallet-sel
 import type {Notification, UpdateUserDto, User} from '@roketo/api-client';
 import {
   createRichContracts,
+  getDao,
   getIncomingStreams,
   getOutgoingStreams,
   initApiControl,
@@ -236,10 +237,16 @@ const requestUnknownTokensFx = createEffect(
         return [tokenName, contract] as const;
       }),
     );
+
+    const {contract} = roketo;
+    const [dao] = await Promise.all([getDao({contract})]);
+
     const additionalTokens = await createRichContracts({
-      tokensInfo: requestResults,
       account: nearAuth.account,
+      tokensInfo: requestResults,
+      dao,
     });
+
     return additionalTokens;
   },
 );

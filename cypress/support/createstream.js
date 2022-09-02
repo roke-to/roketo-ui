@@ -6,12 +6,13 @@ export function createstream({receiver = 'githubtest9.testnet', duration} = {}) 
   stream.createStream();
   stream.inputReceiver(receiver);
   stream.inputDeposit('1');
+
   if (duration === 'short') {
-    stream.inputPeriod('0', '0', '0', '1');
+    stream.inputPeriod('0m 0d 0h 1min');
   } else {
-    stream.inputPeriod('1000', '10', '10', '10');
-    // stream.inputComments('comment-comment');
+    stream.inputPeriod('35m 10d 10h 10min');
     stream.setDelayed();
+    // stream.inputComments('comment-comment');
   }
   stream.submit();
   const transaction = new Transaction();

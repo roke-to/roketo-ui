@@ -6,6 +6,7 @@ import React, {useState} from 'react';
 
 import {$listedTokens} from '~/entities/wallet';
 
+import {Balance, DisplayMode} from '~/shared/components/Balance';
 import {DropdownMenu} from '~/shared/kit/DropdownMenu';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 import {TokenImage} from '~/shared/kit/TokenImage';
@@ -32,17 +33,27 @@ const TokenOption = ({
   token,
   onClick,
   className,
+  isActive,
 }: {
   token: RichToken;
   className?: string;
   onClick?: () => void;
+  isActive?: boolean;
 }) => {
   const classNames = cn(styles.tokenOption, className);
 
   const content = (
     <>
       <TokenImage tokenAccountId={token.roketoMeta.account_id} />
-      <span>{`${token.meta.name}, ${token.meta.symbol}`}</span>
+      <div className={cn(styles.tokenWrap, isActive ? styles.tokenActive : '')}>
+        <span className={cn(styles.tokenName)}>{`${token.meta.symbol}`}</span>
+        <Balance
+          className={cn(styles.tokenBalance, isActive ? styles.tokenActive : '')}
+          tokenAccountId={token.tokenContract.contractId}
+          isShort
+          mode={DisplayMode.CRYPTO}
+        />
+      </div>
     </>
   );
 
@@ -113,6 +124,7 @@ export const TokenSelector = (props: TokenSelectorProps) => {
               token={token}
               onClick={() => handleChooseTokenOptions(token)}
               className={styles.withHover}
+              isActive={token.tokenContract.contractId === activeTokenAccountId}
             />
           ))}
         </DropdownMenu>

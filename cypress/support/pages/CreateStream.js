@@ -14,20 +14,8 @@ class CreateStream {
     cy.get(testSelectors.createStreamAmountInput).click().type(' {backspace}').type(value);
   }
 
-  inputPeriod(month, days, hours, mins) {
-    if (month !== '0') {
-      cy.get(testSelectors.createStreamMonthsInput).click().type(' {backspace}').type(month);
-    }
-    // select days
-    if (days !== '0') {
-      cy.get(testSelectors.createStreamDaysInput).click().type(' {backspace}').type(days);
-    }
-    // select hours
-    if (hours !== '0') {
-      cy.get(testSelectors.createStreamHoursInput).click().type(' {backspace}').type(hours);
-    }
-    // select mins
-    cy.get(testSelectors.createStreamMinutesInput).click().type(' {backspace}').type(mins);
+  inputPeriod(value) {
+    cy.get(testSelectors.createStreamDurationInput).click().type(' {backspace}').type(value);
   }
 
   inputCliffPeriod() {
@@ -48,7 +36,7 @@ class CreateStream {
   }
 
   setDelayed() {
-    cy.get(testSelectors.createStreamDelayedCheckbox).click();
+    cy.get(testSelectors.createStreamDelayedCheckbox).click({force: true});
   }
 
   submit() {
@@ -56,7 +44,11 @@ class CreateStream {
   }
 
   uneditable() {
-    cy.get(testSelectors.createStreamLockedCheckbox).click();
+    cy.get(testSelectors.createStreamLockedCheckbox).click({force: true});
+  }
+
+  moreOptions() {
+    cy.get(testSelectors.collapseButton).click();
   }
 }
 

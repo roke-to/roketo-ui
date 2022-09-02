@@ -3,12 +3,11 @@
 .textarea {
   position: relative;
   width: 100%;
-  min-height: 100px;
 
   outline: 1px solid transparent;
 
-  border: 1px solid $grey;
-  padding: 12px;
+  border: 1px solid $input-blue;
+  padding: 12px 18px;
   border-radius: 8px;
   background-color: $white;
 
