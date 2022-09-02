@@ -22,7 +22,7 @@
     [bar-column] 200px
     [address-column] min-content
     [comment-column] minmax(min-content, 1fr)
-    [control-column] 150px;
+    [control-column] 120px;
 }
 
 .colorCell,
@@ -174,7 +174,7 @@
 }
 
 .commentBlock {
-  max-width: 300px;
+  max-width: 350px;
 
   font-weight: 500;
   font-size: 14px;
@@ -184,6 +184,7 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  word-break: break-word;
 }
 
 .nameText {
@@ -357,6 +358,13 @@
     width: 100%;
     border-radius: 24px;
     font-weight: 600;
+  }
+}
+
+@media (max-width: 991px) {
+  .commentCell,
+  .nameCell {
+    padding-left: 24px;
   }
 }
 
