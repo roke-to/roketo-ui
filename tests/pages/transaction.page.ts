@@ -12,8 +12,9 @@ export class TransactionPage {
   async approve() {
     await this.page.locator('.button-group > .blue').click();
     //add TImeout
-    await expect(this.page.locator('button', {hasText: 'Sending'})).toHaveCount(0);
+    // await expect(this.page.locator('button', {hasText: 'Sending'})).toHaveCount(0);
     //cy.contains('Sending', {timeout: 60000}).should('not.exist');
+    await Promise.all([this.page.waitForNavigation()]);
   }
 
   async cancel() {

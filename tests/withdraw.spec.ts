@@ -1,4 +1,5 @@
 import {test} from '../tests/fixtures/auth';
+import {test_receiver} from '../tests/fixtures/auth-as-receiver';
 // import {NearWallet} from '../page-objects/near-wallet';
 import {CreateStreamPage} from '../tests/pages/createstream.page';
 import {HomePage} from '../tests/pages/home.page';
@@ -9,32 +10,32 @@ import {login} from './shared/login';
 
 // cy.task('getAccount').then((testAccount) => (account = testAccount));
 test('withdraw all before test', async ({page, accountId}) => {
-  login(page);
+  await login(page);
   const mystreams = new MyStreamsPage(page);
-  mystreams.withdraw();
+  await mystreams.withdraw();
   const SHOULD_BE_EMPTY = true;
-  mystreams.checkwithdraw(SHOULD_BE_EMPTY);
+  await mystreams.checkwithdraw(SHOULD_BE_EMPTY);
 });
 
-test('create stream', async ({page, accountId}) => {
-  login(page);
-  createstream(page, 'short');
-  const mystreams = new MyStreamsPage(page);
-  mystreams.checkNewStreamStatus('Active');
+test_receiver('create stream', async ({page_rec, accountRecId}) => {
+  await login(page_rec);
+  await createstream(page_rec, 'playwright5.testnet', 'short');
+  const mystreams = new MyStreamsPage(page_rec);
+  await mystreams.checkNewStreamStatus('Active');
 });
 
 test('not empty withdraw', async ({page, accountId}) => {
-  // login(receiver.seedPhrase);
+  await login(page);
   const mystreams = new MyStreamsPage(page);
   const SHOULD_NOT_BE_EMPTY = false;
-  mystreams.checkwithdraw(SHOULD_NOT_BE_EMPTY);
-  mystreams.waitUntilDue();
-  mystreams.withdrawFirst();
+  await mystreams.checkwithdraw(SHOULD_NOT_BE_EMPTY);
+  await mystreams.waitUntilDue();
+  await mystreams.withdrawFirst();
 });
 
 test('empty withdraw', async ({page, accountId}) => {
-  // login(receiver.seedPhrase);
+  await login(page);
   const mystreams = new MyStreamsPage(page);
   const SHOULD_BE_EMPTY = true;
-  mystreams.checkwithdraw(SHOULD_BE_EMPTY);
+  await mystreams.checkwithdraw(SHOULD_BE_EMPTY);
 });

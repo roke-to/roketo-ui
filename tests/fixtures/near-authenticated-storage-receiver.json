@@ -6,22 +6,22 @@
       "localStorage": [
         {
           "name": "_4:wallet:accounts_v2",
-          "value": "{\"playwright5.testnet\":true}"
+          "value": "{\"playwright4.testnet\":true}"
         },
         {
           "name": "languageCode",
           "value": "en"
         },
         {
-          "name": "nearlib:keystore:playwright5.testnet:default",
-          "value": "ed25519:PYz33XC2fR4NqB1QwwHMtTDS6Xrse82MXZ364ZQdvoEFrLrafkiUQEWASho6QTrH3quk1dpDBFHQWakfooJMvrQ"
+          "name": "nearlib:keystore:playwright4.testnet:default",
+          "value": "ed25519:2eh91rd99zKsos99RypSfgAnnq4YjiQz9hV5Ns56BtrijKzttSoJc57egvwA4dhQhf1N2aamobsHhNq7XXQHufqy"
         },
         {
           "name": "_4:wallet:active_account_id_v2",
-          "value": "playwright5.testnet"
+          "value": "playwright4.testnet"
         },
         {
-          "name": "wallet.account:playwright5.testnet:default:confirmed",
+          "name": "wallet.account:playwright4.testnet:default:confirmed",
           "value": "true"
         }
       ]

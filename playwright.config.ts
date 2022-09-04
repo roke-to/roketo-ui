@@ -25,7 +25,7 @@ const config: PlaywrightTestConfig = {
      * Maximum time expect() should wait for the condition to be met.
      * For example in `await expect(locator).toHaveText();`
      */
-    timeout: 5000,
+    timeout: 20000,
   },
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -116,11 +116,11 @@ const config: PlaywrightTestConfig = {
   outputDir: 'test-results/',
 
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'yarn start',
-    port: 3000,
-    reuseExistingServer: true,
-  },
+  // webServer: {
+  //   command: 'yarn start',
+  //   port: 3000,
+  //   reuseExistingServer: true,
+  // },
 };
 
 // ts-unused-exports:disable-next-line

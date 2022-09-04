@@ -30,6 +30,7 @@ export class CreateStreamPage {
   }
 
   async inputDeposit(value: string) {
+    await this.page.locator(testSelectors.createStreamAmountInput).click();
     await this.page.locator(testSelectors.createStreamAmountInput).type(value);
     //cy.get(testSelectors.createStreamAmountInput).click().type(' {backspace}').type(value);
   }
@@ -69,7 +70,7 @@ export class CreateStreamPage {
     await this.page
       .locator('[aria-label="Second"]')
       .type(currentTimeInMilliseconds.getSeconds().toString());
-    await this.page.locator('[aria-label="Select AM/PM"]').selectOption('AM');
+    await this.page.locator('[aria-label="Select AM/PM"]').selectOption('am');
   }
 
   async inputComments(value: string) {

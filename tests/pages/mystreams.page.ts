@@ -22,14 +22,16 @@ export class MyStreamsPage {
   }
 
   async checkNewStreamStatus(value: string) {
-    await expect(this.page.locator(testSelectors.streamStatusIcon).nth(0)).toHaveText(value);
+    expect(
+      await this.page.locator(testSelectors.streamStatusIcon).nth(0).getAttribute('alt'),
+    ).toEqual(value);
   }
   async checkStreamDoesntExist() {
     await expect(this.page.locator(testSelectors.streamControlsDropdown)).toHaveCount(0);
   }
 
   async changeStatus(value: string) {
-    this.page.locator(testSelectors.streamStatusIcon).nth(0).click();
+    this.page.locator(testSelectors.streamControlsDropdown).nth(0).click();
     if (value === 'start') {
       this.page.locator(testSelectors.streamStartButton).nth(0).click();
     }
@@ -43,16 +45,17 @@ export class MyStreamsPage {
   }
 
   async visit() {
-    await this.page.goto(this.elements.myStreamsURL);
+    await this.page.goto('http://localhost:3000/#/streams');
   }
 
   async checkPage() {
     // this.page.url()
     //  /https:\/\/wallet\.testnet\.near\.org\/login/
     // await expect(this.page).toHaveURL('/http:\/\/localhost:3000\/#\/streams');
-    await expect(this.page).toHaveURL(new RegExp('^http://localhost:3000/#/streams'), {
-      timeout: 20000,
-    });
+    await expect(this.page).toHaveURL('http://localhost:3000/#/streams'),
+      {
+        timeout: 20000,
+      };
     //cy.url().contains('http://localhost:3000/#/streams', {timeout: 20000});
   }
 
@@ -90,7 +93,7 @@ export class MyStreamsPage {
 
   async waitUntilDue() {
     await expect(this.page.locator(testSelectors.streamProgressCaption).nth(0)).toHaveText(
-      '/\b1 of 1\b/',
+      '-0.1 of 0.1',
     );
     // RegExp to catch "1 of 1" only and not "0.251 of 1". Move all received tokens to your wallet.You have nothing to withdraw
     // cy.get(testSelectors.streamProgressCaption)
@@ -100,9 +103,7 @@ export class MyStreamsPage {
 
   async checkIfLastStreamLocked() {
     await expect(this.page.locator(testSelectors.streamControlsDropdown)).toHaveCount(0);
-    await expect(this.page.locator('span')).toHaveText('Locked');
-    // cy.get(testSelectors.streamControlsDropdown).should('not.exist');
-    // cy.get('span:contains("Locked")', {timeout: 60000});
+    expect(await this.page.locator('span:has-text("Locked")')).not.toHaveCount(0);
   }
 
   async withdrawFirst() {
@@ -117,7 +118,7 @@ export class MyStreamsPage {
   async addFunds(value: string) {
     await this.page.locator(testSelectors.streamControlsDropdown).nth(0).click();
     await this.page.locator(testSelectors.addFunds).nth(0).click();
-    await this.page.locator(testSelectors.addFunds).type(value);
+    await this.page.locator('[name="deposit"]').type(value);
     // cy.get('[name="deposit"]')
     //   .click({force: true}, {timeout: 60000})
     //   .type(' {backspace}')
@@ -127,7 +128,7 @@ export class MyStreamsPage {
 
   async checkAddFunds() {
     await expect(this.page.locator(testSelectors.streamProgressCaption).nth(0)).toHaveText(
-      '/\b0 of 2\b/',
+      '-0 of 1',
     );
   }
 }

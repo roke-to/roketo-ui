@@ -3,11 +3,11 @@ import {Page} from '@playwright/test';
 import {CreateStreamPage} from '../pages/createstream.page';
 import {TransactionPage} from '../pages/transaction.page';
 
-export async function createstream(page: Page, duration: string) {
+export async function createstream(page: Page, receiver: string, duration: string) {
   // export function createstream({receiver = 'githubtest9.testnet', duration} = {}) {
   const stream = new CreateStreamPage(page);
   await stream.createStream();
-  await stream.inputReceiver('delusion.testnet');
+  await stream.inputReceiver(receiver);
   await stream.inputDeposit('1');
   if (duration === 'short') {
     await stream.inputPeriod('0', '0', '0', '1');

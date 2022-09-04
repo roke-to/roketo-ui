@@ -1,4 +1,5 @@
 import {expect, Page} from '@playwright/test';
+import {string} from 'yup';
 
 import {testSelectors} from '../../src/shared/constants';
 
@@ -28,17 +29,61 @@ export class NotificationPage {
     await expect(this.page.locator(testSelectors.notificationsLoader)).toHaveCount(0);
   }
 
-  async checknew(type: string, receiverId: string) {
-    const text = {
-      start: `You've successfully created a stream to ${receiverId}`,
-      pause: `The stream to ${receiverId} is paused`,
-      restart: `The stream to ${receiverId} was resumed`,
-      stop: `The stream to ${receiverId} has completed`,
-      cliff: `The stream to ${receiverId} has passed the cliff period`,
-      funds: `The funds were added to the stream to ${receiverId}`,
-    }[type];
+  async checknew(typeInput: string, receiverId: string) {
+    let type = 'default';
+    type = typeInput;
+    // const text = {
+    //   start: `You've successfully created a stream to ${receiverId}`,
+    //   pause: `The stream to ${receiverId} is paused`,
+    //   restart: `The stream to ${receiverId} was resumed`,
+    //   stop: `The stream to ${receiverId} has completed`,
+    //   cliff: `The stream to ${receiverId} has passed the cliff period`,
+    //   funds: `The funds were added to the stream to ${receiverId}`,
+    // }[type];
 
-    // await expect(this.page.locator(testSelectors.notificationsContainer)).toHaveText(text);
+    switch (typeInput) {
+      case 'start': {
+        //statements;
+        type = `You've successfully created a stream to ${receiverId}Total streaming amount: 1 NEARStream duration`;
+        break;
+      }
+      case 'pause': {
+        //statements;
+        type = `The stream to ${receiverId} is paused`;
+        break;
+      }
+      case 'restart': {
+        //statements;
+        type = `The stream to ${receiverId} was resumed`;
+        break;
+      }
+      case 'stop': {
+        //statements;
+        type = `The stream to ${receiverId} has completed`;
+        break;
+      }
+      case 'cliff': {
+        //statements;
+        type = `The stream to ${receiverId} has passed the cliff period`;
+        break;
+      }
+      case 'funds': {
+        //statements;
+        type = `The funds were added to the stream to ${receiverId}`;
+        break;
+      }
+      default: {
+        //statements;
+        type = `You've successfully created a stream to ${receiverId}`;
+        break;
+      }
+    }
+
+    //await expect(this.page.locator(testSelectors.notificationsContainer)).toHaveText?(text?.toString()):string;
+    //  data-testid="notificationsContainer"
+    await expect(
+      this.page.locator('[data-testid="notificationsContainer"]>a').nth(0),
+    ).toContainText(type);
   }
 
   async checkReceiver(type: string, senderId: string) {

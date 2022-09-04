@@ -20,8 +20,8 @@ test('login', async ({page}) => {
   await signPage.loginToNear();
 
   const streamsPage = new MyStreamsPage(page);
-  await streamsPage.checkPage();
-
+  //await streamsPage.checkPage();
+  await Promise.all([page.waitForNavigation()]);
   // await signPage.loginToNear();
   // await signPage.importExistingAccount(),
   // await signPage.chooseFirstAccount();
