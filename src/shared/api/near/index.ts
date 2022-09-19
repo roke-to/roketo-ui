@@ -13,8 +13,6 @@ import {
 } from 'near-api-js';
 import type {Action as NearAction} from 'near-api-js/lib/transaction';
 
-import type {WalletId} from '~/entities/wallet';
-
 import {env} from '~/shared/config';
 import {MAGIC_WALLET_SELECTOR_APP_NAME} from '~/shared/constants';
 
@@ -36,10 +34,10 @@ export const createWalletSelectorInstance = async () =>
     ],
   });
 
-export async function createNearInstance(WalletId: WalletId | 'any' = 'any'): Promise<{
+export async function createNearInstance(WalletId: string = 'none'): Promise<{
   near: Near;
   auth: NearAuth;
-  WalletId: WalletId | 'any';
+  WalletId: string;
 }> {
   const keyStore = new keyStores.BrowserLocalStorageKeyStore();
   let near: Near;

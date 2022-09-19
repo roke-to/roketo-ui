@@ -24,8 +24,6 @@ import {notificationsApiClient, tokenProvider, usersApiClient} from '~/shared/ap
 import {env} from '~/shared/config';
 import {getChangedFields} from '~/shared/lib/changeDetection';
 
-export type WalletId = 'sender' | 'my-near' | 'near';
-
 async function retry<T>(cb: () => Promise<T>) {
   const retryCount = 3;
   let error: unknown;
@@ -50,7 +48,7 @@ export const initWallets = createEvent();
 export const $nearWallet = createStore<null | {
   near: Near;
   auth: NearAuth;
-  WalletId: WalletId | 'any';
+  WalletId: string;
 }>(null);
 export const $roketoWallet = createStore<null | ApiControl>(null);
 export const $tokens = createStore<Record<string, RichToken>>({});
@@ -193,7 +191,7 @@ export const logoutFx = attach({
   },
 });
 
-const createNearWalletFx = createEffect(async (WalletId: WalletId | 'any' = 'any') => {
+const createNearWalletFx = createEffect(async (WalletId: string = 'none') => {
   const {near, auth, WalletId: type} = await createNearInstance(WalletId);
   return {near, auth, WalletId: type};
 });
