@@ -1,5 +1,6 @@
 import {expect, Page} from '@playwright/test';
 
+import rec from '../fixtures/rec.json';
 import {createTestAccount} from '../shared/createTestAccount';
 
 export class LoginPage {
@@ -47,6 +48,7 @@ export class LoginPage {
 
   async loginToNear() {
     const {seedPhrase} = await createTestAccount();
+
     await this.page.locator(this.elements.homePageImportAccountButton).click();
     await this.page.locator(this.elements.recoverAccountWithPassphraseButton).click();
     await this.page.locator(this.elements.seedPhraseRecoveryInput).type(seedPhrase);
@@ -99,7 +101,21 @@ export class LoginPage {
   }
 
   async loginNearAuthentificated() {
-    await this.chooseFirstAccount();
-    await this.submitButton();
+    const buttonImportAccount = await this.page.locator('button', {
+      hasText: 'Import a Different Account',
+    });
+    if ((await this.page.locator(this.elements.commonSubmitButton).count()) > 0) {
+      // cy.get('.account-selector > .gray-blue').click({force: true});
+      await this.chooseFirstAccount();
+      await this.submitButton();
+    } else {
+      await this.page.locator('.buttons > .link').click({timeout: 200000});
+      await this.recoverAccount();
+      await this.inputPassphrase(rec.seedPhrase);
+      // await this.chooseFirstAccount();
+      await this.submitButton();
+      await this.submitButton();
+      // cy.get('.buttons > .link').click({force: true});
+    }
   }
 }

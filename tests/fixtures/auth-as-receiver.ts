@@ -1,12 +1,12 @@
 import {test as base} from '@playwright/test';
 import path from 'path';
 
-export const test_receiver = base.extend({
+export const testReceiver = base.extend({
   // eslint-disable-next-line no-empty-pattern
   accountRecId: async ({}, use) => {
-    use('playwright4.testnet');
+    use('pw6.testnet');
   },
-  page_rec: async ({browser}, use) => {
+  pageRec: async ({browser}, use) => {
     const context = await browser.newContext({
       storageState: path.resolve(__dirname, './near-authenticated-storage-receiver.json'),
     });

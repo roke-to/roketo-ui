@@ -54,7 +54,8 @@ export class CreateStreamPage {
     const currentTimeInMilliseconds = new Date();
     await this.page
       .locator('[aria-label="Month"]')
-      .type(currentTimeInMilliseconds.getMonth().toString());
+      // .type(currentTimeInMilliseconds.getMonth().toString());
+      .type('01');
     await this.page
       .locator('[aria-label="Day"]')
       .type(currentTimeInMilliseconds.getDay().toString());

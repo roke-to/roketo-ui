@@ -4,7 +4,7 @@ import path from 'path';
 export const test = base.extend({
   // eslint-disable-next-line no-empty-pattern
   accountId: async ({}, use) => {
-    use('playwright5.testnet');
+    use('pw7.testnet');
   },
   page: async ({browser}, use) => {
     const context = await browser.newContext({

@@ -1,6 +1,5 @@
-// import {test} from './fixtures/auth';
-import {test} from '@playwright/test';
-
+import {test} from './fixtures/auth';
+// import {test} from '@playwright/test';
 import {HomePage} from './pages/home.page';
 // import {NearWallet} from '../page-objects/near-wallet';
 import {LoginPage} from './pages/login.page';

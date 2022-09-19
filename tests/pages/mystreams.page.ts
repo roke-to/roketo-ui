@@ -128,7 +128,7 @@ export class MyStreamsPage {
 
   async checkAddFunds() {
     await expect(this.page.locator(testSelectors.streamProgressCaption).nth(0)).toHaveText(
-      '-0 of 1',
+      '-0 of 2',
     );
   }
 }

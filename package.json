@@ -42,6 +42,7 @@
     "node-fetch": "2.6.6",
     "numbro": "^2.3.5",
     "patronum": "^1.9.0",
+    "playwright": "^1.25.2",
     "rc-tooltip": "^5.1.1",
     "react": "^16.13.1",
     "react-datetime-picker": "^3.5.0",
