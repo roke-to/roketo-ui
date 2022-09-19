@@ -2,8 +2,8 @@
 import {testSelectors} from '../../../src/shared/constants';
 
 class Notifications {
-  openNotifications() {
-    cy.get(testSelectors.openNotificationsButton).click();
+  toggleNotifications() {
+    cy.get(testSelectors.toggleNotificationsButton).click();
   }
 
   waitForInitialLoading() {

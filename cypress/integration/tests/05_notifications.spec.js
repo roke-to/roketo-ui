@@ -1,5 +1,5 @@
 import {createstream} from '../../support/createstream';
-import {login} from '../../support/login';
+import {login, waitForBackendAuth} from '../../support/login';
 import {logout} from '../../support/logout';
 import MyStreams from '../../support/pages/MyStreams';
 import Notification from '../../support/pages/Notification';
@@ -20,39 +20,39 @@ context('Notifications', () => {
     cy.viewport(1536, 960);
 
     login(receiver.seedPhrase);
-    const notif = new Notification();
-    notif.openNotifications();
-    notif.waitForInitialLoading();
+    waitForBackendAuth();
     logout();
 
     login(sender.seedPhrase);
+    waitForBackendAuth();
     createstream({duration: 'short', receiver: receiver.accountId});
     const mystreams = new MyStreams();
     // mystreams.checkNewStreamStatus('Active');
 
-    notif.openNotifications();
+    const notif = new Notification();
+    notif.toggleNotifications();
     notif.checknew('start', receiver.accountId);
 
     mystreams.changeStatus('pause');
     const transaction = new Transaction();
     transaction.approve();
-    notif.openNotifications();
+    notif.toggleNotifications();
     notif.checknew('pause', receiver.accountId);
 
     mystreams.changeStatus('start');
     transaction.approve();
-    notif.openNotifications();
+    notif.toggleNotifications();
     notif.checknew('restart', receiver.accountId);
 
     //add funds
     mystreams.addFunds(1);
     transaction.approve();
-    notif.openNotifications();
+    notif.toggleNotifications();
     notif.checknew('funds', receiver.accountId);
 
     mystreams.changeStatus('stop');
     transaction.approve();
-    notif.openNotifications();
+    notif.toggleNotifications();
     notif.checknew('stop', receiver.accountId);
   });
 
@@ -61,7 +61,7 @@ context('Notifications', () => {
     login(receiver.seedPhrase);
     const notif = new Notification();
 
-    notif.openNotifications();
+    notif.toggleNotifications();
     notif.checkReceiver('start', sender.accountId);
     notif.checkReceiver('pause', sender.accountId);
     notif.checkReceiver('restart', sender.accountId);

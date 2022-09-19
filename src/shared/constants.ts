@@ -45,7 +45,7 @@ export const testIds = {
   createStreamLockedCheckbox: 'createStreamLockedCheckbox',
   createStreamCancelButton: 'createStreamCancelButton',
   createStreamSubmitButton: 'createStreamSubmitButton',
-  openNotificationsButton: 'openNotificationsButton',
+  toggleNotificationsButton: 'toggleNotificationsButton',
   notificationsLoader: 'notificationsLoader',
   notificationsContainer: 'notificationsContainer',
   addFunds: 'addFunds',
