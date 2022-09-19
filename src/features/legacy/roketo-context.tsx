@@ -1,7 +1,8 @@
 import {Near, WalletConnection} from 'near-api-js';
 import React, {useContext, useEffect, useState} from 'react';
 
-import {env} from '../../shared/config';
+import {MAGIC_WALLET_SELECTOR_APP_NAME} from '~/shared/constants';
+
 import {createNearInstance, getNearAuth, NearAuth} from './api/near';
 import {initRoketo, Roketo} from './api/roketo';
 import {Tokens} from './ft-tokens';
@@ -22,7 +23,7 @@ export function RoketoLegacyContextProvider({children}: {children: React.ReactNo
     const init = async () => {
       const near = await createNearInstance();
 
-      const walletConnection = new WalletConnection(near, env.ROKETO_CONTRACT_NAME);
+      const walletConnection = new WalletConnection(near, MAGIC_WALLET_SELECTOR_APP_NAME);
       const auth = getNearAuth(walletConnection);
 
       const roketo = await initRoketo({walletConnection});

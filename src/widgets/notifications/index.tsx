@@ -234,7 +234,7 @@ export function Notifications({arrowClassName}: NotificationsProps) {
         className={styles.dropdownOpener}
         arrowClassName={arrowClassName}
         opened={isPanelVisible}
-        testId={testIds.openNotificationsButton}
+        testId={testIds.toggleNotificationsButton}
       >
         <BellIcon withBadge={hasUnreadNotifications} />
       </DropdownOpener>

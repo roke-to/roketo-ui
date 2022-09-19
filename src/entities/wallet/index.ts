@@ -186,9 +186,10 @@ const createWalletSelectorInstanceFx = createEffect(async () => {
 });
 
 export const logoutFx = attach({
-  source: $nearWallet,
-  async effect(wallet) {
-    await wallet?.auth.logout();
+  source: $walletSelector,
+  async effect(walletSelector) {
+    const wallet = await walletSelector?.wallet();
+    await wallet?.signOut();
   },
 });
 
