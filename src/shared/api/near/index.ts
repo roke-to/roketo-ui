@@ -1,17 +1,9 @@
-import {setupWalletSelector} from '@near-wallet-selector/core';
+import {Action, setupWalletSelector, WalletSelector} from '@near-wallet-selector/core';
 import {setupMyNearWallet} from '@near-wallet-selector/my-near-wallet';
 import {setupNearWallet} from '@near-wallet-selector/near-wallet';
 import {setupSender} from '@near-wallet-selector/sender';
 import type {NearAuth, TransactionMediator} from '@roketo/sdk/dist/types';
-import {
-  connect,
-  ConnectedWalletAccount,
-  keyStores,
-  Near,
-  transactions,
-  WalletConnection,
-} from 'near-api-js';
-import type {Action as NearAction} from 'near-api-js/lib/transaction';
+import {connect, ConnectedWalletAccount, keyStores, Near, WalletConnection} from 'near-api-js';
 
 import {env} from '~/shared/config';
 import {MAGIC_WALLET_SELECTOR_APP_NAME} from '~/shared/constants';
@@ -34,13 +26,15 @@ export const createWalletSelectorInstance = async () =>
     ],
   });
 
-export async function createNearInstance(WalletId: string = 'none'): Promise<{
+export async function createNearInstance(walletSelector: WalletSelector): Promise<{
   near: Near;
   auth: NearAuth;
   WalletId: string;
 }> {
   const keyStore = new keyStores.BrowserLocalStorageKeyStore();
   let near: Near;
+
+  const WalletId = walletSelector.store.getState().selectedWalletId;
 
   switch (WalletId) {
     case 'sender':
@@ -65,17 +59,28 @@ export async function createNearInstance(WalletId: string = 'none'): Promise<{
     balance = await account.getAccountBalance();
   }
 
-  const nearTransactionMediator: TransactionMediator<NearAction> = {
-    functionCall(methodName, args, gas, deposit) {
-      return transactions.functionCall(methodName, args, gas, deposit);
-    },
-    signAndSendTransaction(params) {
-      // @ts-expect-error signAndSendTransaction is protected
-      return account.signAndSendTransaction(params);
+  const nearTransactionMediator: TransactionMediator<Action> = {
+    functionCall: (methodName, args, gas, deposit) => ({
+      type: 'FunctionCall',
+      params: {
+        methodName,
+        args,
+        gas,
+        deposit,
+      },
+    }),
+    async signAndSendTransaction(params) {
+      const currentWalletId = walletSelector.store.getState().selectedWalletId;
+
+      if (currentWalletId) {
+        const wallet = await walletSelector.wallet();
+
+        return wallet.signAndSendTransaction(params);
+      }
     },
   };
   return {
-    WalletId,
+    WalletId: WalletId ?? 'none',
     near,
     auth: {
       balance,
@@ -83,13 +88,26 @@ export async function createNearInstance(WalletId: string = 'none'): Promise<{
       signedIn: !!accountId,
       accountId,
       async login() {
-        localStorage.setItem('profileType', WalletId);
-        const appTitle = 'Roketo Token Streaming Service';
-        await walletConnection.requestSignIn(env.ROKETO_CONTRACT_NAME, appTitle);
+        const currentWalletId = walletSelector.store.getState().selectedWalletId;
+
+        if (currentWalletId) {
+          const wallet = await walletSelector.wallet();
+
+          if (wallet.type !== 'injected') {
+            throw new Error('Only injected wallets are supported.');
+          }
+
+          return wallet.signIn({contractId: env.ROKETO_CONTRACT_NAME});
+        }
       },
       async logout() {
-        localStorage.setItem('profileType', 'none');
-        await walletConnection.signOut();
+        const currentWalletId = walletSelector.store.getState().selectedWalletId;
+
+        if (currentWalletId) {
+          const wallet = await walletSelector.wallet();
+
+          await wallet.signOut();
+        }
       },
       transactionMediator: nearTransactionMediator,
     },
