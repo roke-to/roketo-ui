@@ -16,6 +16,7 @@ import type {Action as NearAction} from 'near-api-js/lib/transaction';
 import type {WalletId} from '~/entities/wallet';
 
 import {env} from '~/shared/config';
+import {MAGIC_WALLET_SELECTOR_APP_NAME} from '~/shared/constants';
 
 import {WalletIconType} from './options';
 
@@ -57,7 +58,7 @@ export async function createNearInstance(WalletId: WalletId | 'any' = 'any'): Pr
       });
   }
 
-  const walletConnection = new WalletConnection(near, env.ROKETO_CONTRACT_NAME);
+  const walletConnection = new WalletConnection(near, MAGIC_WALLET_SELECTOR_APP_NAME);
 
   const accountId = walletConnection.getAccountId();
   const account: ConnectedWalletAccount = walletConnection.account();

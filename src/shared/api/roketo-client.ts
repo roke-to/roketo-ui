@@ -9,6 +9,7 @@ import {
 import {WalletConnection} from 'near-api-js';
 
 import {env} from '~/shared/config';
+import {MAGIC_WALLET_SELECTOR_APP_NAME} from '~/shared/constants';
 
 import {createNearInstance} from './near';
 
@@ -70,7 +71,7 @@ class TokenProvider {
 
   private async getAccountIdAndNear() {
     const {near} = await createNearInstance();
-    const walletConnection = new WalletConnection(near, env.ROKETO_CONTRACT_NAME);
+    const walletConnection = new WalletConnection(near, MAGIC_WALLET_SELECTOR_APP_NAME);
     const accountId = walletConnection.getAccountId();
 
     return {accountId, near};

@@ -5,6 +5,8 @@ export const SECONDS_IN_WEEK = SECONDS_IN_DAY * 7;
 export const SECONDS_IN_MONTH = SECONDS_IN_WEEK * 4;
 export const SECONDS_IN_YEAR = SECONDS_IN_MONTH * 12;
 
+export const MAGIC_WALLET_SELECTOR_APP_NAME = 'near_app';
+
 export enum TimePeriod {
   Second = 'second',
   Minute = 'minute',
