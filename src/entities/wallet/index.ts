@@ -99,7 +99,7 @@ const KNOWN_NOTIFICATION_TYPES = new Set([
 // eslint-disable-next-line arrow-body-style
 const getNotificationsFx = createEffect(async () => {
   return retry(async () => {
-    const allNotifications = await notificationsApiClient.findAll();
+    const allNotifications = await notificationsApiClient.findAllNotifications();
 
     return allNotifications.filter((notification) =>
       KNOWN_NOTIFICATION_TYPES.has(notification.type),
