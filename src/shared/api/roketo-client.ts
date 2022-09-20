@@ -4,6 +4,7 @@ import {
   LoginDto,
   NotificationsApi,
   ServerConfiguration,
+  TokensApi,
   UsersApi,
 } from '@roketo/api-client';
 import {WalletConnection} from 'near-api-js';
@@ -110,3 +111,5 @@ const apiConfig = createConfiguration({
 export const usersApiClient = new UsersApi(apiConfig);
 
 export const notificationsApiClient = new NotificationsApi(apiConfig);
+
+export const tokensApiClient = new TokensApi(apiConfig);

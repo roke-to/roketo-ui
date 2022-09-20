@@ -20,7 +20,12 @@ import {Get} from 'type-fest';
 
 import {createNearInstance, createWalletSelectorInstance} from '~/shared/api/near';
 import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
-import {notificationsApiClient, tokenProvider, usersApiClient} from '~/shared/api/roketo-client';
+import {
+  notificationsApiClient,
+  tokenProvider,
+  tokensApiClient,
+  usersApiClient,
+} from '~/shared/api/roketo-client';
 import {env} from '~/shared/config';
 import {getChangedFields} from '~/shared/lib/changeDetection';
 
@@ -81,6 +86,8 @@ export const $user = createStore<Partial<User>>({
 });
 
 export const $notifications = createStore<Notification[] | null>(null);
+
+export const $fts = createStore<string[] | null>(null);
 
 // eslint-disable-next-line arrow-body-style
 const getUserFx = createEffect(async (accountId: string) => {
@@ -299,11 +306,17 @@ sample({
   target: $accountStreams,
 });
 
+const getUserFTsFx = createEffect(async () => retry(() => tokensApiClient.findAllTokens()));
+sample({
+  clock: getUserFTsFx.doneData,
+  target: $fts,
+});
+
 /** when account id is exists, request user info and notifications for it */
 sample({
   clock: $accountId,
   filter: Boolean,
-  target: [getUserFx, getNotificationsFx],
+  target: [getUserFx, getNotificationsFx, getUserFTsFx],
 });
 
 sample({
@@ -433,6 +446,22 @@ sample({
 });
 
 sample({
+  clock: $fts,
+  source: {
+    roketo: $roketoWallet,
+    near: $nearWallet,
+  },
+  target: requestUnknownTokensFx,
+  fn({roketo, near}, tokenNames) {
+    return {
+      tokenNames: tokenNames ?? [],
+      roketo,
+      nearAuth: near?.auth ?? null,
+    };
+  },
+});
+
+sample({
   clock: requestUnknownTokensFx.doneData,
   source: $tokens,
   target: $tokens,
@@ -451,3 +480,4 @@ $user.reset([logoutFx.done]);
 $tokens.reset([logoutFx.done]);
 $priceOracle.reset([logoutFx.done]);
 $accountStreams.reset([logoutFx.done]);
+$fts.reset([logoutFx.done]);
