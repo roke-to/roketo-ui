@@ -40,7 +40,7 @@ export class MyStreamsPage {
     }
     if (value === 'stop') {
       await this.page.locator(testSelectors.streamStopButton).nth(0).click();
-      awaitthis.page.locator(testSelectors.streamModalStopButton).click();
+      await this.page.locator(testSelectors.streamModalStopButton).click();
     }
   }
 
