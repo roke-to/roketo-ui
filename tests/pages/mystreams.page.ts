@@ -31,16 +31,16 @@ export class MyStreamsPage {
   }
 
   async changeStatus(value: string) {
-    this.page.locator(testSelectors.streamControlsDropdown).nth(0).click();
+    await this.page.locator(testSelectors.streamControlsDropdown).nth(0).click();
     if (value === 'start') {
-      this.page.locator(testSelectors.streamStartButton).nth(0).click();
+      await this.page.locator(testSelectors.streamStartButton).nth(0).click();
     }
     if (value === 'pause') {
-      this.page.locator(testSelectors.streamPauseButton).nth(0).click();
+      await this.page.locator(testSelectors.streamPauseButton).nth(0).click();
     }
     if (value === 'stop') {
-      this.page.locator(testSelectors.streamStopButton).nth(0).click();
-      this.page.locator(testSelectors.streamModalStopButton).click();
+      await this.page.locator(testSelectors.streamStopButton).nth(0).click();
+      awaitthis.page.locator(testSelectors.streamModalStopButton).click();
     }
   }
 
