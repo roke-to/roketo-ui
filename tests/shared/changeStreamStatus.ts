@@ -12,6 +12,8 @@ export async function changeStreamStatus(
   console.log('changeStreamStatus', value, comment);
   const row = await findRowByComment(comment, page);
   await page.locator(testSelectors.streamControlsDropdown).nth(row).click({timeout: 20_000});
+  // eslint-disable-next-line no-promise-executor-return
+  await new Promise((rs) => setTimeout(rs, 500));
   switch (value) {
     case 'start':
       await page.locator(testSelectors.streamStartButton).nth(row).click({timeout: 20_000});
