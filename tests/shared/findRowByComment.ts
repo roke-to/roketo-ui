@@ -2,7 +2,11 @@ import type {Page} from '@playwright/test';
 
 import {testSelectors} from '../../src/shared/constants';
 
-export async function findRowByComment(comment: string, page: Page) {
+export async function findRowByComment(
+  comment: string,
+  page: Page,
+  shouldNotExist: boolean = false,
+) {
   console.log('findRowByComment', comment);
   // eslint-disable-next-line no-promise-executor-return
   await new Promise((rs) => setTimeout(rs, 2000));
@@ -19,9 +23,14 @@ export async function findRowByComment(comment: string, page: Page) {
       break;
     }
   }
-  if (commentIndex === -1) {
-    throw Error(`cant find a row with comment "${comment}"`);
+  if (shouldNotExist && commentIndex !== -1) {
+    throw Error(`stream "${comment}" still exists: row ${commentIndex}`);
   }
-  console.log('row', comment, commentIndex);
+  if (!shouldNotExist) {
+    if (commentIndex === -1) {
+      throw Error(`cant find a row with comment "${comment}"`);
+    }
+    console.log('row', comment, commentIndex);
+  }
   return commentIndex;
 }

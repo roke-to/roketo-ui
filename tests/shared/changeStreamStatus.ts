@@ -16,13 +16,13 @@ export async function changeStreamStatus(
   await new Promise((rs) => setTimeout(rs, 500));
   switch (value) {
     case 'start':
-      await page.locator(testSelectors.streamStartButton).nth(row).click({timeout: 20_000});
+      await page.locator(testSelectors.streamStartButton).nth(0).click({timeout: 20_000});
       break;
     case 'pause':
-      await page.locator(testSelectors.streamPauseButton).nth(row).click({timeout: 20_000});
+      await page.locator(testSelectors.streamPauseButton).nth(0).click({timeout: 20_000});
       break;
     case 'stop':
-      await page.locator(testSelectors.streamStopButton).nth(row).click({timeout: 20_000});
+      await page.locator(testSelectors.streamStopButton).nth(0).click({timeout: 20_000});
       // eslint-disable-next-line no-promise-executor-return
       await new Promise((rs) => setTimeout(rs, 500));
       await page.locator(testSelectors.streamModalStopButton).click({timeout: 20_000});
