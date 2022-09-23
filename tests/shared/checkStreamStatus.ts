@@ -10,3 +10,10 @@ export async function checkStreamStatus(value: string, comment: string, page: Pa
   console.log('alt', alt);
   if (alt !== value) throw Error(`expect alt to be "${value}" got "${alt}"`);
 }
+
+export async function checkStreamLocked(comment: string, page: Page) {
+  console.log('isStreamLocked', comment);
+  const row = await findRowByComment(comment, page);
+  const receiverText = await page.locator(testSelectors.streamListReceiver).nth(row).innerText();
+  if (!receiverText.includes('Locked')) throw Error(`expect stream "${comment}" to be locked`);
+}
