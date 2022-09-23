@@ -41,7 +41,11 @@ const StreamNameLink = memo(({streamId}: {streamId: string}) => {
     defaultValue: streamCardDataDefaults,
   });
   return (
-    <Link to={streamPageLink} className={cn(styles.nameCell)}>
+    <Link
+      to={streamPageLink}
+      className={cn(styles.nameCell)}
+      data-testid={testIds.streamListReceiver}
+    >
       <span className={styles.nameText}>{name}</span>
 
       {isLocked && (
