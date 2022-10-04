@@ -1,5 +1,6 @@
 import {Page} from '@playwright/test';
 
+import {testSelectors} from '../../src/shared/constants';
 import {HomePage} from '../pages/home.page';
 // import {NearWallet} from '../page-objects/near-wallet';
 import {LoginPage} from '../pages/login.page';
@@ -20,5 +21,40 @@ export async function login(page: Page) {
 
   // const streamsPage = new MyStreamsPage(page);
   await Promise.all([page.waitForNavigation()]);
+  // await streamsPage.checkPage();
+}
+
+export async function login2(page: Page, phrase: string) {
+  if ((await page.locator(testSelectors.signOutButton).count()) > 0) {
+    await page.locator(testSelectors.signOutButton).click();
+  }
+  const homePage = new HomePage(page);
+
+  await homePage.visit();
+  await homePage.checkPage();
+  await homePage.goToSignIn();
+
+  const signPage = new LoginPage(page);
+  await Promise.all([page.waitForNavigation(), signPage.checkIsRedirectedToNear()]);
+
+  // await signPage.loginNearAuthentificated();
+  // await signPage.loginToNear();
+  // await signPage.loginToNear();
+
+  await Promise.all([page.waitForNavigation(), signPage.importExistingAccount()]);
+
+  // await signPage.chooseFirstAccount();
+  // await signPage.submitButton();
+
+  await Promise.all([page.waitForNavigation(), signPage.recoverAccount()]);
+
+  await Promise.all([page.waitForNavigation(), signPage.inputPassphrase(phrase)]);
+
+  signPage.pressNext();
+  signPage.pressNext();
+  page.waitForNavigation();
+
+  // const streamsPage = new MyStreamsPage(page);
+  // await Promise.all([page.waitForNavigation()]);
   // await streamsPage.checkPage();
 }

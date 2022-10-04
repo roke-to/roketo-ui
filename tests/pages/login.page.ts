@@ -1,4 +1,5 @@
 import {expect, Page} from '@playwright/test';
+import {text} from 'stream/consumers';
 
 import rec from '../fixtures/rec.json';
 import {createTestAccount} from '../shared/createTestAccount';
@@ -58,12 +59,17 @@ export class LoginPage {
   }
 
   async importExistingAccount() {
-    const buttonImportAccount = await this.page.locator('button', {
-      hasText: 'Import a Different Account',
-    });
-    if ((await buttonImportAccount.count()) > 0) {
-      // cy.get('.account-selector > .gray-blue').click({force: true});
-      this.page.locator('.account-selector > .gray-blue').click({timeout: 200000});
+    // const orderSent = this.page.locator('.buttons > .link');
+    // await orderSent.waitFor();
+
+    // const buttonImportAccount = await this.page.locator('button', {
+    //   hasText: 'Import a Different Account',
+    // });
+    // console.log(await buttonImportAccount.count());
+    // if (await buttonImportAccount.count() > 0) {
+    console.log(await this.page.locator('.account-selector > .gray-blue').count());
+    if ((await this.page.locator('.account-selector > .gray-blue').count()) > 0) {
+      await this.page.locator('.account-selector > .gray-blue').click({timeout: 200000});
     } else {
       await this.page.locator('.buttons > .link').click({timeout: 200000});
       // cy.get('.buttons > .link').click({force: true});

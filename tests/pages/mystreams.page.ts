@@ -2,6 +2,8 @@ import {expect, Page} from '@playwright/test';
 
 import {testSelectors} from '../../src/shared/constants';
 import {TransactionPage} from '../pages/transaction.page';
+// import { findRowByComment } from 'tests/shared/findRowByComment';
+import {findRowByComment} from '../shared/findRowByComment';
 
 export class MyStreamsPage {
   readonly page: Page;
@@ -91,28 +93,44 @@ export class MyStreamsPage {
     }
   }
 
-  async waitUntilDue() {
-    await expect(this.page.locator(testSelectors.streamProgressCaption).nth(0)).toHaveText(
+  async waitUntilDue(comment: string, page: Page) {
+    let index = await findRowByComment(comment, page);
+    expect(await this.page.locator('[data-testid="streamProgressCaption"]').nth(index)).toHaveText(
       '-0.1 of 0.1',
+      {timeout: 120000},
     );
+    // await expect(this.page.locator(testSelectors.streamProgressCaption).nth(0)).toHaveText(
+    //   '-0.1 of 0.1',
+    // );
     // RegExp to catch "1 of 1" only and not "0.251 of 1". Move all received tokens to your wallet.You have nothing to withdraw
     // cy.get(testSelectors.streamProgressCaption)
     //   .eq(0)
     //   .contains(/\b1 of 1\b/, {timeout: 60000});
   }
 
-  async checkIfLastStreamLocked() {
-    await expect(this.page.locator(testSelectors.streamControlsDropdown)).toHaveCount(0);
-    expect(await this.page.locator('span:has-text("Locked")')).not.toHaveCount(0);
+  async checkIfLastStreamLocked(comment: string, page: Page) {
+    let index = await findRowByComment(comment, page);
+    expect(await this.page.locator('[data-testid="streamListReceiver"]').nth(index)).toHaveText(
+      'Locked',
+    );
+    // await expect(this.page.locator(testSelectors.streamControlsDropdown)).toHaveCount(0);
+    // expect(await this.page.locator('span:has-text("Locked")')).not.toHaveCount(0);
   }
 
-  async withdrawFirst() {
-    await this.page.locator(testSelectors.streamControlsDropdown).nth(0).click();
-    await this.page.locator(testSelectors.withdrawButton).nth(0).click();
+  async withdrawFirst(comment: string, page: Page) {
+    let index = await findRowByComment(comment, page);
+    await this.page.locator(testSelectors.streamControlsDropdown).nth(index).click();
+    await this.page.locator(testSelectors.withdrawButton).nth(index).click();
+    // await this.page.locator(testSelectors.streamControlsDropdown).nth(0).click();
+    // await this.page.locator(testSelectors.withdrawButton).nth(0).click();
     const transaction = new TransactionPage(this.page);
     //transaction.checkPage();
     await transaction.approve();
     await expect(this.page).toHaveURL(new RegExp('^http://localhost:3000/#/streams'));
+    // expect(await this.page.locator('[data-testid="streamListReceiver"]').nth(index)).toHaveCount(0);
+    await expect(page.locator(testSelectors.streamListCommentCell).nth(index)).not.toContainText(
+      comment,
+    );
   }
 
   async addFunds(value: string) {

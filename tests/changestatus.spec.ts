@@ -7,16 +7,18 @@ import {CreateStreamPage} from '../tests/pages/createstream.page';
 import {MyStreamsPage} from '../tests/pages/mystreams.page';
 import {NotificationPage} from '../tests/pages/notification.page';
 import {TransactionPage} from '../tests/pages/transaction.page';
+import {accountId, seedPhrase} from './fixtures/rec.json';
 import {changeStreamStatus} from './shared/changeStreamStatus';
 import {checkStreamStatus} from './shared/checkStreamStatus';
 import {createCustomStream, createstream} from './shared/createstream';
-import {login} from './shared/login';
+import {login, login2} from './shared/login';
 
 let page: Page; //create variable with page
 test.beforeAll(async ({browser}) => {
   page = await browser.newPage(); //Create a new Page instance
   await login(page);
 });
+
 test('Create uneditable stream', async ({accountId}) => {
   //   login(account.seedPhrase);
   // await login(page);
@@ -29,7 +31,7 @@ test('Create uneditable stream', async ({accountId}) => {
     uneditable: true,
   });
   const mystreams = new MyStreamsPage(page);
-  await mystreams.checkIfLastStreamLocked();
+  await mystreams.checkIfLastStreamLocked(comment, page);
 });
 
 test('Create a delayed stream', async ({accountId}) => {
@@ -107,7 +109,7 @@ test('stop stream', async ({accountId}) => {
   await mystreams.checkStreamDoesntExist();
 });
 
-test('withdraw all before test', async ({accountId}) => {
+test('withdraw all', async ({accountId}) => {
   // await login(page);
   const mystreams = new MyStreamsPage(page);
   await mystreams.withdraw();
@@ -115,28 +117,37 @@ test('withdraw all before test', async ({accountId}) => {
   await mystreams.checkwithdraw(SHOULD_BE_EMPTY);
 });
 
-testReceiver('create stream', async ({accountRecId}) => {
+testReceiver('withdraw local', async ({accountRecId}) => {
   // await login(page);
-  await createstream(page, 'pw7.testnet', 'short');
+  const comment = createComment('not empty withdraw');
+  const receiver = 'pw6.testnet';
+  const deposit = '0.1';
+  await createCustomStream({
+    page,
+    receiver: receiver,
+    comment,
+    deposit: deposit,
+    period: {mins: '1'},
+  });
+
+  // await createstream(page, 'pw7.testnet', 'short');
   const mystreams = new MyStreamsPage(page);
   await mystreams.checkNewStreamStatus('Active');
-});
 
-test('not empty withdraw', async ({accountId}) => {
-  // await login(page);
-  const mystreams = new MyStreamsPage(page);
-  const SHOULD_NOT_BE_EMPTY = false;
+  await login2(page, seedPhrase); //login as receiver
+  // const mystreams = new MyStreamsPage(page);
+  const SHOULD_NOT_BE_EMPTY = true;
   await mystreams.checkwithdraw(SHOULD_NOT_BE_EMPTY);
-  await mystreams.waitUntilDue();
-  await mystreams.withdrawFirst();
+  await mystreams.waitUntilDue(comment, page);
+  await mystreams.withdrawFirst(comment, page);
 });
 
-test('empty withdraw', async ({accountId}) => {
-  // await login(page);
-  const mystreams = new MyStreamsPage(page);
-  const SHOULD_BE_EMPTY = true;
-  await mystreams.checkwithdraw(SHOULD_BE_EMPTY);
-});
+// test('empty withdraw', async ({accountId}) => {
+//   // await login(page);
+//   const mystreams = new MyStreamsPage(page);
+//   const SHOULD_BE_EMPTY = true;
+//   await mystreams.checkwithdraw(SHOULD_BE_EMPTY);
+// });
 
 test('run stream', async ({accountId}) => {
   //cy.viewport(1536, 960);
