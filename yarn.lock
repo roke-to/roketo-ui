@@ -1565,6 +1565,13 @@
   dependencies:
     rxjs "^7.5.5"
 
+"@near-wallet-selector/core@6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@near-wallet-selector/core/-/core-6.0.1.tgz#6e3bbbfc90be07be495b15b4d565fba01cf36101"
+  integrity sha512-MXxu3KA8tCoZ9ws48cN3iykFB8lbLMGW4Juy9TpgGcMZKNg6M0cAxD0fztpzYbpwj3+7m6/uxUv+5fyr19ED+g==
+  dependencies:
+    rxjs "^7.5.5"
+
 "@near-wallet-selector/my-near-wallet@6.0.0", "@near-wallet-selector/my-near-wallet@^6.0.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@near-wallet-selector/my-near-wallet/-/my-near-wallet-6.0.0.tgz#363b11184c2a60a7c4e00a2b0289176343860c68"
@@ -1595,6 +1602,14 @@
   integrity sha512-si2d7e6aKePJJDuh+Bmln0x6CHarePeZFBpMyXV/3JbyY4xHROhAh/NU77Bb/CE5N6JzG6r69qivHkJugTcVOA==
   dependencies:
     "@near-wallet-selector/core" "6.0.0"
+    bn.js "^5.2.0"
+
+"@near-wallet-selector/wallet-utils@^6.0.0":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@near-wallet-selector/wallet-utils/-/wallet-utils-6.0.1.tgz#fbf5f7e3b96454c3423f7914b681ca3498a90cbb"
+  integrity sha512-kSRhA4bcc8cSo4KxxdMgrvGIPhYKUYhTwww5NdOPa4qwuRBr5a8CVyIwRbZ8JH0OEMefPrMjOLv4vAJ4YQrwfg==
+  dependencies:
+    "@near-wallet-selector/core" "6.0.1"
     bn.js "^5.2.0"
 
 "@nodelib/fs.scandir@2.1.5":
