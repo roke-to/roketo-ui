@@ -1589,7 +1589,7 @@
     "@near-wallet-selector/core" "6.0.0"
     is-mobile "^3.1.1"
 
-"@near-wallet-selector/wallet-utils@6.0.0", "@near-wallet-selector/wallet-utils@^6.0.0":
+"@near-wallet-selector/wallet-utils@6.0.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@near-wallet-selector/wallet-utils/-/wallet-utils-6.0.0.tgz#d521eb66c6d8ad978e5dd911eac82f1a47e8d606"
   integrity sha512-si2d7e6aKePJJDuh+Bmln0x6CHarePeZFBpMyXV/3JbyY4xHROhAh/NU77Bb/CE5N6JzG6r69qivHkJugTcVOA==
