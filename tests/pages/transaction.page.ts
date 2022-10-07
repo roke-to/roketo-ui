@@ -10,7 +10,7 @@ export class TransactionPage {
   }
 
   async approve() {
-    await this.page.locator('.button-group > .blue').click({timeout: 20000});
+    await this.page.locator('.button-group > .blue').click({timeout: 60000});
     //add TImeout
     // await expect(this.page.locator('button', {hasText: 'Sending'})).toHaveCount(0);
     //cy.contains('Sending', {timeout: 60000}).should('not.exist');

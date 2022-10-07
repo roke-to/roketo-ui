@@ -67,9 +67,17 @@ export class LoginPage {
     // });
     // console.log(await buttonImportAccount.count());
     // if (await buttonImportAccount.count() > 0) {
-    console.log(await this.page.locator('.account-selector > .gray-blue').count());
-    if ((await this.page.locator('.account-selector > .gray-blue').count()) > 0) {
-      await this.page.locator('.account-selector > .gray-blue').click({timeout: 200000});
+    await this.page.waitForTimeout(5000);
+
+    console.log('1 ' + (await this.page.locator('.account-selector > button').count()));
+    console.log('2 ' + (await this.page.locator('.buttons > .link').count()));
+    console.log('3 ' + (await this.page.locator('.account-selector > gray-blue').count()));
+    console.log(
+      '4 ' + (await this.page.locator('button:has-text("Import a Different Account")').count()),
+    );
+    // console.log("5"+await this.page.locator('.account-selector > button').count());
+    if ((await this.page.locator('.account-selector > button').count()) > 0) {
+      await this.page.locator('.account-selector > gray-blue').click({timeout: 200000});
     } else {
       await this.page.locator('.buttons > .link').click({timeout: 200000});
       // cy.get('.buttons > .link').click({force: true});
