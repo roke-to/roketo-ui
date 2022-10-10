@@ -58,3 +58,24 @@ export async function login2(page: Page, phrase: string) {
   // await Promise.all([page.waitForNavigation()]);
   // await streamsPage.checkPage();
 }
+
+export async function login3(page: Page) {
+  if ((await page.locator(testSelectors.signOutButton).count()) > 0) {
+    await page.locator(testSelectors.signOutButton).click();
+  }
+
+  const homePage = new HomePage(page);
+
+  await homePage.visit();
+  await homePage.checkPage();
+  await homePage.goToSignIn();
+
+  const signPage = new LoginPage(page);
+  await Promise.all([page.waitForNavigation(), signPage.checkIsRedirectedToNear()]);
+  await signPage.loginNearAuthentificatedReceiver();
+  // await signPage.loginToNear();
+
+  // const streamsPage = new MyStreamsPage(page);
+  await Promise.all([page.waitForNavigation()]);
+  // await streamsPage.checkPage();
+}

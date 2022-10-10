@@ -62,25 +62,17 @@ export class LoginPage {
     // const orderSent = this.page.locator('.buttons > .link');
     // await orderSent.waitFor();
 
-    // const buttonImportAccount = await this.page.locator('button', {
-    //   hasText: 'Import a Different Account',
-    // });
+    const buttonImportAccount = await this.page.locator('button', {
+      hasText: 'Import a Different Account',
+    });
     // console.log(await buttonImportAccount.count());
-    // if (await buttonImportAccount.count() > 0) {
     await this.page.waitForTimeout(5000);
-
-    console.log('1 ' + (await this.page.locator('.account-selector > button').count()));
-    console.log('2 ' + (await this.page.locator('.buttons > .link').count()));
-    console.log('3 ' + (await this.page.locator('.account-selector > gray-blue').count()));
-    console.log(
-      '4 ' + (await this.page.locator('button:has-text("Import a Different Account")').count()),
-    );
-    // console.log("5"+await this.page.locator('.account-selector > button').count());
-    if ((await this.page.locator('.account-selector > button').count()) > 0) {
-      await this.page.locator('.account-selector > gray-blue').click({timeout: 200000});
+    if ((await buttonImportAccount.count()) > 0) {
+      await buttonImportAccount.click({timeout: 200000});
     } else {
-      await this.page.locator('.buttons > .link').click({timeout: 200000});
+      await this.page.locator('.buttons > .link').click({timeout: 2000000});
       // cy.get('.buttons > .link').click({force: true});
+      await Promise.all([this.page.waitForNavigation()]);
     }
   }
 
@@ -107,6 +99,12 @@ export class LoginPage {
   //   }
 
   async chooseFirstAccount() {
+    await this.page.locator('.account-id:has-text("pw7.testnet")').click();
+    await this.page.locator(this.elements.commonSubmitButton).click();
+  }
+  async chooseSecondAccount() {
+    // this.page.locator('.accounts > div').nth(2).click();
+    await this.page.locator('.account-id:has-text("pw6.testnet")').click();
     await this.page.locator(this.elements.commonSubmitButton).click();
   }
 
@@ -118,9 +116,31 @@ export class LoginPage {
     const buttonImportAccount = await this.page.locator('button', {
       hasText: 'Import a Different Account',
     });
+    await this.page.waitForTimeout(5000);
     if ((await this.page.locator(this.elements.commonSubmitButton).count()) > 0) {
       // cy.get('.account-selector > .gray-blue').click({force: true});
+
       await this.chooseFirstAccount();
+      await this.submitButton();
+    } else {
+      await this.page.locator('.buttons > .link').click({timeout: 200000});
+      await this.recoverAccount();
+      await this.inputPassphrase(rec.seedPhrase);
+      // await this.chooseFirstAccount();
+      await this.submitButton();
+      await this.submitButton();
+      // cy.get('.buttons > .link').click({force: true});
+    }
+  }
+
+  async loginNearAuthentificatedReceiver() {
+    const buttonImportAccount = await this.page.locator('button', {
+      hasText: 'Import a Different Account',
+    });
+    await this.page.waitForTimeout(5000);
+    if ((await this.page.locator(this.elements.commonSubmitButton).count()) > 0) {
+      // cy.get('.account-selector > .gray-blue').click({force: true});
+      await this.chooseSecondAccount();
       await this.submitButton();
     } else {
       await this.page.locator('.buttons > .link').click({timeout: 200000});

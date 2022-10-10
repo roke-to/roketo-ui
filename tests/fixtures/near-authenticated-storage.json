@@ -6,7 +6,7 @@
       "localStorage": [
         {
           "name": "_4:wallet:accounts_v2",
-          "value": "{\"pw7.testnet\":true}"
+          "value": "{\"pw7.testnet\":true, \"pw6.testnet\":true}"
         },
         {
           "name": "languageCode",
@@ -23,6 +23,14 @@
         {
           "name": "wallet.account:pw7.testnet:default:confirmed",
           "value": "true"
+        },
+        {
+          "name": "wallet.account:pw6.testnet:default:confirmed",
+          "value": "true"
+        },
+        {
+          "name": "nearlib:keystore:pw6.testnet:default",
+          "value": "ed25519:5Tjt6s8HonVBZu6ULX4SZytaJRmSqmicrSb1Gnt92iqHqeg665W4KTfJ7epQeMGUvGfzN2gWeDkJJt7evjU7bz6c"
         }
       ]
     }

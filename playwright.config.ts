@@ -49,6 +49,7 @@ const config: PlaywrightTestConfig = {
     headless: yn(process.env.E2E_HEADLESS),
     screenshot: 'only-on-failure',
     video: 'retry-with-video',
+    // video: 'on',
   },
 
   /* Configure projects for major browsers */
@@ -69,12 +70,12 @@ const config: PlaywrightTestConfig = {
           },
         },
 
-        // {
-        //   name: 'firefox',
-        //   use: {
-        //     ...devices['Desktop Firefox'],
-        //   },
-        // },
+        {
+          name: 'firefox',
+          use: {
+            ...devices['Desktop Firefox'],
+          },
+        },
 
         // {
         //   name: 'webkit',
@@ -116,11 +117,11 @@ const config: PlaywrightTestConfig = {
   outputDir: 'test-results/',
 
   /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'yarn start',
-  //   port: 3000,
-  //   reuseExistingServer: true,
-  // },
+  webServer: {
+    command: 'yarn start',
+    port: 3000,
+    reuseExistingServer: true,
+  },
 };
 
 // ts-unused-exports:disable-next-line
