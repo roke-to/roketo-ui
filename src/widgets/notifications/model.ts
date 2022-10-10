@@ -4,7 +4,7 @@ import {generatePath} from 'react-router-dom';
 
 import {$notifications} from '~/entities/wallet';
 
-import {notificationsApiClient} from '~/shared/api/roketo-client';
+import {ecoApi} from '~/shared/api/eco';
 import {ROUTES_MAP} from '~/shared/lib/routing';
 
 export const $panelIsVisible = createStore(false);
@@ -14,12 +14,13 @@ export const $notificationsContent = $notifications.map(
   (items) =>
     items?.map((notification) => {
       // eslint-disable-next-line no-nested-ternary
-      const dateText = isToday(notification.createdAt)
+      const createdDate = new Date(notification.createdAt);
+      const dateText = isToday(createdDate)
         ? ''
-        : isYesterday(notification.createdAt)
+        : isYesterday(createdDate)
         ? 'Yesterday'
-        : format(notification.createdAt, 'PP');
-      const timeText = format(new Date(notification.createdAt), 'HH:mm');
+        : format(createdDate, 'PP');
+      const timeText = format(createdDate, 'HH:mm');
       return {
         notification,
         link: generatePath(ROUTES_MAP.stream.path, {
@@ -37,7 +38,7 @@ const markAllReadFx = attach({
   source: $notifications,
   async effect(notifications) {
     if (notifications) {
-      await notificationsApiClient.markAllRead();
+      await ecoApi.notifications.markAllRead().then((response) => response.data);
     }
   },
 });

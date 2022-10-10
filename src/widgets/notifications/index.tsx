@@ -1,4 +1,3 @@
-import type {Notification, NotificationTypeEnum as NotificationType} from '@roketo/api-client';
 import {calculateTimeLeft, getStreamProgress} from '@roketo/sdk';
 import type {RoketoStream} from '@roketo/sdk/dist/types';
 import classNames from 'classnames';
@@ -9,6 +8,7 @@ import {Link} from 'react-router-dom';
 import {blurGate} from '~/entities/blur';
 import {$notifications} from '~/entities/wallet';
 
+import type {Notification} from '~/shared/api/eco/generated/eco-api';
 import {formatAmount} from '~/shared/api/token-formatter';
 import {testIds} from '~/shared/constants';
 import {useGetStreamDirection} from '~/shared/hooks/useGetStreamDirection';
@@ -35,7 +35,7 @@ import {
 } from './model';
 import styles from './styles.module.scss';
 
-function NotificationIcon({type}: {type: NotificationType}) {
+function NotificationIcon({type}: {type: Notification['type']}) {
   const iconUrls = {
     StreamStarted: streamStartedIcon,
     StreamPaused: streamPausedIcon,
@@ -223,6 +223,7 @@ export function Notifications({arrowClassName}: NotificationsProps) {
   const compact = useMediaQuery('(max-width: 767px)');
   const initialLoading = useStoreMap($notifications, (notifications) => notifications === null);
   const hasNotifications = useStoreMap($notifications, (items) => Boolean(items?.length));
+
   useGate(blurGate, {
     modalId: 'notifications',
     active: compact && isPanelVisible,

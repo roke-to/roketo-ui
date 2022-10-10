@@ -1,5 +1,4 @@
 import {ModuleState, WalletSelector, WalletSelectorState} from '@near-wallet-selector/core';
-import type {Notification, UpdateUserDto, User} from '@roketo/api-client';
 import {
   createRichContracts,
   getDao,
@@ -18,9 +17,11 @@ import {attach, createEffect, createEvent, createStore, sample} from 'effector';
 import {ConnectedWalletAccount, Near} from 'near-api-js';
 import {Get} from 'type-fest';
 
+import {ecoApi} from '~/shared/api/eco';
+import type {Notification, UpdateUserDto, User} from '~/shared/api/eco/generated/eco-api';
 import {createNearInstance, createWalletSelectorInstance} from '~/shared/api/near';
 import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
-import {notificationsApiClient, tokenProvider, usersApiClient} from '~/shared/api/roketo-client';
+import {tokenProvider} from '~/shared/api/roketo-client';
 import {env} from '~/shared/config';
 import {getChangedFields} from '~/shared/lib/changeDetection';
 
@@ -84,7 +85,7 @@ export const $notifications = createStore<Notification[] | null>(null);
 
 // eslint-disable-next-line arrow-body-style
 const getUserFx = createEffect(async (accountId: string) => {
-  return retry(() => usersApiClient.findOne(accountId));
+  return retry(() => ecoApi.users.findOne(accountId).then((response) => response.data));
 });
 
 const KNOWN_NOTIFICATION_TYPES = new Set([
@@ -99,9 +100,9 @@ const KNOWN_NOTIFICATION_TYPES = new Set([
 // eslint-disable-next-line arrow-body-style
 const getNotificationsFx = createEffect(async () => {
   return retry(async () => {
-    const allNotifications = await notificationsApiClient.findAll();
+    const allNotifications = await ecoApi.notifications.findAll().then((response) => response.data);
 
-    return allNotifications.filter((notification) =>
+    return allNotifications.filter((notification: Notification) =>
       KNOWN_NOTIFICATION_TYPES.has(notification.type),
     );
   });
@@ -114,7 +115,7 @@ export const updateUserFx = attach({
       const updateUserDto: Partial<UpdateUserDto> = getChangedFields(nextUser, user);
 
       if (Object.keys(updateUserDto).length !== 0) {
-        return usersApiClient.update(accountId, updateUserDto);
+        return ecoApi.users.update(accountId, updateUserDto).then((response) => response.data);
       }
     }
   },
@@ -124,7 +125,7 @@ export const resendVerificationEmailFx = attach({
   source: $accountId,
   async effect(accountId) {
     if (accountId) {
-      return usersApiClient.resendVerificationEmail(accountId);
+      return ecoApi.users.resendVerificationEmail(accountId).then((response) => response.data);
     }
   },
 });

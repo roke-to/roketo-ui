@@ -1,26 +1,15 @@
-import {
-  AuthApi,
-  createConfiguration,
-  LoginDto,
-  NotificationsApi,
-  ServerConfiguration,
-  UsersApi,
-} from '@roketo/api-client';
 import {WalletConnection} from 'near-api-js';
 
 import {env} from '~/shared/config';
 import {MAGIC_WALLET_SELECTOR_APP_NAME} from '~/shared/constants';
 
+import {Api as EcoApi, LoginDto} from './eco/generated/eco-api';
 import {createNearInstance} from './near';
 
-const serverConfig = {baseServer: new ServerConfiguration(env.WEB_API_URL, {})};
-
-class TokenProvider {
+export class TokenProvider {
   private initialized: boolean = false;
 
   private token: null | Promise<string> = null;
-
-  private readonly authApiClient = new AuthApi(createConfiguration({...serverConfig}));
 
   getToken() {
     if (!this.token) {
@@ -36,6 +25,10 @@ class TokenProvider {
 
   private async getRefreshedToken(): Promise<string> {
     try {
+      const authApiClient = new EcoApi({
+        baseUrl: env.WEB_API_URL,
+      });
+
       const {accountId} = await this.getAccountIdAndNear();
 
       const ROKETO_API_ACCESS_TOKEN_KEY_PREFIX = 'roketoApiAccessToken';
@@ -56,7 +49,9 @@ class TokenProvider {
 
       const loginParams = await this.generateLoginParams();
 
-      const {accessToken} = await this.authApiClient.login(loginParams);
+      const {accessToken} = await authApiClient.auth
+        .login(loginParams)
+        .then((response) => response.data);
 
       localStorage[key] = accessToken;
 
@@ -101,12 +96,3 @@ class TokenProvider {
 }
 
 export const tokenProvider = new TokenProvider();
-
-const apiConfig = createConfiguration({
-  ...serverConfig,
-  authMethods: {bearer: {tokenProvider}},
-});
-
-export const usersApiClient = new UsersApi(apiConfig);
-
-export const notificationsApiClient = new NotificationsApi(apiConfig);
