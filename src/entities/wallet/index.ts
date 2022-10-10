@@ -25,7 +25,7 @@ import {tokenProvider} from '~/shared/api/roketo-client';
 import {env} from '~/shared/config';
 import {getChangedFields} from '~/shared/lib/changeDetection';
 
-export type WalletId = 'sender' | 'my-near' | 'near';
+import {$walletSelector} from './selector';
 
 async function retry<T>(cb: () => Promise<T>) {
   const retryCount = 3;
@@ -51,7 +51,7 @@ export const initWallets = createEvent();
 export const $nearWallet = createStore<null | {
   near: Near;
   auth: NearAuth;
-  WalletId: WalletId | 'any';
+  WalletId: string;
 }>(null);
 export const $roketoWallet = createStore<null | ApiControl>(null);
 export const $tokens = createStore<Record<string, RichToken>>({});
@@ -132,7 +132,6 @@ export const resendVerificationEmailFx = attach({
 
 export const lastCreatedStreamUpdated = createEvent<string>();
 
-const $walletSelector = createStore<WalletSelector | null>(null);
 export const $walletSelectorState = createStore<WalletSelectorState>({
   contract: null,
   modules: [],
@@ -194,8 +193,12 @@ export const logoutFx = attach({
   },
 });
 
-const createNearWalletFx = createEffect(async (WalletId: WalletId | 'any' = 'any') => {
-  const {near, auth, WalletId: type} = await createNearInstance(WalletId);
+const createNearWalletFx = createEffect(async (walletSelector: WalletSelector | null) => {
+  if (!walletSelector) {
+    throw new Error('There should be non-null walletSelector at this point.');
+  }
+
+  const {near, auth, WalletId: type} = await createNearInstance(walletSelector);
   return {near, auth, WalletId: type};
 });
 const createRoketoWalletFx = createEffect(
@@ -374,7 +377,7 @@ sample({
 });
 
 sample({
-  clock: initWallets,
+  clock: $walletSelector,
   target: createNearWalletFx,
 });
 sample({

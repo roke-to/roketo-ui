@@ -1,5 +1,7 @@
 import {WalletConnection} from 'near-api-js';
 
+import {$walletSelector} from '~/entities/wallet/selector';
+
 import {env} from '~/shared/config';
 import {MAGIC_WALLET_SELECTOR_APP_NAME} from '~/shared/constants';
 
@@ -65,7 +67,13 @@ export class TokenProvider {
   }
 
   private async getAccountIdAndNear() {
-    const {near} = await createNearInstance();
+    const walletSelector = $walletSelector.getState();
+
+    if (!walletSelector) {
+      throw new Error('There should be non-null walletSelector at this point.');
+    }
+
+    const {near} = await createNearInstance(walletSelector);
     const walletConnection = new WalletConnection(near, MAGIC_WALLET_SELECTOR_APP_NAME);
     const accountId = walletConnection.getAccountId();
 
