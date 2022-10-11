@@ -67,14 +67,34 @@ export interface UpdateUserDto {
   allowNotifications?: boolean;
 }
 
+export interface RoketoStream {
+  amount_to_push: string;
+  balance: string;
+  cliff?: number;
+  creator_id: string;
+  description: string;
+  id: string;
+  is_expirable: boolean;
+  is_locked: boolean;
+  last_action: number;
+  owner_id: string;
+  receiver_id: string;
+  status: object;
+  timestamp_created: number;
+  token_account_id: string;
+  tokens_per_sec: string;
+  tokens_total_withdrawn: string;
+  wasDue?: boolean;
+  hasPassedCliff?: boolean;
+}
+
 export interface Notification {
   id: string;
   accountId: string;
   streamId: string;
 
   /** @format date-time */
-  // createdAt: string; // ------------------
-  createdAt: Date | number;
+  createdAt: string;
   isRead: boolean;
   type:
     | 'StreamStarted'
@@ -84,11 +104,7 @@ export interface Notification {
     | 'StreamContinued'
     | 'StreamCliffPassed'
     | 'StreamFundsAdded';
-  // payload: object; // ------------------
-  payload: {
-    stream: any;
-    fundsAdded?: any;
-  };
+  payload: {stream: RoketoStream; fundsAdded?: string};
 }
 
 export interface ArchivedStream {
@@ -101,11 +117,7 @@ export interface ArchivedStream {
 
   /** @format date-time */
   finishedAt: string;
-  // payload: object; // ------------------
-  payload: {
-    stream: any;
-    fundsAdded?: any;
-  };
+  payload: {stream: RoketoStream};
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -274,7 +286,7 @@ export class HttpClient<SecurityDataType = unknown> {
     baseUrl,
     cancelToken,
     ...params
-  }: FullRequestParams): Promise<HttpResponse<T, E>> => {
+  }: FullRequestParams): Promise<T> => {
     const secureParams =
       ((typeof secure === 'boolean' ? secure : this.baseApiParams.secure) &&
         this.securityWorker &&
@@ -322,7 +334,7 @@ export class HttpClient<SecurityDataType = unknown> {
       }
 
       if (!response.ok) throw data;
-      return data;
+      return data.data;
     });
   };
 }
