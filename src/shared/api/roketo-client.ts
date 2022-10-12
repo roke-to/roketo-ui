@@ -51,9 +51,7 @@ export class TokenProvider {
 
       const loginParams = await this.generateLoginParams();
 
-      const {accessToken} = await authApiClient.auth
-        .login(loginParams)
-        .then((response) => response.data);
+      const {accessToken} = await authApiClient.auth.login(loginParams);
 
       localStorage[key] = accessToken;
 

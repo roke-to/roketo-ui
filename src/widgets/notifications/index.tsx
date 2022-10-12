@@ -1,5 +1,4 @@
 import {calculateTimeLeft, getStreamProgress} from '@roketo/sdk';
-import type {RoketoStream} from '@roketo/sdk/dist/types';
 import classNames from 'classnames';
 import {useGate, useList, useStore, useStoreMap} from 'effector-react';
 import React from 'react';
@@ -57,7 +56,7 @@ function SecondaryText({children}: {children: React.ReactNode}) {
 }
 
 function NotificationBody({notification: {type, payload}}: {notification: Notification}) {
-  const stream: RoketoStream = 'stream' in payload ? payload.stream : payload;
+  const {stream} = payload;
 
   const direction = useGetStreamDirection(stream);
   const timeLeft = calculateTimeLeft(stream, stream.last_action);

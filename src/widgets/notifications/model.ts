@@ -38,7 +38,7 @@ const markAllReadFx = attach({
   source: $notifications,
   async effect(notifications) {
     if (notifications) {
-      await ecoApi.notifications.markAllRead().then((response) => response.data);
+      await ecoApi.notifications.markAllRead();
     }
   },
 });

@@ -85,7 +85,7 @@ export const $notifications = createStore<Notification[] | null>(null);
 
 // eslint-disable-next-line arrow-body-style
 const getUserFx = createEffect(async (accountId: string) => {
-  return retry(() => ecoApi.users.findOne(accountId).then((response) => response.data));
+  return retry(() => ecoApi.users.findOne(accountId));
 });
 
 const KNOWN_NOTIFICATION_TYPES = new Set([
@@ -100,7 +100,7 @@ const KNOWN_NOTIFICATION_TYPES = new Set([
 // eslint-disable-next-line arrow-body-style
 const getNotificationsFx = createEffect(async () => {
   return retry(async () => {
-    const allNotifications = await ecoApi.notifications.findAll().then((response) => response.data);
+    const allNotifications = await ecoApi.notifications.findAll();
 
     return allNotifications.filter((notification: Notification) =>
       KNOWN_NOTIFICATION_TYPES.has(notification.type),
@@ -115,7 +115,7 @@ export const updateUserFx = attach({
       const updateUserDto: Partial<UpdateUserDto> = getChangedFields(nextUser, user);
 
       if (Object.keys(updateUserDto).length !== 0) {
-        return ecoApi.users.update(accountId, updateUserDto).then((response) => response.data);
+        return ecoApi.users.update(accountId, updateUserDto);
       }
     }
   },
@@ -125,7 +125,7 @@ export const resendVerificationEmailFx = attach({
   source: $accountId,
   async effect(accountId) {
     if (accountId) {
-      return ecoApi.users.resendVerificationEmail(accountId).then((response) => response.data);
+      return ecoApi.users.resendVerificationEmail(accountId);
     }
   },
 });
