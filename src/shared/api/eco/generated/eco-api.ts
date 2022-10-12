@@ -79,13 +79,7 @@ export interface RoketoStream {
   last_action: number;
   owner_id: string;
   receiver_id: string;
-  status:
-    | 'Initialized'
-    | 'Active'
-    | 'Paused'
-    | {
-        Finished: string;
-      };
+  status: 'Initialized' | 'Active' | 'Paused';
   timestamp_created: number;
   token_account_id: string;
   tokens_per_sec: string;

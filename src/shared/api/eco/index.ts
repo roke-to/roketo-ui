@@ -12,6 +12,15 @@ export const ecoApi = new EcoApi({
       Authorization: `Bearer ${await tokenProvider.getToken()}`,
     },
   }),
+  customFetch: async (input: RequestInfo | URL, init?: RequestInit) => {
+    const fetchResult = await fetch(input, init);
+
+    if (fetchResult.status === 401) {
+      await tokenProvider.refreshToken();
+      return fetch(input, init);
+    }
+    return fetchResult;
+  },
 });
 
 export * from './generated/eco-api';
