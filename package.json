@@ -10,7 +10,7 @@
     "start": "vite",
     "build": "vite build",
     "testIds:check": "tsc check-testIds.ts --skipLibCheck --module node16 --outDir testIds && node testIds/check-testIds.js && rm -rf testIds",
-    "test": "cypress run",
+    "test": "yarn playwright test",
     "lint": "eslint -c .eslintrc src --ext .js,.jsx,.ts,.tsx",
     "deploy": "yarn build && gh-pages -d build",
     "preview": "vite preview --port 3000",
