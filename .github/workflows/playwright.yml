@@ -1,8 +1,6 @@
 name: Playwrite
 on:
   push:
-    branches:
-      - master
   pull_request:
   
 concurrency:
