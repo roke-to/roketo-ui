@@ -25,7 +25,7 @@
 name: Playwright Tests
 on: [push]
 jobs:
-  cypress-run:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
