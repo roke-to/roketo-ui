@@ -21,13 +21,23 @@ jobs:
         working-directory: .
         run: yarn testIds:check
 
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
-        with:
-          wait-on-timeout: 120
-          record: false
-          parallel: false
-          start: |
-            yarn build
-            yarn preview
-          wait-on: 'http://localhost:3000'
+      # - name: Cypress run
+      #   uses: cypress-io/github-action@v2
+      #   with:
+      #     wait-on-timeout: 120
+      #     record: false
+      #     parallel: false
+      #     start: |
+      #       yarn build
+      #       yarn preview
+      #     wait-on: 'http://localhost:3000'
+          - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    - name: Run Playwright tests
+      run: yarn playwright test
+    - uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
