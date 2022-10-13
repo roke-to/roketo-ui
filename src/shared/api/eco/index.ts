@@ -17,7 +17,12 @@ export const ecoApi = new EcoApi({
 
     if (fetchResult.status === 401) {
       await tokenProvider.refreshToken();
-      return fetch(input, init);
+
+      const headers = {
+        Authorization: `Bearer ${await tokenProvider.getToken()}`,
+      };
+
+      return fetch(input, {...init, headers});
     }
     return fetchResult;
   },
