@@ -1,26 +1,16 @@
 name: Playwright Tests
 on: [push]
 jobs:
-  playwright-run:
+  test:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - uses: actions/cache@v2
-        id: yarn-cache
-        with:
-          path: 'node_modules'
-          key: node-modules-${{ hashFiles('yarn.lock', 'package.json') }}
-
-      - name: Install deps 🔧
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile --silent
-
-      - name: Check testIds
-        working-directory: .
-        run: yarn testIds:check
-
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14.x'
+    - name: Install dependencies
+      run: yarn
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
@@ -31,5 +21,3 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
-
-
