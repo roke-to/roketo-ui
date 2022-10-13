@@ -108,9 +108,9 @@ export interface Notification {
 }
 
 export interface ArchivedStream {
-  id: string;
   streamId: string;
   accountId: string;
+  receiverId: string;
 
   /** @format date-time */
   startedAt: string;
@@ -531,7 +531,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags archives_streams
+     * @tags archived_streams
      * @name FindArchivedStreams
      * @request GET:/archived_streams
      * @secure
