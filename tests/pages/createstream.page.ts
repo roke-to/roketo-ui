@@ -66,9 +66,7 @@ export class CreateStreamPage {
       .locator('[aria-label="Month"]')
       // .type(currentTimeInMilliseconds.getMonth().toString());
       .type('01');
-    await this.page
-      .locator('[aria-label="Day"]')
-      .type(currentTimeInMilliseconds.getDay().toString());
+    await this.page.locator('[aria-label="Day"]').type('01');
     await this.page
       .locator('[aria-label="Year"]')
       .type((currentTimeInMilliseconds.getFullYear() + 1).toString());
@@ -78,9 +76,7 @@ export class CreateStreamPage {
     await this.page
       .locator('[aria-label="Minute"]')
       .type(currentTimeInMilliseconds.getMinutes().toString());
-    await this.page
-      .locator('[aria-label="Second"]')
-      .type(currentTimeInMilliseconds.getSeconds().toString());
+    await this.page.locator('[aria-label="Second"]').type('00');
     await this.page.locator('[aria-label="Select AM/PM"]').selectOption('am');
   }
 
