@@ -35,20 +35,20 @@ export async function login2(page: Page, phrase: string) {
   await homePage.goToSignIn();
 
   const signPage = new LoginPage(page);
-  await Promise.all([page.waitForNavigation(), signPage.checkIsRedirectedToNear()]);
+  await Promise.all([page.waitForNavigation({timeout: 60000}), signPage.checkIsRedirectedToNear()]);
 
   // await signPage.loginNearAuthentificated();
   // await signPage.loginToNear();
   // await signPage.loginToNear();
 
-  await Promise.all([page.waitForNavigation(), signPage.importExistingAccount()]);
+  await Promise.all([page.waitForNavigation({timeout: 60000}), signPage.importExistingAccount()]);
 
   // await signPage.chooseFirstAccount();
   // await signPage.submitButton();
 
-  await Promise.all([page.waitForNavigation(), signPage.recoverAccount()]);
+  await Promise.all([page.waitForNavigation({timeout: 60000}), signPage.recoverAccount()]);
 
-  await Promise.all([page.waitForNavigation(), signPage.inputPassphrase(phrase)]);
+  await Promise.all([page.waitForNavigation({timeout: 60000}), signPage.inputPassphrase(phrase)]);
 
   signPage.pressNext();
   signPage.pressNext();
@@ -71,11 +71,11 @@ export async function login3(page: Page) {
   await homePage.goToSignIn();
 
   const signPage = new LoginPage(page);
-  await Promise.all([page.waitForNavigation(), signPage.checkIsRedirectedToNear()]);
+  await Promise.all([page.waitForNavigation({timeout: 60000}), signPage.checkIsRedirectedToNear()]);
   await signPage.loginNearAuthentificatedReceiver();
   // await signPage.loginToNear();
 
   // const streamsPage = new MyStreamsPage(page);
-  await Promise.all([page.waitForNavigation()]);
+  await Promise.all([page.waitForNavigation({timeout: 60000})]);
   // await streamsPage.checkPage();
 }
