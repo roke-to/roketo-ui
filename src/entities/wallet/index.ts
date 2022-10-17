@@ -1,5 +1,4 @@
 import {ModuleState, WalletSelector, WalletSelectorState} from '@near-wallet-selector/core';
-import type {Notification, UpdateUserDto, User} from '@roketo/api-client';
 import {
   createRichContracts,
   getDao,
@@ -18,32 +17,14 @@ import {attach, createEffect, createEvent, createStore, sample} from 'effector';
 import {ConnectedWalletAccount, Near} from 'near-api-js';
 import {Get} from 'type-fest';
 
+import {ecoApi} from '~/shared/api/eco';
+import type {Notification, UpdateUserDto, User} from '~/shared/api/eco/generated/eco-api';
 import {createNearInstance, createWalletSelectorInstance} from '~/shared/api/near';
 import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
-import {notificationsApiClient, tokenProvider, usersApiClient} from '~/shared/api/roketo-client';
 import {env} from '~/shared/config';
 import {getChangedFields} from '~/shared/lib/changeDetection';
 
 import {$walletSelector} from './selector';
-
-async function retry<T>(cb: () => Promise<T>) {
-  const retryCount = 3;
-  let error: unknown;
-  for (let i = 0; i <= retryCount; i += 1) {
-    try {
-      if (i > 0) {
-        // eslint-disable-next-line no-await-in-loop
-        await tokenProvider.refreshToken();
-      }
-      // eslint-disable-next-line no-await-in-loop
-      return await cb();
-    } catch (err: any) {
-      if (!err.message.startsWith('HTTP-Code: 401')) throw err;
-      error = err;
-    }
-  }
-  throw error;
-}
 
 export const initWallets = createEvent();
 
@@ -84,7 +65,7 @@ export const $notifications = createStore<Notification[] | null>(null);
 
 // eslint-disable-next-line arrow-body-style
 const getUserFx = createEffect(async (accountId: string) => {
-  return retry(() => usersApiClient.findOne(accountId));
+  return ecoApi.users.findOne(accountId);
 });
 
 const KNOWN_NOTIFICATION_TYPES = new Set([
@@ -98,13 +79,11 @@ const KNOWN_NOTIFICATION_TYPES = new Set([
 ]);
 // eslint-disable-next-line arrow-body-style
 const getNotificationsFx = createEffect(async () => {
-  return retry(async () => {
-    const allNotifications = await notificationsApiClient.findAll();
+  const allNotifications = await ecoApi.notifications.findAll();
 
-    return allNotifications.filter((notification) =>
-      KNOWN_NOTIFICATION_TYPES.has(notification.type),
-    );
-  });
+  return allNotifications.filter((notification: Notification) =>
+    KNOWN_NOTIFICATION_TYPES.has(notification.type),
+  );
 });
 
 export const updateUserFx = attach({
@@ -114,7 +93,7 @@ export const updateUserFx = attach({
       const updateUserDto: Partial<UpdateUserDto> = getChangedFields(nextUser, user);
 
       if (Object.keys(updateUserDto).length !== 0) {
-        return usersApiClient.update(accountId, updateUserDto);
+        return ecoApi.users.update(accountId, updateUserDto);
       }
     }
   },
@@ -124,7 +103,7 @@ export const resendVerificationEmailFx = attach({
   source: $accountId,
   async effect(accountId) {
     if (accountId) {
-      return usersApiClient.resendVerificationEmail(accountId);
+      return ecoApi.users.resendVerificationEmail(accountId);
     }
   },
 });

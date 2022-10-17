@@ -18,7 +18,8 @@
     "prepare": "is-ci || husky install",
     "pretty": "prettier \"./**/**.{ts,tsx,js,jsx,mjs,cjs,css,scss,sass,md,*.json,.prettierrc,.lintstagedrc,.babelrc,.eslintrc,*.webmanifest}\"",
     "format": "yarn pretty --write",
-    "format:check": "yarn pretty --check"
+    "format:check": "yarn pretty --check",
+    "generate:eco-api": "swagger-typescript-api --path $(./get-dotenv.js VITE_WEB_API_URL)/api-json --output src/shared/api/eco/generated --name eco-api.ts --responses --unwrap-response-data"
   },
   "dependencies": {
     "@effector/reflect": "^8.0.0",
@@ -26,12 +27,12 @@
     "@near-wallet-selector/my-near-wallet": "^6.0.0",
     "@near-wallet-selector/near-wallet": "^6.0.0",
     "@near-wallet-selector/sender": "^6.0.0",
-    "@roketo/api-client": "roke-to/roketo-api-client#v0.0.31",
+    "@near-wallet-selector/wallet-utils": "^6.0.0",
     "@roketo/sdk": "^0.2.9",
     "bignumber.js": "^9.0.2",
     "classnames": "^2.3.1",
     "clipboard-copy": "^4.0.1",
-    "date-fns": "^2.27.0",
+    "date-fns": "^2.29.3",
     "effector": "^22.3.0",
     "effector-react": "^22.1.4",
     "error-polyfill": "^0.1.3",
@@ -95,6 +96,7 @@
     "react-styleguidist": "^11.2.0",
     "rollup": "^2.75.5",
     "sass": "^1.49.9",
+    "swagger-typescript-api": "^10.0.1",
     "tailwind-css-variables": "^3.0.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17",
     "typescript": "^4.7.4",
