@@ -2,7 +2,7 @@ import {RoketoLogoIcon} from './RoketoLogoIcon';
 import {StaderLogoIcon} from './StaderLogoIcon';
 import styles from './styles.module.scss';
 
-export const StaderBanner = ({onClick}: {onClick?: (event: any) => void}) => (
+export const StaderBanner = ({onClick}: {onClick?: () => void}) => (
   <div className={styles.layout}>
     <RoketoLogoIcon />
     <span className={styles.symbol}>+</span>
