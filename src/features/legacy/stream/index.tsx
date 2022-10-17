@@ -3,10 +3,11 @@ import classNames from 'classnames';
 import copy from 'clipboard-copy';
 import {format, isPast} from 'date-fns';
 import React, {useState} from 'react';
-import {Link, useParams} from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 
 import {tokensPerMeaningfulPeriod} from '~/shared/api/token-formatter';
 import {PageError} from '~/shared/components/PageError';
+import {Breadcrumb} from '~/shared/kit/Breadcrumb';
 import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 import {TokenImage} from '~/shared/kit/TokenImage';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
@@ -25,7 +26,6 @@ import {streamViewData, useAccount, useLegacySingleStream} from '../roketo-resou
 import {getLegacyStreamLink, LEGACY_ROUTES_MAP} from '../routing';
 import {StreamControls} from '../stream-control/StreamControls';
 import {WithdrawAllButton} from '../stream-control/WithdrawAllButton';
-import {BreadcrumbIcon} from './BreadcrumbIcon';
 import styles from './styles.module.scss';
 
 const getStreamingSpeed = (speedInSeconds: number | string, token: RichToken): string => {
@@ -266,13 +266,11 @@ export function LegacyStreamPage() {
   return (
     <div className={styles.root}>
       <Layout>
-        <div className={styles.breadbrumbs}>
-          <Link to={LEGACY_ROUTES_MAP.legacyStreams.path} className={styles.streamsLink}>
-            Streams (legacy)
-          </Link>
-          <BreadcrumbIcon className={styles.breadbrumb} />
-          <span className={styles.id}>{id}</span>
-        </div>
+        <Breadcrumb
+          parentPage="Streams (legacy)"
+          currentPage={id}
+          link={LEGACY_ROUTES_MAP.legacyStreams.path}
+        />
         {pageError && (
           <PageError
             className="max-w-2xl mx-auto py-32"

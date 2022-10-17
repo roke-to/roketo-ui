@@ -13,6 +13,7 @@ import {PrivateRoute} from '~/shared/components/PrivateRoute';
 import {env} from '~/shared/config';
 import {ROUTES_MAP} from '~/shared/lib/routing';
 
+import {ArchivedStreamsPage} from './archived_streams';
 import {AuthorizePage} from './authorize';
 import {NotFoundPage} from './not-found';
 import {StreamPage} from './stream';
@@ -36,7 +37,7 @@ export function Routing() {
 
   const signedIn = useStore($isSignedIn);
 
-  const {root, stream, streams, authorize} = ROUTES_MAP;
+  const {root, stream, streams, archivedStreams, authorize} = ROUTES_MAP;
 
   const {legacyStream, legacyStreams} = LEGACY_ROUTES_MAP;
 
@@ -87,6 +88,15 @@ export function Routing() {
           path={streams.path}
         >
           <StreamsPage />
+        </PrivateRoute>
+
+        <PrivateRoute
+          exact
+          redirect={<Redirect to={authorize.path} />}
+          allowed={signedIn}
+          path={archivedStreams.path}
+        >
+          <ArchivedStreamsPage />
         </PrivateRoute>
 
         <Route render={NotFoundPage} />

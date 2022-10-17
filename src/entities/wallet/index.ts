@@ -63,6 +63,14 @@ export const $user = createStore<Partial<User>>({
 
 export const $notifications = createStore<Notification[] | null>(null);
 
+export const $archivedStreams = createStore<{
+  streams: RoketoStream[];
+  streamsLoaded: boolean;
+}>({
+  streams: [],
+  streamsLoaded: false,
+});
+
 // eslint-disable-next-line arrow-body-style
 const getUserFx = createEffect(async (accountId: string) => {
   return ecoApi.users.findOne(accountId);
@@ -84,6 +92,11 @@ const getNotificationsFx = createEffect(async () => {
   return allNotifications.filter((notification: Notification) =>
     KNOWN_NOTIFICATION_TYPES.has(notification.type),
   );
+});
+
+const getArchivedStreamsFx = createEffect(async () => {
+  const allStreams = await ecoApi.archivedStreams.findArchivedStreams();
+  return allStreams.map((stream) => stream.payload.stream);
 });
 
 export const updateUserFx = attach({
@@ -285,7 +298,7 @@ sample({
 sample({
   clock: $accountId,
   filter: Boolean,
-  target: [getUserFx, getNotificationsFx],
+  target: [getUserFx, getNotificationsFx, getArchivedStreamsFx],
 });
 
 sample({
@@ -303,6 +316,15 @@ sample({
   target: $notifications,
 });
 
+sample({
+  clock: getArchivedStreamsFx.doneData,
+  fn: (streams) => ({
+    streams,
+    streamsLoaded: true,
+  }),
+  target: $archivedStreams,
+});
+
 const notificationsUpdateTimerFx = createEffect(
   () =>
     new Promise<void>((rs) => {
@@ -316,6 +338,21 @@ sample({
 sample({
   clock: notificationsUpdateTimerFx.done,
   target: getNotificationsFx,
+});
+
+const archivedStreamsUpdateTimerFx = createEffect(
+  () =>
+    new Promise<void>((rs) => {
+      setTimeout(rs, 5000);
+    }),
+);
+sample({
+  clock: getArchivedStreamsFx.done,
+  target: archivedStreamsUpdateTimerFx,
+});
+sample({
+  clock: archivedStreamsUpdateTimerFx.done,
+  target: getArchivedStreamsFx,
 });
 
 /** clear user when there is no account id */
