@@ -1,5 +1,5 @@
 import {useStore} from 'effector-react';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {Redirect, Route, HashRouter as Router, Switch} from 'react-router-dom';
 
 import {Footer} from '~/widgets/footer';
@@ -10,6 +10,7 @@ import {$isSignedIn} from '~/entities/wallet';
 
 import {Header} from '~/shared/components/Header';
 import {PrivateRoute} from '~/shared/components/PrivateRoute';
+import {StaderBanner} from '~/shared/components/StaderBanner';
 import {env} from '~/shared/config';
 import {ROUTES_MAP} from '~/shared/lib/routing';
 
@@ -21,6 +22,8 @@ import {StreamsPage} from './streams';
 const TRASH_QUERY_PARAMS = ['transactionHashes', 'errorCode', 'errorMessage'];
 
 export function Routing() {
+  const [staderBannerOpened, setStaderBannerOpened] = useState(true);
+
   useEffect(() => {
     // Remove unused search params
     const url = new URL(window.location.href);
@@ -36,12 +39,15 @@ export function Routing() {
 
   const signedIn = useStore($isSignedIn);
 
+  const handleBannerClose = () => setStaderBannerOpened(false);
+
   const {root, stream, streams, authorize} = ROUTES_MAP;
 
   const {legacyStream, legacyStreams} = LEGACY_ROUTES_MAP;
 
   return (
     <Router basename={env.PUBLIC_URL}>
+      {staderBannerOpened && <StaderBanner onClick={handleBannerClose} />}
       <Header />
 
       <Switch>
