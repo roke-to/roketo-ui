@@ -1,0 +1,81 @@
+@import 'src/shared/ui/palette';
+
+.layout {
+  background-color: #f0f6ff;
+  height: 44px;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+}
+
+.text {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  margin-left: 12px;
+}
+
+.link {
+  color: #496ef3;
+}
+
+.symbol {
+  margin: 0 6px;
+}
+
+.close {
+  cursor: pointer;
+
+  position: absolute;
+
+  top: 15px;
+  right: 15px;
+
+  width: 14px;
+  height: 14px;
+
+  transition: 100ms ease;
+
+  &:after,
+  &:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+
+    height: 1px;
+    width: 100%;
+
+    background: #2b313b;
+
+    border-radius: 40px;
+  }
+
+  &:before {
+    transform: rotate(45deg);
+  }
+
+  &:after {
+    transform: rotate(-45deg);
+  }
+}
+
+@media (max-width: 991px) {
+  .close {
+    top: 21px;
+    right: 18px;
+  }
+
+  .layout {
+    height: 56px;
+    justify-content: left;
+    padding-left: 18px;
+  }
+
+  .link {
+    display: block;
+  }
+}
