@@ -168,9 +168,17 @@
   }
 }
 
-.actionButtonsWrapper {
+.actionControlsWrapper {
   grid-column: auto/span 4;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.actionButtonsWrapper {
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
@@ -208,9 +216,6 @@
   .form {
     gap: 16px;
   }
-  .actionButtonsWrapper {
-    justify-content: center;
-  }
 }
 
 /* Phone, landscape */
@@ -221,7 +226,7 @@
   .commissionBlock,
   .cliff,
   .isUnlocked,
-  .actionButtonsWrapper {
+  .actionControlsWrapper {
     grid-column: 1 / -1;
   }
 
@@ -232,7 +237,16 @@
   }
 
   .actionButtonsWrapper {
+    display: flex;
     justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .actionControlsWrapper {
+    justify-content: space-between;
+    align-items: flex-start;
   }
 
   .isUnlocked {
