@@ -34,7 +34,6 @@ export function formatAmount(tokenDecimals: number, amount?: number | string) {
     mantissa: 3,
     trimMantissa: true,
     optionalMantissa: true,
-    average: true,
   });
 
   return formatted;
