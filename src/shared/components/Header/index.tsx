@@ -12,7 +12,7 @@ import styles from './styles.module.scss';
 
 function MinifiedHeader() {
   return (
-    <div className={classNames('py-4 px-6', 'absolute w-full pt-8', 'flex justify-center')}>
+    <div className={classNames('py-4 px-6', 'absolute w-full pt-20', 'flex justify-center')}>
       <Logo className={styles.logo} />
     </div>
   );
