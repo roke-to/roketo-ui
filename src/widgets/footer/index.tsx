@@ -3,7 +3,7 @@ import {format} from 'date-fns';
 import {env} from '~/shared/config';
 
 import {GithubLogo} from '@ui/icons/Github';
-import {DisplayType, Logo} from '@ui/icons/Logo';
+import {ColorType, Logo} from '@ui/icons/Logo';
 import {TelegramLogo} from '@ui/icons/Telegram';
 import {TwitterLogo} from '@ui/icons/Twitter';
 
@@ -17,7 +17,7 @@ export function Footer() {
     <div className={styles.root}>
       <div className={styles.container}>
         <div className={styles.logo}>
-          <Logo className={styles.roketo} type={DisplayType.CURRENT_COLOR} />
+          <Logo className={styles.roketo} color={ColorType.GREY} />
         </div>
         <div className={styles.links}>
           <a href="https://www.roke.to/#page-top" target="_blank" rel="noreferrer">

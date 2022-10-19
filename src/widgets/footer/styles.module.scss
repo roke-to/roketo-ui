@@ -18,8 +18,8 @@
   @media (min-width: 1024px) {
     padding-top: 48px;
     padding-bottom: 80px;
-    padding-left: 128px;
-    padding-right: 128px;
+    padding-left: 48px;
+    padding-right: 48px;
   }
 }
 
@@ -74,6 +74,10 @@
   .roketo {
     height: 24px;
     color: $light-black;
+
+    @media (max-width: 768px) {
+      width: 100px;
+    }
   }
 }
 
