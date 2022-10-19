@@ -15,6 +15,9 @@ jobs:
       - Linux
       - node
     steps:
+      - name: Remove cache
+        run: rm -r /var/cache/github-actions-runner/_temp
+
       - uses: actions/checkout@v3
 
       - name: Set up Node.js ⚙️
