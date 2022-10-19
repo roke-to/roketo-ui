@@ -19,9 +19,9 @@ export async function createstream(
     await stream.inputComments(comment);
   }
   if (duration === 'short') {
-    await stream.inputPeriod('0', '0', '0', '1');
+    await stream.inputPeriod('0m 0d 0h 1m');
   } else {
-    await stream.inputPeriod('1000', '10', '10', '10');
+    await stream.inputPeriod('1000m 10d 10h 10m');
     // stream.inputComments('comment-comment');
     await stream.setDelayed();
   }
@@ -66,10 +66,9 @@ export async function createCustomStream({
     await stream.uneditable();
   }
   await stream.inputPeriod(
-    period.month ?? '0',
-    period.days ?? '0',
-    period.hours ?? '0',
-    period.mins ?? '0',
+    `${period.month ?? '0'}m ${period.days ?? '0'}d ${period.hours ?? '0'}h ${
+      period.mins ?? '0'
+    }min`,
   );
   if (cliff) {
     await stream.inputCliffPeriod();

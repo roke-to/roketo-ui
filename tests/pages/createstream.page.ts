@@ -35,30 +35,10 @@ export class CreateStreamPage {
     //cy.get(testSelectors.createStreamAmountInput).click().type(' {backspace}').type(value);
   }
 
-  async inputPeriod(month: string, days: string, hours: string, mins: string) {
-    if (month !== '0') {
-      await this.page.locator(testSelectors.createStreamMonthsInput).click();
-      await this.page.keyboard.press('Backspace');
-      await this.page.locator(testSelectors.createStreamMonthsInput).type(month);
-    }
-    // select days
-    if (days !== '0') {
-      await this.page.locator(testSelectors.createStreamDaysInput).click();
-      await this.page.keyboard.press('Backspace');
-      await this.page.locator(testSelectors.createStreamDaysInput).type(days);
-    }
-    // select hours
-    if (hours !== '0') {
-      await this.page.locator(testSelectors.createStreamHoursInput).click();
-      await this.page.keyboard.press('Backspace');
-      await this.page.locator(testSelectors.createStreamHoursInput).type(hours);
-    }
-    // select mins
-    if (mins !== '0') {
-      await this.page.locator(testSelectors.createStreamMinutesInput).click();
-      await this.page.keyboard.press('Backspace');
-      await this.page.locator(testSelectors.createStreamMinutesInput).type(mins);
-    }
+  async inputPeriod(duration: string) {
+    await this.page.locator(testSelectors.createStreamDurationInput).click();
+    await this.page.keyboard.press('Backspace');
+    await this.page.locator(testSelectors.createStreamDurationInput).type(duration);
   }
   async inputCliffPeriod() {
     const currentTimeInMilliseconds = new Date();

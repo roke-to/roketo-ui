@@ -156,7 +156,7 @@ test('run stream', async ({accountId}) => {
   await stream.createStream();
   await stream.inputReceiver('delusion.testnet');
   await stream.inputDeposit('1');
-  await stream.inputPeriod('1000', '10', '10', '10');
+  await stream.inputPeriod(`1000m 10d 10h 10m`);
   // stream.inputComments('comment-comment');
   await stream.submit();
   const transaction = new TransactionPage(page);

@@ -22,7 +22,7 @@ export class NotificationPage {
   }
 
   async openNotifications() {
-    await this.page.locator(testSelectors.openNotificationsButton).click();
+    await this.page.locator(testSelectors.toggleNotificationsButton).click();
   }
 
   async waitForInitialLoading() {
