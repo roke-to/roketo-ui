@@ -1,0 +1,32 @@
+@import 'src/shared/ui/palette';
+
+.layout {
+  color: $light-black;
+
+  flex-grow: 1;
+  padding: 24px 56px 28px 56px;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: max-content;
+  row-gap: 30px;
+  column-gap: 40px;
+}
+
+.streamListBlock {
+  grid-column: 1 / span 3;
+}
+
+.streamFilters {
+  grid-column: 1 / span 3;
+}
+
+/* Phone */
+@media (max-width: 767px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding: 24px 16px 28px 16px;
+    overflow-x: hidden;
+    row-gap: 20px;
+  }
+}

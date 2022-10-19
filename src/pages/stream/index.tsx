@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import {useGate, useStore} from 'effector-react';
 import React, {ReactNode} from 'react';
-import {Link, useParams} from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 
 import {AddFunds} from '~/features/add-funds';
 import {StreamControls} from '~/features/stream-control/StreamControls';
@@ -10,6 +10,7 @@ import {WithdrawButton} from '~/features/stream-control/WithdrawButton';
 import {Badge} from '~/shared/components/Badge';
 import {PageError} from '~/shared/components/PageError';
 import {useMediaQuery} from '~/shared/hooks/useMatchQuery';
+import {Breadcrumb} from '~/shared/kit/Breadcrumb';
 import {ColorDot} from '~/shared/kit/ColorDot';
 import {ROUTES_MAP} from '~/shared/lib/routing';
 
@@ -17,7 +18,6 @@ import {CopyLinkButton} from '@ui/components/CopyLinkButton';
 import {Layout} from '@ui/components/Layout';
 import {ProgressBar} from '@ui/components/ProgressBar';
 
-import {BreadcrumbIcon} from './BreadcrumbIcon';
 import {$loading, $pageError, $stream, $streamInfo, pageGate} from './model';
 import styles from './styles.module.scss';
 
@@ -61,13 +61,7 @@ export function StreamPage() {
   return (
     <div className={styles.root}>
       <Layout>
-        <div className={styles.breadbrumbs}>
-          <Link to={ROUTES_MAP.streams.path} className={styles.streamsLink}>
-            Streams
-          </Link>
-          <BreadcrumbIcon className={styles.breadbrumb} />
-          <span className={styles.id}>{id}</span>
-        </div>
+        <Breadcrumb parentPage="Streams" currentPage={id} link={ROUTES_MAP.streams.path} />
         {pageError && (
           <PageError className="max-w-2xl mx-auto py-32" message={pageError} onRetry={() => {}} />
         )}

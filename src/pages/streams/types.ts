@@ -1,20 +1,6 @@
-import type {RoketoStream} from '@roketo/sdk/dist/types';
 import type {BigNumber} from 'bignumber.js';
 
 import type {STREAM_STATUS, StreamDirection} from '~/shared/api/roketo/constants';
-
-import type {OrderType} from '@ui/icons/Sort';
-
-export type DirectionFilter = 'All' | 'Incoming' | 'Outgoing';
-export type StatusFilter = 'All' | 'Initialized' | 'Active' | 'Paused';
-
-export type StreamSort = {
-  label: string;
-  order: OrderType;
-  fn: (a: RoketoStream, b: RoketoStream) => number;
-};
-
-export type FilterFn = (stream: RoketoStream) => boolean;
 
 export type StreamCardData = {
   streamPageLink: string;

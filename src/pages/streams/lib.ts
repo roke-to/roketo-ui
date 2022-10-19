@@ -1,11 +1,9 @@
-import {getAvailableToWithdraw, getStreamProgress, parseComment} from '@roketo/sdk';
+import {getAvailableToWithdraw, getStreamProgress} from '@roketo/sdk';
 import type {RichToken, RoketoStream} from '@roketo/sdk/dist/types';
 import {BigNumber} from 'bignumber.js';
 
 import type {PriceOracle} from '~/shared/api/price-oracle';
 import {toHumanReadableValue} from '~/shared/api/token-formatter';
-
-import type {DirectionFilter, FilterFn, StatusFilter} from './types';
 
 const INITIAL_VALUE = new BigNumber(0);
 const MANTISSA = 3;
@@ -77,41 +75,3 @@ export const collectTotalFinancialAmountInfo = (
     withdrawn: Number(totalFinancialInfo.withdrawn.toFixed(0)),
   };
 };
-
-export function getDirectionFilter(
-  accountId: string | null,
-  direction: DirectionFilter,
-): FilterFn | null {
-  switch (direction) {
-    case 'Incoming':
-      return (stream) => stream.receiver_id === accountId;
-    case 'Outgoing':
-      return (stream) => stream.owner_id === accountId;
-    default:
-      return null;
-  }
-}
-
-export function getStatusFilter(status: StatusFilter): FilterFn | null {
-  switch (status) {
-    case 'Initialized':
-    case 'Active':
-    case 'Paused':
-      return (stream) => stream.status === status;
-    default:
-      return null;
-  }
-}
-
-export function getTextFilter(accountId: string | null, text: string): FilterFn | null {
-  const trimmedText = text.trim();
-  if (trimmedText.length > 0) {
-    return ({description, owner_id, receiver_id}) => {
-      const comment = parseComment(description) ?? '';
-
-      const counterActor = accountId === owner_id ? receiver_id : owner_id;
-      return comment.includes(trimmedText) || counterActor.includes(trimmedText);
-    };
-  }
-  return null;
-}

@@ -1,0 +1,129 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: min-content 1fr;
+}
+
+.sortWithOrder {
+  display: flex;
+  align-items: center;
+
+  & > :not(:last-child) {
+    margin-right: 6px;
+  }
+}
+
+.sortBlock {
+  grid-column: 4 / span 1;
+}
+
+.directionSorts {
+  grid-column: 1 / span 1;
+  display: flex;
+}
+
+.directionSort {
+  border-radius: 24px;
+  padding: 12px;
+
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+
+  color: $grey;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: color 100ms ease-in, background-color 100ms ease-out;
+
+  &[disabled] {
+    cursor: not-allowed;
+  }
+  &:not([disabled]):hover {
+    color: #2b313b;
+  }
+}
+
+.directionActive:not([disabled]) {
+  background-color: #f0f6ff;
+  color: #2b313b;
+  cursor: unset;
+}
+
+.compactFilter {
+  display: none;
+}
+
+.compactFilterModal {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  & > h3 {
+    padding-top: 6px;
+  }
+}
+
+@media (max-width: 991px) {
+  .sortBlock {
+    grid-column: 4 / span 1;
+  }
+}
+
+/* Phone */
+@media (max-width: 767px) {
+  .root {
+    grid-template-columns: 1fr max-content;
+  }
+  .compactFilter {
+    display: unset;
+    grid-column: 3;
+  }
+  .sortBlock,
+  .directionSorts {
+    display: none;
+  }
+}
+
+.filterControl {
+  background: #f0f6ff;
+  border-radius: 24px;
+  padding: 12px 19px;
+}
+
+.modalOverlay {
+  pointer-events: auto;
+  user-select: text;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  overflow: auto;
+  padding: 15vh 0 10vh;
+  flex-direction: column;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+
+  &::before {
+    content: '╳';
+    color: white;
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    font-size: 48px;
+    right: 6vw;
+    top: 5vh;
+    display: block;
+    position: absolute;
+  }
+}
+
+.modalContent {
+  width: min(550px, 100vw - 30px);
+  border-radius: 24px;
+  background-color: white;
+}

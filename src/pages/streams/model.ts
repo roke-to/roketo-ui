@@ -41,27 +41,23 @@ import {
 } from '~/shared/api/token-formatter';
 import {env} from '~/shared/config';
 import {areArraysDifferent, areObjectsDifferent, recordUpdater} from '~/shared/lib/changeDetection';
+import {
+  DirectionFilter,
+  FilterFn,
+  getDirectionFilter,
+  getStatusFilter,
+  getTextFilter,
+  StatusFilter,
+  StreamSort,
+} from '~/shared/lib/getFilters';
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 import {ROUTES_MAP} from '~/shared/lib/routing';
 
 import {sorts, statusOptions} from './constants';
-import {
-  collectTotalFinancialAmountInfo,
-  countTotalUSDWithdrawal,
-  getDirectionFilter,
-  getStatusFilter,
-  getTextFilter,
-} from './lib';
-import type {
-  DirectionFilter,
-  FilterFn,
-  StatusFilter,
-  StreamCardData,
-  StreamProgressData,
-  StreamSort,
-} from './types';
+import {collectTotalFinancialAmountInfo, countTotalUSDWithdrawal} from './lib';
+import type {StreamCardData, StreamProgressData} from './types';
 
 const redirectUrl = generatePath(ROUTES_MAP.streams.path);
 const returnPath = `${window.location.origin}/#${redirectUrl}`;

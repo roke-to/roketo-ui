@@ -1,15 +1,11 @@
 import type {RoketoStream} from '@roketo/sdk/dist/types';
 import {BigNumber} from 'bignumber.js';
 
+import {DirectionFilter, StatusFilter, StreamSort} from '~/shared/lib/getFilters';
+
 import {OrderType} from '@ui/icons/Sort';
 
-import type {
-  DirectionFilter,
-  StatusFilter,
-  StreamCardData,
-  StreamProgressData,
-  StreamSort,
-} from './types';
+import type {StreamCardData, StreamProgressData} from './types';
 
 export const streamCardDataDefaults: StreamCardData = {
   streamPageLink: '',

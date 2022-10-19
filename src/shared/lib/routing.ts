@@ -19,6 +19,10 @@ export const ROUTES_MAP = {
     path: '/streams/:id',
     title: 'Stream',
   },
+  archivedStreams: {
+    path: '/archive',
+    title: 'Archive',
+  },
 };
 
 export function getStreamLink(streamId: string | undefined) {
