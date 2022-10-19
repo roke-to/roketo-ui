@@ -112,6 +112,6 @@
     column-gap: 12px;
   }
   .container {
-    max-height: unset;
+    max-height: min(100vh - 100px, 80vh);
   }
 }
