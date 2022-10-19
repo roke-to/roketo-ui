@@ -242,7 +242,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
                 deposit={deposit}
               />
 
-              <div className={cn(styles.formBlock, styles.actionButtonsWrapper)}>
+              <div className={cn(styles.formBlock, styles.actionControlsWrapper)}>
                 {submitError && (
                   <div className={styles.submitError}>
                     <ErrorSign />
@@ -250,23 +250,25 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
                   </div>
                 )}
 
-                <Button
-                  displayMode={ButtonDisplayMode.simple}
-                  onClick={onFormCancel}
-                  testId={testIds.createStreamCancelButton}
-                  disabled={submitting}
-                >
-                  Cancel
-                </Button>
+                <div className={styles.actionButtonsWrapper}>
+                  <Button
+                    displayMode={ButtonDisplayMode.simple}
+                    onClick={onFormCancel}
+                    testId={testIds.createStreamCancelButton}
+                    disabled={submitting}
+                  >
+                    Cancel
+                  </Button>
 
-                <Button
-                  type={ButtonType.submit}
-                  displayMode={ButtonDisplayMode.action}
-                  testId={testIds.createStreamSubmitButton}
-                  disabled={submitting}
-                >
-                  {submitting ? 'Creating...' : 'Create'}
-                </Button>
+                  <Button
+                    type={ButtonType.submit}
+                    displayMode={ButtonDisplayMode.action}
+                    testId={testIds.createStreamSubmitButton}
+                    disabled={submitting}
+                  >
+                    {submitting ? 'Creating...' : 'Create'}
+                  </Button>
+                </div>
               </div>
             </form>
           );
