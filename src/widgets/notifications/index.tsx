@@ -25,6 +25,7 @@ import streamFundsAddedIcon from './icons/streamFundsAdded.svg';
 import streamIsDueIcon from './icons/streamIsDue.svg';
 import streamPausedIcon from './icons/streamPaused.svg';
 import streamStartedIcon from './icons/streamStarted.svg';
+import {printDuration} from './lib';
 import {
   $hasUnreadNotifications,
   $notificationsContent,
@@ -59,7 +60,7 @@ function NotificationBody({notification: {type, payload}}: {notification: Notifi
   const {stream} = payload;
 
   const direction = useGetStreamDirection(stream);
-  const timeLeft = calculateTimeLeft(stream, stream.last_action);
+  const timeLeft = calculateTimeLeft(stream, stream.last_action) || printDuration(stream);
   const {full, streamed, left} = getStreamProgress({
     stream,
     progressAtTimestamp: stream.last_action,
