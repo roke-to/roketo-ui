@@ -17,7 +17,7 @@
 .streamGrid {
   display: grid;
   grid-template-columns:
-    [address-column] 120px
+    [address-column] minmax(min-content, max-content)
     [amount-column] minmax(min-content, max-content)
     [start-column] minmax(140px, max-content)
     [end-column] minmax(140px, max-content)
