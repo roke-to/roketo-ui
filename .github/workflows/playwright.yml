@@ -1,0 +1,50 @@
+name: Playwrite
+on:
+  push:
+  pull_request:
+  
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    timeout-minutes: 60
+    runs-on:
+      - self-hosted
+      - Linux
+      - node
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js ⚙️
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.x'
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
+          
+      - name: Install 🔧
+        working-directory: .
+        run: yarn
+
+#       - name: Transfer Near for test account
+#         working-directory: .
+#         run: node .scripts/transferNearForTestAccount.js
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+          
+      - name: Build 🔧
+        working-directory: .
+        run: yarn build
+
+      - name: Run Playwright tests
+        run: yarn playwright test
+
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

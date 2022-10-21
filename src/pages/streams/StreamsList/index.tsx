@@ -41,7 +41,11 @@ const StreamNameLink = memo(({streamId}: {streamId: string}) => {
     defaultValue: streamCardDataDefaults,
   });
   return (
-    <Link to={streamPageLink} className={cn(styles.nameCell)}>
+    <Link
+      to={streamPageLink}
+      className={cn(styles.nameCell)}
+      data-testid={testIds.streamListReceiver}
+    >
       <span className={styles.nameText}>{name}</span>
 
       {isLocked && (
@@ -68,7 +72,9 @@ const StreamCommentLink = memo(({streamId}: {streamId: string}) => {
   });
   return (
     <Link to={streamPageLink} className={cn(styles.commentCell)}>
-      <div className={styles.commentBlock}>{comment}</div>
+      <div className={styles.commentBlock} data-testid={testIds.streamListCommentCell}>
+        {comment}
+      </div>
     </Link>
   );
 });
@@ -251,7 +257,8 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
 
 const Placeholder = ({onCreateStreamClick}: {onCreateStreamClick(): void}) => {
   const {streamsLoading, hasStreams} = useStore($streamListData);
-  if (streamsLoading) return <Spinner wrapperClassName={styles.loader} />;
+  if (streamsLoading)
+    return <Spinner wrapperClassName={styles.loader} testId={testIds.streamListLoader} />;
   if (!hasStreams) {
     return (
       <>

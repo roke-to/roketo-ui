@@ -51,6 +51,9 @@ export const testIds = {
   addFunds: 'addFunds',
   addFundsSubmit: 'addFundsSubmit',
   collapseButton: 'collapseButton',
+  streamListCommentCell: 'streamListCommentCell',
+  streamListLoader: 'streamListLoader',
+  streamListReceiver: 'streamListReceiver',
 } as const;
 
 const testIdsKeys = Object.keys(testIds) as Array<keyof typeof testIds>;

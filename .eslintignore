@@ -1,1 +1,6 @@
 check-testIds.ts
+*.spec.ts
+*.page.ts
+createTestAccount.ts
+auth.ts
+playwright.config.ts
