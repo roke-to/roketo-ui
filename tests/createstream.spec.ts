@@ -30,7 +30,7 @@ test('Create uneditable stream', async ({accountId, page}) => {
   await createCustomStream({
     page,
     comment,
-    period: {month: '1000', days: '10', hours: '10', mins: '10'},
+    period: {month: '30', days: '10', hours: '10', mins: '10'},
     uneditable: true,
   });
   const mystreams = new MyStreamsPage(page);
@@ -43,7 +43,7 @@ test('Create a delayed stream', async ({accountId, page}) => {
   await createCustomStream({
     page,
     comment,
-    period: {month: '1000', days: '10', hours: '10', mins: '10'},
+    period: {month: '30', days: '10', hours: '10', mins: '10'},
     delayed: true,
   });
   await checkStreamStatus('Initialized', comment, page);
@@ -77,7 +77,7 @@ test('Create a stream with cliff', async ({accountId, page}) => {
   await createCustomStream({
     page,
     comment,
-    period: {month: '36', days: '10', hours: '10', mins: '10'},
+    period: {month: '30', days: '10', hours: '10', mins: '10'},
     cliff: true,
   });
   await checkStreamStatus('Active', comment, page);
