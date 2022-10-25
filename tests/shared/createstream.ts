@@ -63,6 +63,7 @@ export async function createCustomStream({
     await stream.setDelayed();
   }
   if (uneditable) {
+    await page.locator('[data-testid="collapseButton"]').click();
     await stream.uneditable();
   }
   await stream.inputPeriod(
@@ -71,6 +72,8 @@ export async function createCustomStream({
     }min`,
   );
   if (cliff) {
+    await page.locator('[data-testid="collapseButton"]').click();
+    // data-testid="collapseButton"
     await stream.inputCliffPeriod();
   }
   await stream.submit();
