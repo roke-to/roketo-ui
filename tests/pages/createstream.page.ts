@@ -73,6 +73,6 @@ export class CreateStreamPage {
   }
 
   async uneditable() {
-    await this.page.locator(testSelectors.createStreamLockedCheckbox).click();
+    await this.page.locator('[data-testid="createStreamLockedCheckbox"]').click();
   }
 }
