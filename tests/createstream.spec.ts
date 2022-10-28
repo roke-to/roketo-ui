@@ -22,20 +22,20 @@ test.beforeAll(async ({page, browser}) => {
   await login(page);
 });
 
-test('Create uneditable stream', async ({accountId, page}) => {
+//test('Create uneditable stream', async ({accountId, page}) => {
   //   login(account.seedPhrase);
   // await login(page);
 
-  const comment = createComment('uneditable stream');
-  await createCustomStream({
-    page,
-    comment,
-    period: {month: '30', days: '10', hours: '10', mins: '10'},
-    uneditable: true,
-  });
-  const mystreams = new MyStreamsPage(page);
-  await mystreams.checkIfLastStreamLocked(comment, page);
-});
+//  const comment = createComment('uneditable stream');
+//  await createCustomStream({
+//    page,
+//    comment,
+//    period: {month: '30', days: '10', hours: '10', mins: '10'},
+//    uneditable: true,
+//  });
+//  const mystreams = new MyStreamsPage(page);
+//  await mystreams.checkIfLastStreamLocked(comment, page);
+//});
 
 test('Create a delayed stream', async ({accountId, page}) => {
   // await login(page);
