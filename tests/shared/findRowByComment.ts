@@ -9,7 +9,8 @@ export async function findRowByComment(
 ) {
   console.log('findRowByComment', comment);
   // eslint-disable-next-line no-promise-executor-return
-  await new Promise((rs) => setTimeout(rs, 2000));
+  // await new Promise((rs) => setTimeout(rs, 2000));
+  await page.locator(testSelectors.createStreamButton).isEnabled({timeout: 60000});
   await page.locator(testSelectors.streamListLoader).waitFor({state: 'detached'});
   let commentIndex = -1;
   const commLocator = page.locator(testSelectors.streamListCommentCell);
