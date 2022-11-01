@@ -97,7 +97,8 @@ export class MyStreamsPage {
     let index = await findRowByComment(comment, page);
     await this.page.waitForTimeout(60000);
     expect(await this.page.locator('[data-testid="streamProgressCaption"]').nth(index)).toHaveText(
-      '-0.1 of 0.1',
+      // '-0.1 of 0.1',
+      '+0.1 of 0.1',
       {timeout: 60000},
     );
     // await expect(this.page.locator(testSelectors.streamProgressCaption).nth(0)).toHaveText(

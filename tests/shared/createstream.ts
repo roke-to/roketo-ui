@@ -21,7 +21,7 @@ export async function createstream(
   if (duration === 'short') {
     await stream.inputPeriod('0m 0d 0h 1m');
   } else {
-    await stream.inputPeriod('1000m 10d 10h 10m');
+    await stream.inputPeriod('30m 10d 10h 10min');
     // stream.inputComments('comment-comment');
     await stream.setDelayed();
   }
@@ -63,6 +63,7 @@ export async function createCustomStream({
     await stream.setDelayed();
   }
   if (uneditable) {
+    await page.locator('[data-testid="collapseButton"]').click();
     await stream.uneditable();
   }
   await stream.inputPeriod(
@@ -71,6 +72,8 @@ export async function createCustomStream({
     }min`,
   );
   if (cliff) {
+    await page.locator('[data-testid="collapseButton"]').click();
+    // data-testid="collapseButton"
     await stream.inputCliffPeriod();
   }
   await stream.submit();

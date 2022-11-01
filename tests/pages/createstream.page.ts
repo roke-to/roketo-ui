@@ -57,7 +57,7 @@ export class CreateStreamPage {
       .locator('[aria-label="Minute"]')
       .type(currentTimeInMilliseconds.getMinutes().toString());
     await this.page.locator('[aria-label="Second"]').type('00');
-    await this.page.locator('[aria-label="Select AM/PM"]').selectOption('am');
+    await this.page.locator('[name="amPm"]').selectOption('am');
   }
 
   async inputComments(value: string) {
@@ -73,6 +73,6 @@ export class CreateStreamPage {
   }
 
   async uneditable() {
-    await this.page.locator(testSelectors.createStreamLockedCheckbox).click();
+    await this.page.locator('[data-testid="createStreamLockedCheckbox"]').click();
   }
 }
