@@ -19,6 +19,7 @@ import {AuthorizePage} from './authorize';
 import {NotFoundPage} from './not-found';
 import {StreamPage} from './stream';
 import {StreamsPage} from './streams';
+import {SubscriptionsPage} from './subscriptions';
 
 const TRASH_QUERY_PARAMS = ['transactionHashes', 'errorCode', 'errorMessage'];
 
@@ -42,7 +43,7 @@ export function Routing() {
 
   const handleBannerClose = () => setStaderBannerOpened(false);
 
-  const {root, stream, streams, archivedStreams, authorize} = ROUTES_MAP;
+  const {root, stream, streams, subscriptions, archivedStreams, authorize} = ROUTES_MAP;
 
   const {legacyStream, legacyStreams} = LEGACY_ROUTES_MAP;
 
@@ -94,6 +95,15 @@ export function Routing() {
           path={streams.path}
         >
           <StreamsPage />
+        </PrivateRoute>
+
+        <PrivateRoute
+          exact
+          redirect={<Redirect to={authorize.path} />}
+          allowed={signedIn}
+          path={subscriptions.path}
+        >
+          <SubscriptionsPage />
         </PrivateRoute>
 
         <PrivateRoute

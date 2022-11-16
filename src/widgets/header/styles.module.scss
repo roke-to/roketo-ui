@@ -1,5 +1,8 @@
 @import 'src/shared/ui/palette';
 
+$header-height: 80px;
+$link-height: 19.5px;
+
 .wrapper {
   border-bottom: 1px solid $light-grey;
   background-color: $white;
@@ -38,8 +41,25 @@
   text-decoration-style: dashed;
 }
 
+.navigationActive {
+  position: relative;
+  color: $light-black;
+
+  &:before {
+    content: '';
+    display: block;
+    position: absolute;
+    background-color: $light-black;
+    height: 3px;
+    width: calc(100% + 8px);
+    left: 50%;
+    bottom: -calc($header-height / 2 - $link-height / 2);
+    transform: translate(-50%, 0);
+  }
+}
+
 .root {
-  height: 80px;
+  height: $header-height;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -92,6 +112,7 @@
 
     &.compactNavigationActive {
       border-bottom-color: #a0c2f8;
+      color: $light-black;
     }
   }
 }

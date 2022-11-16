@@ -2,6 +2,7 @@ export const STREAM_STATUS = {
   Initialized: 'Initialized',
   Active: 'Active',
   Paused: 'Paused',
+  Stopped: 'Stopped',
   Finished: 'Finished',
 } as const;
 

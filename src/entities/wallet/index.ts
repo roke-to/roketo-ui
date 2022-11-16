@@ -21,6 +21,8 @@ import {ecoApi} from '~/shared/api/eco';
 import type {Notification, UpdateUserDto, User} from '~/shared/api/eco/generated/eco-api';
 import {createNearInstance, createWalletSelectorInstance} from '~/shared/api/near';
 import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
+import {rbApi} from '~/shared/api/rb';
+import {ApplicationResponseDto} from '~/shared/api/rb/generated/rb-api';
 import {env} from '~/shared/config';
 import {getChangedFields} from '~/shared/lib/changeDetection';
 
@@ -71,6 +73,8 @@ export const $archivedStreams = createStore<{
   streamsLoaded: false,
 });
 
+export const $subscriptions = createStore<ApplicationResponseDto[] | []>([]);
+
 // eslint-disable-next-line arrow-body-style
 const getUserFx = createEffect(async (accountId: string) => {
   return ecoApi.users.findOne(accountId);
@@ -97,6 +101,12 @@ const getNotificationsFx = createEffect(async () => {
 const getArchivedStreamsFx = createEffect(async () => {
   const allStreams = await ecoApi.archivedStreams.findArchivedStreams();
   return allStreams.map((stream) => stream.payload.stream);
+});
+
+const getSubscriptionsFx = createEffect(async (accountId: string) => {
+  const allSubscriptions =
+    await rbApi.applications.applicationsControllerFindAllApplicationsByAccount(accountId);
+  return allSubscriptions.map((item) => ({amount: item.plan.amount, ...item}));
 });
 
 export const updateUserFx = attach({
@@ -298,7 +308,7 @@ sample({
 sample({
   clock: $accountId,
   filter: Boolean,
-  target: [getUserFx, getNotificationsFx, getArchivedStreamsFx],
+  target: [getUserFx, getNotificationsFx, getArchivedStreamsFx, getSubscriptionsFx],
 });
 
 sample({
@@ -314,6 +324,11 @@ sample({
 sample({
   clock: getNotificationsFx.doneData,
   target: $notifications,
+});
+
+sample({
+  clock: getSubscriptionsFx.doneData,
+  target: $subscriptions,
 });
 
 sample({

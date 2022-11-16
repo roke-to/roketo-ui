@@ -19,7 +19,11 @@ import styles from './styles.module.scss';
 import {PageList} from './ui/PagesList';
 import {ReactComponent as Warning} from './warning.svg';
 
-const ROUTES_TO_DISPLAY = [ROUTES_MAP.streams, ROUTES_MAP.archivedStreams];
+const ROUTES_TO_DISPLAY = [
+  ROUTES_MAP.streams,
+  ROUTES_MAP.subscriptions,
+  ROUTES_MAP.archivedStreams,
+];
 
 export const Header = () => {
   const showLegacyStreams = useShowLegacyStreams();
@@ -54,6 +58,7 @@ export const Header = () => {
           </Link>
           {signedIn && !isCompact && (
             <PageList
+              activeClassName={styles.navigationActive}
               pageRoutes={
                 showLegacyStreams
                   ? [...ROUTES_TO_DISPLAY, LEGACY_ROUTES_MAP.legacyStreams]

@@ -41,10 +41,10 @@ export function areArraysDifferent<T>(a: T[], b: T[]) {
  * efficiently updates objects-record maps
  * computed from given array of source items
  * */
-export function recordUpdater<T, Src extends {id: string}>(
+export function recordUpdater<T, Src extends {id: string | number}>(
   oldData: Record<string, T>,
   sourceItems: Src[],
-  updater: (item: Src, id: string) => T | undefined,
+  updater: (item: Src, id: string | number) => T | undefined,
 ): Record<string, T> {
   const result = Object.fromEntries(
     sourceItems

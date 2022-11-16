@@ -19,6 +19,10 @@ export const ROUTES_MAP = {
     path: '/streams/:id',
     title: 'Stream',
   },
+  subscriptions: {
+    path: '/subscriptions',
+    title: 'Subscriptions',
+  },
   archivedStreams: {
     path: '/archive',
     title: 'Archive',

@@ -28,6 +28,7 @@ export function formatSmartly(value: number) {
 
 /** for display purposes, converts from yocto values */
 export function formatAmount(tokenDecimals: number, amount?: number | string) {
+  console.log();
   const MP = 10 ** tokenDecimals;
   const value = numbro(amount).divide(MP).value();
   const formatted = numbro(value).format({
