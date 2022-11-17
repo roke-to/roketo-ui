@@ -1,0 +1,146 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  display: flex;
+
+  flex-direction: column;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 28px;
+
+  margin-bottom: 24px;
+}
+
+.description {
+  font-size: 16px;
+  line-height: 24px;
+
+  margin-bottom: 25px;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-flow: dense;
+  gap: 24px;
+}
+
+.token,
+.deposit {
+  grid-column: auto / span 6;
+}
+
+.color {
+  grid-column: auto / span 1;
+  // grid-column: auto;
+}
+
+.receiver {
+  grid-column: auto / span 11;
+}
+
+.comment,
+.start {
+  grid-column: 1 / -1;
+}
+
+.start {
+  width: fit-content;
+}
+
+.isUnlocked {
+  grid-column: auto / span 6;
+  justify-content: center;
+  margin-top: 21px;
+}
+
+.submitError {
+  display: flex;
+
+  align-items: center;
+
+  span {
+    color: $danger;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+
+    margin-left: 8px;
+  }
+}
+
+.actionControlsWrapper {
+  grid-column: auto/span 4;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.actionButtonsWrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+
+  gap: 20px;
+}
+
+.textarea {
+  height: 1em;
+}
+
+/* Laptop */
+@media (max-width: 1199px) {
+  .root {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 991px) {
+  .form {
+    gap: 16px;
+  }
+}
+
+/* Phone, landscape */
+@media (max-width: 767px) {
+  .deposit,
+  .token,
+  .commissionBlock,
+  .actionControlsWrapper {
+    grid-column: 1 / -1;
+  }
+
+  .commissionWrap {
+    div {
+      grid-column: auto / span 6;
+    }
+  }
+
+  .actionButtonsWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .actionControlsWrapper {
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .isUnlocked {
+    margin-top: 0;
+  }
+}
+@media (max-width: 767px) {
+  .form {
+    gap: 16px;
+  }
+}

@@ -57,3 +57,9 @@ export const INITIAL_FORM_VALUES: FormValues = {
   cliffDateTime: null,
   color: 'none',
 };
+
+export type CreateStreamProps = {
+  onFormSubmit: (values: FormValues) => Promise<void>;
+  onFormCancel: () => void;
+  submitting: boolean;
+};
