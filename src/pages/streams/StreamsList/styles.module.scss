@@ -20,6 +20,7 @@
     [color-column] 4px
     [status-column] 48px
     [bar-column] 200px
+    [type-column] 150px
     [address-column] min-content
     [comment-column] minmax(min-content, 1fr)
     [control-column] 120px;
@@ -28,6 +29,7 @@
 .colorCell,
 .statusCell,
 .progressCell,
+.typeCell,
 .nameCell,
 .commentCell,
 .controlCell {
@@ -59,7 +61,7 @@
   line-height: 16px;
   grid-row: 1;
   grid-column: span 1;
-  padding-left: 64px;
+  padding-left: 36px;
   margin-bottom: 10px;
   &:first-of-type {
     grid-column: span 3;
@@ -126,6 +128,14 @@
   overflow: hidden;
 }
 
+.typeCell {
+  grid-column: type-column;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  overflow: hidden;
+}
+
 .inlineBadge {
   margin-left: 12px;
 }
@@ -158,6 +168,7 @@
 
 .statusCell,
 .progressCell,
+.typeCell,
 .nameCell,
 .commentCell,
 .controlCell {
@@ -168,9 +179,10 @@
   padding-left: 12px;
 }
 
+.typeCell,
 .nameCell,
 .commentCell {
-  padding-left: 64px;
+  padding-left: 36px;
 }
 
 .commentBlock {
@@ -193,6 +205,31 @@
   line-height: 20px;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+// with .typeBage with background
+// .typeBadge {
+//   font-weight: 600;
+//   font-size: 14px;
+//   line-height: 24px;
+//   color: #fff;
+//   background-color: $input-blue;
+//   border-radius: 14px;
+//   padding: 3px 12px;
+//   opacity: 0.5;
+// }
+
+// with .typeBage with gradient
+.typeBadge {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 24px;
+  color: $light-black;
+  background: linear-gradient(white, white) padding-box,
+    linear-gradient(to right, rgba(71, 145, 255, 0.5), rgba(251, 191, 236, 0.5)) border-box;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  padding: 3px 12px;
 }
 
 .streamLinkButton {
@@ -318,8 +355,12 @@
   .remaining,
   .streamed,
   .withdrawn,
+  .typeBadge,
   .cliffRemaining {
     grid-column: content-column / right-column-end;
+  }
+  .typeBadge {
+    width: fit-content;
   }
   .comment {
     grid-column: left-column / right-column-end;
@@ -382,6 +423,7 @@
   }
   .statusCell,
   .progressCell,
+  .typeCell,
   .nameCell,
   .commentCell,
   .controlCell {
@@ -398,6 +440,7 @@
   .title {
     display: none;
   }
+  .typeCell,
   .nameCell,
   .commentCell,
   .controlCell {

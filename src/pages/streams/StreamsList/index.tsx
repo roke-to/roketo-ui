@@ -57,6 +57,27 @@ const StreamNameLink = memo(({streamId}: {streamId: string}) => {
   );
 });
 
+const StreamBadgeLink = memo(({streamId}: {streamId: string}) => {
+  const {streamPageLink} = useStoreMap({
+    store: $streamCardsData,
+    keys: [streamId],
+    fn: (items) => items[streamId],
+    defaultValue: streamCardDataDefaults,
+  });
+
+  const type = 'toWallet';
+
+  return (
+    <Link
+      to={streamPageLink}
+      className={cn(styles.typeCell)}
+      data-testid={testIds.streamListReceiver}
+    >
+      <span className={styles.typeBadge}>{type === 'toWallet' ? 'to Wallet' : 'to NFT'}</span>
+    </Link>
+  );
+});
+
 const ViewDetailsLink = memo(({to}: {to: string}) => (
   <Link to={to} className={styles.viewDetails}>
     View details
@@ -123,6 +144,8 @@ const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
         streamId={stream.id}
         className={cn(styles.progressCell, styles.leftStickyCell)}
       />
+
+      <StreamBadgeLink streamId={stream.id} />
 
       <StreamNameLink streamId={stream.id} />
 
@@ -192,6 +215,9 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
     fn: (items) => items[streamId],
     defaultValue: streamProgressDataDefaults,
   });
+
+  const type = 'toWallet';
+
   return (
     <div className={styles.expandedInfo}>
       <div className={cn(styles.statusIcon)}>
@@ -216,6 +242,7 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
       {color && <ColorDot className={styles.color} color={color} />}
       <div className={styles.direction}>{direction === 'in' ? 'Incoming' : 'Outgoing'} stream</div>
       <CopyLinkButton className={styles.link} link={getStreamLink(streamId)} />
+      <div className={styles.typeBadge}>{type === 'toWallet' ? 'to Wallet' : 'to NFT'}</div>
       <div className={styles.speed}>
         {speedFormattedValue}{' '}
         <span className={styles.subtext}>
@@ -280,6 +307,7 @@ export const StreamsList = ({
   <div className={cn(styles.container, className)}>
     <section className={styles.streamGrid}>
       <h3 className={cn(styles.leftStickyCell, styles.title)}>Amount to stream</h3>
+      <h3 className={styles.title}>Type of streaming</h3>
       <h3 className={styles.title}>Wallet address</h3>
       <h3 className={styles.title}>Comment</h3>
 
