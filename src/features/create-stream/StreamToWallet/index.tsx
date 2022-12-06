@@ -99,7 +99,7 @@ export const StreamToWallet = ({onFormCancel, onFormSubmit, submitting}: CreateS
               hint={
                 values.isNotDelayed
                   ? 'The stream will start immediately'
-                  : 'You can start stream manualy later'
+                  : 'You can start stream manually later'
               }
               isChecked={values.cliffDateTime ? false : values.isNotDelayed}
               onDelayedChange={(isNotDelayed: boolean) => onChoose('isNotDelayed', isNotDelayed)}

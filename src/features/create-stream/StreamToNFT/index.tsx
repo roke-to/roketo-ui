@@ -4,7 +4,7 @@ import {useStore} from 'effector-react';
 import {Field, Formik} from 'formik';
 import React, {useState} from 'react';
 
-import {$accountId, $listedTokens} from '~/entities/wallet';
+import {$accountId, $listedTokens, $nfts} from '~/entities/wallet';
 
 import {Balance, DisplayMode} from '~/shared/components/Balance';
 import {FormikInput} from '~/shared/components/FormikInput';
@@ -31,10 +31,12 @@ import styles from './styles.module.scss';
 
 export const StreamToNFT = ({onFormCancel, onFormSubmit, submitting}: CreateStreamProps) => {
   const tokens = useStore($listedTokens);
+  const nfts = useStore($nfts);
   const accountId = useStore($accountId);
   const [submitError, setError] = useState<Error | null>(null);
   const [streamAmount, setStreamAmount] = useState(0);
   const [deposit, setDeposit] = useState(0);
+  console.log(nfts);
 
   const handleFormSubmit = (formValues: FormValues) => {
     formValues.duration = 1; // eslint-disable-line no-param-reassign

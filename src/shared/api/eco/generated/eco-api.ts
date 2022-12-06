@@ -479,12 +479,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags notifications
-     * @name FindAll
+     * @name FindAllNotifications
      * @request GET:/notifications
      * @secure
      * @response `200` `(Notification)[]`
      */
-    findAll: (params: RequestParams = {}) =>
+    findAllNotifications: (params: RequestParams = {}) =>
       this.request<Notification[], any>({
         path: `/notifications`,
         method: 'GET',
@@ -540,6 +540,43 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     findArchivedStreams: (params: RequestParams = {}) =>
       this.request<ArchivedStream[], any>({
         path: `/archived_streams`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+  };
+  tokens = {
+    /**
+     * No description
+     *
+     * @tags tokens
+     * @name FindAllTokens
+     * @request GET:/tokens/fts/{accountId}
+     * @secure
+     * @response `200` `(string)[]`
+     */
+    findAllTokens: (accountId: string, params: RequestParams = {}) =>
+      this.request<string[], any>({
+        path: `/tokens/fts/${accountId}`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags tokens
+     * @name FindAllNfTs
+     * @request GET:/tokens/nfts/{accountId}
+     * @secure
+     * @response `200` `(string)[]`
+     */
+    findAllNfTs: (accountId: string, params: RequestParams = {}) =>
+      this.request<string[], any>({
+        path: `/tokens/nfts/${accountId}`,
         method: 'GET',
         secure: true,
         format: 'json',
