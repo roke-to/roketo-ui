@@ -19,7 +19,7 @@ import {combine, createEffect, createEvent, createStore, sample} from 'effector'
 import {generatePath} from 'react-router-dom';
 
 import {colorDescriptions} from '~/features/create-stream/constants';
-import type {FormValues} from '~/features/create-stream/constants';
+import type {FormValues, NftFormValues} from '~/features/create-stream/constants';
 import {getTokensPerSecondCount} from '~/features/create-stream/lib';
 
 import {$isSmallScreen} from '~/entities/screen';
@@ -54,6 +54,7 @@ import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 import {ROUTES_MAP} from '~/shared/lib/routing';
+import {vaultTransfer} from '~/shared/lib/vaultContract';
 
 import {sorts, statusOptions} from './constants';
 import {collectTotalFinancialAmountInfo, countTotalUSDWithdrawal} from './lib';
@@ -93,6 +94,42 @@ export const $statusFilterCounts = createStore<Record<StatusFilter, number>>({
 
 export const changeStreamSort = createEvent<StreamSort>();
 export const $streamSort = createStore<StreamSort>(sorts.mostRecent);
+
+export const handleCreateStreamToNFTFx = createProtectedEffect({
+  source: combine($roketoWallet, $nearWallet, (roketo, near) =>
+    !!roketo && !!near ? {roketo, near} : null,
+  ),
+  async fn(
+    {roketo: {tokens, transactionMediator, accountId}, near: {auth}},
+    values: NftFormValues,
+  ) {
+    const {deposit, nftId, nftContractId, token} = values;
+
+    const {tokenContract} = tokens[token];
+
+    const creator = () =>
+      vaultTransfer({
+        owner_id: accountId,
+        amount: deposit,
+        transactionMediator,
+        tokenContract,
+        tokenAccountId: token,
+        nftId,
+        nftContractId,
+        wNearId: env.WNEAR_ID,
+      });
+    try {
+      await creator();
+    } catch (error) {
+      if ((error as Error).message === 'Wallet not signed in') {
+        await auth.login();
+        await creator();
+      } else {
+        throw error;
+      }
+    }
+  },
+});
 
 export const handleCreateStreamFx = createProtectedEffect({
   source: combine($roketoWallet, $nearWallet, (roketo, near) =>

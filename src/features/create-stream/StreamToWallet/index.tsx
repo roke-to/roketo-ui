@@ -4,6 +4,8 @@ import {useStore} from 'effector-react';
 import {Field, Formik} from 'formik';
 import React, {useState} from 'react';
 
+import {handleCreateStreamFx} from '~/pages/streams/model';
+
 import {$accountId, $listedTokens} from '~/entities/wallet';
 
 import {Balance, DisplayMode} from '~/shared/components/Balance';
@@ -30,16 +32,17 @@ import styles from './styles.module.scss';
 type CreateStreamProps = {
   onFormSubmit: (values: FormValues) => Promise<void>;
   onFormCancel: () => void;
-  submitting: boolean;
 };
 
-export const StreamToWallet = ({onFormCancel, onFormSubmit, submitting}: CreateStreamProps) => {
+export const StreamToWallet = ({onFormCancel, onFormSubmit}: CreateStreamProps) => {
   const tokens = useStore($listedTokens);
   const accountId = useStore($accountId);
   const [submitError, setError] = useState<Error | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [streamAmount, setStreamAmount] = useState(0);
   const [deposit, setDeposit] = useState(0);
+
+  const submitting = useStore(handleCreateStreamFx.pending);
 
   const handleFormSubmit = (formValues: FormValues) => {
     onFormSubmit(formValues).catch((error) => setError(error));

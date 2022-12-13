@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import {useState} from 'react';
 
-import {CreateStreamProps} from '../constants';
+import {CreateStreamProps, StreamType} from '../constants';
 import {StreamToNFT} from '../StreamToNFT';
 import {StreamToWallet} from '../StreamToWallet';
 import styles from './styles.module.scss';
@@ -11,11 +11,6 @@ type ButtonProps = {
   isActive: boolean;
   label: string;
 };
-
-enum CreationStream {
-  Wallet = 'Wallet',
-  NFT = 'NFT',
-}
 
 const TabButton = ({onClick, isActive, label}: ButtonProps) => (
   <button
@@ -27,9 +22,8 @@ const TabButton = ({onClick, isActive, label}: ButtonProps) => (
   </button>
 );
 
-export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStreamProps) => {
-  const [chosenStreamType, setChosenStreamType] = useState(CreationStream.Wallet);
-  console.log(submitting);
+export const CreateStream = ({onFormCancel, onFormSubmit, onNftFormSubmit}: CreateStreamProps) => {
+  const [chosenStreamType, setChosenStreamType] = useState(StreamType.Wallet);
 
   return (
     <div className={styles.root}>
@@ -37,26 +31,22 @@ export const CreateStream = ({onFormCancel, onFormSubmit, submitting}: CreateStr
 
       <div className={styles.tabs}>
         <TabButton
-          onClick={() => setChosenStreamType(CreationStream.Wallet)}
-          isActive={chosenStreamType === CreationStream.Wallet}
+          onClick={() => setChosenStreamType(StreamType.Wallet)}
+          isActive={chosenStreamType === StreamType.Wallet}
           label="To Wallet"
         />
         <TabButton
-          onClick={() => setChosenStreamType(CreationStream.NFT)}
-          isActive={chosenStreamType === CreationStream.NFT}
+          onClick={() => setChosenStreamType(StreamType.NFT)}
+          isActive={chosenStreamType === StreamType.NFT}
           label="To NFT"
         />
       </div>
 
-      {chosenStreamType === CreationStream.NFT && (
-        <StreamToNFT onFormCancel={onFormCancel} onFormSubmit={onFormSubmit} submitting={false} />
+      {chosenStreamType === StreamType.NFT && (
+        <StreamToNFT onFormCancel={onFormCancel} onFormSubmit={onNftFormSubmit} />
       )}
-      {chosenStreamType === CreationStream.Wallet && (
-        <StreamToWallet
-          onFormCancel={onFormCancel}
-          onFormSubmit={onFormSubmit}
-          submitting={false}
-        />
+      {chosenStreamType === StreamType.Wallet && (
+        <StreamToWallet onFormCancel={onFormCancel} onFormSubmit={onFormSubmit} />
       )}
     </div>
   );

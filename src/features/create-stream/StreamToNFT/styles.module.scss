@@ -38,8 +38,20 @@
   // grid-column: auto;
 }
 
+// .receiver {
+//   grid-column: auto / span 9;
+// }
+
+// .nftId {
+//   grid-column: auto / span 2;
+// }
+
 .receiver {
-  grid-column: auto / span 11;
+  grid-column: auto / span 10;
+}
+
+.nftId {
+  grid-column: auto / span 2;
 }
 
 .comment,

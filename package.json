@@ -19,7 +19,7 @@
     "pretty": "prettier \"./**/**.{ts,tsx,js,jsx,mjs,cjs,css,scss,sass,md,*.json,.prettierrc,.lintstagedrc,.babelrc,.eslintrc,*.webmanifest}\"",
     "format": "yarn pretty --write",
     "format:check": "yarn pretty --check",
-    "generate:eco-api": "swagger-typescript-api --path $(./get-dotenv.js VITE_WEB_API_URL)/api-json --output src/shared/api/eco/generated --name eco-api.ts --responses --unwrap-response-data"
+    "generate:eco-api": "swagger-typescript-api --path http://localhost:4001/api-json --output src/shared/api/eco/generated --name eco-api.ts --responses --unwrap-response-data"
   },
   "dependencies": {
     "@effector/reflect": "^8.0.0",

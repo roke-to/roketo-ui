@@ -4,11 +4,12 @@ import {useStore} from 'effector-react';
 import {Field, Formik} from 'formik';
 import React, {useState} from 'react';
 
-import {$accountId, $listedTokens, $nfts} from '~/entities/wallet';
+import {handleCreateStreamToNFTFx} from '~/pages/streams/model';
+
+import {$accountId, $listedTokens} from '~/entities/wallet';
 
 import {Balance, DisplayMode} from '~/shared/components/Balance';
 import {FormikInput} from '~/shared/components/FormikInput';
-import {FormikTextArea} from '~/shared/components/FormikTextArea';
 import {FormikToggle} from '~/shared/components/FormikToggle';
 import {env} from '~/shared/config';
 import {testIds} from '~/shared/constants';
@@ -16,36 +17,34 @@ import {testIds} from '~/shared/constants';
 import {Button, DisplayMode as ButtonDisplayMode, ButtonType} from '@ui/components/Button';
 import {ErrorSign} from '@ui/icons/ErrorSign';
 
-import {ColorPicker} from '../ColorPicker';
 import {CommissionDetails} from '../CommissionDetails';
-import {
-  COMMENT_TEXT_LIMIT,
-  CreateStreamProps,
-  FormValues,
-  INITIAL_FORM_VALUES,
-  StreamColor,
-} from '../constants';
+import {INITIAL_NFT_FORM_VALUES, NftFormValues, StreamType} from '../constants';
 import {TokenSelector} from '../TokenSelector';
 import {formValidationSchema} from './model';
 import styles from './styles.module.scss';
 
-export const StreamToNFT = ({onFormCancel, onFormSubmit, submitting}: CreateStreamProps) => {
+type CreateStreamProps = {
+  onFormSubmit: (values: NftFormValues) => Promise<void>;
+  onFormCancel: () => void;
+};
+
+export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamProps) => {
   const tokens = useStore($listedTokens);
-  const nfts = useStore($nfts);
   const accountId = useStore($accountId);
   const [submitError, setError] = useState<Error | null>(null);
   const [streamAmount, setStreamAmount] = useState(0);
   const [deposit, setDeposit] = useState(0);
-  console.log(nfts);
 
-  const handleFormSubmit = (formValues: FormValues) => {
-    formValues.duration = 1; // eslint-disable-line no-param-reassign
-    onFormSubmit(formValues).catch((error) => setError(error));
+  const submitting = useStore(handleCreateStreamToNFTFx.pending);
+
+  const handleFormSubmit = (nftFormValues: NftFormValues) => {
+    nftFormValues.type = StreamType.NFT; // eslint-disable-line no-param-reassign
+    onFormSubmit(nftFormValues).catch((error) => setError(error));
   };
 
   return (
     <Formik
-      initialValues={INITIAL_FORM_VALUES}
+      initialValues={INITIAL_NFT_FORM_VALUES}
       onSubmit={handleFormSubmit}
       validateOnBlur
       validationSchema={formValidationSchema}
@@ -56,11 +55,10 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit, submitting}: CreateStre
         const activeTokenAccountId = values.token;
         const token = tokens[activeTokenAccountId];
 
-        const handleReceiverChanged = async (event: React.FormEvent<HTMLFormElement>) => {
-          const receiverTokenAccountId = (event.target as HTMLInputElement).value;
+        const handleReceiverChanged = async () => {
           const {tokenContract} = token;
 
-          const storageDepositAccountIds = [accountId || '', receiverTokenAccountId];
+          const storageDepositAccountIds = [accountId || ''];
 
           const {depositSum} = await countStorageDeposit({
             tokenContract,
@@ -101,8 +99,8 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit, submitting}: CreateStre
 
             <Field
               isRequired
-              name="receiver"
-              label="Receiver"
+              name="nftContractId"
+              label="NFT Contract"
               component={FormikInput}
               placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
               className={cn(styles.formBlock, styles.receiver)}
@@ -111,11 +109,14 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit, submitting}: CreateStre
             />
 
             <Field
-              name="color"
-              label="Add tag"
-              component={ColorPicker}
-              className={cn(styles.formBlock, styles.color)}
-              onChoose={(color: StreamColor) => onChoose('color', color, true)}
+              isRequired
+              name="nftId"
+              label="NFT ID"
+              component={FormikInput}
+              placeholder="0"
+              className={cn(styles.formBlock, styles.nftId)}
+              data-testid={testIds.createStreamReceiverInput}
+              onBlur={handleReceiverChanged}
             />
 
             <Field
@@ -140,16 +141,6 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit, submitting}: CreateStre
               onTokenChoose={(tokenAccountId: string) => onChoose('token', tokenAccountId, true)}
               component={TokenSelector}
               className={cn(styles.formBlock, styles.token)}
-            />
-
-            <Field
-              maxLength={COMMENT_TEXT_LIMIT}
-              name="comment"
-              label="Comment"
-              placeholder="You can type something to highlight the stream"
-              component={FormikTextArea}
-              className={cn(styles.formBlock, styles.comment)}
-              data-testid={testIds.createStreamCommentInput}
             />
 
             <CommissionDetails
@@ -181,7 +172,7 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit, submitting}: CreateStre
                 <Button
                   type={ButtonType.submit}
                   displayMode={ButtonDisplayMode.action}
-                  testId={testIds.createStreamSubmitButton}
+                  testId={testIds.createStreamToNFTSubmitButton}
                   disabled={submitting}
                 >
                   {submitting ? 'Creating...' : 'Create'}

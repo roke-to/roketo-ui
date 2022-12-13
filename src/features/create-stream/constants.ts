@@ -32,6 +32,11 @@ export const colorDescriptions: Record<StreamColor, ColorDescription> = {
 
 export const COMMENT_TEXT_LIMIT = 80;
 
+export enum StreamType {
+  Wallet = 'Wallet',
+  NFT = 'NFT',
+}
+
 export type FormValues = {
   receiver: string;
   streamName: string;
@@ -43,6 +48,7 @@ export type FormValues = {
   isUnlocked: boolean;
   cliffDateTime: Date | null;
   color: StreamColor;
+  type: StreamType;
 };
 
 export const INITIAL_FORM_VALUES: FormValues = {
@@ -56,10 +62,43 @@ export const INITIAL_FORM_VALUES: FormValues = {
   isUnlocked: true,
   cliffDateTime: null,
   color: 'none',
+  type: StreamType.Wallet,
 };
 
 export type CreateStreamProps = {
   onFormSubmit: (values: FormValues) => Promise<void>;
+  onNftFormSubmit: (values: NftFormValues) => Promise<void>;
   onFormCancel: () => void;
-  submitting: boolean;
+};
+
+export type NftFormValues = {
+  receiver: string;
+  streamName: string;
+  isNotDelayed: boolean;
+  comment: string;
+  deposit: number;
+  duration: number;
+  token: string;
+  isUnlocked: boolean;
+  cliffDateTime: Date | null;
+  color: StreamColor;
+  nftId: string;
+  nftContractId: string;
+  type: StreamType;
+};
+
+export const INITIAL_NFT_FORM_VALUES: NftFormValues = {
+  receiver: '',
+  streamName: '',
+  token: env.WNEAR_ID,
+  duration: 0,
+  deposit: 0,
+  isNotDelayed: true,
+  comment: '',
+  isUnlocked: true,
+  cliffDateTime: null,
+  color: 'none',
+  nftId: '',
+  nftContractId: '',
+  type: StreamType.Wallet,
 };
