@@ -2,7 +2,6 @@ import type {RoketoStream} from '@roketo/sdk/dist/types';
 import cn from 'classnames';
 import {useList, useStore, useStoreMap} from 'effector-react';
 import React, {memo} from 'react';
-import {Link} from 'react-router-dom';
 
 import {StreamListControls} from '~/features/stream-control/StreamControls';
 
@@ -16,7 +15,6 @@ import {Button} from '@ui/components/Button';
 import {CopyLinkButton} from '@ui/components/CopyLinkButton';
 import {ProgressBar} from '@ui/components/ProgressBar';
 import {Spinner} from '@ui/components/Spinner';
-import clockIcon from '@ui/icons/clock.svg';
 
 import {streamCardDataDefaults, streamProgressDataDefaults} from '../constants';
 import {
@@ -29,7 +27,6 @@ import {
 import {StreamProgress} from '../StreamProgress';
 import activeStreamIcon from './activeStream.svg';
 import finishedStreamIcon from './finishedStream.svg';
-import menuDotsIcon from './menuDots.svg';
 import pausedStreamIcon from './pausedStream.svg';
 import styles from './styles.module.scss';
 
@@ -41,10 +38,12 @@ const StreamNameLink = memo(({streamId}: {streamId: string}) => {
     defaultValue: streamCardDataDefaults,
   });
   return (
-    <Link
-      to={streamPageLink}
+    <a
+      href={streamPageLink}
+      target="_blank"
       className={cn(styles.nameCell)}
       data-testid={testIds.streamListReceiver}
+      rel="noreferrer"
     >
       <span className={styles.nameText}>{name}</span>
 
@@ -53,31 +52,15 @@ const StreamNameLink = memo(({streamId}: {streamId: string}) => {
           Locked
         </Badge>
       )}
-    </Link>
+    </a>
   );
 });
 
 const ViewDetailsLink = memo(({to}: {to: string}) => (
-  <Link to={to} className={styles.viewDetails}>
+  <a href={to} target="_blank" className={styles.viewDetails} rel="noreferrer">
     View details
-  </Link>
+  </a>
 ));
-
-const StreamCommentLink = memo(({streamId}: {streamId: string}) => {
-  const {streamPageLink, comment} = useStoreMap({
-    store: $streamCardsData,
-    keys: [streamId],
-    fn: (items) => items[streamId],
-    defaultValue: streamCardDataDefaults,
-  });
-  return (
-    <Link to={streamPageLink} className={cn(styles.commentCell)}>
-      <div className={styles.commentBlock} data-testid={testIds.streamListCommentCell}>
-        {comment}
-      </div>
-    </Link>
-  );
-});
 
 function selectIcon(iconType: keyof typeof STREAM_STATUS) {
   switch (iconType) {
@@ -94,14 +77,7 @@ function selectIcon(iconType: keyof typeof STREAM_STATUS) {
 
 const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
   const {id: streamId} = stream;
-  const {
-    color,
-    showAddFundsButton,
-    showWithdrawButton,
-    showStartButton,
-    showPauseButton,
-    iconType,
-  } = useStoreMap({
+  const {iconType} = useStoreMap({
     store: $streamCardsData,
     keys: [streamId],
     fn: (items) => items[streamId],
@@ -109,7 +85,6 @@ const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
   });
   return (
     <>
-      <div className={styles.colorCell} style={{'--stream-color': color} as any} />
       <div className={cn(styles.statusCell)}>
         <img
           src={selectIcon(iconType)}
@@ -126,25 +101,10 @@ const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
 
       <StreamNameLink streamId={stream.id} />
 
-      <StreamCommentLink streamId={stream.id} />
-
       <div className={cn(styles.controlCell)}>
-        <CopyLinkButton className={styles.streamLinkButton} link={getStreamLink(streamId)} />
-        <StreamListControls
-          stream={stream}
-          dropdownClassName={styles.controlDropdown}
-          showAddFundsButton={showAddFundsButton}
-          showWithdrawButton={showWithdrawButton}
-          showStartButton={showStartButton}
-          showPauseButton={showPauseButton}
-          openerClassName={styles.streamActionsButton}
-          openerContent={
-            <img
-              src={menuDotsIcon}
-              alt="Open stream actions"
-              className={styles.streamActionsIcon}
-            />
-          }
+        <CopyLinkButton
+          className={styles.streamLinkButton}
+          link={`https://explorer.testnet.near.org/transactions/${streamId}`}
         />
       </div>
     </>
@@ -156,7 +116,6 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
   const {
     color,
     iconType,
-    comment,
     streamPageLink,
     showAddFundsButton,
     showWithdrawButton,
@@ -176,10 +135,6 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
     progressStreamed,
     progressWithdrawn,
     cliffPercent,
-    cliffText,
-    speedFormattedValue,
-    speedUnit,
-    timeLeft,
     streamedText,
     streamedPercentage,
     withdrawnText,
@@ -217,19 +172,6 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
       {color && <ColorDot className={styles.color} color={color} />}
       <div className={styles.direction}>{direction === 'in' ? 'Incoming' : 'Outgoing'} stream</div>
       <CopyLinkButton className={styles.link} link={getStreamLink(streamId)} />
-      {/* <div className={styles.typeBadge}>{type === 'toWallet' ? 'to Wallet' : 'to NFT'}</div> */}
-      <div className={styles.speed}>
-        {speedFormattedValue}{' '}
-        <span className={styles.subtext}>
-          {symbol} / {speedUnit}
-        </span>
-      </div>
-      {timeLeft && (
-        <>
-          <img src={clockIcon} alt="remaining" className={styles.remainingIcon} />
-          <div className={styles.remaining}>{timeLeft} remaining</div>
-        </>
-      )}
       <div className={styles.streamed}>
         Streamed: {streamedText}{' '}
         <span className={styles.subtext}>({streamedPercentage.toString()}%)</span>
@@ -238,8 +180,6 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
         Withdrawn: {withdrawnText}{' '}
         <span className={styles.subtext}>({withdrawnPercentage.toString()}%)</span>
       </div>
-      {cliffText && <div className={styles.cliffRemaining}>Cliff ends within: {cliffText}</div>}
-      {comment && <div className={styles.comment}>{comment}</div>}
       <StreamListControls
         stream={stream}
         dropdownClassName={styles.controlDropdown}
@@ -282,9 +222,7 @@ export const StreamsList = ({
   <div className={cn(styles.container, className)}>
     <section className={styles.streamGrid}>
       <h3 className={cn(styles.leftStickyCell, styles.title)}>Amount to stream</h3>
-      {/* <h3 className={styles.title}>Type of streaming</h3> */}
-      <h3 className={styles.title}>Wallet address</h3>
-      <h3 className={styles.title}>Comment</h3>
+      <h3 className={styles.title}>NFT address</h3>
 
       {useList($filteredStreams, {
         getKey: ({id}) => id,

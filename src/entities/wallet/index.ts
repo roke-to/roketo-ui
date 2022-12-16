@@ -74,6 +74,14 @@ export const $archivedStreams = createStore<{
   streamsLoaded: false,
 });
 
+export const $streamsToNft = createStore<{
+  streams: RoketoStream[];
+  streamsLoaded: boolean;
+}>({
+  streams: [],
+  streamsLoaded: false,
+});
+
 // eslint-disable-next-line arrow-body-style
 const getUserFx = createEffect(async (accountId: string) => {
   return ecoApi.users.findOne(accountId);
@@ -100,6 +108,11 @@ const getNotificationsFx = createEffect(async () => {
 const getArchivedStreamsFx = createEffect(async () => {
   const allStreams = await ecoApi.archivedStreams.findArchivedStreams();
   return allStreams.map((stream) => stream.payload.stream);
+});
+
+const getStreamsToNFTFx = createEffect(async (accountId: string) => {
+  console.log(accountId);
+  return ecoApi.tokens.findAllNftTransactions(accountId);
 });
 
 export const updateUserFx = attach({
@@ -309,7 +322,14 @@ sample({
 sample({
   clock: $accountId,
   filter: Boolean,
-  target: [getUserFx, getNotificationsFx, getArchivedStreamsFx, getUserFTsFx, getUserNFTsFx],
+  target: [
+    getUserFx,
+    getNotificationsFx,
+    getArchivedStreamsFx,
+    getStreamsToNFTFx,
+    getUserFTsFx,
+    getUserNFTsFx,
+  ],
 });
 
 sample({
@@ -374,6 +394,33 @@ sample({
 sample({
   clock: archivedStreamsUpdateTimerFx.done,
   target: getArchivedStreamsFx,
+});
+
+const streamsToNFTUpdateTimerFx = createEffect(
+  () =>
+    new Promise<void>((rs) => {
+      setTimeout(rs, 5000);
+    }),
+);
+
+sample({
+  clock: getStreamsToNFTFx.done,
+  target: streamsToNFTUpdateTimerFx,
+});
+
+sample({
+  clock: streamsToNFTUpdateTimerFx.done,
+  fn: ({params}: {params: any}) => params.params,
+  target: getStreamsToNFTFx,
+});
+
+sample({
+  clock: getStreamsToNFTFx.doneData,
+  fn: (streams) => ({
+    streams,
+    streamsLoaded: true,
+  }),
+  target: $streamsToNft,
 });
 
 /** clear user when there is no account id */

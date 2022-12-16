@@ -582,5 +582,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: 'json',
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags tokens
+     * @name FindAllNftTransactions
+     * @request GET:/tokens/nft_transactions/{accountId}
+     * @secure
+     * @response `200` `(RoketoStream)[]`
+     */
+    findAllNftTransactions: (accountId: string, params: RequestParams = {}) =>
+      this.request<RoketoStream[], any>({
+        path: `/tokens/nft_transactions/${accountId}`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
   };
 }

@@ -12,7 +12,8 @@ import {ProgressBar} from '~/shared/ui/components/ProgressBar';
 
 import {Button} from '@ui/components/Button';
 
-import {$financialStatus, handleCreateStreamFx, handleCreateStreamToNFTFx} from './model';
+import {handleCreateStreamToNFTFx} from '../nft_streams/model';
+import {$financialStatus, handleCreateStreamFx} from './model';
 import {StreamFilters} from './StreamFilters';
 import {StreamsList} from './StreamsList';
 import styles from './styles.module.scss';

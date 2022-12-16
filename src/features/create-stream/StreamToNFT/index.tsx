@@ -4,7 +4,7 @@ import {useStore} from 'effector-react';
 import {Field, Formik} from 'formik';
 import React, {useState} from 'react';
 
-import {handleCreateStreamToNFTFx} from '~/pages/streams/model';
+import {handleCreateStreamToNFTFx} from '~/pages/nft_streams/model';
 
 import {$accountId, $listedTokens} from '~/entities/wallet';
 

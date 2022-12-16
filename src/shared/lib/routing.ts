@@ -15,6 +15,10 @@ export const ROUTES_MAP = {
     path: '/streams',
     title: 'Streams',
   },
+  nftStreams: {
+    path: '/nft_streams',
+    title: 'Streams to NFT',
+  },
   stream: {
     path: '/streams/:id',
     title: 'Stream',
