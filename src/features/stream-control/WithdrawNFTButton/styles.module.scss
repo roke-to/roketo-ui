@@ -1,0 +1,21 @@
+@import 'src/shared/ui/palette';
+
+.notAllowed {
+  cursor: not-allowed;
+}
+
+.small {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 15px;
+}
+
+.hasntPassedCliff {
+  color: $bluish-grey;
+  text-align: center;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+}

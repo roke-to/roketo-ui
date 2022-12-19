@@ -5,7 +5,7 @@ import {utils} from 'near-api-js';
 
 import {env} from '~/shared/config';
 
-// const GAS_SIZE = "200000000000000";
+const GAS_SIZE = '200000000000000';
 const STORAGE_DEPOSIT = '0.0025';
 
 type VaultTransferType = {
@@ -65,6 +65,41 @@ const countStorageDeposit = async ({
     depositAmount: depositAmount || '',
   };
 };
+
+export const createChangeFunctionCall = (
+  mediator: any,
+  methodName: any,
+  args: any,
+  gas: any,
+  deposit: any,
+) =>
+  mediator.signAndSendTransaction({
+    receiverId: env.ROKETO_VAULT_CONTRACT_NAME,
+    actions: [mediator.functionCall(methodName, args, gas, deposit)],
+  });
+
+export const withdrawNFT = ({
+  nftContractId,
+  nftId,
+  fungibleToken,
+  transactionMediator,
+}: {
+  nftContractId: string;
+  nftId: string;
+  fungibleToken: string;
+  transactionMediator: any;
+}) =>
+  createChangeFunctionCall(
+    transactionMediator,
+    'withdraw',
+    {
+      nft_contract_id: nftContractId,
+      nft_id: nftId,
+      fungible_token: fungibleToken,
+    },
+    GAS_SIZE,
+    '1',
+  );
 
 export const vaultTransfer = async ({
   owner_id,
@@ -136,4 +171,17 @@ export const vaultTransfer = async ({
     receiverId: tokenAccountId,
     actions,
   });
+};
+
+export const parseNftContract = (description: string) => {
+  let nftId = '';
+  let nftContractId = '';
+
+  try {
+    const parsedDescription = JSON.parse(JSON.parse(`"${description}"`));
+    nftId = parsedDescription.nft_id; // eslint-disable-next-line no-empty
+    nftContractId = parsedDescription.nft_contract_id; // eslint-disable-next-line no-empty
+  } catch {}
+
+  return {nftId, nftContractId};
 };

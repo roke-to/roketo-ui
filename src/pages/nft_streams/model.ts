@@ -1,12 +1,8 @@
 import {
-  ableToAddFunds,
-  ableToPauseStream,
-  ableToStartStream,
   calculateCliffEndTimestamp,
   calculateCliffPercent,
   formatTimeLeft,
   getStreamDirection,
-  isActiveStream,
   parseColor,
   parseComment,
 } from '@roketo/sdk';
@@ -31,6 +27,7 @@ import {areArraysDifferent, areObjectsDifferent, recordUpdater} from '~/shared/l
 import {
   DirectionFilter,
   FilterFn,
+  getDirectionFilter,
   getTextFilter,
   StatusFilter,
   StreamSort,
@@ -38,7 +35,7 @@ import {
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
-import {vaultTransfer} from '~/shared/lib/vaultContract';
+import {parseNftContract, vaultTransfer} from '~/shared/lib/vaultContract';
 
 import {sorts} from './constants';
 import type {StreamCardData, StreamProgressData} from './types';
@@ -59,6 +56,7 @@ export const $streamFilter = createStore({
   text: '',
 });
 
+export const changeDirectionFilter = createEvent<DirectionFilter>();
 export const changeTextFilter = createEvent<string>();
 
 export const $statusFilterCounts = createStore<Record<StatusFilter, number>>({
@@ -133,8 +131,11 @@ sample({
 sample({
   source: {streams: $streamsToNft, filter: $streamFilter, accountId: $accountId, sort: $streamSort},
   target: $filteredStreams,
-  fn({streams: {streams}, filter: {text}, accountId, sort}) {
-    const filters = [getTextFilter(accountId, text)].filter((fn): fn is FilterFn => !!fn);
+  fn({streams: {streams}, filter: {direction, text}, accountId, sort}) {
+    const filters = [
+      getDirectionFilter(accountId, direction),
+      getTextFilter(accountId, text),
+    ].filter((fn): fn is FilterFn => !!fn);
 
     const result =
       filters.length === 0
@@ -237,17 +238,22 @@ sample({
       const direction = getStreamDirection(stream, accountId);
       const isIncomingStream = direction === 'IN';
       const iconType: keyof typeof STREAM_STATUS = 'Finished';
+      const nftDetails = parseNftContract(stream.description);
+
       return {
         streamPageLink: `https://explorer.testnet.near.org/transactions/${stream.id}`,
         comment: parseComment(stream.description),
         color: parseColor(stream.description),
         name: isIncomingStream ? stream.owner_id : stream.receiver_id,
         isLocked: stream.is_locked,
-        showAddFundsButton: ableToAddFunds(stream, accountId),
-        showWithdrawButton: direction === 'IN' && isActiveStream(stream),
-        showStartButton: ableToStartStream(stream, accountId),
-        showPauseButton: ableToPauseStream(stream, accountId),
+        showAddFundsButton: false,
+        showWithdrawButton: direction === 'IN',
+        showStartButton: false,
+        showPauseButton: false,
+        showStopButton: false,
         iconType,
+        nftId: nftDetails.nftId || '',
+        nftContract: nftDetails.nftContractId || '',
       };
     }),
   target: $streamCardsData,
@@ -268,4 +274,5 @@ sample({
   target: $selectedStream,
 });
 
+$streamFilter.on(changeDirectionFilter, (filter, direction) => ({...filter, direction}));
 $streamFilter.on(changeTextFilter, (filter, text) => ({...filter, text}));

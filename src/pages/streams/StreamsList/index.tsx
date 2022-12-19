@@ -137,6 +137,7 @@ const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
           showWithdrawButton={showWithdrawButton}
           showStartButton={showStartButton}
           showPauseButton={showPauseButton}
+          showStopButton
           openerClassName={styles.streamActionsButton}
           openerContent={
             <img
@@ -248,6 +249,7 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
         showWithdrawButton={showWithdrawButton}
         showStartButton={showStartButton}
         showPauseButton={showPauseButton}
+        showStopButton
         className={styles.streamActions}
         openerClassName={styles.streamActionsButtonExpanded}
         openerContent="Stream actions"

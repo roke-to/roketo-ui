@@ -111,8 +111,8 @@ const getArchivedStreamsFx = createEffect(async () => {
 });
 
 const getStreamsToNFTFx = createEffect(async (accountId: string) => {
-  console.log(accountId);
-  return ecoApi.tokens.findAllNftTransactions(accountId);
+  const alllNftStreams = await ecoApi.nftStreams.findAllNftTransactions(accountId);
+  return alllNftStreams.map(({payload}) => payload.stream);
 });
 
 export const updateUserFx = attach({

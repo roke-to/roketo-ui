@@ -1,7 +1,7 @@
 import type {RoketoStream} from '@roketo/sdk/dist/types';
 import {BigNumber} from 'bignumber.js';
 
-import {StreamSort} from '~/shared/lib/getFilters';
+import {DirectionFilter, StreamSort} from '~/shared/lib/getFilters';
 
 import {OrderType} from '@ui/icons/Sort';
 
@@ -13,10 +13,13 @@ export const streamCardDataDefaults: StreamCardData = {
   color: '',
   name: '',
   isLocked: false,
+  nftId: '',
+  nftContract: '',
   showAddFundsButton: false,
   showWithdrawButton: false,
   showStartButton: false,
   showPauseButton: false,
+  showStopButton: false,
   iconType: 'Initialized',
 };
 
@@ -58,3 +61,4 @@ function compareBy(a: RoketoStream, b: RoketoStream, key: keyof RoketoStream) {
 }
 
 export const sortOptions: StreamSort[] = Object.values(sorts);
+export const directionOptions: DirectionFilter[] = ['All', 'Incoming', 'Outgoing'];

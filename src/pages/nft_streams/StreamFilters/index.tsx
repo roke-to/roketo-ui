@@ -12,12 +12,13 @@ import {RadioButton} from '~/shared/kit/RadioButton';
 import {Button} from '@ui/components/Button';
 import {OrderType, SortIcon} from '@ui/icons/Sort';
 
-import {sortOptions} from '../constants';
+import {directionOptions, sortOptions} from '../constants';
 import {
   $filteredStreams,
   $statusFilterCounts,
   $streamFilter,
   $streamSort,
+  changeDirectionFilter,
   changeStreamSort,
   changeTextFilter,
 } from '../model';
@@ -29,7 +30,7 @@ export function StreamFilters({className}: {className: string}) {
   const [showInput, setShowInput] = useState(false);
   const [showCompactFilterModal, setShowCompactFilterModal] = useState(false);
 
-  const [sorting, {text: filterText}, isSmallScreen] = useUnit([
+  const [sorting, {direction: activeDirection, text: filterText}, isSmallScreen] = useUnit([
     $streamSort,
     $streamFilter,
     $statusFilterCounts,
@@ -45,6 +46,20 @@ export function StreamFilters({className}: {className: string}) {
 
   return (
     <div className={cn(styles.root, className)}>
+      <div className={styles.directionSorts}>
+        {directionOptions.map((direction) => (
+          <Button
+            key={direction}
+            className={cn(styles.directionSort, {
+              [styles.directionActive]: direction === activeDirection,
+            })}
+            onClick={() => changeDirectionFilter(direction)}
+            disabled={isEmptyList}
+          >
+            {direction}
+          </Button>
+        ))}
+      </div>
       <div className={cn(styles.textFilter, showInput && styles.withInput)} key="text-filter">
         <img src={magnifierIcon} className={styles.textFilterMagnifier} alt="search" />
         <input
@@ -93,6 +108,16 @@ export function StreamFilters({className}: {className: string}) {
         className={cn(styles.modalContent, styles.compactFilterModal)}
         overlayClassName={cn(styles.modalOverlay)}
       >
+        <h3>Direction:</h3>
+        {directionOptions.map((direction) => (
+          <RadioButton
+            key={direction}
+            active={direction === activeDirection}
+            label={<span>{direction}</span>}
+            value={direction}
+            onChange={changeDirectionFilter}
+          />
+        ))}
         <h3>Show first:</h3>
         {sortOptions.map((sort) => (
           <RadioButton
