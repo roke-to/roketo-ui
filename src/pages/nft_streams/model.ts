@@ -37,7 +37,7 @@ import {getRoundedPercentageRatio} from '~/shared/lib/math';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 import {parseNftContract, vaultTransfer} from '~/shared/lib/vaultContract';
 
-import {sorts} from './constants';
+import {linkToExplorer, sorts} from './constants';
 import type {StreamCardData, StreamProgressData} from './types';
 
 export const $streamListData = createStore(
@@ -58,13 +58,6 @@ export const $streamFilter = createStore({
 
 export const changeDirectionFilter = createEvent<DirectionFilter>();
 export const changeTextFilter = createEvent<string>();
-
-export const $statusFilterCounts = createStore<Record<StatusFilter, number>>({
-  All: 0,
-  Initialized: 0,
-  Active: 0,
-  Paused: 0,
-});
 
 export const changeStreamSort = createEvent<StreamSort>();
 export const $streamSort = createStore<StreamSort>(sorts.mostRecent);
@@ -241,7 +234,7 @@ sample({
       const nftDetails = parseNftContract(stream.description);
 
       return {
-        streamPageLink: `https://explorer.testnet.near.org/transactions/${stream.id}`,
+        streamPageLink: `${linkToExplorer}${stream.id}`,
         comment: parseComment(stream.description),
         color: parseColor(stream.description),
         name: isIncomingStream ? stream.owner_id : stream.receiver_id,

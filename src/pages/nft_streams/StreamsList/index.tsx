@@ -15,7 +15,7 @@ import {CopyLinkButton} from '@ui/components/CopyLinkButton';
 import {ProgressBar} from '@ui/components/ProgressBar';
 import {Spinner} from '@ui/components/Spinner';
 
-import {streamCardDataDefaults, streamProgressDataDefaults} from '../constants';
+import {linkToExplorer, streamCardDataDefaults, streamProgressDataDefaults} from '../constants';
 import {
   $filteredStreams,
   $selectedStream,
@@ -140,10 +140,7 @@ const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
       <StreamNFTId streamId={stream.id} />
 
       <div className={cn(styles.controlCell)}>
-        <CopyLinkButton
-          className={styles.streamLinkButton}
-          link={`https://explorer.testnet.near.org/transactions/${streamId}`}
-        />
+        <CopyLinkButton className={styles.streamLinkButton} link={`${linkToExplorer}${streamId}`} />
         {showWithdrawButton && (
           <StreamListControls
             stream={stream}

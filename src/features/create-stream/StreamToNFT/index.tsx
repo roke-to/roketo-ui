@@ -18,17 +18,17 @@ import {Button, DisplayMode as ButtonDisplayMode, ButtonType} from '@ui/componen
 import {ErrorSign} from '@ui/icons/ErrorSign';
 
 import {CommissionDetails} from '../CommissionDetails';
-import {INITIAL_NFT_FORM_VALUES, NftFormValues, StreamType} from '../constants';
+import {INITIAL_NFT_FORM_VALUES, NftFormValues} from '../constants';
 import {TokenSelector} from '../TokenSelector';
 import {formValidationSchema} from './model';
 import styles from './styles.module.scss';
 
-type CreateStreamProps = {
+type CreateStreamToNFTProps = {
   onFormSubmit: (values: NftFormValues) => Promise<void>;
   onFormCancel: () => void;
 };
 
-export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamProps) => {
+export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToNFTProps) => {
   const tokens = useStore($listedTokens);
   const accountId = useStore($accountId);
   const [submitError, setError] = useState<Error | null>(null);
@@ -38,7 +38,6 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamProps) => 
   const submitting = useStore(handleCreateStreamToNFTFx.pending);
 
   const handleFormSubmit = (nftFormValues: NftFormValues) => {
-    nftFormValues.type = StreamType.NFT; // eslint-disable-line no-param-reassign
     onFormSubmit(nftFormValues).catch((error) => setError(error));
   };
 

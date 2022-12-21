@@ -29,12 +29,12 @@ import {ArrowIcon} from './ArrowIcon';
 import {formValidationSchema} from './model';
 import styles from './styles.module.scss';
 
-type CreateStreamProps = {
+type CreateStreamToWalleProps = {
   onFormSubmit: (values: FormValues) => Promise<void>;
   onFormCancel: () => void;
 };
 
-export const StreamToWallet = ({onFormCancel, onFormSubmit}: CreateStreamProps) => {
+export const StreamToWallet = ({onFormCancel, onFormSubmit}: CreateStreamToWalleProps) => {
   const tokens = useStore($listedTokens);
   const accountId = useStore($accountId);
   const [submitError, setError] = useState<Error | null>(null);

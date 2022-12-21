@@ -64,7 +64,6 @@ export const $user = createStore<Partial<User>>({
 export const $notifications = createStore<Notification[] | null>(null);
 
 export const $fts = createStore<string[] | null>(null);
-export const $nfts = createStore<string[] | null>(null);
 
 export const $archivedStreams = createStore<{
   streams: RoketoStream[];
@@ -130,10 +129,6 @@ export const updateUserFx = attach({
 
 const getUserFTsFx = createEffect(async (accountId: string) =>
   ecoApi.tokens.findAllTokens(accountId),
-);
-
-const getUserNFTsFx = createEffect(async (accountId: string) =>
-  ecoApi.tokens.findAllNfTs(accountId),
 );
 
 export const resendVerificationEmailFx = attach({
@@ -322,14 +317,7 @@ sample({
 sample({
   clock: $accountId,
   filter: Boolean,
-  target: [
-    getUserFx,
-    getNotificationsFx,
-    getArchivedStreamsFx,
-    getStreamsToNFTFx,
-    getUserFTsFx,
-    getUserNFTsFx,
-  ],
+  target: [getUserFx, getNotificationsFx, getArchivedStreamsFx, getStreamsToNFTFx, getUserFTsFx],
 });
 
 sample({
@@ -350,11 +338,6 @@ sample({
 sample({
   clock: getUserFTsFx.doneData,
   target: $fts,
-});
-
-sample({
-  clock: getUserNFTsFx.doneData,
-  target: $nfts,
 });
 
 sample({

@@ -15,7 +15,6 @@ import {OrderType, SortIcon} from '@ui/icons/Sort';
 import {directionOptions, sortOptions} from '../constants';
 import {
   $filteredStreams,
-  $statusFilterCounts,
   $streamFilter,
   $streamSort,
   changeDirectionFilter,
@@ -33,7 +32,6 @@ export function StreamFilters({className}: {className: string}) {
   const [sorting, {direction: activeDirection, text: filterText}, isSmallScreen] = useUnit([
     $streamSort,
     $streamFilter,
-    $statusFilterCounts,
     $isSmallScreen,
   ]);
 

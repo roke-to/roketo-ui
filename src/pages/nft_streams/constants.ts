@@ -7,6 +7,8 @@ import {OrderType} from '@ui/icons/Sort';
 
 import type {StreamCardData, StreamProgressData} from './types';
 
+export const linkToExplorer = 'https://explorer.testnet.near.org/transactions/';
+
 export const streamCardDataDefaults: StreamCardData = {
   streamPageLink: '',
   comment: '',
