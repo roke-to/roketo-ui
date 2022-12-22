@@ -57,3 +57,29 @@ export const INITIAL_FORM_VALUES: FormValues = {
   cliffDateTime: null,
   color: 'none',
 };
+
+export type NftFormValues = FormValues & {
+  nftId: string;
+  nftContractId: string;
+};
+
+export const INITIAL_NFT_FORM_VALUES: NftFormValues = {
+  receiver: '',
+  streamName: '',
+  token: env.WNEAR_ID,
+  duration: 0,
+  deposit: 0,
+  isNotDelayed: true,
+  comment: '',
+  isUnlocked: true,
+  cliffDateTime: null,
+  color: 'none',
+  nftId: '',
+  nftContractId: '',
+};
+
+export type CreateStreamProps = {
+  onFormSubmit: (values: FormValues) => Promise<void>;
+  onNftFormSubmit: (values: NftFormValues) => Promise<void>;
+  onFormCancel: () => void;
+};

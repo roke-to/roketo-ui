@@ -63,7 +63,17 @@ export const $user = createStore<Partial<User>>({
 
 export const $notifications = createStore<Notification[] | null>(null);
 
+export const $fts = createStore<string[] | null>(null);
+
 export const $archivedStreams = createStore<{
+  streams: RoketoStream[];
+  streamsLoaded: boolean;
+}>({
+  streams: [],
+  streamsLoaded: false,
+});
+
+export const $streamsToNft = createStore<{
   streams: RoketoStream[];
   streamsLoaded: boolean;
 }>({
@@ -87,7 +97,7 @@ const KNOWN_NOTIFICATION_TYPES = new Set([
 ]);
 // eslint-disable-next-line arrow-body-style
 const getNotificationsFx = createEffect(async () => {
-  const allNotifications = await ecoApi.notifications.findAll();
+  const allNotifications = await ecoApi.notifications.findAllNotifications();
 
   return allNotifications.filter((notification: Notification) =>
     KNOWN_NOTIFICATION_TYPES.has(notification.type),
@@ -97,6 +107,11 @@ const getNotificationsFx = createEffect(async () => {
 const getArchivedStreamsFx = createEffect(async () => {
   const allStreams = await ecoApi.archivedStreams.findArchivedStreams();
   return allStreams.map((stream) => stream.payload.stream);
+});
+
+const getStreamsToNFTFx = createEffect(async (accountId: string) => {
+  const alllNftStreams = await ecoApi.nftStreams.findAllNftTransactions(accountId);
+  return alllNftStreams.map(({payload}) => payload.stream);
 });
 
 export const updateUserFx = attach({
@@ -111,6 +126,10 @@ export const updateUserFx = attach({
     }
   },
 });
+
+const getUserFTsFx = createEffect(async (accountId: string) =>
+  ecoApi.tokens.findAllTokens(accountId),
+);
 
 export const resendVerificationEmailFx = attach({
   source: $accountId,
@@ -298,7 +317,7 @@ sample({
 sample({
   clock: $accountId,
   filter: Boolean,
-  target: [getUserFx, getNotificationsFx, getArchivedStreamsFx],
+  target: [getUserFx, getNotificationsFx, getArchivedStreamsFx, getStreamsToNFTFx, getUserFTsFx],
 });
 
 sample({
@@ -314,6 +333,11 @@ sample({
 sample({
   clock: getNotificationsFx.doneData,
   target: $notifications,
+});
+
+sample({
+  clock: getUserFTsFx.doneData,
+  target: $fts,
 });
 
 sample({
@@ -353,6 +377,33 @@ sample({
 sample({
   clock: archivedStreamsUpdateTimerFx.done,
   target: getArchivedStreamsFx,
+});
+
+const streamsToNFTUpdateTimerFx = createEffect(
+  () =>
+    new Promise<void>((rs) => {
+      setTimeout(rs, 5000);
+    }),
+);
+
+sample({
+  clock: getStreamsToNFTFx.done,
+  target: streamsToNFTUpdateTimerFx,
+});
+
+sample({
+  clock: streamsToNFTUpdateTimerFx.done,
+  fn: ({params}: {params: any}) => params.params,
+  target: getStreamsToNFTFx,
+});
+
+sample({
+  clock: getStreamsToNFTFx.doneData,
+  fn: (streams) => ({
+    streams,
+    streamsLoaded: true,
+  }),
+  target: $streamsToNft,
 });
 
 /** clear user when there is no account id */
@@ -445,6 +496,22 @@ sample({
     const unknownTokens = streamsTokens.filter((token) => !(token in tokens));
     return {
       tokenNames: unknownTokens,
+      roketo,
+      nearAuth: near?.auth ?? null,
+    };
+  },
+});
+
+sample({
+  clock: $fts,
+  source: {
+    roketo: $roketoWallet,
+    near: $nearWallet,
+  },
+  target: requestUnknownTokensFx,
+  fn({roketo, near}, tokenNames) {
+    return {
+      tokenNames: tokenNames ?? [],
       roketo,
       nearAuth: near?.auth ?? null,
     };

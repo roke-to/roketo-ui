@@ -1,0 +1,128 @@
+@import 'src/shared/ui/palette';
+
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+.text {
+  font-size: 16px;
+  line-height: 19px;
+  font-weight: 500;
+}
+
+.status {
+  position: relative;
+  font-weight: 500;
+  font-size: 16px;
+  left: 12px;
+  line-height: 26px;
+}
+
+.overlay {
+  background-color: unset;
+  opacity: 1;
+
+  :global(.rc-tooltip-inner) {
+    border: none;
+    border-radius: 24px;
+    box-shadow: 0px 8px 20px rgba(87, 140, 219, 0.25);
+    z-index: 1;
+  }
+}
+
+.tooltip {
+  width: 285px;
+}
+
+.extendedInfo {
+  padding: 8px 6px;
+
+  .status {
+    line-height: 19px;
+    left: 0;
+  }
+
+  .progressBar {
+    margin-bottom: 20px;
+  }
+}
+
+.title {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 24px;
+  margin-bottom: 6px;
+}
+
+.innerStatus {
+  margin-bottom: 6px;
+}
+
+.subtext {
+  color: $grey;
+}
+
+.speed {
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+.remaining {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.clock {
+  margin-top: 2px;
+  margin-right: 8px;
+}
+
+.progress:not(:last-child) {
+  margin-bottom: 12px;
+}
+
+.streamName {
+  display: none;
+}
+
+.tokenSymbol {
+  color: $light-black;
+  opacity: 0.7;
+}
+
+.progressStatus {
+  display: contents;
+}
+
+/* Phone */
+@media (max-width: 767px) {
+  .root {
+    cursor: pointer;
+  }
+  .tooltip {
+    display: none;
+  }
+  .status {
+    display: flex;
+    width: calc(100% - 24px);
+  }
+  .streamName {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-basis: 30%;
+    flex-grow: 2;
+    flex-shrink: 0;
+  }
+  .progressStatus {
+    display: inline-flex;
+    flex-basis: 30%;
+    flex-grow: 2;
+    justify-content: end;
+    flex-shrink: 1;
+    align-items: baseline;
+    gap: 4px;
+    white-space: nowrap;
+  }
+}

@@ -12,6 +12,7 @@ import {ProgressBar} from '~/shared/ui/components/ProgressBar';
 
 import {Button} from '@ui/components/Button';
 
+import {handleCreateStreamToNFTFx} from '../nft_streams/model';
 import {$financialStatus, handleCreateStreamFx} from './model';
 import {StreamFilters} from './StreamFilters';
 import {StreamsList} from './StreamsList';
@@ -62,8 +63,6 @@ export const StreamsPage = () => {
     [setIsModalOpened, isModalOpened],
   );
 
-  const submitting = useStore(handleCreateStreamFx.pending);
-
   const {outcomeAmountInfo, incomeAmountInfo, availableForWithdrawal} = useStore($financialStatus);
 
   return (
@@ -96,10 +95,12 @@ export const StreamsPage = () => {
         <Modal isOpen={isModalOpened} onCloseModal={toggleModal}>
           <CreateStream
             onFormCancel={toggleModal}
+            onNftFormSubmit={(values) =>
+              handleCreateStreamToNFTFx(values).then(() => setIsModalOpened(false))
+            }
             onFormSubmit={(values) =>
               handleCreateStreamFx(values).then(() => setIsModalOpened(false))
             }
-            submitting={submitting}
           />
         </Modal>
       </div>

@@ -79,6 +79,8 @@ export interface RoketoStream {
   last_action: number;
   owner_id: string;
   receiver_id: string;
+  nft_id?: string;
+  nft_contract?: string;
   status: 'Initialized' | 'Active' | 'Paused';
   timestamp_created: number;
   token_account_id: string;
@@ -108,6 +110,19 @@ export interface Notification {
 }
 
 export interface ArchivedStream {
+  streamId: string;
+  accountId: string;
+  receiverId: string;
+
+  /** @format date-time */
+  startedAt: string;
+
+  /** @format date-time */
+  finishedAt: string;
+  payload: {stream: RoketoStream};
+}
+
+export interface NftStream {
   streamId: string;
   accountId: string;
   receiverId: string;
@@ -479,12 +494,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags notifications
-     * @name FindAll
+     * @name FindAllNotifications
      * @request GET:/notifications
      * @secure
      * @response `200` `(Notification)[]`
      */
-    findAll: (params: RequestParams = {}) =>
+    findAllNotifications: (params: RequestParams = {}) =>
       this.request<Notification[], any>({
         path: `/notifications`,
         method: 'GET',
@@ -542,6 +557,59 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/archived_streams`,
         method: 'GET',
         secure: true,
+        format: 'json',
+        ...params,
+      }),
+  };
+  tokens = {
+    /**
+     * No description
+     *
+     * @tags tokens
+     * @name FindAllTokens
+     * @request GET:/tokens/fts/{accountId}
+     * @secure
+     * @response `200` `(string)[]`
+     */
+    findAllTokens: (accountId: string, params: RequestParams = {}) =>
+      this.request<string[], any>({
+        path: `/tokens/fts/${accountId}`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags tokens
+     * @name FindAllNfTs
+     * @request GET:/tokens/nfts/{accountId}
+     * @secure
+     * @response `200` `(string)[]`
+     */
+    findAllNfTs: (accountId: string, params: RequestParams = {}) =>
+      this.request<string[], any>({
+        path: `/tokens/nfts/${accountId}`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+  };
+  nftStreams = {
+    /**
+     * No description
+     *
+     * @name FindAllNftTransactions
+     * @request GET:/nft_streams/{accountId}
+     * @response `200` `(NftStream)[]`
+     */
+    findAllNftTransactions: (accountId: string, params: RequestParams = {}) =>
+      this.request<NftStream[], any>({
+        path: `/nft_streams/${accountId}`,
+        method: 'GET',
         format: 'json',
         ...params,
       }),

@@ -18,6 +18,7 @@ import {DropdownOpener} from '~/shared/kit/DropdownOpener';
 
 import {StreamStatus} from '../StreamStatus';
 import {WithdrawButton} from '../WithdrawButton';
+import {WithdrawNFTButton} from '../WithdrawNFTButton';
 import {$loading, pauseStream, startStream, stopStream} from './model';
 import {PauseIcon} from './PauseIcon';
 import {StartIcon} from './StartIcon';
@@ -271,6 +272,7 @@ export function StreamListControls({
   showWithdrawButton,
   showStartButton,
   showPauseButton,
+  showStopButton,
   openerContent,
   openerClassName,
 }: {
@@ -282,6 +284,7 @@ export function StreamListControls({
   showWithdrawButton: boolean;
   showStartButton: boolean;
   showPauseButton: boolean;
+  showStopButton?: boolean;
   openerContent: ReactNode;
   openerClassName: string;
 }) {
@@ -386,9 +389,14 @@ export function StreamListControls({
             <AddFunds stream={stream} className={styles.controlButton} />
           </DropdownMenuItem>
         )}
-        {showWithdrawButton && (
+        {showWithdrawButton && showStopButton && (
           <DropdownMenuItem>
             <WithdrawButton stream={stream} className={styles.controlButton} />
+          </DropdownMenuItem>
+        )}
+        {showWithdrawButton && !showStopButton && (
+          <DropdownMenuItem>
+            <WithdrawNFTButton stream={stream} className={styles.controlButton} />
           </DropdownMenuItem>
         )}
         {showStartButton && (
@@ -419,19 +427,23 @@ export function StreamListControls({
           </DropdownMenuItem>
         )}
 
-        <DropdownMenuDivider className={styles.menuDivider} />
+        {showStopButton && (
+          <>
+            <DropdownMenuDivider className={styles.menuDivider} />
 
-        <DropdownMenuItem>
-          <button
-            type="button"
-            onClick={onClickStop}
-            className={cn(styles.controlButton, styles.stop)}
-            data-testid={testIds.streamStopButton}
-          >
-            <StopIcon />
-            <span>Stop</span>
-          </button>
-        </DropdownMenuItem>
+            <DropdownMenuItem>
+              <button
+                type="button"
+                onClick={onClickStop}
+                className={cn(styles.controlButton, styles.stop)}
+                data-testid={testIds.streamStopButton}
+              >
+                <StopIcon />
+                <span>Stop</span>
+              </button>
+            </DropdownMenuItem>
+          </>
+        )}
       </AdaptiveModal>
     </div>
   );
