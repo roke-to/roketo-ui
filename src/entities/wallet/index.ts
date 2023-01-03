@@ -127,9 +127,10 @@ export const updateUserFx = attach({
   },
 });
 
-const getUserFTsFx = createEffect(async (accountId: string) =>
-  ecoApi.tokens.findAllTokens(accountId),
-);
+const getUserFTsFx = createEffect(async (accountId: string) => {
+  const fts = await ecoApi.tokens.findAllTokens(accountId);
+  return fts.map(({list}) => list)[0];
+});
 
 export const resendVerificationEmailFx = attach({
   source: $accountId,

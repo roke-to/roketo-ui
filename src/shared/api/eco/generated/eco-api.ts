@@ -79,8 +79,6 @@ export interface RoketoStream {
   last_action: number;
   owner_id: string;
   receiver_id: string;
-  nft_id?: string;
-  nft_contract?: string;
   status: 'Initialized' | 'Active' | 'Paused';
   timestamp_created: number;
   token_account_id: string;
@@ -120,6 +118,18 @@ export interface ArchivedStream {
   /** @format date-time */
   finishedAt: string;
   payload: {stream: RoketoStream};
+}
+
+export interface UserFt {
+  accountId: string;
+  list: string[];
+  blockTimestamp: string;
+}
+
+export interface UserNft {
+  accountId: string;
+  list: string[];
+  blockTimestamp: string;
 }
 
 export interface NftStream {
@@ -569,10 +579,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name FindAllTokens
      * @request GET:/tokens/fts/{accountId}
      * @secure
-     * @response `200` `(string)[]`
+     * @response `200` `(UserFt)[]`
      */
     findAllTokens: (accountId: string, params: RequestParams = {}) =>
-      this.request<string[], any>({
+      this.request<UserFt[], any>({
         path: `/tokens/fts/${accountId}`,
         method: 'GET',
         secure: true,
@@ -587,10 +597,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name FindAllNfTs
      * @request GET:/tokens/nfts/{accountId}
      * @secure
-     * @response `200` `(string)[]`
+     * @response `200` `(UserNft)[]`
      */
     findAllNfTs: (accountId: string, params: RequestParams = {}) =>
-      this.request<string[], any>({
+      this.request<UserNft[], any>({
         path: `/tokens/nfts/${accountId}`,
         method: 'GET',
         secure: true,
@@ -602,6 +612,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
+     * @tags nft_streams
      * @name FindAllNftTransactions
      * @request GET:/nft_streams/{accountId}
      * @response `200` `(NftStream)[]`
