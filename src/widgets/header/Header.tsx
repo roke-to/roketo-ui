@@ -19,7 +19,12 @@ import styles from './styles.module.scss';
 import {PageList} from './ui/PagesList';
 import {ReactComponent as Warning} from './warning.svg';
 
-const ROUTES_TO_DISPLAY = [ROUTES_MAP.streams, ROUTES_MAP.nftStreams, ROUTES_MAP.archivedStreams];
+const ROUTES_TO_DISPLAY = [
+  ROUTES_MAP.streams,
+  ROUTES_MAP.nftTransfers,
+  ROUTES_MAP.nftStreams,
+  ROUTES_MAP.archivedStreams,
+];
 
 export const Header = () => {
   const showLegacyStreams = useShowLegacyStreams();

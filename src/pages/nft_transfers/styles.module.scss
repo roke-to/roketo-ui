@@ -12,6 +12,12 @@
   row-gap: 30px;
   column-gap: 40px;
 }
+.createStreamButton,
+.shadowCard {
+  grid-column: 1;
+  grid-column-start: 2;
+  grid-row: 1;
+}
 
 .streamListBlock {
   grid-column: 1 / span 3;
@@ -63,11 +69,11 @@
   grid-row: 1;
 }
 
-.createStreamButton {
-  grid-column: 1;
-  grid-row: 2;
-  white-space: nowrap;
-}
+// .createStreamButton {
+//   grid-column: 1;
+//   grid-row: 2;
+//   white-space: nowrap;
+// }
 
 .finance {
   font-weight: 600;
@@ -114,7 +120,6 @@
   }
   .createStreamButton {
     grid-column: 1;
-    grid-row: 3;
   }
   .withdrawalStatus {
     grid-column: 1 / span 1;

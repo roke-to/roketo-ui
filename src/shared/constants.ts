@@ -45,7 +45,7 @@ export const testIds = {
   createStreamLockedCheckbox: 'createStreamLockedCheckbox',
   createStreamCancelButton: 'createStreamCancelButton',
   createStreamSubmitButton: 'createStreamSubmitButton',
-  createStreamToNFTSubmitButton: 'createStreamToNFTSubmitButton',
+  createTransferToNFTSubmitButton: 'createTransferToNFTSubmitButton',
   toggleNotificationsButton: 'toggleNotificationsButton',
   notificationsLoader: 'notificationsLoader',
   notificationsContainer: 'notificationsContainer',

@@ -26,6 +26,16 @@ import {getChangedFields} from '~/shared/lib/changeDetection';
 
 import {$walletSelector} from './selector';
 
+const KNOWN_NOTIFICATION_TYPES = new Set([
+  'StreamStarted',
+  'StreamPaused',
+  'StreamFinished',
+  'StreamIsDue',
+  'StreamContinued',
+  'StreamCliffPassed',
+  'StreamFundsAdded',
+]);
+
 export const initWallets = createEvent();
 
 export const $nearWallet = createStore<null | {
@@ -33,12 +43,15 @@ export const $nearWallet = createStore<null | {
   auth: NearAuth;
   WalletId: string;
 }>(null);
+
 export const $roketoWallet = createStore<null | ApiControl>(null);
+export const $streamToNftWallet = createStore<null | ApiControl>(null);
 export const $tokens = createStore<Record<string, RichToken>>({});
 export const $listedTokens = createStore<Record<string, RichToken>>({});
 export const $priceOracle = createStore<PriceOracle>({
   getPriceInUsd: () => '0',
 });
+
 export const $accountStreams = createStore<{
   inputs: RoketoStream[];
   outputs: RoketoStream[];
@@ -49,21 +62,15 @@ export const $accountStreams = createStore<{
   streamsLoaded: false,
 });
 
-export const $isSignedIn = $nearWallet.map((wallet) => wallet?.auth.signedIn ?? false);
-
-export const $account = $roketoWallet.map((wallet) => wallet?.roketoAccount ?? null);
-
-export const $accountId = $nearWallet.map((wallet) => wallet?.auth.accountId ?? null);
-
-export const $user = createStore<Partial<User>>({
-  name: '',
-  email: '',
-  isEmailVerified: false,
+export const $accountNftStreams = createStore<{
+  inputs: RoketoStream[];
+  outputs: RoketoStream[];
+  streamsLoaded: boolean;
+}>({
+  inputs: [],
+  outputs: [],
+  streamsLoaded: false,
 });
-
-export const $notifications = createStore<Notification[] | null>(null);
-
-export const $fts = createStore<string[] | null>(null);
 
 export const $archivedStreams = createStore<{
   streams: RoketoStream[];
@@ -81,20 +88,27 @@ export const $streamsToNft = createStore<{
   streamsLoaded: false,
 });
 
+export const $user = createStore<Partial<User>>({
+  name: '',
+  email: '',
+  isEmailVerified: false,
+});
+
+export const $notifications = createStore<Notification[] | null>(null);
+
+export const $fts = createStore<string[] | null>(null);
+
+export const $isSignedIn = $nearWallet.map((wallet) => wallet?.auth.signedIn ?? false);
+
+export const $account = $roketoWallet.map((wallet) => wallet?.roketoAccount ?? null);
+
+export const $accountId = $nearWallet.map((wallet) => wallet?.auth.accountId ?? null);
+
 // eslint-disable-next-line arrow-body-style
 const getUserFx = createEffect(async (accountId: string) => {
   return ecoApi.users.findOne(accountId);
 });
 
-const KNOWN_NOTIFICATION_TYPES = new Set([
-  'StreamStarted',
-  'StreamPaused',
-  'StreamFinished',
-  'StreamIsDue',
-  'StreamContinued',
-  'StreamCliffPassed',
-  'StreamFundsAdded',
-]);
 // eslint-disable-next-line arrow-body-style
 const getNotificationsFx = createEffect(async () => {
   const allNotifications = await ecoApi.notifications.findAllNotifications();
@@ -235,6 +249,16 @@ const requestAccountStreamsFx = createEffect(
     return {inputs, outputs};
   },
 );
+// const requestAccountStreamsToNftFx = createEffect(
+//   async ({accountId, contract}: Pick<ApiControl, 'accountId' | 'contract'>) => {
+//     const c = env.STREAM_TO_NFT_CONTRACT_NAME;
+//     const [inputs, outputs] = await Promise.all([
+//       getIncomingStreams({from: 0, limit: 500, accountId, c}),
+//       getOutgoingStreams({from: 0, limit: 500, accountId, contract}),
+//     ]);
+//     return {inputs, outputs};
+//   },
+// );
 
 const requestUnknownTokensFx = createEffect(
   async ({
@@ -300,6 +324,13 @@ sample({
   fn: ({accountId, contract}) => ({accountId, contract}),
   target: requestAccountStreamsFx,
 });
+// sample({
+//   clock: [lastCreatedStreamUpdated, streamsRevalidationTimerFx.doneData],
+//   source: $roketoWallet,
+//   filter: Boolean,
+//   fn: ({accountId, contract}) => ({accountId, contract}),
+//   target: requestAccountStreamsToNftFx,
+// });
 /**
  * when account streams successfully requested
  * save them to store $accountStreams

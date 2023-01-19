@@ -2,12 +2,10 @@ import type {RoketoStream} from '@roketo/sdk/dist/types';
 import cn from 'classnames';
 import {useList, useStore, useStoreMap} from 'effector-react';
 import React, {memo} from 'react';
-import {Link} from 'react-router-dom';
 
 import {StreamListControls} from '~/features/stream-control/StreamControls';
 
 import type {STREAM_STATUS} from '~/shared/api/roketo/constants';
-import {Badge} from '~/shared/components/Badge';
 import {testIds} from '~/shared/constants';
 import {ColorDot} from '~/shared/kit/ColorDot';
 import {getStreamLink} from '~/shared/lib/routing';
@@ -16,9 +14,8 @@ import {Button} from '@ui/components/Button';
 import {CopyLinkButton} from '@ui/components/CopyLinkButton';
 import {ProgressBar} from '@ui/components/ProgressBar';
 import {Spinner} from '@ui/components/Spinner';
-import clockIcon from '@ui/icons/clock.svg';
 
-import {streamCardDataDefaults, streamProgressDataDefaults} from '../constants';
+import {linkToExplorer, streamCardDataDefaults, streamProgressDataDefaults} from '../constants';
 import {
   $filteredStreams,
   $selectedStream,
@@ -33,51 +30,71 @@ import menuDotsIcon from './menuDots.svg';
 import pausedStreamIcon from './pausedStream.svg';
 import styles from './styles.module.scss';
 
-const StreamNameLink = memo(({streamId}: {streamId: string}) => {
-  const {streamPageLink, name, isLocked} = useStoreMap({
+const StreamNFTContract = memo(({streamId}: {streamId: string}) => {
+  const {streamPageLink, nftContract} = useStoreMap({
     store: $streamCardsData,
     keys: [streamId],
     fn: (items) => items[streamId],
     defaultValue: streamCardDataDefaults,
   });
   return (
-    <Link
-      to={streamPageLink}
+    <a
+      href={streamPageLink}
+      target="_blank"
+      className={cn(styles.contractCell)}
+      data-testid={testIds.streamListReceiver}
+      rel="noreferrer"
+    >
+      <span className={styles.nameText}>{nftContract}</span>
+    </a>
+  );
+});
+
+const StreamNFTId = memo(({streamId}: {streamId: string}) => {
+  const {streamPageLink, nftId} = useStoreMap({
+    store: $streamCardsData,
+    keys: [streamId],
+    fn: (items) => items[streamId],
+    defaultValue: streamCardDataDefaults,
+  });
+  return (
+    <a
+      href={streamPageLink}
+      target="_blank"
+      className={cn(styles.nftIdCell)}
+      data-testid={testIds.streamListReceiver}
+      rel="noreferrer"
+    >
+      <span className={styles.nameText}>{nftId}</span>
+    </a>
+  );
+});
+
+const StreamNameLink = memo(({streamId}: {streamId: string}) => {
+  const {streamPageLink, name} = useStoreMap({
+    store: $streamCardsData,
+    keys: [streamId],
+    fn: (items) => items[streamId],
+    defaultValue: streamCardDataDefaults,
+  });
+  return (
+    <a
+      href={streamPageLink}
+      target="_blank"
       className={cn(styles.nameCell)}
       data-testid={testIds.streamListReceiver}
+      rel="noreferrer"
     >
       <span className={styles.nameText}>{name}</span>
-
-      {isLocked && (
-        <Badge className={styles.inlineBadge} isOrange>
-          Locked
-        </Badge>
-      )}
-    </Link>
+    </a>
   );
 });
 
 const ViewDetailsLink = memo(({to}: {to: string}) => (
-  <Link to={to} className={styles.viewDetails}>
+  <a href={to} target="_blank" className={styles.viewDetails} rel="noreferrer">
     View details
-  </Link>
+  </a>
 ));
-
-const StreamCommentLink = memo(({streamId}: {streamId: string}) => {
-  const {streamPageLink, comment} = useStoreMap({
-    store: $streamCardsData,
-    keys: [streamId],
-    fn: (items) => items[streamId],
-    defaultValue: streamCardDataDefaults,
-  });
-  return (
-    <Link to={streamPageLink} className={cn(styles.commentCell)}>
-      <div className={styles.commentBlock} data-testid={testIds.streamListCommentCell}>
-        {comment}
-      </div>
-    </Link>
-  );
-});
 
 function selectIcon(iconType: keyof typeof STREAM_STATUS) {
   switch (iconType) {
@@ -94,14 +111,7 @@ function selectIcon(iconType: keyof typeof STREAM_STATUS) {
 
 const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
   const {id: streamId} = stream;
-  const {
-    color,
-    showAddFundsButton,
-    showWithdrawButton,
-    showStartButton,
-    showPauseButton,
-    iconType,
-  } = useStoreMap({
+  const {iconType, showWithdrawButton} = useStoreMap({
     store: $streamCardsData,
     keys: [streamId],
     fn: (items) => items[streamId],
@@ -109,7 +119,6 @@ const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
   });
   return (
     <>
-      <div className={styles.colorCell} style={{'--stream-color': color} as any} />
       <div className={cn(styles.statusCell)}>
         <img
           src={selectIcon(iconType)}
@@ -126,27 +135,31 @@ const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
 
       <StreamNameLink streamId={stream.id} />
 
-      <StreamCommentLink streamId={stream.id} />
+      <StreamNFTContract streamId={stream.id} />
+
+      <StreamNFTId streamId={stream.id} />
 
       <div className={cn(styles.controlCell)}>
-        <CopyLinkButton className={styles.streamLinkButton} link={getStreamLink(streamId)} />
-        <StreamListControls
-          stream={stream}
-          dropdownClassName={styles.controlDropdown}
-          showAddFundsButton={showAddFundsButton}
-          showWithdrawButton={showWithdrawButton}
-          showStartButton={showStartButton}
-          showPauseButton={showPauseButton}
-          showStopButton
-          openerClassName={styles.streamActionsButton}
-          openerContent={
-            <img
-              src={menuDotsIcon}
-              alt="Open stream actions"
-              className={styles.streamActionsIcon}
-            />
-          }
-        />
+        <CopyLinkButton className={styles.streamLinkButton} link={`${linkToExplorer}${streamId}`} />
+        {showWithdrawButton && (
+          <StreamListControls
+            stream={stream}
+            dropdownClassName={styles.controlDropdown}
+            showAddFundsButton={false}
+            showWithdrawButton={showWithdrawButton}
+            showStartButton={false}
+            showPauseButton={false}
+            showStopButton={false}
+            openerClassName={styles.streamActionsButton}
+            openerContent={
+              <img
+                src={menuDotsIcon}
+                alt="Open stream actions"
+                className={styles.streamActionsIcon}
+              />
+            }
+          />
+        )}
       </div>
     </>
   );
@@ -157,12 +170,14 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
   const {
     color,
     iconType,
-    comment,
     streamPageLink,
     showAddFundsButton,
-    showWithdrawButton,
-    showStartButton,
     showPauseButton,
+    showStartButton,
+    showStopButton,
+    showWithdrawButton,
+    nftContract,
+    nftId,
   } = useStoreMap({
     store: $streamCardsData,
     keys: [streamId],
@@ -177,12 +192,7 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
     progressStreamed,
     progressWithdrawn,
     cliffPercent,
-    cliffText,
-    speedFormattedValue,
-    speedUnit,
-    timeLeft,
     streamedText,
-    streamedPercentage,
     withdrawnText,
     withdrawnPercentage,
     direction,
@@ -218,29 +228,19 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
       {color && <ColorDot className={styles.color} color={color} />}
       <div className={styles.direction}>{direction === 'in' ? 'Incoming' : 'Outgoing'} stream</div>
       <CopyLinkButton className={styles.link} link={getStreamLink(streamId)} />
-      {/* <div className={styles.typeBadge}>{type === 'toWallet' ? 'to Wallet' : 'to NFT'}</div> */}
-      <div className={styles.speed}>
-        {speedFormattedValue}{' '}
-        <span className={styles.subtext}>
-          {symbol} / {speedUnit}
-        </span>
-      </div>
-      {timeLeft && (
-        <>
-          <img src={clockIcon} alt="remaining" className={styles.remainingIcon} />
-          <div className={styles.remaining}>{timeLeft} remaining</div>
-        </>
-      )}
       <div className={styles.streamed}>
-        Streamed: {streamedText}{' '}
-        <span className={styles.subtext}>({streamedPercentage.toString()}%)</span>
+        NFT address:
+        <span className={styles.subtext}> {nftContract}</span>
       </div>
+      <div className={styles.streamed}>
+        NFT ID:
+        <span className={styles.subtext}> {nftId}</span>
+      </div>
+      <div className={styles.streamed}>Streamed: {streamedText} </div>
       <div className={styles.withdrawn}>
         Withdrawn: {withdrawnText}{' '}
         <span className={styles.subtext}>({withdrawnPercentage.toString()}%)</span>
       </div>
-      {cliffText && <div className={styles.cliffRemaining}>Cliff ends within: {cliffText}</div>}
-      {comment && <div className={styles.comment}>{comment}</div>}
       <StreamListControls
         stream={stream}
         dropdownClassName={styles.controlDropdown}
@@ -249,7 +249,7 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
         showWithdrawButton={showWithdrawButton}
         showStartButton={showStartButton}
         showPauseButton={showPauseButton}
-        showStopButton
+        showStopButton={showStopButton}
         className={styles.streamActions}
         openerClassName={styles.streamActionsButtonExpanded}
         openerContent="Stream actions"
@@ -284,9 +284,9 @@ export const StreamsList = ({
   <div className={cn(styles.container, className)}>
     <section className={styles.streamGrid}>
       <h3 className={cn(styles.leftStickyCell, styles.title)}>Amount to stream</h3>
-      {/* <h3 className={styles.title}>Type of streaming</h3> */}
       <h3 className={styles.title}>Wallet address</h3>
-      <h3 className={styles.title}>Comment</h3>
+      <h3 className={styles.title}>NFT address</h3>
+      <h3 className={styles.title}>NFT ID</h3>
 
       {useList($filteredStreams, {
         getKey: ({id}) => id,

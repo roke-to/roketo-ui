@@ -6,20 +6,18 @@ import Modal from 'react-modal';
 import {blurGate} from '~/entities/blur';
 import {$isSmallScreen} from '~/entities/screen';
 
-import {Filter, FilterOptionWithCounter} from '~/shared/kit/Filter';
+import {Filter} from '~/shared/kit/Filter';
 import {RadioButton} from '~/shared/kit/RadioButton';
 
 import {Button} from '@ui/components/Button';
 import {OrderType, SortIcon} from '@ui/icons/Sort';
 
-import {directionOptions, sortOptions, statusOptions} from '../constants';
+import {directionOptions, sortOptions} from '../constants';
 import {
-  $allStreams,
-  $statusFilterCounts,
+  $filteredStreams,
   $streamFilter,
   $streamSort,
   changeDirectionFilter,
-  changeStatusFilter,
   changeStreamSort,
   changeTextFilter,
 } from '../model';
@@ -31,14 +29,13 @@ export function StreamFilters({className}: {className: string}) {
   const [showInput, setShowInput] = useState(false);
   const [showCompactFilterModal, setShowCompactFilterModal] = useState(false);
 
-  const [
-    sorting,
-    {direction: activeDirection, status, text: filterText},
-    statusFilterCounts,
-    isSmallScreen,
-  ] = useUnit([$streamSort, $streamFilter, $statusFilterCounts, $isSmallScreen]);
+  const [sorting, {direction: activeDirection, text: filterText}, isSmallScreen] = useUnit([
+    $streamSort,
+    $streamFilter,
+    $isSmallScreen,
+  ]);
 
-  const isEmptyList = useStoreMap($allStreams, (items) => items.length === 0);
+  const isEmptyList = useStoreMap($filteredStreams, (streams) => streams.length === 0);
 
   useGate(blurGate, {
     modalId: 'compactFilterModal',
@@ -88,22 +85,6 @@ export function StreamFilters({className}: {className: string}) {
         </button>
       </div>
       <Filter
-        options={statusOptions}
-        label="Status:"
-        active={status}
-        onChange={changeStatusFilter}
-        isDisabled={isEmptyList}
-        className={styles.statusBlock}
-        controlClassName={styles.filterControl}
-        renderOption={(option) => (
-          <FilterOptionWithCounter
-            key={option}
-            option={option}
-            count={statusFilterCounts[option]}
-          />
-        )}
-      />
-      <Filter
         options={sortOptions}
         label="Sort by:"
         active={sorting}
@@ -133,20 +114,6 @@ export function StreamFilters({className}: {className: string}) {
             label={<span>{direction}</span>}
             value={direction}
             onChange={changeDirectionFilter}
-          />
-        ))}
-        <h3>Status:</h3>
-        {statusOptions.map((option) => (
-          <RadioButton
-            key={option}
-            active={option === status}
-            label={
-              <span>
-                {option} <span className={styles.countText}>{statusFilterCounts[option]}</span>
-              </span>
-            }
-            value={option}
-            onChange={changeStatusFilter}
           />
         ))}
         <h3>Show first:</h3>

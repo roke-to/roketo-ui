@@ -5,7 +5,6 @@ import React from 'react';
 
 import {testIds} from '~/shared/constants';
 import {ProgressBar} from '~/shared/ui/components/ProgressBar';
-import clockIcon from '~/shared/ui/icons/clock.svg';
 
 import {streamProgressDataDefaults} from '../constants';
 import {$streamsProgress, selectStream} from '../model';
@@ -24,15 +23,11 @@ const ExtendedInfo = ({streamId, className}: {streamId: string; className?: stri
     progressStreamed,
     progressWithdrawn,
     cliffPercent,
-    speedFormattedValue,
-    speedUnit,
-    timeLeft,
     streamedText,
     streamedPercentage,
     withdrawnText,
     withdrawnPercentage,
     direction,
-    sign,
     cliffText,
   } = useStoreMap({
     store: $streamsProgress,
@@ -51,27 +46,13 @@ const ExtendedInfo = ({streamId, className}: {streamId: string; className?: stri
       </div>
 
       <ProgressBar
+        className={styles.progressBar}
         total={progressFull}
         streamed={progressStreamed}
         withdrawn={progressWithdrawn}
         cliffPercent={cliffPercent}
         direction={direction}
       />
-
-      <div className={cn(styles.status, styles.speed)}>
-        {sign}
-        {speedFormattedValue}{' '}
-        <span className={styles.subtext}>
-          {symbol} / {speedUnit}
-        </span>
-      </div>
-
-      {timeLeft && (
-        <div className={styles.remaining}>
-          <img src={clockIcon} className={styles.clock} alt="remaining" />
-          {timeLeft}
-        </div>
-      )}
 
       {cliffText && <div className={cn(styles.progress)}>Cliff ends within: {cliffText}</div>}
 

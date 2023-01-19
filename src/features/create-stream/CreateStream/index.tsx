@@ -4,6 +4,7 @@ import {useState} from 'react';
 import {CreateStreamProps} from '../constants';
 import {StreamToNFT} from '../StreamToNFT';
 import {StreamToWallet} from '../StreamToWallet';
+import {TransferToNFT} from '../TransferToNFT';
 import styles from './styles.module.scss';
 
 type ButtonProps = {
@@ -12,9 +13,10 @@ type ButtonProps = {
   label: string;
 };
 
-enum StreamDestinationType {
-  Wallet = 'Wallet',
-  NFT = 'NFT',
+enum TransactionType {
+  STREAM = 'STREAM',
+  TRANSFER_TO_NFT = 'TRANSFER_TO_NFT',
+  STREAM_TO_NFT = 'STREAM_TO_NFT',
 }
 
 const TabButton = ({onClick, isActive, label}: ButtonProps) => (
@@ -28,7 +30,7 @@ const TabButton = ({onClick, isActive, label}: ButtonProps) => (
 );
 
 export const CreateStream = ({onFormCancel, onFormSubmit, onNftFormSubmit}: CreateStreamProps) => {
-  const [chosenStreamType, setChosenStreamType] = useState(StreamDestinationType.Wallet);
+  const [chosenStreamType, setChosenStreamType] = useState(TransactionType.STREAM);
 
   return (
     <div className={styles.root}>
@@ -36,22 +38,30 @@ export const CreateStream = ({onFormCancel, onFormSubmit, onNftFormSubmit}: Crea
 
       <div className={styles.tabs}>
         <TabButton
-          onClick={() => setChosenStreamType(StreamDestinationType.Wallet)}
-          isActive={chosenStreamType === StreamDestinationType.Wallet}
-          label="To Wallet"
+          onClick={() => setChosenStreamType(TransactionType.STREAM)}
+          isActive={chosenStreamType === TransactionType.STREAM}
+          label="Stream To Wallet"
         />
         <TabButton
-          onClick={() => setChosenStreamType(StreamDestinationType.NFT)}
-          isActive={chosenStreamType === StreamDestinationType.NFT}
-          label="To NFT"
+          onClick={() => setChosenStreamType(TransactionType.TRANSFER_TO_NFT)}
+          isActive={chosenStreamType === TransactionType.TRANSFER_TO_NFT}
+          label="Transaction To NFT"
+        />
+        <TabButton
+          onClick={() => setChosenStreamType(TransactionType.STREAM_TO_NFT)}
+          isActive={chosenStreamType === TransactionType.STREAM_TO_NFT}
+          label="Stream To NFT"
         />
       </div>
 
-      {chosenStreamType === StreamDestinationType.NFT && (
-        <StreamToNFT onFormCancel={onFormCancel} onFormSubmit={onNftFormSubmit} />
+      {chosenStreamType === TransactionType.TRANSFER_TO_NFT && (
+        <TransferToNFT onFormCancel={onFormCancel} onFormSubmit={onNftFormSubmit} />
       )}
-      {chosenStreamType === StreamDestinationType.Wallet && (
+      {chosenStreamType === TransactionType.STREAM && (
         <StreamToWallet onFormCancel={onFormCancel} onFormSubmit={onFormSubmit} />
+      )}
+      {chosenStreamType === TransactionType.STREAM_TO_NFT && (
+        <StreamToNFT onFormCancel={onFormCancel} onFormSubmit={onFormSubmit} />
       )}
     </div>
   );

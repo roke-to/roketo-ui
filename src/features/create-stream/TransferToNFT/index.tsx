@@ -4,14 +4,12 @@ import {useStore} from 'effector-react';
 import {Field, Formik} from 'formik';
 import React, {useState} from 'react';
 
-import {handleCreateStreamFx} from '~/pages/streams/model';
+import {handleCreateTransferToNFTFx} from '~/pages/nft_transfers/model';
 
 import {$accountId, $listedTokens} from '~/entities/wallet';
 
 import {Balance, DisplayMode} from '~/shared/components/Balance';
-import {FormikCheckbox} from '~/shared/components/FormikCheckbox';
 import {FormikInput} from '~/shared/components/FormikInput';
-import {FormikTextArea} from '~/shared/components/FormikTextArea';
 import {FormikToggle} from '~/shared/components/FormikToggle';
 import {env} from '~/shared/config';
 import {testIds} from '~/shared/constants';
@@ -19,38 +17,33 @@ import {testIds} from '~/shared/constants';
 import {Button, DisplayMode as ButtonDisplayMode, ButtonType} from '@ui/components/Button';
 import {ErrorSign} from '@ui/icons/ErrorSign';
 
-import {CliffPeriodPicker} from '../CliffPeriodPicker';
-import {ColorPicker} from '../ColorPicker';
 import {CommissionDetails} from '../CommissionDetails';
-import {COMMENT_TEXT_LIMIT, FormValues, INITIAL_FORM_VALUES, StreamColor} from '../constants';
-import {StreamDurationCalcField} from '../StreamDurationCalcField';
+import {INITIAL_NFT_FORM_VALUES, NftFormValues} from '../constants';
 import {TokenSelector} from '../TokenSelector';
-import {ArrowIcon} from './ArrowIcon';
 import {formValidationSchema} from './model';
 import styles from './styles.module.scss';
 
-type CreateStreamToWalleProps = {
-  onFormSubmit: (values: FormValues) => Promise<void>;
+type CreateSTransferToNFTProps = {
+  onFormSubmit: (values: NftFormValues) => Promise<void>;
   onFormCancel: () => void;
 };
 
-export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWalleProps) => {
+export const TransferToNFT = ({onFormCancel, onFormSubmit}: CreateSTransferToNFTProps) => {
   const tokens = useStore($listedTokens);
   const accountId = useStore($accountId);
   const [submitError, setError] = useState<Error | null>(null);
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [streamAmount, setStreamAmount] = useState(0);
   const [deposit, setDeposit] = useState(0);
 
-  const submitting = useStore(handleCreateStreamFx.pending);
+  const submitting = useStore(handleCreateTransferToNFTFx.pending);
 
-  const handleFormSubmit = (formValues: FormValues) => {
-    onFormSubmit(formValues).catch((error) => setError(error));
+  const handleFormSubmit = (nftFormValues: NftFormValues) => {
+    onFormSubmit(nftFormValues).catch((error) => setError(error));
   };
 
   return (
     <Formik
-      initialValues={INITIAL_FORM_VALUES}
+      initialValues={INITIAL_NFT_FORM_VALUES}
       onSubmit={handleFormSubmit}
       validateOnBlur
       validationSchema={formValidationSchema}
@@ -61,11 +54,10 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
         const activeTokenAccountId = values.token;
         const token = tokens[activeTokenAccountId];
 
-        const handleReceiverChanged = async (event: React.FormEvent<HTMLFormElement>) => {
-          const receiverTokenAccountId = (event.target as HTMLInputElement).value;
+        const handleReceiverChanged = async () => {
           const {tokenContract} = token;
 
-          const storageDepositAccountIds = [accountId || '', receiverTokenAccountId];
+          const storageDepositAccountIds = [accountId || ''];
 
           const {depositSum} = await countStorageDeposit({
             tokenContract,
@@ -94,24 +86,20 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
           <form onSubmit={handleSubmit} className={styles.form}>
             <Field
               name="isNotDelayed"
-              disabled={Boolean(values.cliffDateTime)}
+              disabled
               component={FormikToggle}
               testId={testIds.createStreamDelayedCheckbox}
               className={cn(styles.formBlock, styles.start)}
               description="Start immediately"
-              hint={
-                values.isNotDelayed
-                  ? 'The stream will start immediately'
-                  : 'You can start stream manually later'
-              }
-              isChecked={values.cliffDateTime ? false : values.isNotDelayed}
+              hint="The stream will start immediately"
+              isChecked
               onDelayedChange={(isNotDelayed: boolean) => onChoose('isNotDelayed', isNotDelayed)}
             />
 
             <Field
               isRequired
-              name="receiver"
-              label="Receiver"
+              name="nftContractId"
+              label="NFT Contract"
               component={FormikInput}
               placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
               className={cn(styles.formBlock, styles.receiver)}
@@ -120,11 +108,14 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
             />
 
             <Field
-              name="color"
-              label="Add tag"
-              component={ColorPicker}
-              className={cn(styles.formBlock, styles.color)}
-              onChoose={(color: StreamColor) => onChoose('color', color, true)}
+              isRequired
+              name="nftId"
+              label="NFT ID"
+              component={FormikInput}
+              placeholder="0"
+              className={cn(styles.formBlock, styles.nftId)}
+              data-testid={testIds.createStreamReceiverInput}
+              onBlur={handleReceiverChanged}
             />
 
             <Field
@@ -150,60 +141,6 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
               component={TokenSelector}
               className={cn(styles.formBlock, styles.token)}
             />
-
-            <Field
-              isRequired
-              name="duration"
-              label="Stream duration"
-              component={StreamDurationCalcField}
-              onDurationChange={(duration: number) => onChoose('duration', duration, true)}
-              className={cn(styles.formBlock, styles.duration)}
-            />
-
-            <Field
-              maxLength={COMMENT_TEXT_LIMIT}
-              name="comment"
-              label="Comment"
-              placeholder="You can type something to highlight the stream"
-              component={FormikTextArea}
-              className={cn(styles.formBlock, styles.comment)}
-              data-testid={testIds.createStreamCommentInput}
-            />
-
-            <div className={styles.collapseBtnWrap}>
-              <button
-                type="button"
-                className={styles.collapseBtn}
-                onClick={() => setIsCollapsed(!isCollapsed)}
-                data-testid={testIds.collapseButton}
-              >
-                {!isCollapsed && 'More options'}
-                {isCollapsed && 'Less options'}
-                <ArrowIcon className={isCollapsed ? styles.rotated : ''} />
-              </button>
-            </div>
-
-            {isCollapsed && (
-              <>
-                <Field
-                  name="cliffDateTime"
-                  label="Cliff period"
-                  component={CliffPeriodPicker}
-                  onCliffDateTimeChange={(cliffDateTime: Date | null) =>
-                    onChoose('cliffDateTime', cliffDateTime, true)
-                  }
-                  className={cn(styles.formBlock, styles.cliff)}
-                />
-                <Field
-                  name="isUnlocked"
-                  description="Edited stream"
-                  type="checkbox"
-                  component={FormikCheckbox}
-                  data-testid={testIds.createStreamLockedCheckbox}
-                  className={cn(styles.formBlock, styles.isUnlocked)}
-                />
-              </>
-            )}
 
             <CommissionDetails
               amount={streamAmount}
@@ -234,7 +171,7 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
                 <Button
                   type={ButtonType.submit}
                   displayMode={ButtonDisplayMode.action}
-                  testId={testIds.createStreamSubmitButton}
+                  testId={testIds.createTransferToNFTSubmitButton}
                   disabled={submitting}
                 >
                   {submitting ? 'Creating...' : 'Create'}

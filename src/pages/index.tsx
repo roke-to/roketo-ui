@@ -17,6 +17,7 @@ import {ROUTES_MAP} from '~/shared/lib/routing';
 import {ArchivedStreamsPage} from './archived_streams';
 import {AuthorizePage} from './authorize';
 import {NftStreamsPage} from './nft_streams';
+import {NftTransfersPage} from './nft_transfers';
 import {NotFoundPage} from './not-found';
 import {StreamPage} from './stream';
 import {StreamsPage} from './streams';
@@ -43,7 +44,7 @@ export function Routing() {
 
   const handleBannerClose = () => setStaderBannerOpened(false);
 
-  const {root, stream, streams, nftStreams, archivedStreams, authorize} = ROUTES_MAP;
+  const {root, stream, streams, nftTransfers, nftStreams, archivedStreams, authorize} = ROUTES_MAP;
 
   const {legacyStream, legacyStreams} = LEGACY_ROUTES_MAP;
 
@@ -95,6 +96,15 @@ export function Routing() {
           path={streams.path}
         >
           <StreamsPage />
+        </PrivateRoute>
+
+        <PrivateRoute
+          exact
+          redirect={<Redirect to={authorize.path} />}
+          allowed={signedIn}
+          path={nftTransfers.path}
+        >
+          <NftTransfersPage />
         </PrivateRoute>
 
         <PrivateRoute

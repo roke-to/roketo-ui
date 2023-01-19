@@ -1,36 +1,19 @@
 import {
-  ableToAddFunds,
-  ableToPauseStream,
-  ableToStartStream,
   calculateCliffEndTimestamp,
   calculateCliffPercent,
-  calculateTimeLeft,
-  createStream,
   formatTimeLeft,
   getStreamDirection,
-  getStreamProgress,
-  isActiveStream,
   parseColor,
   parseComment,
 } from '@roketo/sdk';
 import type {RoketoStream} from '@roketo/sdk/dist/types';
 import {isPast} from 'date-fns';
 import {combine, createEffect, createEvent, createStore, sample} from 'effector';
-import {generatePath} from 'react-router-dom';
 
-import {colorDescriptions} from '~/features/create-stream/constants';
-import type {FormValues} from '~/features/create-stream/constants';
-import {getTokensPerSecondCount} from '~/features/create-stream/lib';
+import type {NftFormValues} from '~/features/create-stream/constants';
 
 import {$isSmallScreen} from '~/entities/screen';
-import {
-  $accountId,
-  $accountStreams,
-  $nearWallet,
-  $priceOracle,
-  $roketoWallet,
-  $tokens,
-} from '~/entities/wallet';
+import {$accountId, $nearWallet, $roketoWallet, $streamsToNft, $tokens} from '~/entities/wallet';
 
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import {
@@ -45,7 +28,6 @@ import {
   DirectionFilter,
   FilterFn,
   getDirectionFilter,
-  getStatusFilter,
   getTextFilter,
   StatusFilter,
   StreamSort,
@@ -53,14 +35,10 @@ import {
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
-import {ROUTES_MAP} from '~/shared/lib/routing';
+import {parseNftContract, vaultTransfer} from '~/shared/lib/vaultContract';
 
-import {sorts, statusOptions} from './constants';
-import {collectTotalFinancialAmountInfo, countTotalUSDWithdrawal} from './lib';
+import {linkToExplorer, sorts} from './constants';
 import type {StreamCardData, StreamProgressData} from './types';
-
-const redirectUrl = generatePath(ROUTES_MAP.streams.path);
-const returnPath = `${window.location.origin}/#${redirectUrl}`;
 
 export const $streamListData = createStore(
   {
@@ -69,8 +47,6 @@ export const $streamListData = createStore(
   },
   {updateFilter: areObjectsDifferent},
 );
-
-export const $allStreams = $accountStreams.map(({inputs, outputs}) => [...inputs, ...outputs]);
 
 export const $filteredStreams = createStore<RoketoStream[]>([], {updateFilter: areArraysDifferent});
 
@@ -81,58 +57,32 @@ export const $streamFilter = createStore({
 });
 
 export const changeDirectionFilter = createEvent<DirectionFilter>();
-export const changeStatusFilter = createEvent<StatusFilter>();
 export const changeTextFilter = createEvent<string>();
-
-export const $statusFilterCounts = createStore<Record<StatusFilter, number>>({
-  All: 0,
-  Initialized: 0,
-  Active: 0,
-  Paused: 0,
-});
 
 export const changeStreamSort = createEvent<StreamSort>();
 export const $streamSort = createStore<StreamSort>(sorts.mostRecent);
 
-export const handleCreateStreamFx = createProtectedEffect({
+export const handleCreateTransferToNFTFx = createProtectedEffect({
   source: combine($roketoWallet, $nearWallet, (roketo, near) =>
     !!roketo && !!near ? {roketo, near} : null,
   ),
-  async fn({roketo: {tokens, transactionMediator, accountId}, near: {auth}}, values: FormValues) {
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const {
-      receiver,
-      isNotDelayed,
-      comment,
-      deposit,
-      duration,
-      token,
-      isUnlocked,
-      cliffDateTime,
-      color,
-    } = values;
-    const {roketoMeta, tokenContract, meta} = tokens[token];
-    const tokensPerSec = getTokensPerSecondCount(meta, deposit, duration);
+  async fn(
+    {roketo: {tokens, transactionMediator, accountId}, near: {auth}},
+    values: NftFormValues,
+  ) {
+    const {deposit, nftId, nftContractId, token} = values;
+
+    const {tokenContract, meta} = tokens[token];
+
     const creator = () =>
-      createStream({
-        deposit: toYocto(meta.decimals, deposit),
-        comment,
-        receiverId: receiver,
-        tokenAccountId: token,
-        commissionOnCreate: roketoMeta.commission_on_create,
-        tokensPerSec,
-        delayed: !isNotDelayed,
-        callbackUrl: returnPath,
-        isLocked: !isUnlocked,
-        cliffPeriodSec: cliffDateTime
-          ? Math.floor((cliffDateTime.getTime() - Date.now()) / 1000)
-          : undefined,
-        color: color === 'none' ? null : colorDescriptions[color].color,
+      vaultTransfer({
+        owner_id: accountId,
+        amount: toYocto(meta.decimals, deposit),
         transactionMediator,
-        accountId,
         tokenContract,
-        roketoContractName: env.ROKETO_CONTRACT_NAME,
-        financeContractName: env.ROKETO_FINANCE_CONTRACT_NAME,
+        tokenAccountId: token,
+        nftId,
+        nftContractId,
         wNearId: env.WNEAR_ID,
       });
     try {
@@ -146,20 +96,6 @@ export const handleCreateStreamFx = createProtectedEffect({
       }
     }
   },
-});
-
-export const $financialStatus = createStore({
-  outcomeAmountInfo: {
-    total: 0,
-    streamed: 0,
-    withdrawn: 0,
-  },
-  incomeAmountInfo: {
-    total: 0,
-    streamed: 0,
-    withdrawn: 0,
-  },
-  availableForWithdrawal: 0,
 });
 
 const progressRedrawTimerFx = createEffect(
@@ -177,39 +113,20 @@ export const selectStream = createEvent<string | null>();
 export const $selectedStream = createStore<string | null>(null);
 
 sample({
-  source: {
-    tokens: $tokens,
-    streams: $accountStreams,
-    priceOracle: $priceOracle,
-  },
-  fn({tokens, streams: {inputs, outputs}, priceOracle}) {
-    const activeInputStreams = inputs.filter(isActiveStream);
-    const activeOutputStreams = outputs.filter(isActiveStream);
-    return {
-      outcomeAmountInfo: collectTotalFinancialAmountInfo(activeOutputStreams, tokens, priceOracle),
-      incomeAmountInfo: collectTotalFinancialAmountInfo(activeInputStreams, tokens, priceOracle),
-      availableForWithdrawal: countTotalUSDWithdrawal(activeInputStreams, tokens, priceOracle),
-    };
-  },
-  target: $financialStatus,
-});
-
-sample({
-  source: $accountStreams,
-  target: $streamListData,
-  fn: ({streamsLoaded, inputs, outputs}) => ({
+  source: $streamsToNft,
+  fn: ({streamsLoaded, streams}) => ({
     streamsLoading: !streamsLoaded,
-    hasStreams: inputs.length + outputs.length > 0,
+    hasStreams: streams.length > 0,
   }),
+  target: $streamListData,
 });
 
 sample({
-  source: {streams: $allStreams, filter: $streamFilter, accountId: $accountId, sort: $streamSort},
+  source: {streams: $streamsToNft, filter: $streamFilter, accountId: $accountId, sort: $streamSort},
   target: $filteredStreams,
-  fn({streams, filter: {direction, status, text}, accountId, sort}) {
+  fn({streams: {streams}, filter: {direction, text}, accountId, sort}) {
     const filters = [
       getDirectionFilter(accountId, direction),
-      getStatusFilter(status),
       getTextFilter(accountId, text),
     ].filter((fn): fn is FilterFn => !!fn);
 
@@ -218,22 +135,6 @@ sample({
         ? [...streams]
         : streams.filter((item) => filters.every((filter) => filter(item)));
     return result.sort(sort.fn);
-  },
-});
-
-sample({
-  source: {streams: $allStreams, filter: $streamFilter, accountId: $accountId},
-  target: $statusFilterCounts,
-  fn({streams, filter, accountId}) {
-    const directionFilter = getDirectionFilter(accountId, filter.direction);
-    const filteredStreams = directionFilter ? streams.filter(directionFilter) : streams;
-    return Object.fromEntries(
-      statusOptions.map((status) => {
-        const statusFilter = getStatusFilter(status);
-        const resultStreams = statusFilter ? filteredStreams.filter(statusFilter) : filteredStreams;
-        return [status, resultStreams.length];
-      }),
-    ) as Record<StatusFilter, number>;
   },
 });
 
@@ -267,8 +168,16 @@ sample({
       const {decimals} = token.meta;
       const symbol = isWNearTokenId(tokenId) ? 'NEAR' : token.meta.symbol;
       const cliffEndTimestamp = calculateCliffEndTimestamp(stream);
-      const progress = getStreamProgress({stream});
-      const timeLeft = calculateTimeLeft(stream);
+
+      const progress = {
+        full: Number(stream.balance).toFixed(0),
+        withdrawn: '0',
+        streamed: Number(stream.balance).toFixed(0),
+        left: 0,
+        available: 0,
+      };
+      const timeLeft = '0';
+
       const streamed = Number(toHumanReadableValue(decimals, progress.streamed, 3));
       const withdrawn = Number(toHumanReadableValue(decimals, progress.withdrawn, 3));
       const total = Number(toHumanReadableValue(decimals, progress.full, 3));
@@ -288,19 +197,7 @@ sample({
         tokensPerSec,
       );
       const direction = getStreamDirection(stream, accountId);
-      let sign: string;
-      switch (direction) {
-        case 'IN':
-          sign = '+';
-          break;
-        case 'OUT':
-          sign = '-';
-          break;
-        case null:
-        default:
-          sign = '';
-          break;
-      }
+
       return {
         symbol,
         progressFull: progress.full,
@@ -320,7 +217,7 @@ sample({
         withdrawnText,
         withdrawnPercentage,
         direction: direction ? (direction.toLowerCase() as 'in' | 'out') : null,
-        sign,
+        sign: '',
         name: direction === 'IN' ? stream.owner_id : stream.receiver_id,
       };
     }),
@@ -330,22 +227,26 @@ sample({
   clock: $filteredStreams,
   source: {accountId: $accountId, oldData: $streamCardsData},
   fn: ({accountId, oldData}, streams) =>
-    recordUpdater(oldData, streams, (stream, id) => {
+    recordUpdater(oldData, streams, (stream) => {
       const direction = getStreamDirection(stream, accountId);
       const isIncomingStream = direction === 'IN';
-      const iconType: keyof typeof STREAM_STATUS =
-        typeof stream.status === 'string' ? stream.status : 'Finished';
+      const iconType: keyof typeof STREAM_STATUS = 'Finished';
+      const nftDetails = parseNftContract(stream.description);
+
       return {
-        streamPageLink: generatePath(ROUTES_MAP.stream.path, {id}),
+        streamPageLink: `${linkToExplorer}${stream.id}`,
         comment: parseComment(stream.description),
         color: parseColor(stream.description),
         name: isIncomingStream ? stream.owner_id : stream.receiver_id,
         isLocked: stream.is_locked,
-        showAddFundsButton: ableToAddFunds(stream, accountId),
-        showWithdrawButton: direction === 'IN' && isActiveStream(stream),
-        showStartButton: ableToStartStream(stream, accountId),
-        showPauseButton: ableToPauseStream(stream, accountId),
+        showAddFundsButton: false,
+        showWithdrawButton: direction === 'IN',
+        showStartButton: false,
+        showPauseButton: false,
+        showStopButton: false,
         iconType,
+        nftId: nftDetails.nftId || '',
+        nftContract: nftDetails.nftContractId || '',
       };
     }),
   target: $streamCardsData,
@@ -367,5 +268,4 @@ sample({
 });
 
 $streamFilter.on(changeDirectionFilter, (filter, direction) => ({...filter, direction}));
-$streamFilter.on(changeStatusFilter, (filter, status) => ({...filter, status}));
 $streamFilter.on(changeTextFilter, (filter, text) => ({...filter, text}));
