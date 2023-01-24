@@ -8,6 +8,7 @@ import {testIds} from '~/shared/constants';
 
 import {Button} from '@ui/components/Button';
 
+import {handleCreateStreamToNFTFx} from '../nft_streams/model';
 import {handleCreateStreamFx} from '../streams/model';
 import {handleCreateTransferToNFTFx} from './model';
 import {StreamFilters} from './StreamFilters';
@@ -35,6 +36,9 @@ export const NftTransfersPage = () => {
           onFormCancel={toggleModal}
           onNftFormSubmit={(values) =>
             handleCreateTransferToNFTFx(values).then(() => setIsModalOpened(false))
+          }
+          onStreamToNftFormSubmit={(values) =>
+            handleCreateStreamToNFTFx(values).then(() => setIsModalOpened(false))
           }
           onFormSubmit={(values) =>
             handleCreateStreamFx(values).then(() => setIsModalOpened(false))

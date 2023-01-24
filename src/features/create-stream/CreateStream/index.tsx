@@ -29,7 +29,12 @@ const TabButton = ({onClick, isActive, label}: ButtonProps) => (
   </button>
 );
 
-export const CreateStream = ({onFormCancel, onFormSubmit, onNftFormSubmit}: CreateStreamProps) => {
+export const CreateStream = ({
+  onFormCancel,
+  onFormSubmit,
+  onNftFormSubmit,
+  onStreamToNftFormSubmit,
+}: CreateStreamProps) => {
   const [chosenStreamType, setChosenStreamType] = useState(TransactionType.STREAM);
 
   return (
@@ -61,7 +66,7 @@ export const CreateStream = ({onFormCancel, onFormSubmit, onNftFormSubmit}: Crea
         <StreamToWallet onFormCancel={onFormCancel} onFormSubmit={onFormSubmit} />
       )}
       {chosenStreamType === TransactionType.STREAM_TO_NFT && (
-        <StreamToNFT onFormCancel={onFormCancel} onFormSubmit={onFormSubmit} />
+        <StreamToNFT onFormCancel={onFormCancel} onFormSubmit={onStreamToNftFormSubmit} />
       )}
     </div>
   );

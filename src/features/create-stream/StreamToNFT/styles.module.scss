@@ -39,7 +39,11 @@
 }
 
 .receiver {
-  grid-column: auto / span 11;
+  grid-column: auto / span 8;
+}
+
+.nftId {
+  grid-column: auto / span 3;
 }
 
 .cliff {

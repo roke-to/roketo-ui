@@ -35,7 +35,7 @@ import {
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
-import {parseNftContract, vaultTransfer} from '~/shared/lib/vaultContract';
+import {createTransferToNFT, parseNftContract} from '~/shared/lib/vaultContract';
 
 import {linkToExplorer, sorts} from './constants';
 import type {StreamCardData, StreamProgressData} from './types';
@@ -75,7 +75,7 @@ export const handleCreateTransferToNFTFx = createProtectedEffect({
     const {tokenContract, meta} = tokens[token];
 
     const creator = () =>
-      vaultTransfer({
+      createTransferToNFT({
         owner_id: accountId,
         amount: toYocto(meta.decimals, deposit),
         transactionMediator,

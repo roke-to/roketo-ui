@@ -249,17 +249,6 @@ const requestAccountStreamsFx = createEffect(
     return {inputs, outputs};
   },
 );
-// const requestAccountStreamsToNftFx = createEffect(
-//   async ({accountId, contract}: Pick<ApiControl, 'accountId' | 'contract'>) => {
-//     const c = env.STREAM_TO_NFT_CONTRACT_NAME;
-//     const [inputs, outputs] = await Promise.all([
-//       getIncomingStreams({from: 0, limit: 500, accountId, c}),
-//       getOutgoingStreams({from: 0, limit: 500, accountId, contract}),
-//     ]);
-//     return {inputs, outputs};
-//   },
-// );
-
 const requestUnknownTokensFx = createEffect(
   async ({
     tokenNames,
@@ -324,13 +313,6 @@ sample({
   fn: ({accountId, contract}) => ({accountId, contract}),
   target: requestAccountStreamsFx,
 });
-// sample({
-//   clock: [lastCreatedStreamUpdated, streamsRevalidationTimerFx.doneData],
-//   source: $roketoWallet,
-//   filter: Boolean,
-//   fn: ({accountId, contract}) => ({accountId, contract}),
-//   target: requestAccountStreamsToNftFx,
-// });
 /**
  * when account streams successfully requested
  * save them to store $accountStreams

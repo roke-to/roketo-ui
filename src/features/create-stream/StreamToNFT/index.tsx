@@ -22,7 +22,12 @@ import {ErrorSign} from '@ui/icons/ErrorSign';
 import {CliffPeriodPicker} from '../CliffPeriodPicker';
 import {ColorPicker} from '../ColorPicker';
 import {CommissionDetails} from '../CommissionDetails';
-import {COMMENT_TEXT_LIMIT, FormValues, INITIAL_FORM_VALUES, StreamColor} from '../constants';
+import {
+  COMMENT_TEXT_LIMIT,
+  INITIAL_NFT_FORM_VALUES,
+  NftFormValues,
+  StreamColor,
+} from '../constants';
 import {StreamDurationCalcField} from '../StreamDurationCalcField';
 import {TokenSelector} from '../TokenSelector';
 import {ArrowIcon} from './ArrowIcon';
@@ -30,7 +35,7 @@ import {formValidationSchema} from './model';
 import styles from './styles.module.scss';
 
 type CreateStreamToWalleProps = {
-  onFormSubmit: (values: FormValues) => Promise<void>;
+  onFormSubmit: (values: NftFormValues) => Promise<void>;
   onFormCancel: () => void;
 };
 
@@ -44,13 +49,13 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
 
   const submitting = useStore(handleCreateStreamFx.pending);
 
-  const handleFormSubmit = (formValues: FormValues) => {
+  const handleFormSubmit = (formValues: NftFormValues) => {
     onFormSubmit(formValues).catch((error) => setError(error));
   };
 
   return (
     <Formik
-      initialValues={INITIAL_FORM_VALUES}
+      initialValues={INITIAL_NFT_FORM_VALUES}
       onSubmit={handleFormSubmit}
       validateOnBlur
       validationSchema={formValidationSchema}
@@ -110,11 +115,22 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
 
             <Field
               isRequired
-              name="receiver"
-              label="Receiver"
+              name="nftContractId"
+              label="NFT Contract"
               component={FormikInput}
               placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
               className={cn(styles.formBlock, styles.receiver)}
+              data-testid={testIds.createStreamReceiverInput}
+              onBlur={handleReceiverChanged}
+            />
+
+            <Field
+              isRequired
+              name="nftId"
+              label="NFT ID"
+              component={FormikInput}
+              placeholder="0"
+              className={cn(styles.formBlock, styles.nftId)}
               data-testid={testIds.createStreamReceiverInput}
               onBlur={handleReceiverChanged}
             />

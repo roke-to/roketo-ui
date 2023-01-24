@@ -81,5 +81,6 @@ export const INITIAL_NFT_FORM_VALUES: NftFormValues = {
 export type CreateStreamProps = {
   onFormSubmit: (values: FormValues) => Promise<void>;
   onNftFormSubmit: (values: NftFormValues) => Promise<void>;
+  onStreamToNftFormSubmit: (values: NftFormValues) => Promise<void>;
   onFormCancel: () => void;
 };

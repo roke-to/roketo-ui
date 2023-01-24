@@ -5,7 +5,6 @@ import {
   calculateCliffEndTimestamp,
   calculateCliffPercent,
   calculateTimeLeft,
-  createStream,
   formatTimeLeft,
   getStreamDirection,
   getStreamProgress,
@@ -18,8 +17,7 @@ import {isPast} from 'date-fns';
 import {combine, createEffect, createEvent, createStore, sample} from 'effector';
 import {generatePath} from 'react-router-dom';
 
-import {colorDescriptions} from '~/features/create-stream/constants';
-import type {FormValues} from '~/features/create-stream/constants';
+import {colorDescriptions, NftFormValues} from '~/features/create-stream/constants';
 import {getTokensPerSecondCount} from '~/features/create-stream/lib';
 
 import {$isSmallScreen} from '~/entities/screen';
@@ -54,13 +52,11 @@ import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
 import {ROUTES_MAP} from '~/shared/lib/routing';
+import {createStreamToNFT} from '~/shared/lib/vaultContract';
 
 import {sorts, statusOptions} from './constants';
 import {collectTotalFinancialAmountInfo, countTotalUSDWithdrawal} from './lib';
 import type {StreamCardData, StreamProgressData} from './types';
-
-const redirectUrl = generatePath(ROUTES_MAP.streams.path);
-const returnPath = `${window.location.origin}/#${redirectUrl}`;
 
 export const $streamListData = createStore(
   {
@@ -94,11 +90,14 @@ export const $statusFilterCounts = createStore<Record<StatusFilter, number>>({
 export const changeStreamSort = createEvent<StreamSort>();
 export const $streamSort = createStore<StreamSort>(sorts.mostRecent);
 
-export const handleCreateStreamFx = createProtectedEffect({
+export const handleCreateStreamToNFTFx = createProtectedEffect({
   source: combine($roketoWallet, $nearWallet, (roketo, near) =>
     !!roketo && !!near ? {roketo, near} : null,
   ),
-  async fn({roketo: {tokens, transactionMediator, accountId}, near: {auth}}, values: FormValues) {
+  async fn(
+    {roketo: {tokens, transactionMediator, accountId}, near: {auth}},
+    values: NftFormValues,
+  ) {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     const {
       receiver,
@@ -110,11 +109,13 @@ export const handleCreateStreamFx = createProtectedEffect({
       isUnlocked,
       cliffDateTime,
       color,
+      nftContractId,
+      nftId,
     } = values;
     const {roketoMeta, tokenContract, meta} = tokens[token];
     const tokensPerSec = getTokensPerSecondCount(meta, deposit, duration);
     const creator = () =>
-      createStream({
+      createStreamToNFT({
         deposit: toYocto(meta.decimals, deposit),
         comment,
         receiverId: receiver,
@@ -122,7 +123,8 @@ export const handleCreateStreamFx = createProtectedEffect({
         commissionOnCreate: roketoMeta.commission_on_create,
         tokensPerSec,
         delayed: !isNotDelayed,
-        callbackUrl: returnPath,
+        nftContractId,
+        nftId,
         isLocked: !isUnlocked,
         cliffPeriodSec: cliffDateTime
           ? Math.floor((cliffDateTime.getTime() - Date.now()) / 1000)
@@ -131,8 +133,6 @@ export const handleCreateStreamFx = createProtectedEffect({
         transactionMediator,
         accountId,
         tokenContract,
-        roketoContractName: env.ROKETO_CONTRACT_NAME,
-        financeContractName: env.ROKETO_FINANCE_CONTRACT_NAME,
         wNearId: env.WNEAR_ID,
       });
     try {
