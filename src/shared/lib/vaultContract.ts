@@ -302,7 +302,7 @@ export const createStreamToNFT = ({
     nft_id: nftId,
     callback: 'withdraw_call',
     args: JSON.stringify({...withdrawArgs}),
-    deposit,
+    deposit: '1',
   };
 
   const msg = JSON.stringify({
