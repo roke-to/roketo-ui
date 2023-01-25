@@ -1,3 +1,4 @@
+import * as Yup from 'yup';
 import {
   ableToAddFunds,
   ableToPauseStream,
@@ -23,6 +24,7 @@ import {getTokensPerSecondCount} from '~/features/create-stream/lib';
 import {$isSmallScreen} from '~/entities/screen';
 import {
   $accountId,
+  $accountNftStreams,
   $accountStreams,
   $nearWallet,
   $priceOracle,
@@ -58,6 +60,12 @@ import {sorts, statusOptions} from './constants';
 import {collectTotalFinancialAmountInfo, countTotalUSDWithdrawal} from './lib';
 import type {StreamCardData, StreamProgressData} from './types';
 
+export const withdrawFormValidationSchema = Yup.object().shape({
+  nftContractId: Yup.string().required('NFT Contract is required'),
+  nftId: Yup.string().required('NFT ID is required'),
+  fungibleToken: Yup.string().required('Fungible Token ID is required'),
+});
+
 export const $streamListData = createStore(
   {
     streamsLoading: true,
@@ -67,6 +75,7 @@ export const $streamListData = createStore(
 );
 
 export const $allStreams = $accountStreams.map(({inputs, outputs}) => [...inputs, ...outputs]);
+export const $allNFTStreams = $accountNftStreams.map(({outputs}) => [...outputs]);
 
 export const $filteredStreams = createStore<RoketoStream[]>([], {updateFilter: areArraysDifferent});
 

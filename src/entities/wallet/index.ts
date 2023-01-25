@@ -23,6 +23,7 @@ import {createNearInstance, createWalletSelectorInstance} from '~/shared/api/nea
 import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
 import {env} from '~/shared/config';
 import {getChangedFields} from '~/shared/lib/changeDetection';
+import {getOutgoingStreamsToNFT} from '~/shared/lib/vaultContract';
 
 import {$walletSelector} from './selector';
 
@@ -63,11 +64,9 @@ export const $accountStreams = createStore<{
 });
 
 export const $accountNftStreams = createStore<{
-  inputs: RoketoStream[];
   outputs: RoketoStream[];
   streamsLoaded: boolean;
 }>({
-  inputs: [],
   outputs: [],
   streamsLoaded: false,
 });
@@ -80,7 +79,7 @@ export const $archivedStreams = createStore<{
   streamsLoaded: false,
 });
 
-export const $streamsToNft = createStore<{
+export const $transfersToNft = createStore<{
   streams: RoketoStream[];
   streamsLoaded: boolean;
 }>({
@@ -123,9 +122,9 @@ const getArchivedStreamsFx = createEffect(async () => {
   return allStreams.map((stream) => stream.payload.stream);
 });
 
-const getStreamsToNFTFx = createEffect(async (accountId: string) => {
-  const alllNftStreams = await ecoApi.nftStreams.findAllNftTransactions(accountId);
-  return alllNftStreams.map(({payload}) => payload.stream);
+const getTransfersToNFTFx = createEffect(async (accountId: string) => {
+  const alllNftTransfers = await ecoApi.nftStreams.findAllNftTransactions(accountId);
+  return alllNftTransfers.map(({payload}) => payload.stream);
 });
 
 export const updateUserFx = attach({
@@ -236,6 +235,20 @@ const createRoketoWalletFx = createEffect(
   }) =>
     initApiControl({account, transactionMediator, roketoContractName: env.ROKETO_CONTRACT_NAME}),
 );
+const createNFTWalletFx = createEffect(
+  ({
+    account,
+    transactionMediator,
+  }: {
+    account: ConnectedWalletAccount;
+    transactionMediator: TransactionMediator;
+  }) =>
+    initApiControl({
+      account,
+      transactionMediator,
+      roketoContractName: env.STREAM_TO_NFT_CONTRACT_NAME,
+    }),
+);
 export const $appLoading = createStore(true);
 const createPriceOracleFx = createEffect((account: ConnectedWalletAccount) =>
   initPriceOracle({account}),
@@ -247,6 +260,18 @@ const requestAccountStreamsFx = createEffect(
       getOutgoingStreams({from: 0, limit: 500, accountId, contract}),
     ]);
     return {inputs, outputs};
+  },
+);
+const requestAccountStreamsToNFTFx = createEffect(
+  async ({accountId, contract}: Pick<ApiControl, 'accountId' | 'contract'>) => {
+    // console.log('requestAccountStreamsToNFTFx');
+
+    const [outputs] = await Promise.all([
+      getOutgoingStreamsToNFT({from: 0, limit: 500, accountId, contract}),
+      // getOutgoingStreams({from: 0, limit: 500, accountId, contract}),
+    ]);
+    // console.log(outputs);
+    return {outputs};
   },
 );
 const requestUnknownTokensFx = createEffect(
@@ -291,6 +316,12 @@ sample({
   fn: (wallet) => wallet.roketoAccount.last_created_stream,
   target: lastCreatedStreamUpdated,
 });
+sample({
+  clock: $streamToNftWallet,
+  filter: Boolean,
+  fn: (wallet) => wallet.roketoAccount.last_created_stream,
+  target: lastCreatedStreamUpdated,
+});
 /**
  * when roketo wallet becomes available or revalidation timer ends
  * start revalidation timer again
@@ -311,7 +342,14 @@ sample({
   source: $roketoWallet,
   filter: Boolean,
   fn: ({accountId, contract}) => ({accountId, contract}),
-  target: requestAccountStreamsFx,
+  target: [requestAccountStreamsFx, requestAccountStreamsToNFTFx],
+});
+sample({
+  clock: [lastCreatedStreamUpdated, streamsRevalidationTimerFx.doneData],
+  source: $streamToNftWallet,
+  filter: Boolean,
+  fn: ({accountId, contract}) => ({accountId, contract}),
+  target: requestAccountStreamsToNFTFx,
 });
 /**
  * when account streams successfully requested
@@ -326,12 +364,20 @@ sample({
   }),
   target: $accountStreams,
 });
+sample({
+  clock: requestAccountStreamsToNFTFx.doneData,
+  fn: ({outputs}) => ({
+    outputs,
+    streamsLoaded: true,
+  }),
+  target: $accountNftStreams,
+});
 
 /** when account id is exists, request user info and notifications for it */
 sample({
   clock: $accountId,
   filter: Boolean,
-  target: [getUserFx, getNotificationsFx, getArchivedStreamsFx, getStreamsToNFTFx, getUserFTsFx],
+  target: [getUserFx, getNotificationsFx, getArchivedStreamsFx, getTransfersToNFTFx, getUserFTsFx],
 });
 
 sample({
@@ -393,7 +439,7 @@ sample({
   target: getArchivedStreamsFx,
 });
 
-const streamsToNFTUpdateTimerFx = createEffect(
+const transfersToNFTUpdateTimerFx = createEffect(
   () =>
     new Promise<void>((rs) => {
       setTimeout(rs, 5000);
@@ -401,23 +447,23 @@ const streamsToNFTUpdateTimerFx = createEffect(
 );
 
 sample({
-  clock: getStreamsToNFTFx.done,
-  target: streamsToNFTUpdateTimerFx,
+  clock: getTransfersToNFTFx.done,
+  target: transfersToNFTUpdateTimerFx,
 });
 
 sample({
-  clock: streamsToNFTUpdateTimerFx.done,
+  clock: transfersToNFTUpdateTimerFx.done,
   fn: ({params}: {params: any}) => params.params,
-  target: getStreamsToNFTFx,
+  target: getTransfersToNFTFx,
 });
 
 sample({
-  clock: getStreamsToNFTFx.doneData,
+  clock: getTransfersToNFTFx.doneData,
   fn: (streams) => ({
     streams,
     streamsLoaded: true,
   }),
-  target: $streamsToNft,
+  target: $transfersToNft,
 });
 
 /** clear user when there is no account id */
@@ -463,7 +509,7 @@ sample({
 sample({
   clock: createNearWalletFx.doneData,
   fn: ({auth}) => ({account: auth.account, transactionMediator: auth.transactionMediator}),
-  target: [createRoketoWalletFx],
+  target: [createRoketoWalletFx, createRoketoWalletFx],
 });
 sample({
   clock: createNearWalletFx.doneData,
@@ -477,6 +523,10 @@ sample({
 sample({
   clock: createRoketoWalletFx.doneData,
   target: $roketoWallet,
+});
+sample({
+  clock: createNFTWalletFx.doneData,
+  target: $streamToNftWallet,
 });
 sample({
   clock: createRoketoWalletFx.doneData,
@@ -547,6 +597,7 @@ sample({
 
 $nearWallet.reset([logoutFx.done]);
 $roketoWallet.reset([logoutFx.done]);
+$streamToNftWallet.reset([logoutFx.done]);
 $user.reset([logoutFx.done]);
 $tokens.reset([logoutFx.done]);
 $priceOracle.reset([logoutFx.done]);

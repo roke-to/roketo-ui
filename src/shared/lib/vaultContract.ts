@@ -1,6 +1,8 @@
 import {isWNearTokenId} from '@roketo/sdk';
 import {
   FTContract,
+  RoketoContract,
+  RoketoStream,
   TransactionMediator, // RoketoContract
 } from '@roketo/sdk/dist/types';
 import {BigNumber} from 'bignumber.js';
@@ -8,7 +10,8 @@ import {utils} from 'near-api-js';
 
 import {env} from '~/shared/config';
 
-const GAS_SIZE = '200000000000000';
+// const GAS_SIZE = '200000000000000';
+const GAS_SIZE = '300000000000000';
 const STORAGE_DEPOSIT = '0.0025';
 
 type Create = {
@@ -33,12 +36,13 @@ type VaultTransferType = {
   wNearId: string;
 };
 
-// type GetStreamsType = {
-//   from: number;
-//   limit: number;
-//   contract: RoketoContract;
-//   accountId: string;
-// }
+type GetStreamsType = {
+  from: number;
+  limit: number;
+  // transactionMediator: TransactionMediator,
+  contract: RoketoContract;
+  accountId: string;
+};
 
 type StorageDepositType = {
   tokenContract: any;
@@ -155,18 +159,23 @@ export const vaultTransfer = async ({
   });
 };
 
-// export const getIncomingStreamsToNFT = ({
-//   from,
-//   limit,
-//   contract,
-//   accountId
-// }: GetStreamsType) => {
-//   return contract.get_account_incoming_streams({
-//     account_id: accountId,
-//     from,
-//     limit
-//   }).catch(() => []);
-// }
+export const getOutgoingStreamsToNFT = async ({
+  from,
+  limit,
+  contract,
+  accountId,
+}: GetStreamsType): Promise<RoketoStream[]> => {
+  const outgoingStreams = contract
+    .get_account_outgoing_streams({
+      account_id: accountId,
+      from,
+      limit,
+    })
+    .catch(() => []);
+
+  return outgoingStreams;
+};
+
 // export const getOutgoingStreamsToNFT = ({
 //   from,
 //   limit,
@@ -200,7 +209,7 @@ export const withdrawNFT = ({
 }: {
   nftContractId: string;
   nftId: string;
-  fungibleToken: string;
+  fungibleToken?: string;
   transactionMediator: any;
 }) =>
   createChangeFunctionCall(
@@ -210,6 +219,26 @@ export const withdrawNFT = ({
       nft_contract_id: nftContractId,
       nft_id: nftId,
       fungible_token: fungibleToken,
+    },
+    GAS_SIZE,
+    '1',
+  );
+
+export const withdrawAllNFT = ({
+  nftContractId,
+  nftId,
+  transactionMediator,
+}: {
+  nftContractId: string;
+  nftId: string;
+  transactionMediator: any;
+}) =>
+  createChangeFunctionCall(
+    transactionMediator,
+    'withdraw_all',
+    {
+      nft_contract_id: nftContractId,
+      nft_id: nftId,
     },
     GAS_SIZE,
     '1',

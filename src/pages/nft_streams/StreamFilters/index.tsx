@@ -14,7 +14,7 @@ import {OrderType, SortIcon} from '@ui/icons/Sort';
 
 import {directionOptions, sortOptions, statusOptions} from '../constants';
 import {
-  $allStreams,
+  $allNFTStreams,
   $statusFilterCounts,
   $streamFilter,
   $streamSort,
@@ -38,7 +38,7 @@ export function StreamFilters({className}: {className: string}) {
     isSmallScreen,
   ] = useUnit([$streamSort, $streamFilter, $statusFilterCounts, $isSmallScreen]);
 
-  const isEmptyList = useStoreMap($allStreams, (items) => items.length === 0);
+  const isEmptyList = useStoreMap($allNFTStreams, (items) => items.length === 0);
 
   useGate(blurGate, {
     modalId: 'compactFilterModal',

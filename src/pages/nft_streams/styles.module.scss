@@ -7,7 +7,7 @@
   padding: 24px 56px 28px 56px;
 
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   grid-auto-rows: max-content;
   row-gap: 30px;
   column-gap: 40px;
@@ -93,6 +93,28 @@
 .progressBar {
   margin-top: 12px;
   max-width: min(100%, 80vw);
+}
+
+.title {
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 28px;
+  margin-bottom: 24px;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  grid-auto-flow: dense;
+  gap: 24px;
+}
+
+.actionButtonsWrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+
+  gap: 20px;
 }
 
 /* Phone */

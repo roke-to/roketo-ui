@@ -13,7 +13,7 @@ import {combine, createEffect, createEvent, createStore, sample} from 'effector'
 import type {NftFormValues} from '~/features/create-stream/constants';
 
 import {$isSmallScreen} from '~/entities/screen';
-import {$accountId, $nearWallet, $roketoWallet, $streamsToNft, $tokens} from '~/entities/wallet';
+import {$accountId, $nearWallet, $roketoWallet, $tokens, $transfersToNft} from '~/entities/wallet';
 
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import {
@@ -113,7 +113,7 @@ export const selectStream = createEvent<string | null>();
 export const $selectedStream = createStore<string | null>(null);
 
 sample({
-  source: $streamsToNft,
+  source: $transfersToNft,
   fn: ({streamsLoaded, streams}) => ({
     streamsLoading: !streamsLoaded,
     hasStreams: streams.length > 0,
@@ -122,7 +122,12 @@ sample({
 });
 
 sample({
-  source: {streams: $streamsToNft, filter: $streamFilter, accountId: $accountId, sort: $streamSort},
+  source: {
+    streams: $transfersToNft,
+    filter: $streamFilter,
+    accountId: $accountId,
+    sort: $streamSort,
+  },
   target: $filteredStreams,
   fn({streams: {streams}, filter: {direction, text}, accountId, sort}) {
     const filters = [
