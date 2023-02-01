@@ -171,7 +171,6 @@ export const TransferToNFT = ({onFormCancel, onFormSubmit}: CreateSTransferToNFT
                 <Button
                   type={ButtonType.submit}
                   displayMode={ButtonDisplayMode.action}
-                  testId={testIds.createTransferToNFTSubmitButton}
                   disabled={submitting}
                 >
                   {submitting ? 'Creating...' : 'Create'}

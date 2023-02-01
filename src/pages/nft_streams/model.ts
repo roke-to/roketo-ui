@@ -25,9 +25,7 @@ import {$isSmallScreen} from '~/entities/screen';
 import {
   $accountId,
   $accountNftStreams,
-  $accountStreams,
   $nearWallet,
-  $priceOracle,
   $roketoWallet,
   $tokens,
 } from '~/entities/wallet';
@@ -57,7 +55,6 @@ import {ROUTES_MAP} from '~/shared/lib/routing';
 import {createStreamToNFT} from '~/shared/lib/vaultContract';
 
 import {sorts, statusOptions} from './constants';
-import {collectTotalFinancialAmountInfo, countTotalUSDWithdrawal} from './lib';
 import type {StreamCardData, StreamProgressData} from './types';
 
 export const withdrawFormValidationSchema = Yup.object().shape({
@@ -74,7 +71,6 @@ export const $streamListData = createStore(
   {updateFilter: areObjectsDifferent},
 );
 
-export const $allStreams = $accountStreams.map(({inputs, outputs}) => [...inputs, ...outputs]);
 export const $allNFTStreams = $accountNftStreams.map(({outputs}) => [...outputs]);
 
 export const $filteredStreams = createStore<RoketoStream[]>([], {updateFilter: areArraysDifferent});
@@ -157,20 +153,6 @@ export const handleCreateStreamToNFTFx = createProtectedEffect({
   },
 });
 
-export const $financialStatus = createStore({
-  outcomeAmountInfo: {
-    total: 0,
-    streamed: 0,
-    withdrawn: 0,
-  },
-  incomeAmountInfo: {
-    total: 0,
-    streamed: 0,
-    withdrawn: 0,
-  },
-  availableForWithdrawal: 0,
-});
-
 const progressRedrawTimerFx = createEffect(
   () =>
     new Promise<void>((rs) => {
@@ -186,34 +168,21 @@ export const selectStream = createEvent<string | null>();
 export const $selectedStream = createStore<string | null>(null);
 
 sample({
-  source: {
-    tokens: $tokens,
-    streams: $accountStreams,
-    priceOracle: $priceOracle,
-  },
-  fn({tokens, streams: {inputs, outputs}, priceOracle}) {
-    const activeInputStreams = inputs.filter(isActiveStream);
-    const activeOutputStreams = outputs.filter(isActiveStream);
-    return {
-      outcomeAmountInfo: collectTotalFinancialAmountInfo(activeOutputStreams, tokens, priceOracle),
-      incomeAmountInfo: collectTotalFinancialAmountInfo(activeInputStreams, tokens, priceOracle),
-      availableForWithdrawal: countTotalUSDWithdrawal(activeInputStreams, tokens, priceOracle),
-    };
-  },
-  target: $financialStatus,
-});
-
-sample({
-  source: $accountStreams,
+  source: $accountNftStreams,
   target: $streamListData,
-  fn: ({streamsLoaded, inputs, outputs}) => ({
+  fn: ({streamsLoaded, outputs}) => ({
     streamsLoading: !streamsLoaded,
-    hasStreams: inputs.length + outputs.length > 0,
+    hasStreams: outputs.length > 0,
   }),
 });
 
 sample({
-  source: {streams: $allStreams, filter: $streamFilter, accountId: $accountId, sort: $streamSort},
+  source: {
+    streams: $allNFTStreams,
+    filter: $streamFilter,
+    accountId: $accountId,
+    sort: $streamSort,
+  },
   target: $filteredStreams,
   fn({streams, filter: {direction, status, text}, accountId, sort}) {
     const filters = [
@@ -231,7 +200,7 @@ sample({
 });
 
 sample({
-  source: {streams: $allStreams, filter: $streamFilter, accountId: $accountId},
+  source: {streams: $allNFTStreams, filter: $streamFilter, accountId: $accountId},
   target: $statusFilterCounts,
   fn({streams, filter, accountId}) {
     const directionFilter = getDirectionFilter(accountId, filter.direction);

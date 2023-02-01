@@ -172,7 +172,6 @@ export const getOutgoingStreamsToNFT = async ({
       limit,
     })
     .catch(() => []);
-
   return outgoingStreams;
 };
 

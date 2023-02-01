@@ -79,14 +79,6 @@ export const $archivedStreams = createStore<{
   streamsLoaded: false,
 });
 
-export const $transfersToNft = createStore<{
-  streams: RoketoStream[];
-  streamsLoaded: boolean;
-}>({
-  streams: [],
-  streamsLoaded: false,
-});
-
 export const $user = createStore<Partial<User>>({
   name: '',
   email: '',
@@ -120,11 +112,6 @@ const getNotificationsFx = createEffect(async () => {
 const getArchivedStreamsFx = createEffect(async () => {
   const allStreams = await ecoApi.archivedStreams.findArchivedStreams();
   return allStreams.map((stream) => stream.payload.stream);
-});
-
-const getTransfersToNFTFx = createEffect(async (accountId: string) => {
-  const alllNftTransfers = await ecoApi.nftStreams.findAllNftTransactions(accountId);
-  return alllNftTransfers.map(({payload}) => payload.stream);
 });
 
 export const updateUserFx = attach({
@@ -377,7 +364,7 @@ sample({
 sample({
   clock: $accountId,
   filter: Boolean,
-  target: [getUserFx, getNotificationsFx, getArchivedStreamsFx, getTransfersToNFTFx, getUserFTsFx],
+  target: [getUserFx, getNotificationsFx, getArchivedStreamsFx, getUserFTsFx],
 });
 
 sample({
@@ -439,33 +426,6 @@ sample({
   target: getArchivedStreamsFx,
 });
 
-const transfersToNFTUpdateTimerFx = createEffect(
-  () =>
-    new Promise<void>((rs) => {
-      setTimeout(rs, 5000);
-    }),
-);
-
-sample({
-  clock: getTransfersToNFTFx.done,
-  target: transfersToNFTUpdateTimerFx,
-});
-
-sample({
-  clock: transfersToNFTUpdateTimerFx.done,
-  fn: ({params}: {params: any}) => params.params,
-  target: getTransfersToNFTFx,
-});
-
-sample({
-  clock: getTransfersToNFTFx.doneData,
-  fn: (streams) => ({
-    streams,
-    streamsLoaded: true,
-  }),
-  target: $transfersToNft,
-});
-
 /** clear user when there is no account id */
 sample({
   clock: $accountId,
@@ -509,7 +469,7 @@ sample({
 sample({
   clock: createNearWalletFx.doneData,
   fn: ({auth}) => ({account: auth.account, transactionMediator: auth.transactionMediator}),
-  target: [createRoketoWalletFx, createRoketoWalletFx],
+  target: [createRoketoWalletFx, createNFTWalletFx],
 });
 sample({
   clock: createNearWalletFx.doneData,

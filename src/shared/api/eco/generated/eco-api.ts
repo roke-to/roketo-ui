@@ -132,19 +132,6 @@ export interface UserNft {
   blockTimestamp: string;
 }
 
-export interface NftStream {
-  streamId: string;
-  accountId: string;
-  receiverId: string;
-
-  /** @format date-time */
-  startedAt: string;
-
-  /** @format date-time */
-  finishedAt: string;
-  payload: {stream: RoketoStream};
-}
-
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>;
 
@@ -604,23 +591,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/tokens/nfts/${accountId}`,
         method: 'GET',
         secure: true,
-        format: 'json',
-        ...params,
-      }),
-  };
-  nftStreams = {
-    /**
-     * No description
-     *
-     * @tags nft_streams
-     * @name FindAllNftTransactions
-     * @request GET:/nft_streams/{accountId}
-     * @response `200` `(NftStream)[]`
-     */
-    findAllNftTransactions: (accountId: string, params: RequestParams = {}) =>
-      this.request<NftStream[], any>({
-        path: `/nft_streams/${accountId}`,
-        method: 'GET',
         format: 'json',
         ...params,
       }),

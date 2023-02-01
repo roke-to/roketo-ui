@@ -13,7 +13,7 @@ import {combine, createEffect, createEvent, createStore, sample} from 'effector'
 import type {NftFormValues} from '~/features/create-stream/constants';
 
 import {$isSmallScreen} from '~/entities/screen';
-import {$accountId, $nearWallet, $roketoWallet, $tokens, $transfersToNft} from '~/entities/wallet';
+import {$accountId, $nearWallet, $roketoWallet, $tokens} from '~/entities/wallet';
 
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import {
@@ -24,14 +24,7 @@ import {
 } from '~/shared/api/token-formatter';
 import {env} from '~/shared/config';
 import {areArraysDifferent, areObjectsDifferent, recordUpdater} from '~/shared/lib/changeDetection';
-import {
-  DirectionFilter,
-  FilterFn,
-  getDirectionFilter,
-  getTextFilter,
-  StatusFilter,
-  StreamSort,
-} from '~/shared/lib/getFilters';
+import {DirectionFilter, StatusFilter, StreamSort} from '~/shared/lib/getFilters';
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
@@ -111,37 +104,6 @@ export const $streamsProgress = createStore<Record<string, StreamProgressData>>(
 
 export const selectStream = createEvent<string | null>();
 export const $selectedStream = createStore<string | null>(null);
-
-sample({
-  source: $transfersToNft,
-  fn: ({streamsLoaded, streams}) => ({
-    streamsLoading: !streamsLoaded,
-    hasStreams: streams.length > 0,
-  }),
-  target: $streamListData,
-});
-
-sample({
-  source: {
-    streams: $transfersToNft,
-    filter: $streamFilter,
-    accountId: $accountId,
-    sort: $streamSort,
-  },
-  target: $filteredStreams,
-  fn({streams: {streams}, filter: {direction, text}, accountId, sort}) {
-    const filters = [
-      getDirectionFilter(accountId, direction),
-      getTextFilter(accountId, text),
-    ].filter((fn): fn is FilterFn => !!fn);
-
-    const result =
-      filters.length === 0
-        ? [...streams]
-        : streams.filter((item) => filters.every((filter) => filter(item)));
-    return result.sort(sort.fn);
-  },
-});
 
 sample({clock: changeStreamSort, target: $streamSort});
 
