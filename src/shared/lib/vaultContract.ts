@@ -6,13 +6,102 @@ import {
   TransactionMediator, // RoketoContract
 } from '@roketo/sdk/dist/types';
 import {BigNumber} from 'bignumber.js';
-import {utils} from 'near-api-js';
+import {Contract, utils} from 'near-api-js';
 
 import {env} from '~/shared/config';
 
 // const GAS_SIZE = '200000000000000';
 const GAS_SIZE = '300000000000000';
 const STORAGE_DEPOSIT = '0.0025';
+type StringInt = string;
+type StreamId = string;
+type TokenAmount = {
+  [tokenAccountId: string]: StringInt;
+};
+type RoketoAccount = {
+  active_incoming_streams: number;
+  active_outgoing_streams: number;
+  deposit: StringInt;
+  inactive_incoming_streams: number;
+  inactive_outgoing_streams: number;
+  is_cron_allowed: boolean;
+  last_created_stream: StreamId;
+  stake: StringInt;
+  total_incoming: TokenAmount;
+  total_outgoing: TokenAmount;
+  total_received: TokenAmount;
+  args?: any;
+};
+type ContractChangeFunctionArgs<P> = {
+  args: P;
+  gas: string;
+  amount: string;
+  callbackUrl?: string;
+};
+type ContractResponse<R> = R & {
+  Err: never;
+  Ok: R;
+};
+type ContractViewFunction<P, R> = (json?: P) => Promise<R>;
+type ContractChangeFunction<P> = (
+  json: P | ContractChangeFunctionArgs<P>,
+  gasSize?: string,
+  deposit?: string,
+) => Promise<void>;
+type StreamsProps = {
+  account_id: string;
+  from: number;
+  limit: number;
+};
+type AccountFTResponse = [total_incoming: string, total_outgoing: string, total_received: string];
+export type StreamToNFTContract = RoketoContract & {
+  replenishers: ContractViewFunction<
+    {
+      nft_contract_id: string;
+      nft_id: string;
+    },
+    ContractResponse<RoketoAccount[]>
+  >;
+  get_account: ContractViewFunction<
+    {
+      account_id: string;
+    },
+    ContractResponse<RoketoAccount>
+  >;
+  get_stream: ContractViewFunction<
+    {
+      stream_id: string;
+    },
+    ContractResponse<RoketoStream>
+  >;
+  get_account_incoming_streams: ContractViewFunction<
+    StreamsProps,
+    ContractResponse<RoketoStream[]>
+  >;
+  get_account_outgoing_streams: ContractViewFunction<
+    StreamsProps,
+    ContractResponse<RoketoStream[]>
+  >;
+  get_account_ft: ContractViewFunction<
+    {
+      account_id: string;
+      token_account_id: string;
+    },
+    ContractResponse<AccountFTResponse>
+  >;
+  withdraw: ContractChangeFunction<{
+    stream_ids: string[];
+  }>;
+  start_stream: ContractChangeFunction<{
+    stream_id: string;
+  }>;
+  pause_stream: ContractChangeFunction<{
+    stream_id: string;
+  }>;
+  stop_stream: ContractChangeFunction<{
+    stream_id: string;
+  }>;
+};
 
 type Create = {
   owner_id: string;
@@ -39,9 +128,15 @@ type VaultTransferType = {
 type GetStreamsType = {
   from: number;
   limit: number;
-  // transactionMediator: TransactionMediator,
   contract: RoketoContract;
   accountId: string;
+};
+
+type GetIncomingStreamsType = {
+  account: any;
+  nftContractId: string;
+  nftId: string;
+  roketoContract: RoketoContract;
 };
 
 type StorageDepositType = {
@@ -175,18 +270,30 @@ export const getOutgoingStreamsToNFT = async ({
   return outgoingStreams;
 };
 
-// export const getOutgoingStreamsToNFT = ({
-//   from,
-//   limit,
-//   contract,
-//   accountId
-// }: GetStreamsType) => {
-//   return contract.get_account_outgoing_streams({
-//     account_id: accountId,
-//     from,
-//     limit
-//   }).catch(() => []);
-// }
+export const getIncomingStreamsToNFT = async ({
+  account,
+  nftContractId,
+  nftId,
+  roketoContract,
+}: GetIncomingStreamsType) => {
+  console.log('getIncomingStreamsToNFT');
+  const contract = new Contract(account, env.ROKETO_VAULT_CONTRACT_NAME, {
+    viewMethods: ['replenishers'],
+    changeMethods: [],
+  }) as StreamToNFTContract;
+
+  const [replenishers] = await contract.replenishers({
+    nft_contract_id: nftContractId,
+    nft_id: nftId,
+  });
+
+  const streamId = JSON.parse(replenishers.args).stream_id;
+
+  const incomingStreams = await roketoContract.get_stream({
+    stream_id: streamId,
+  });
+  return incomingStreams;
+};
 
 export const createChangeFunctionCall = (
   mediator: any,
@@ -244,7 +351,6 @@ export const withdrawAllNFT = ({
   );
 
 export const createStreamToNFT = ({
-  comment,
   deposit,
   tokenAccountId,
   commissionOnCreate,
@@ -252,7 +358,6 @@ export const createStreamToNFT = ({
   delayed = false,
   nftId,
   nftContractId,
-  color,
   accountId,
   tokenContract,
   transactionMediator,
@@ -312,14 +417,6 @@ export const createStreamToNFT = ({
       args: JSON.stringify({...vaultArgs}),
     },
   });
-
-  if (color || comment.length > 0) {
-    const description: any = {};
-    if (color) description.col = color;
-    if (comment.length > 0) description.c = comment; // @ts-expect-error
-
-    transferPayload.description = JSON.stringify(description);
-  }
 
   return vaultTransfer({
     owner_id: accountId,

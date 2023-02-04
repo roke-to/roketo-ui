@@ -25,6 +25,7 @@
   display: grid;
   padding: 24px 32px 32px;
   gap: 12px;
+  column-gap: 32px;
 
   box-shadow: 0px 5px 20px rgba(87, 140, 219, 0.25);
   border-radius: 24px;
@@ -32,7 +33,7 @@
 
 .sendingReceivingStatus {
   grid-column: 1 / span 2;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   grid-template-rows: max-content max-content;
 }
 
@@ -64,7 +65,6 @@
 }
 
 .createStreamButton {
-  grid-column: 1;
   grid-row: 2;
   white-space: nowrap;
 }
@@ -100,6 +100,21 @@
   font-size: 22px;
   line-height: 28px;
   margin-bottom: 24px;
+}
+
+.subtitle {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 28px;
+  margin: 18px 0;
+}
+
+.subtitle + div {
+  width: 100%;
+}
+
+.subtitle + div div:nth-child(2) {
+  height: 28px;
 }
 
 .form {

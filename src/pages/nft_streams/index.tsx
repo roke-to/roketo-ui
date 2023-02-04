@@ -1,3 +1,4 @@
+import {RoketoStream} from '@roketo/sdk/dist/types';
 import cn from 'classnames';
 import {useStore} from 'effector-react';
 import {Field, Formik} from 'formik';
@@ -15,9 +16,14 @@ import {Button, DisplayMode as ButtonDisplayMode, ButtonType} from '@ui/componen
 
 import {handleCreateTransferToNFTFx} from '../nft_transfers/model';
 import {handleCreateStreamFx} from '../streams/model';
-import {handleCreateStreamToNFTFx, withdrawFormValidationSchema} from './model';
+import {
+  getIncomingStreamsFx,
+  getStreamsFormValidationSchema,
+  handleCreateStreamToNFTFx,
+  withdrawFormValidationSchema,
+} from './model';
 import {StreamFilters} from './StreamFilters';
-import {StreamsList} from './StreamsList';
+import {ExpandedStreamCard, StreamsList} from './StreamsList';
 import styles from './styles.module.scss';
 
 export const NftStreamsPage = () => {
@@ -27,19 +33,34 @@ export const NftStreamsPage = () => {
     () => setIsWithdrawModalOpened(!isWithdrawModalOpened),
     [setIsWithdrawModalOpened, isWithdrawModalOpened],
   );
+  const [isGetStreamsModalOpened, setIsGetStreamsModalOpened] = useState<boolean>(false);
+  const toggleGetStreamsModal = useCallback(
+    () => setIsGetStreamsModalOpened(!isGetStreamsModalOpened),
+    [setIsGetStreamsModalOpened, isGetStreamsModalOpened],
+  );
   const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
   const toggleModal = useCallback(
     () => setIsModalOpened(!isModalOpened),
     [setIsModalOpened, isModalOpened],
   );
-  console.log('NftStreamsPage');
-  // const [submitError, setError] = useState<Error | null>(null);
+
+  const [incomingStream, setIncomingStream] = useState<RoketoStream | null>(null);
+
   const handleWithdraw = (e: any) => {
     withdrawNFTx({
       nftContractId: e.nftContractId,
       nftId: e.nftId,
       fungibleToken: e.fungibleToken,
     });
+  };
+
+  const handleGetStreams = async (e: any) => {
+    const stream = await getIncomingStreamsFx({
+      nftContractId: e.nftContractId,
+      nftId: e.nftId,
+    });
+
+    setIncomingStream(stream.inputs);
   };
 
   const submitting = useStore(withdrawNFTx.pending);
@@ -68,14 +89,17 @@ export const NftStreamsPage = () => {
             }
           />
         </Modal>
-      </div>
-
-      <div className={cn(styles.shadowCard, styles.withdrawalStatus)}>
         <Button
           className={cn(styles.button, styles.createStreamButton)}
           onClick={toggleWithdrawModal}
         >
           Withdraw a stream
+        </Button>
+        <Button
+          className={cn(styles.button, styles.createStreamButton)}
+          onClick={toggleGetStreamsModal}
+        >
+          Get incoming streams
         </Button>
         <Modal isOpen={isWithdrawModalOpened} onCloseModal={toggleWithdrawModal}>
           <h2 className={styles.title}>Withdraw a stream</h2>
@@ -87,13 +111,7 @@ export const NftStreamsPage = () => {
             validateOnChange={false}
             validateOnMount={false}
           >
-            {({
-              // values,
-              handleSubmit,
-              // setFieldValue,
-              // setFieldTouched,
-              // validateField
-            }) => (
+            {({handleSubmit}) => (
               <form onSubmit={handleSubmit} className={styles.form}>
                 <Field
                   isRequired
@@ -122,13 +140,6 @@ export const NftStreamsPage = () => {
                 />
 
                 <div className={cn(styles.formBlock, styles.actionControlsWrapper)}>
-                  {/* {submitError && (
-                      <div className={styles.submitError}>
-                        <ErrorSign />
-                        <span>{submitError.message}</span>
-                      </div>
-                    )} */}
-
                   <div className={styles.actionButtonsWrapper}>
                     <Button onClick={toggleWithdrawModal} disabled={submitting}>
                       Cancel
@@ -146,6 +157,67 @@ export const NftStreamsPage = () => {
               </form>
             )}
           </Formik>
+        </Modal>
+        <Modal
+          isOpen={isGetStreamsModalOpened}
+          onCloseModal={() => {
+            toggleGetStreamsModal();
+            setIncomingStream(null);
+          }}
+        >
+          <h2 className={styles.title}>Get incoming streams</h2>
+          <Formik
+            initialValues={INITIAL_VALUES}
+            onSubmit={handleGetStreams}
+            validateOnBlur
+            validationSchema={getStreamsFormValidationSchema}
+            validateOnChange={false}
+            validateOnMount={false}
+          >
+            {({handleSubmit}) => (
+              <form onSubmit={handleSubmit} className={styles.form}>
+                <Field
+                  isRequired
+                  name="nftContractId"
+                  label="NFT Contract"
+                  component={FormikInput}
+                  placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
+                  className={cn(styles.formBlock, styles.receiver)}
+                />
+
+                <Field
+                  isRequired
+                  name="nftId"
+                  label="NFT ID"
+                  component={FormikInput}
+                  placeholder="0"
+                  className={cn(styles.formBlock, styles.nftId)}
+                />
+
+                <div className={cn(styles.formBlock, styles.actionControlsWrapper)}>
+                  <div className={styles.actionButtonsWrapper}>
+                    <Button onClick={toggleGetStreamsModal} disabled={submitting}>
+                      Cancel
+                    </Button>
+
+                    <Button
+                      type={ButtonType.submit}
+                      displayMode={ButtonDisplayMode.action}
+                      disabled={submitting}
+                    >
+                      {submitting ? 'Getting...' : 'Get streams'}
+                    </Button>
+                  </div>
+                </div>
+              </form>
+            )}
+          </Formik>
+          {incomingStream && (
+            <>
+              <h2 className={styles.subtitle}>Your incoming stream:</h2>
+              <ExpandedStreamCard stream={incomingStream} />
+            </>
+          )}
         </Modal>
       </div>
 

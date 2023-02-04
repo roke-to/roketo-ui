@@ -10,11 +10,13 @@ import type {
   ApiControl,
   NearAuth,
   RichToken,
+  RoketoContract,
+  RoketoDao,
   RoketoStream,
   TransactionMediator,
 } from '@roketo/sdk/dist/types';
 import {attach, createEffect, createEvent, createStore, sample} from 'effector';
-import {ConnectedWalletAccount, Near} from 'near-api-js';
+import {Account, ConnectedWalletAccount, Contract, Near} from 'near-api-js';
 import {Get} from 'type-fest';
 
 import {ecoApi} from '~/shared/api/eco';
@@ -23,9 +25,75 @@ import {createNearInstance, createWalletSelectorInstance} from '~/shared/api/nea
 import {initPriceOracle, PriceOracle} from '~/shared/api/price-oracle';
 import {env} from '~/shared/config';
 import {getChangedFields} from '~/shared/lib/changeDetection';
-import {getOutgoingStreamsToNFT} from '~/shared/lib/vaultContract';
+import {
+  getIncomingStreamsToNFT,
+  getOutgoingStreamsToNFT,
+  StreamToNFTContract,
+} from '~/shared/lib/vaultContract';
 
 import {$walletSelector} from './selector';
+
+const getAccount = ({contract, accountId}: {contract: any; accountId: string}) => {
+  const emptyAccount = {
+    active_incoming_streams: 0,
+    active_outgoing_streams: 0,
+    deposit: '0',
+    inactive_incoming_streams: 0,
+    inactive_outgoing_streams: 0,
+    is_cron_allowed: true,
+    last_created_stream: 'any',
+    stake: '0',
+    total_incoming: {},
+    total_outgoing: {},
+    total_received: {},
+    replenishers: {},
+  };
+  if (!accountId) return emptyAccount;
+  return contract
+    .get_account({
+      account_id: accountId,
+    })
+    .catch(() => emptyAccount);
+};
+
+const initNFTApiControl = async ({
+  account,
+  transactionMediator,
+  streamsToNFTContractName,
+}: {
+  account: Account;
+  transactionMediator: TransactionMediator;
+  streamsToNFTContractName: string;
+}) => {
+  const {accountId} = account;
+  const contract = new Contract(account, streamsToNFTContractName, {
+    viewMethods: [
+      'replenishers',
+      'get_account',
+      'get_stream',
+      'get_account_incoming_streams',
+      'get_account_outgoing_streams',
+      'get_account_ft',
+    ],
+    changeMethods: ['start_stream', 'pause_stream', 'stop_stream', 'withdraw'],
+  }) as StreamToNFTContract;
+  const [roketoAccount] = await Promise.all([
+    getAccount({
+      contract,
+      accountId,
+    }),
+  ]);
+
+  return {
+    account,
+    accountId,
+    contract,
+    dao: {} as RoketoDao,
+    roketoAccount,
+    transactionMediator,
+    tokens: {},
+  };
+};
 
 const KNOWN_NOTIFICATION_TYPES = new Set([
   'StreamStarted',
@@ -38,7 +106,8 @@ const KNOWN_NOTIFICATION_TYPES = new Set([
 ]);
 
 export const initWallets = createEvent();
-
+// export const getIncomingStreamsEvent = createEvent();
+export const $vaultContract = createStore<StreamToNFTContract>({} as StreamToNFTContract);
 export const $nearWallet = createStore<null | {
   near: Near;
   auth: NearAuth;
@@ -142,6 +211,7 @@ export const resendVerificationEmailFx = attach({
 });
 
 export const lastCreatedStreamUpdated = createEvent<string>();
+export const lastCreatedStreamToNFTUpdated = createEvent<string>();
 
 export const $walletSelectorState = createStore<WalletSelectorState>({
   contract: null,
@@ -230,10 +300,10 @@ const createNFTWalletFx = createEffect(
     account: ConnectedWalletAccount;
     transactionMediator: TransactionMediator;
   }) =>
-    initApiControl({
+    initNFTApiControl({
       account,
       transactionMediator,
-      roketoContractName: env.STREAM_TO_NFT_CONTRACT_NAME,
+      streamsToNFTContractName: env.STREAM_TO_NFT_CONTRACT_NAME,
     }),
 );
 export const $appLoading = createStore(true);
@@ -251,16 +321,32 @@ const requestAccountStreamsFx = createEffect(
 );
 const requestAccountStreamsToNFTFx = createEffect(
   async ({accountId, contract}: Pick<ApiControl, 'accountId' | 'contract'>) => {
-    // console.log('requestAccountStreamsToNFTFx');
-
     const [outputs] = await Promise.all([
       getOutgoingStreamsToNFT({from: 0, limit: 500, accountId, contract}),
-      // getOutgoingStreams({from: 0, limit: 500, accountId, contract}),
     ]);
-    // console.log(outputs);
     return {outputs};
   },
 );
+
+export const requestAccountIncomingStreamsToNFTFx = createEffect(
+  async ({
+    account,
+    nftId,
+    nftContractId,
+    roketoContract,
+  }: {
+    account: any;
+    nftId: string;
+    nftContractId: string;
+    roketoContract: RoketoContract;
+  }) => {
+    const [inputs] = await Promise.all([
+      getIncomingStreamsToNFT({account, nftId, nftContractId, roketoContract}),
+    ]);
+    return {inputs};
+  },
+);
+
 const requestUnknownTokensFx = createEffect(
   async ({
     tokenNames,
@@ -297,6 +383,12 @@ const streamsRevalidationTimerFx = createEffect(
       setTimeout(rs, 30000);
     }),
 );
+const streamsToNFTRevalidationTimerFx = createEffect(
+  () =>
+    new Promise<void>((rs) => {
+      setTimeout(rs, 30000);
+    }),
+);
 sample({
   clock: $roketoWallet,
   filter: Boolean,
@@ -307,7 +399,7 @@ sample({
   clock: $streamToNftWallet,
   filter: Boolean,
   fn: (wallet) => wallet.roketoAccount.last_created_stream,
-  target: lastCreatedStreamUpdated,
+  target: lastCreatedStreamToNFTUpdated,
 });
 /**
  * when roketo wallet becomes available or revalidation timer ends
@@ -316,6 +408,10 @@ sample({
 sample({
   clock: [createRoketoWalletFx.doneData, streamsRevalidationTimerFx.doneData],
   target: streamsRevalidationTimerFx,
+});
+sample({
+  clock: [createNFTWalletFx.doneData, streamsToNFTRevalidationTimerFx.doneData],
+  target: streamsToNFTRevalidationTimerFx,
 });
 /**
  * when last_created_stream is changed or revalidation timer ends
@@ -329,10 +425,10 @@ sample({
   source: $roketoWallet,
   filter: Boolean,
   fn: ({accountId, contract}) => ({accountId, contract}),
-  target: [requestAccountStreamsFx, requestAccountStreamsToNFTFx],
+  target: [requestAccountStreamsFx],
 });
 sample({
-  clock: [lastCreatedStreamUpdated, streamsRevalidationTimerFx.doneData],
+  clock: [lastCreatedStreamToNFTUpdated, streamsToNFTRevalidationTimerFx.doneData],
   source: $streamToNftWallet,
   filter: Boolean,
   fn: ({accountId, contract}) => ({accountId, contract}),

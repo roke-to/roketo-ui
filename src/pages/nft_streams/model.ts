@@ -20,6 +20,7 @@ import {generatePath} from 'react-router-dom';
 
 import {colorDescriptions, NftFormValues} from '~/features/create-stream/constants';
 import {getTokensPerSecondCount} from '~/features/create-stream/lib';
+import {NftWithdrawAllValues} from '~/features/stream-control/WithdrawAllButton/model';
 
 import {$isSmallScreen} from '~/entities/screen';
 import {
@@ -27,7 +28,9 @@ import {
   $accountNftStreams,
   $nearWallet,
   $roketoWallet,
+  $streamToNftWallet,
   $tokens,
+  requestAccountIncomingStreamsToNFTFx,
 } from '~/entities/wallet';
 
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
@@ -63,6 +66,25 @@ export const withdrawFormValidationSchema = Yup.object().shape({
   fungibleToken: Yup.string().required('Fungible Token ID is required'),
 });
 
+export const getStreamsFormValidationSchema = Yup.object().shape({
+  nftContractId: Yup.string().required('NFT Contract is required'),
+  nftId: Yup.string().required('NFT ID is required'),
+});
+
+export const getIncomingStreamsFx = createProtectedEffect({
+  source: $streamToNftWallet,
+  fn({account, contract}, values: NftWithdrawAllValues) {
+    const {nftContractId, nftId} = values;
+
+    return requestAccountIncomingStreamsToNFTFx({
+      account,
+      nftContractId,
+      nftId,
+      roketoContract: contract,
+    });
+  },
+});
+
 export const $streamListData = createStore(
   {
     streamsLoading: true,
@@ -74,6 +96,7 @@ export const $streamListData = createStore(
 export const $allNFTStreams = $accountNftStreams.map(({outputs}) => [...outputs]);
 
 export const $filteredStreams = createStore<RoketoStream[]>([], {updateFilter: areArraysDifferent});
+export const $$incom = createStore<RoketoStream | null>(null);
 
 export const $streamFilter = createStore({
   direction: 'All' as DirectionFilter,

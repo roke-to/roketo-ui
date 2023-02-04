@@ -2,7 +2,6 @@ import type {RoketoStream} from '@roketo/sdk/dist/types';
 import cn from 'classnames';
 import {useList, useStore, useStoreMap} from 'effector-react';
 import React, {memo} from 'react';
-import {Link} from 'react-router-dom';
 
 import {StreamListControls} from '~/features/stream-control/StreamControls';
 
@@ -10,10 +9,8 @@ import type {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import {Badge} from '~/shared/components/Badge';
 import {testIds} from '~/shared/constants';
 import {ColorDot} from '~/shared/kit/ColorDot';
-import {getStreamLink} from '~/shared/lib/routing';
 
 import {Button} from '@ui/components/Button';
-import {CopyLinkButton} from '@ui/components/CopyLinkButton';
 import {ProgressBar} from '@ui/components/ProgressBar';
 import {Spinner} from '@ui/components/Spinner';
 import clockIcon from '@ui/icons/clock.svg';
@@ -33,19 +30,15 @@ import menuDotsIcon from './menuDots.svg';
 import pausedStreamIcon from './pausedStream.svg';
 import styles from './styles.module.scss';
 
-const StreamNameLink = memo(({streamId}: {streamId: string}) => {
-  const {streamPageLink, name, isLocked} = useStoreMap({
+const StreamName = memo(({streamId}: {streamId: string}) => {
+  const {name, isLocked} = useStoreMap({
     store: $streamCardsData,
     keys: [streamId],
     fn: (items) => items[streamId],
     defaultValue: streamCardDataDefaults,
   });
   return (
-    <Link
-      to={streamPageLink}
-      className={cn(styles.nameCell)}
-      data-testid={testIds.streamListReceiver}
-    >
+    <div className={cn(styles.nameCell)} data-testid={testIds.streamListReceiver}>
       <span className={styles.nameText}>{name}</span>
 
       {isLocked && (
@@ -53,29 +46,23 @@ const StreamNameLink = memo(({streamId}: {streamId: string}) => {
           Locked
         </Badge>
       )}
-    </Link>
+    </div>
   );
 });
 
-const ViewDetailsLink = memo(({to}: {to: string}) => (
-  <Link to={to} className={styles.viewDetails}>
-    View details
-  </Link>
-));
-
-const StreamCommentLink = memo(({streamId}: {streamId: string}) => {
-  const {streamPageLink, comment} = useStoreMap({
+const StreamComment = memo(({streamId}: {streamId: string}) => {
+  const {comment} = useStoreMap({
     store: $streamCardsData,
     keys: [streamId],
     fn: (items) => items[streamId],
     defaultValue: streamCardDataDefaults,
   });
   return (
-    <Link to={streamPageLink} className={cn(styles.commentCell)}>
+    <div className={cn(styles.commentCell)}>
       <div className={styles.commentBlock} data-testid={testIds.streamListCommentCell}>
         {comment}
       </div>
-    </Link>
+    </div>
   );
 });
 
@@ -124,12 +111,11 @@ const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
         className={cn(styles.progressCell, styles.leftStickyCell)}
       />
 
-      <StreamNameLink streamId={stream.id} />
+      <StreamName streamId={stream.id} />
 
-      <StreamCommentLink streamId={stream.id} />
+      <StreamComment streamId={stream.id} />
 
       <div className={cn(styles.controlCell)}>
-        <CopyLinkButton className={styles.streamLinkButton} link={getStreamLink(streamId)} />
         <StreamListControls
           stream={stream}
           dropdownClassName={styles.controlDropdown}
@@ -152,18 +138,9 @@ const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
   );
 };
 
-const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
+export const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
   const {id: streamId} = stream;
-  const {
-    color,
-    iconType,
-    comment,
-    streamPageLink,
-    showAddFundsButton,
-    showWithdrawButton,
-    showStartButton,
-    showPauseButton,
-  } = useStoreMap({
+  const {color, iconType, comment} = useStoreMap({
     store: $streamCardsData,
     keys: [streamId],
     fn: (items) => items[streamId],
@@ -217,7 +194,6 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
       </ProgressBar>
       {color && <ColorDot className={styles.color} color={color} />}
       <div className={styles.direction}>{direction === 'in' ? 'Incoming' : 'Outgoing'} stream</div>
-      <CopyLinkButton className={styles.link} link={getStreamLink(streamId)} />
       {/* <div className={styles.typeBadge}>{type === 'toWallet' ? 'to Wallet' : 'to NFT'}</div> */}
       <div className={styles.speed}>
         {speedFormattedValue}{' '}
@@ -241,20 +217,6 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
       </div>
       {cliffText && <div className={styles.cliffRemaining}>Cliff ends within: {cliffText}</div>}
       {comment && <div className={styles.comment}>{comment}</div>}
-      <StreamListControls
-        stream={stream}
-        dropdownClassName={styles.controlDropdown}
-        needToUseBlur
-        showAddFundsButton={showAddFundsButton}
-        showWithdrawButton={showWithdrawButton}
-        showStartButton={showStartButton}
-        showPauseButton={showPauseButton}
-        showStopButton
-        className={styles.streamActions}
-        openerClassName={styles.streamActionsButtonExpanded}
-        openerContent="Stream actions"
-      />
-      <ViewDetailsLink to={streamPageLink} />
     </div>
   );
 };
@@ -284,7 +246,6 @@ export const StreamsList = ({
   <div className={cn(styles.container, className)}>
     <section className={styles.streamGrid}>
       <h3 className={cn(styles.leftStickyCell, styles.title)}>Amount to stream</h3>
-      {/* <h3 className={styles.title}>Type of streaming</h3> */}
       <h3 className={styles.title}>Wallet address</h3>
       <h3 className={styles.title}>Comment</h3>
 

@@ -20,10 +20,9 @@
     [color-column] 4px
     [status-column] 48px
     [bar-column] 200px
-    // [type-column] 150px
     [address-column] min-content
     [comment-column] minmax(min-content, 1fr)
-    [control-column] 120px;
+    [control-column] 80px;
 }
 
 .colorCell,

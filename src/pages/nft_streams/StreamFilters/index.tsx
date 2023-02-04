@@ -21,22 +21,14 @@ import {
   changeDirectionFilter,
   changeStatusFilter,
   changeStreamSort,
-  changeTextFilter,
 } from '../model';
-import clearIcon from './clear.svg';
-import magnifierIcon from './magnifier.svg';
 import styles from './styles.module.scss';
 
 export function StreamFilters({className}: {className: string}) {
-  const [showInput, setShowInput] = useState(false);
   const [showCompactFilterModal, setShowCompactFilterModal] = useState(false);
 
-  const [
-    sorting,
-    {direction: activeDirection, status, text: filterText},
-    statusFilterCounts,
-    isSmallScreen,
-  ] = useUnit([$streamSort, $streamFilter, $statusFilterCounts, $isSmallScreen]);
+  const [sorting, {direction: activeDirection, status}, statusFilterCounts, isSmallScreen] =
+    useUnit([$streamSort, $streamFilter, $statusFilterCounts, $isSmallScreen]);
 
   const isEmptyList = useStoreMap($allNFTStreams, (items) => items.length === 0);
 
@@ -47,46 +39,6 @@ export function StreamFilters({className}: {className: string}) {
 
   return (
     <div className={cn(styles.root, className)}>
-      <div className={styles.directionSorts}>
-        {directionOptions.map((direction) => (
-          <Button
-            key={direction}
-            className={cn(styles.directionSort, {
-              [styles.directionActive]: direction === activeDirection,
-            })}
-            onClick={() => changeDirectionFilter(direction)}
-            disabled={isEmptyList}
-          >
-            {direction}
-          </Button>
-        ))}
-      </div>
-      <div className={cn(styles.textFilter, showInput && styles.withInput)} key="text-filter">
-        <img src={magnifierIcon} className={styles.textFilterMagnifier} alt="search" />
-        <input
-          className={styles.textFilterInput}
-          value={filterText}
-          onChange={(e) => changeTextFilter(e.currentTarget.value)}
-          onFocus={() => setShowInput(true)}
-          onBlur={(e) => {
-            const isEmptyInput = e.currentTarget.value.trim() === '';
-            if (isEmptyInput) {
-              setShowInput(false);
-            }
-          }}
-          placeholder="Search text"
-        />
-        <button
-          type="button"
-          className={styles.textFilterClear}
-          onClick={() => {
-            setShowInput(false);
-            changeTextFilter('');
-          }}
-        >
-          <img src={clearIcon} alt="clear" />
-        </button>
-      </div>
       <Filter
         options={statusOptions}
         label="Status:"
