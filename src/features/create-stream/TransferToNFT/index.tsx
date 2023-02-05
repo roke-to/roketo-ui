@@ -12,7 +12,6 @@ import {Balance, DisplayMode} from '~/shared/components/Balance';
 import {FormikInput} from '~/shared/components/FormikInput';
 import {FormikToggle} from '~/shared/components/FormikToggle';
 import {env} from '~/shared/config';
-import {testIds} from '~/shared/constants';
 
 import {Button, DisplayMode as ButtonDisplayMode, ButtonType} from '@ui/components/Button';
 import {ErrorSign} from '@ui/icons/ErrorSign';
@@ -88,7 +87,6 @@ export const TransferToNFT = ({onFormCancel, onFormSubmit}: CreateSTransferToNFT
               name="isNotDelayed"
               disabled
               component={FormikToggle}
-              testId={testIds.createStreamDelayedCheckbox}
               className={cn(styles.formBlock, styles.start)}
               description="Start immediately"
               hint="The stream will start immediately"
@@ -103,7 +101,6 @@ export const TransferToNFT = ({onFormCancel, onFormSubmit}: CreateSTransferToNFT
               component={FormikInput}
               placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
               className={cn(styles.formBlock, styles.receiver)}
-              data-testid={testIds.createStreamReceiverInput}
               onBlur={handleReceiverChanged}
             />
 
@@ -114,7 +111,6 @@ export const TransferToNFT = ({onFormCancel, onFormSubmit}: CreateSTransferToNFT
               component={FormikInput}
               placeholder="0"
               className={cn(styles.formBlock, styles.nftId)}
-              data-testid={testIds.createStreamReceiverInput}
               onBlur={handleReceiverChanged}
             />
 
@@ -129,7 +125,6 @@ export const TransferToNFT = ({onFormCancel, onFormSubmit}: CreateSTransferToNFT
               description={
                 <Balance tokenAccountId={activeTokenAccountId} mode={DisplayMode.CRYPTO} />
               }
-              data-testid={testIds.createStreamAmountInput}
             />
 
             <Field
@@ -162,7 +157,6 @@ export const TransferToNFT = ({onFormCancel, onFormSubmit}: CreateSTransferToNFT
                 <Button
                   displayMode={ButtonDisplayMode.simple}
                   onClick={onFormCancel}
-                  testId={testIds.createStreamCancelButton}
                   disabled={submitting}
                 >
                   Cancel

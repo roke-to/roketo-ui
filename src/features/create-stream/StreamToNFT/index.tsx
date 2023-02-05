@@ -14,7 +14,6 @@ import {FormikInput} from '~/shared/components/FormikInput';
 import {FormikTextArea} from '~/shared/components/FormikTextArea';
 import {FormikToggle} from '~/shared/components/FormikToggle';
 import {env} from '~/shared/config';
-import {testIds} from '~/shared/constants';
 
 import {Button, DisplayMode as ButtonDisplayMode, ButtonType} from '@ui/components/Button';
 import {ErrorSign} from '@ui/icons/ErrorSign';
@@ -101,7 +100,6 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
               name="isNotDelayed"
               disabled={Boolean(values.cliffDateTime)}
               component={FormikToggle}
-              testId={testIds.createStreamDelayedCheckbox}
               className={cn(styles.formBlock, styles.start)}
               description="Start immediately"
               hint={
@@ -120,7 +118,6 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
               component={FormikInput}
               placeholder={`receiver.${env.ACCOUNT_SUFFIX}`}
               className={cn(styles.formBlock, styles.receiver)}
-              data-testid={testIds.createStreamReceiverInput}
               onBlur={handleReceiverChanged}
             />
 
@@ -131,7 +128,6 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
               component={FormikInput}
               placeholder="0"
               className={cn(styles.formBlock, styles.nftId)}
-              data-testid={testIds.createStreamReceiverInput}
               onBlur={handleReceiverChanged}
             />
 
@@ -154,7 +150,6 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
               description={
                 <Balance tokenAccountId={activeTokenAccountId} mode={DisplayMode.CRYPTO} />
               }
-              data-testid={testIds.createStreamAmountInput}
             />
 
             <Field
@@ -183,7 +178,6 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
               placeholder="You can type something to highlight the stream"
               component={FormikTextArea}
               className={cn(styles.formBlock, styles.comment)}
-              data-testid={testIds.createStreamCommentInput}
             />
 
             <div className={styles.collapseBtnWrap}>
@@ -191,7 +185,6 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
                 type="button"
                 className={styles.collapseBtn}
                 onClick={() => setIsCollapsed(!isCollapsed)}
-                data-testid={testIds.collapseButton}
               >
                 {!isCollapsed && 'More options'}
                 {isCollapsed && 'Less options'}
@@ -215,7 +208,6 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
                   description="Edited stream"
                   type="checkbox"
                   component={FormikCheckbox}
-                  data-testid={testIds.createStreamLockedCheckbox}
                   className={cn(styles.formBlock, styles.isUnlocked)}
                 />
               </>
@@ -241,7 +233,6 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
                 <Button
                   displayMode={ButtonDisplayMode.simple}
                   onClick={onFormCancel}
-                  testId={testIds.createStreamCancelButton}
                   disabled={submitting}
                 >
                   Cancel
@@ -250,7 +241,6 @@ export const StreamToNFT = ({onFormCancel, onFormSubmit}: CreateStreamToWallePro
                 <Button
                   type={ButtonType.submit}
                   displayMode={ButtonDisplayMode.action}
-                  testId={testIds.createStreamSubmitButton}
                   disabled={submitting}
                 >
                   {submitting ? 'Creating...' : 'Create'}

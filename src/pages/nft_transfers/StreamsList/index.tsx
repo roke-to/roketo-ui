@@ -6,7 +6,6 @@ import React, {memo} from 'react';
 import {StreamListControls} from '~/features/stream-control/StreamControls';
 
 import type {STREAM_STATUS} from '~/shared/api/roketo/constants';
-import {testIds} from '~/shared/constants';
 import {ColorDot} from '~/shared/kit/ColorDot';
 import {getStreamLink} from '~/shared/lib/routing';
 
@@ -38,13 +37,7 @@ const StreamNFTContract = memo(({streamId}: {streamId: string}) => {
     defaultValue: streamCardDataDefaults,
   });
   return (
-    <a
-      href={streamPageLink}
-      target="_blank"
-      className={cn(styles.contractCell)}
-      data-testid={testIds.streamListReceiver}
-      rel="noreferrer"
-    >
+    <a href={streamPageLink} target="_blank" className={cn(styles.contractCell)} rel="noreferrer">
       <span className={styles.nameText}>{nftContract}</span>
     </a>
   );
@@ -58,13 +51,7 @@ const StreamNFTId = memo(({streamId}: {streamId: string}) => {
     defaultValue: streamCardDataDefaults,
   });
   return (
-    <a
-      href={streamPageLink}
-      target="_blank"
-      className={cn(styles.nftIdCell)}
-      data-testid={testIds.streamListReceiver}
-      rel="noreferrer"
-    >
+    <a href={streamPageLink} target="_blank" className={cn(styles.nftIdCell)} rel="noreferrer">
       <span className={styles.nameText}>{nftId}</span>
     </a>
   );
@@ -78,13 +65,7 @@ const StreamNameLink = memo(({streamId}: {streamId: string}) => {
     defaultValue: streamCardDataDefaults,
   });
   return (
-    <a
-      href={streamPageLink}
-      target="_blank"
-      className={cn(styles.nameCell)}
-      data-testid={testIds.streamListReceiver}
-      rel="noreferrer"
-    >
+    <a href={streamPageLink} target="_blank" className={cn(styles.nameCell)} rel="noreferrer">
       <span className={styles.nameText}>{name}</span>
     </a>
   );
@@ -120,12 +101,7 @@ const CollapsedStreamRow = ({stream}: {stream: RoketoStream}) => {
   return (
     <>
       <div className={cn(styles.statusCell)}>
-        <img
-          src={selectIcon(iconType)}
-          alt={iconType}
-          className={styles.streamStatusIcon}
-          data-testid={testIds.streamStatusIcon}
-        />
+        <img src={selectIcon(iconType)} alt={iconType} className={styles.streamStatusIcon} />
       </div>
 
       <StreamProgress
@@ -261,8 +237,7 @@ const ExpandedStreamCard = ({stream}: {stream: RoketoStream}) => {
 
 const Placeholder = ({onCreateStreamClick}: {onCreateStreamClick(): void}) => {
   const {streamsLoading, hasStreams} = useStore($streamListData);
-  if (streamsLoading)
-    return <Spinner wrapperClassName={styles.loader} testId={testIds.streamListLoader} />;
+  if (streamsLoading) return <Spinner wrapperClassName={styles.loader} />;
   if (!hasStreams) {
     return (
       <>
