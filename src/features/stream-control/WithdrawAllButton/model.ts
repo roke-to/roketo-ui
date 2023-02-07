@@ -7,7 +7,7 @@ import {$accountStreams, $roketoWallet, $tokens} from '~/entities/wallet';
 import {formatAmount} from '~/shared/api/token-formatter';
 import {env} from '~/shared/config';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
-import {withdrawNFT} from '~/shared/lib/vaultContract';
+import {withdrawAllNFT, withdrawNFT} from '~/shared/lib/vaultContract';
 
 export const triggerWithdrawAll = createEvent();
 
@@ -28,6 +28,11 @@ export type NftWithdrawValues = {
   fungibleToken: string;
 };
 
+export type NftWithdrawAllValues = {
+  nftContractId: string;
+  nftId: string;
+};
+
 export const withdrawNFTx = createProtectedEffect({
   source: $roketoWallet,
   fn({transactionMediator}, values: NftWithdrawValues) {
@@ -37,6 +42,19 @@ export const withdrawNFTx = createProtectedEffect({
       nftContractId,
       nftId,
       fungibleToken,
+      transactionMediator,
+    });
+  },
+});
+
+export const withdrawAllNFTx = createProtectedEffect({
+  source: $roketoWallet,
+  fn({transactionMediator}, values: NftWithdrawAllValues) {
+    const {nftContractId, nftId} = values;
+
+    return withdrawAllNFT({
+      nftContractId,
+      nftId,
       transactionMediator,
     });
   },

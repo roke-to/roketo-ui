@@ -1,11 +1,13 @@
 import type {RoketoStream} from '@roketo/sdk/dist/types';
 import {BigNumber} from 'bignumber.js';
 
-import {DirectionFilter, StatusFilter, StreamSort} from '~/shared/lib/getFilters';
+import {DirectionFilter, StreamSort} from '~/shared/lib/getFilters';
 
 import {OrderType} from '@ui/icons/Sort';
 
 import type {StreamCardData, StreamProgressData} from './types';
+
+export const linkToExplorer = 'https://explorer.testnet.near.org/transactions/';
 
 export const streamCardDataDefaults: StreamCardData = {
   streamPageLink: '',
@@ -13,10 +15,13 @@ export const streamCardDataDefaults: StreamCardData = {
   color: '',
   name: '',
   isLocked: false,
+  nftId: '',
+  nftContract: '',
   showAddFundsButton: false,
   showWithdrawButton: false,
   showStartButton: false,
   showPauseButton: false,
+  showStopButton: false,
   iconType: 'Initialized',
 };
 
@@ -46,16 +51,6 @@ export const sorts = {
     order: OrderType.desc,
     fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'balance'),
   },
-  highSpeedFirst: {
-    label: 'With high speed',
-    order: OrderType.desc,
-    fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'tokens_per_sec'),
-  },
-  highSpeedLast: {
-    label: 'With low speed',
-    order: OrderType.asc,
-    fn: (a: RoketoStream, b: RoketoStream) => compareBy(a, b, 'tokens_per_sec') * -1,
-  },
   mostRecent: {
     label: 'Most recent',
     order: OrderType.desc,
@@ -68,5 +63,4 @@ function compareBy(a: RoketoStream, b: RoketoStream, key: keyof RoketoStream) {
 }
 
 export const sortOptions: StreamSort[] = Object.values(sorts);
-export const statusOptions: StatusFilter[] = ['All', 'Initialized', 'Active', 'Paused'];
 export const directionOptions: DirectionFilter[] = ['All', 'Incoming', 'Outgoing'];

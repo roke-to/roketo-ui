@@ -29,9 +29,8 @@
 }
 
 .token,
-.duration,
 .deposit {
-  grid-column: auto / span 4;
+  grid-column: auto / span 6;
 }
 
 .color {
@@ -39,15 +38,11 @@
 }
 
 .receiver {
-  grid-column: auto / span 8;
+  grid-column: auto / span 10;
 }
 
 .nftId {
-  grid-column: auto / span 3;
-}
-
-.cliff {
-  grid-column: auto / span 6;
+  grid-column: auto / span 2;
 }
 
 .comment,
@@ -59,60 +54,8 @@
   width: fit-content;
 }
 
-.collapseBtnWrap {
-  grid-column: 1/-1;
-  position: relative;
-
-  &:before {
-    content: '';
-    width: 100%;
-    height: 2px;
-    background-color: $input-blue;
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translate(0, -50%);
-  }
-}
-
-.collapseBtn {
-  border: 1px solid $input-blue;
-  width: fit-content;
-
-  cursor: pointer;
-  user-select: none;
-
-  color: $blue;
-  font-weight: 500;
-  font-size: 12px;
-  line-height: 15px;
-
-  border-radius: 12px;
-  background-color: $input-background;
-
-  margin: 0 auto;
-  padding: 4.5px 12px;
-
-  display: flex;
-  align-items: center;
-  position: relative;
-
-  & svg {
-    margin-left: 7px;
-    transition: transform 0.2s ease-in-out;
-  }
-}
-
-.rotated {
-  transform: rotate(180deg);
-}
-
-.delayed,
 .isUnlocked {
   grid-column: auto / span 6;
-}
-
-.isUnlocked {
   justify-content: center;
   margin-top: 21px;
 }
@@ -171,10 +114,7 @@
 @media (max-width: 767px) {
   .deposit,
   .token,
-  .duration,
   .commissionBlock,
-  .cliff,
-  .isUnlocked,
   .actionControlsWrapper {
     grid-column: 1 / -1;
   }
@@ -206,11 +146,4 @@
   .form {
     gap: 16px;
   }
-}
-
-.subDescription {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 16px;
-  color: $bluish-grey;
 }

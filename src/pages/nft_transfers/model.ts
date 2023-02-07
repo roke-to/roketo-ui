@@ -1,37 +1,19 @@
-import * as Yup from 'yup';
 import {
-  ableToAddFunds,
-  ableToPauseStream,
-  ableToStartStream,
   calculateCliffEndTimestamp,
   calculateCliffPercent,
-  calculateTimeLeft,
   formatTimeLeft,
   getStreamDirection,
-  getStreamProgress,
-  isActiveStream,
   parseColor,
   parseComment,
 } from '@roketo/sdk';
 import type {RoketoStream} from '@roketo/sdk/dist/types';
 import {isPast} from 'date-fns';
 import {combine, createEffect, createEvent, createStore, sample} from 'effector';
-import {generatePath} from 'react-router-dom';
 
-import {colorDescriptions, NftFormValues} from '~/features/create-stream/constants';
-import {getTokensPerSecondCount} from '~/features/create-stream/lib';
-import {NftWithdrawAllValues} from '~/features/stream-control/WithdrawAllButton/model';
+import type {NftFormValues} from '~/features/create-stream/constants';
 
 import {$isSmallScreen} from '~/entities/screen';
-import {
-  $accountId,
-  $accountNftStreams,
-  $nearWallet,
-  $roketoWallet,
-  $streamToNftWallet,
-  $tokens,
-  requestAccountIncomingStreamsToNFTFx,
-} from '~/entities/wallet';
+import {$accountId, $nearWallet, $roketoWallet, $tokens} from '~/entities/wallet';
 
 import {STREAM_STATUS} from '~/shared/api/roketo/constants';
 import {
@@ -42,48 +24,14 @@ import {
 } from '~/shared/api/token-formatter';
 import {env} from '~/shared/config';
 import {areArraysDifferent, areObjectsDifferent, recordUpdater} from '~/shared/lib/changeDetection';
-import {
-  DirectionFilter,
-  FilterFn,
-  getDirectionFilter,
-  getStatusFilter,
-  getTextFilter,
-  StatusFilter,
-  StreamSort,
-} from '~/shared/lib/getFilters';
+import {DirectionFilter, StatusFilter, StreamSort} from '~/shared/lib/getFilters';
 import {isWNearTokenId} from '~/shared/lib/isWNearTokenId';
 import {getRoundedPercentageRatio} from '~/shared/lib/math';
 import {createProtectedEffect} from '~/shared/lib/protectedEffect';
-import {ROUTES_MAP} from '~/shared/lib/routing';
-import {createStreamToNFT} from '~/shared/lib/vaultContract';
+import {createTransferToNFT, parseNftContract} from '~/shared/lib/vaultContract';
 
-import {sorts, statusOptions} from './constants';
+import {linkToExplorer, sorts} from './constants';
 import type {StreamCardData, StreamProgressData} from './types';
-
-export const withdrawFormValidationSchema = Yup.object().shape({
-  nftContractId: Yup.string().required('NFT Contract is required'),
-  nftId: Yup.string().required('NFT ID is required'),
-  fungibleToken: Yup.string().required('Fungible Token ID is required'),
-});
-
-export const getStreamsFormValidationSchema = Yup.object().shape({
-  nftContractId: Yup.string().required('NFT Contract is required'),
-  nftId: Yup.string().required('NFT ID is required'),
-});
-
-export const getIncomingStreamsFx = createProtectedEffect({
-  source: $streamToNftWallet,
-  fn({account, contract}, values: NftWithdrawAllValues) {
-    const {nftContractId, nftId} = values;
-
-    return requestAccountIncomingStreamsToNFTFx({
-      account,
-      nftContractId,
-      nftId,
-      roketoContract: contract,
-    });
-  },
-});
 
 export const $streamListData = createStore(
   {
@@ -93,10 +41,7 @@ export const $streamListData = createStore(
   {updateFilter: areObjectsDifferent},
 );
 
-export const $allNFTStreams = $accountNftStreams.map(({outputs}) => [...outputs]);
-
 export const $filteredStreams = createStore<RoketoStream[]>([], {updateFilter: areArraysDifferent});
-export const $$incom = createStore<RoketoStream | null>(null);
 
 export const $streamFilter = createStore({
   direction: 'All' as DirectionFilter,
@@ -105,20 +50,12 @@ export const $streamFilter = createStore({
 });
 
 export const changeDirectionFilter = createEvent<DirectionFilter>();
-export const changeStatusFilter = createEvent<StatusFilter>();
 export const changeTextFilter = createEvent<string>();
-
-export const $statusFilterCounts = createStore<Record<StatusFilter, number>>({
-  All: 0,
-  Initialized: 0,
-  Active: 0,
-  Paused: 0,
-});
 
 export const changeStreamSort = createEvent<StreamSort>();
 export const $streamSort = createStore<StreamSort>(sorts.mostRecent);
 
-export const handleCreateStreamToNFTFx = createProtectedEffect({
+export const handleCreateTransferToNFTFx = createProtectedEffect({
   source: combine($roketoWallet, $nearWallet, (roketo, near) =>
     !!roketo && !!near ? {roketo, near} : null,
   ),
@@ -126,41 +63,19 @@ export const handleCreateStreamToNFTFx = createProtectedEffect({
     {roketo: {tokens, transactionMediator, accountId}, near: {auth}},
     values: NftFormValues,
   ) {
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const {
-      receiver,
-      isNotDelayed,
-      comment,
-      deposit,
-      duration,
-      token,
-      isUnlocked,
-      cliffDateTime,
-      color,
-      nftContractId,
-      nftId,
-    } = values;
-    const {roketoMeta, tokenContract, meta} = tokens[token];
-    const tokensPerSec = getTokensPerSecondCount(meta, deposit, duration);
+    const {deposit, nftId, nftContractId, token} = values;
+
+    const {tokenContract, meta} = tokens[token];
+
     const creator = () =>
-      createStreamToNFT({
-        deposit: toYocto(meta.decimals, deposit),
-        comment,
-        receiverId: receiver,
-        tokenAccountId: token,
-        commissionOnCreate: roketoMeta.commission_on_create,
-        tokensPerSec,
-        delayed: !isNotDelayed,
-        nftContractId,
-        nftId,
-        isLocked: !isUnlocked,
-        cliffPeriodSec: cliffDateTime
-          ? Math.floor((cliffDateTime.getTime() - Date.now()) / 1000)
-          : undefined,
-        color: color === 'none' ? null : colorDescriptions[color].color,
+      createTransferToNFT({
+        owner_id: accountId,
+        amount: toYocto(meta.decimals, deposit),
         transactionMediator,
-        accountId,
         tokenContract,
+        tokenAccountId: token,
+        nftId,
+        nftContractId,
         wNearId: env.WNEAR_ID,
       });
     try {
@@ -189,54 +104,6 @@ export const $streamsProgress = createStore<Record<string, StreamProgressData>>(
 
 export const selectStream = createEvent<string | null>();
 export const $selectedStream = createStore<string | null>(null);
-
-sample({
-  source: $accountNftStreams,
-  target: $streamListData,
-  fn: ({streamsLoaded, outputs}) => ({
-    streamsLoading: !streamsLoaded,
-    hasStreams: outputs.length > 0,
-  }),
-});
-
-sample({
-  source: {
-    streams: $allNFTStreams,
-    filter: $streamFilter,
-    accountId: $accountId,
-    sort: $streamSort,
-  },
-  target: $filteredStreams,
-  fn({streams, filter: {direction, status, text}, accountId, sort}) {
-    const filters = [
-      getDirectionFilter(accountId, direction),
-      getStatusFilter(status),
-      getTextFilter(accountId, text),
-    ].filter((fn): fn is FilterFn => !!fn);
-
-    const result =
-      filters.length === 0
-        ? [...streams]
-        : streams.filter((item) => filters.every((filter) => filter(item)));
-    return result.sort(sort.fn);
-  },
-});
-
-sample({
-  source: {streams: $allNFTStreams, filter: $streamFilter, accountId: $accountId},
-  target: $statusFilterCounts,
-  fn({streams, filter, accountId}) {
-    const directionFilter = getDirectionFilter(accountId, filter.direction);
-    const filteredStreams = directionFilter ? streams.filter(directionFilter) : streams;
-    return Object.fromEntries(
-      statusOptions.map((status) => {
-        const statusFilter = getStatusFilter(status);
-        const resultStreams = statusFilter ? filteredStreams.filter(statusFilter) : filteredStreams;
-        return [status, resultStreams.length];
-      }),
-    ) as Record<StatusFilter, number>;
-  },
-});
 
 sample({clock: changeStreamSort, target: $streamSort});
 
@@ -268,8 +135,16 @@ sample({
       const {decimals} = token.meta;
       const symbol = isWNearTokenId(tokenId) ? 'NEAR' : token.meta.symbol;
       const cliffEndTimestamp = calculateCliffEndTimestamp(stream);
-      const progress = getStreamProgress({stream});
-      const timeLeft = calculateTimeLeft(stream);
+
+      const progress = {
+        full: Number(stream.balance).toFixed(0),
+        withdrawn: '0',
+        streamed: Number(stream.balance).toFixed(0),
+        left: 0,
+        available: 0,
+      };
+      const timeLeft = '0';
+
       const streamed = Number(toHumanReadableValue(decimals, progress.streamed, 3));
       const withdrawn = Number(toHumanReadableValue(decimals, progress.withdrawn, 3));
       const total = Number(toHumanReadableValue(decimals, progress.full, 3));
@@ -289,19 +164,7 @@ sample({
         tokensPerSec,
       );
       const direction = getStreamDirection(stream, accountId);
-      let sign: string;
-      switch (direction) {
-        case 'IN':
-          sign = '+';
-          break;
-        case 'OUT':
-          sign = '-';
-          break;
-        case null:
-        default:
-          sign = '';
-          break;
-      }
+
       return {
         symbol,
         progressFull: progress.full,
@@ -321,7 +184,7 @@ sample({
         withdrawnText,
         withdrawnPercentage,
         direction: direction ? (direction.toLowerCase() as 'in' | 'out') : null,
-        sign,
+        sign: '',
         name: direction === 'IN' ? stream.owner_id : stream.receiver_id,
       };
     }),
@@ -331,22 +194,26 @@ sample({
   clock: $filteredStreams,
   source: {accountId: $accountId, oldData: $streamCardsData},
   fn: ({accountId, oldData}, streams) =>
-    recordUpdater(oldData, streams, (stream, id) => {
+    recordUpdater(oldData, streams, (stream) => {
       const direction = getStreamDirection(stream, accountId);
       const isIncomingStream = direction === 'IN';
-      const iconType: keyof typeof STREAM_STATUS =
-        typeof stream.status === 'string' ? stream.status : 'Finished';
+      const iconType: keyof typeof STREAM_STATUS = 'Finished';
+      const nftDetails = parseNftContract(stream.description);
+
       return {
-        streamPageLink: generatePath(ROUTES_MAP.stream.path, {id}),
+        streamPageLink: `${linkToExplorer}${stream.id}`,
         comment: parseComment(stream.description),
         color: parseColor(stream.description),
         name: isIncomingStream ? stream.owner_id : stream.receiver_id,
         isLocked: stream.is_locked,
-        showAddFundsButton: ableToAddFunds(stream, accountId),
-        showWithdrawButton: direction === 'IN' && isActiveStream(stream),
-        showStartButton: ableToStartStream(stream, accountId),
-        showPauseButton: ableToPauseStream(stream, accountId),
+        showAddFundsButton: false,
+        showWithdrawButton: direction === 'IN',
+        showStartButton: false,
+        showPauseButton: false,
+        showStopButton: false,
         iconType,
+        nftId: nftDetails.nftId || '',
+        nftContract: nftDetails.nftContractId || '',
       };
     }),
   target: $streamCardsData,
@@ -368,5 +235,4 @@ sample({
 });
 
 $streamFilter.on(changeDirectionFilter, (filter, direction) => ({...filter, direction}));
-$streamFilter.on(changeStatusFilter, (filter, status) => ({...filter, status}));
 $streamFilter.on(changeTextFilter, (filter, text) => ({...filter, text}));
