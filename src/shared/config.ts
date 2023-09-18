@@ -14,6 +14,8 @@ type EnvType = {
   WEB_API_URL: string;
   COMMIT_HASH: string;
   BUILD_TIME: string;
+  MUNZEN_API_KEY: string;
+  MUNZEN_SECRET_KEY: string;
 };
 
 export const env: EnvType = {
@@ -32,4 +34,6 @@ export const env: EnvType = {
   WEB_API_URL: import.meta.env.VITE_WEB_API_URL,
   COMMIT_HASH: import.meta.env.VITE_COMMIT_HASH,
   BUILD_TIME: import.meta.env.VITE_BUILD_TIME,
+  MUNZEN_API_KEY: import.meta.env.VITE_MUNZEN_API_KEY,
+  MUNZEN_SECRET_KEY: import.meta.env.VITE_MUNZEN_SECRET_KEY,
 };

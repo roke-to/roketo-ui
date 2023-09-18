@@ -65,7 +65,11 @@ export const Button = ({
   );
 
   if (link) {
-    return <Link to={link}>{button}</Link>;
+    return (
+      <Link to={link} className={styles.linkContainer}>
+        {button}
+      </Link>
+    );
   }
 
   return button;

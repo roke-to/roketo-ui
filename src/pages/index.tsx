@@ -20,6 +20,7 @@ import {NftStreamsPage} from './nft_streams';
 import {NotFoundPage} from './not-found';
 import {StreamPage} from './stream';
 import {StreamsPage} from './streams';
+import {TopUpPage} from './top-up';
 
 const TRASH_QUERY_PARAMS = ['transactionHashes', 'errorCode', 'errorMessage'];
 
@@ -43,7 +44,7 @@ export function Routing() {
 
   const handleBannerClose = () => setStaderBannerOpened(false);
 
-  const {root, stream, streams, nftStreams, archivedStreams, authorize} = ROUTES_MAP;
+  const {root, stream, streams, nftStreams, archivedStreams, authorize, topUp} = ROUTES_MAP;
 
   const {legacyStream, legacyStreams} = LEGACY_ROUTES_MAP;
 
@@ -95,6 +96,15 @@ export function Routing() {
           path={streams.path}
         >
           <StreamsPage />
+        </PrivateRoute>
+
+        <PrivateRoute
+          exact
+          redirect={<Redirect to={authorize.path} />}
+          allowed={signedIn}
+          path={topUp.path}
+        >
+          <TopUpPage />
         </PrivateRoute>
 
         <PrivateRoute

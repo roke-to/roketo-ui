@@ -81,13 +81,22 @@
   line-height: 60px;
 }
 
+.verticalButtons {
+  display: flex;
+  flex-direction: column;
+}
+
+.verticalButtons > .button {
+  margin-bottom: 12px;
+}
+
 .button {
   padding: 12px 20px;
   color: #496ef3;
   background: #f0f6ff;
   border-radius: 24px;
   border-color: #f0f6ff;
-  align-self: end;
+  //align-self: end;
 }
 
 .progressBar {

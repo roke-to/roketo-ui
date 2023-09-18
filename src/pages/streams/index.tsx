@@ -8,6 +8,7 @@ import {WithdrawAllButton} from '~/features/stream-control/WithdrawAllButton';
 import {STREAM_DIRECTION, StreamDirection} from '~/shared/api/roketo/constants';
 import {Modal} from '~/shared/components/Modal';
 import {testIds} from '~/shared/constants';
+import {ROUTES_MAP} from '~/shared/lib/routing';
 import {ProgressBar} from '~/shared/ui/components/ProgressBar';
 
 import {Button} from '@ui/components/Button';
@@ -86,13 +87,22 @@ export const StreamsPage = () => {
           direction={STREAM_DIRECTION.IN}
           className={styles.receivingCard}
         />
-        <Button
-          className={cn(styles.button, styles.createStreamButton)}
-          onClick={toggleModal}
-          testId={testIds.createStreamButton}
-        >
-          Create a stream
-        </Button>
+        <div className={cn(styles.verticalButtons)}>
+          <Button
+            className={cn(styles.button, styles.createStreamButton)}
+            onClick={toggleModal}
+            testId={testIds.createStreamButton}
+          >
+            Create a stream
+          </Button>
+
+          <Button
+            className={cn(styles.button, styles.createStreamButton)}
+            link={ROUTES_MAP.topUp.path}
+          >
+            Top UP NEAR
+          </Button>
+        </div>
         <Modal isOpen={isModalOpened} onCloseModal={toggleModal}>
           <CreateStream
             onFormCancel={toggleModal}
