@@ -28,6 +28,7 @@
     "@near-wallet-selector/near-wallet": "^6.0.0",
     "@near-wallet-selector/sender": "^6.0.0",
     "@near-wallet-selector/wallet-utils": "^6.0.0",
+    "@nearpay/nearpay-sdk": "^3.2.1",
     "@roketo/sdk": "^0.2.9",
     "bignumber.js": "^9.0.2",
     "classnames": "^2.3.1",

@@ -1,0 +1,17 @@
+@import 'src/shared/ui/palette';
+
+.layout {
+  color: $light-black;
+
+  flex-grow: 1;
+  padding: 24px 4px 28px 4px;
+
+  @media (min-width: 767px) {
+    padding: 24px 56px 28px 56px;
+  }
+}
+
+.widgetContainer {
+  margin: auto;
+  margin-top: 56px;
+}
